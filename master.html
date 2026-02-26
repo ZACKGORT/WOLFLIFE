@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1.0,minimum-scale=1.0" name="viewport">
-<title>wolfie.life</title>
+<title>wolfie.live</title>
 
 <link rel="modulepreload" href="https://esm.sh/react@18.3.1">
 <link rel="modulepreload" href="https://esm.sh/react-dom@18.3.1/client">
@@ -684,8 +684,15 @@
   .fab, .icon-btn, .btn, .toggle-btn, .zoom-presets-btn, .project-item, details { transform: translateZ(0); backface-visibility: hidden; }
 
   /* ===================================
-     INLINE EDITABLE CELLS (Namecheap DNS style)
+     INLINE EDITABLE CELLS — desktop (Namecheap DNS style)
      =================================== */
+
+  /* Allow text selection inside inputs despite body rule */
+  .cell-input, .cell-input * {
+      -webkit-user-select: text !important;
+      user-select: text !important;
+      touch-action: auto !important;
+  }
 
   .editable-cell {
       cursor: pointer;
@@ -715,6 +722,7 @@
   .project-item:hover .editable-cell .edit-pencil { opacity: 0.35; }
   .project-item:hover .editable-cell:hover .edit-pencil { opacity: 0.8; }
 
+  /* Desktop inline editing state */
   .editing-cell {
       display: inline-flex !important;
       align-items: center;
@@ -762,9 +770,172 @@
   .cell-confirm { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
   .cell-confirm:hover { background: color-mix(in srgb, var(--accent) 20%, transparent); border-color: var(--accent); color: var(--accent); }
   .cell-cancel:hover { background: rgba(255,80,80,0.12); border-color: rgba(255,80,80,0.5); color: #ff6363; }
-
   .project-item:hover .editing-cell { background: rgba(0,0,0,0.95) !important; }
   .project-item:hover .editing-cell .cell-input { color: var(--ink) !important; }
+
+  /* ===================================
+     MOBILE EDITABLE ROWS (coarse pointer)
+     On touch: show a persistent edit icon per row, tap row to expand
+     into a full-width edit panel inside the row itself.
+     =================================== */
+  @media (pointer: coarse) {
+      /* Always-visible edit affordance — small pencil chip on the right */
+      .editable-cell { cursor: default; gap: 0; padding: 0; margin: 0; }
+      .editable-cell:hover { color: inherit !important; background: none !important; }
+      .edit-pencil { display: none !important; } /* hidden — tap target on row instead */
+
+      /* Row tap area — entire row is the tap target, shows edit icon right-side */
+      .project-item.is-editable {
+          position: relative;
+          cursor: pointer;
+          -webkit-tap-highlight-color: rgba(218,165,32,0.08);
+          touch-action: manipulation;
+      }
+      /* Persistent edit affordance chip in right gutter */
+      .project-item.is-editable::after {
+          content: "✎";
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 14px;
+          color: var(--ink-3);
+          opacity: 0.35;
+          pointer-events: none;
+          transition: opacity 0.15s ease;
+          line-height: 1;
+      }
+      .project-item.is-editable:active::after { opacity: 0.8; }
+
+      /* Expanded edit panel — overrides the grid layout */
+      .project-item.mobile-editing {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          padding: 12px 0 0;
+          gap: 0;
+          cursor: default;
+          border-bottom-color: color-mix(in srgb, var(--accent) 30%, transparent);
+          min-height: unset;
+      }
+      .project-item.mobile-editing::after { display: none; }
+      /* Hide the normal grid columns when expanded */
+      .project-item.mobile-editing .project-data { display: none !important; }
+
+      /* The mobile edit panel itself */
+      .mobile-edit-panel {
+          display: none;
+      }
+      .project-item.mobile-editing .mobile-edit-panel {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          width: 100%;
+          padding: 0 0 14px;
+          animation: mobileEditOpen 0.22s cubic-bezier(0.25,1,0.5,1) both;
+      }
+      @keyframes mobileEditOpen {
+          from { opacity: 0; transform: translateY(-6px); }
+          to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .mobile-edit-field {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+      }
+      .mobile-edit-label {
+          font-family: var(--ui-font);
+          font-size: 9px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--ink-3);
+          opacity: 0.6;
+      }
+      .mobile-edit-input {
+          width: 100%;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid var(--border);
+          border-radius: var(--border-radius-md);
+          padding: 11px 14px;
+          font-family: var(--body-font);
+          font-size: 18px;
+          color: var(--ink);
+          outline: none;
+          caret-color: var(--accent);
+          -webkit-user-select: text;
+          user-select: text;
+          touch-action: auto;
+          -webkit-tap-highlight-color: transparent;
+          transition: border-color 0.2s ease, background 0.2s ease;
+      }
+      .mobile-edit-input:focus {
+          border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+          background: rgba(255,255,255,0.07);
+          box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+      }
+      .mobile-edit-input.title-input {
+          font-size: 20px;
+          font-style: italic;
+          font-family: var(--body-font);
+      }
+      .mobile-edit-input.title-input:focus { font-style: normal; }
+
+      .mobile-edit-actions {
+          display: flex;
+          gap: 8px;
+          margin-top: 4px;
+      }
+      .mobile-edit-save {
+          flex: 1;
+          appearance: none;
+          background: var(--accent);
+          border: none;
+          border-radius: var(--border-radius-md);
+          color: #000;
+          font-family: var(--ui-font);
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          padding: 14px 20px;
+          cursor: pointer;
+          transition: filter 0.15s ease, transform 0.1s ease;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
+          min-height: 48px;
+      }
+      .mobile-edit-save:active { filter: brightness(1.12); transform: scale(0.98); }
+
+      .mobile-edit-discard {
+          appearance: none;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid var(--border);
+          border-radius: var(--border-radius-md);
+          color: var(--ink-3);
+          font-family: var(--ui-font);
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          padding: 14px 20px;
+          cursor: pointer;
+          transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
+          min-height: 48px;
+      }
+      .mobile-edit-discard:active { transform: scale(0.97); }
+
+      /* Suppress desktop-only inline editing on touch */
+      .editing-cell {
+          display: inline !important;
+          background: none !important;
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+      }
+  }
 
 
 </style>
@@ -3150,17 +3321,21 @@
           )
       );
   }
-  // ─── Inline-editable cell (Namecheap DNS style) ───────────────────────────
+  // ─── Detect coarse pointer (touch) once ────────────────────────────────────
+  const isCoarsePointer = () => window.matchMedia("(pointer: coarse)").matches;
+
+  // ─── Desktop inline-editable cell ──────────────────────────────────────────
   function EditableCell({ value, className, editable, onCommit, placeholder }) {
     const [editing, setEditing] = React.useState(false);
     const [draft, setDraft] = React.useState(value);
     const inputRef = React.useRef(null);
+    // Track whether a button tap is in progress so blur doesn't race it
+    const committingRef = React.useRef(false);
 
-    // Sync if parent value changes while not editing
     React.useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
 
     const activate = (e) => {
-      if (!editable) return;
+      if (!editable || isCoarsePointer()) return;
       e.stopPropagation();
       setDraft(value);
       setEditing(true);
@@ -3171,14 +3346,19 @@
     };
 
     const commit = () => {
+      if (committingRef.current) return;
+      committingRef.current = true;
       const trimmed = draft.trim();
       if (trimmed && trimmed !== value) onCommit(trimmed);
       setEditing(false);
+      requestAnimationFrame(() => { committingRef.current = false; });
     };
 
     const cancel = () => {
+      committingRef.current = true;
       setDraft(value);
       setEditing(false);
+      requestAnimationFrame(() => { committingRef.current = false; });
     };
 
     const onKeyDown = (e) => {
@@ -3197,9 +3377,12 @@
           value: draft,
           onChange: (e) => setDraft(e.target.value),
           onKeyDown,
-          onBlur: commit,
+          onBlur: () => { if (!committingRef.current) commit(); },
           placeholder: placeholder || value,
           "aria-label": `Edit ${placeholder}`,
+          autoComplete: "off",
+          autoCorrect: "off",
+          spellCheck: false,
         }),
         React.createElement(
           "span",
@@ -3225,13 +3408,102 @@
       {
         className: `${className}${editable ? " editable-cell" : ""}`,
         onClick: editable ? activate : undefined,
-        title: editable ? "Click to edit" : undefined,
+        title: editable && !isCoarsePointer() ? "Click to edit" : undefined,
       },
       value || placeholder || "—",
-      editable && React.createElement("span", { className: "edit-pencil", "aria-hidden": "true" },
+      editable && !isCoarsePointer() && React.createElement(
+        "span", { className: "edit-pencil", "aria-hidden": "true" },
         React.createElement("svg", { viewBox: "0 0 16 16", fill: "none", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" },
           React.createElement("path", { d: "M11.5 2.5l2 2-7 7-2.5.5.5-2.5 7-7z" })
         )
+      )
+    );
+  }
+
+  // ─── Mobile expanded-row editor ────────────────────────────────────────────
+  function MobileEditPanel({ item, onCommit, onCancel }) {
+    const [titleDraft, setTitleDraft] = React.useState(item.title || "");
+    const [captionDraft, setCaptionDraft] = React.useState(item.caption || "");
+    const panelRef = React.useRef(null);
+    const titleRef = React.useRef(null);
+
+    React.useEffect(() => {
+      // Scroll row into view then focus title field
+      if (panelRef.current) {
+        const row = panelRef.current.closest(".project-item");
+        if (row) {
+          // Small delay lets the DOM expand first
+          setTimeout(() => {
+            row.scrollIntoView({ behavior: "smooth", block: "center" });
+            titleRef.current?.focus();
+          }, 80);
+        }
+      }
+    }, []);
+
+    const handleSave = (e) => {
+      e && e.preventDefault();
+      onCommit({
+        title: titleDraft.trim() || item.title,
+        caption: captionDraft.trim() || item.caption,
+      });
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === "Enter" && e.ctrlKey) handleSave(e);
+      if (e.key === "Escape") onCancel();
+      e.stopPropagation();
+    };
+
+    return React.createElement(
+      "div",
+      { className: "mobile-edit-panel", ref: panelRef, onClick: (e) => e.stopPropagation() },
+      React.createElement(
+        "div", { className: "mobile-edit-field" },
+        React.createElement("span", { className: "mobile-edit-label" }, "Title"),
+        React.createElement("input", {
+          ref: titleRef,
+          className: "mobile-edit-input title-input",
+          value: titleDraft,
+          onChange: (e) => setTitleDraft(e.target.value),
+          onKeyDown,
+          placeholder: "Title",
+          "aria-label": "Edit title",
+          autoComplete: "off",
+          autoCorrect: "on",
+          spellCheck: true,
+          enterKeyHint: "next",
+        })
+      ),
+      React.createElement(
+        "div", { className: "mobile-edit-field" },
+        React.createElement("span", { className: "mobile-edit-label" }, "Caption"),
+        React.createElement("input", {
+          className: "mobile-edit-input",
+          value: captionDraft,
+          onChange: (e) => setCaptionDraft(e.target.value),
+          onKeyDown,
+          placeholder: "Caption",
+          "aria-label": "Edit caption",
+          autoComplete: "off",
+          autoCorrect: "on",
+          spellCheck: true,
+          enterKeyHint: "done",
+          onKeyPress: (e) => { if (e.key === "Enter") handleSave(e); },
+        })
+      ),
+      React.createElement(
+        "div", { className: "mobile-edit-actions" },
+        React.createElement("button", {
+          className: "mobile-edit-save",
+          onClick: handleSave,
+          "aria-label": "Save changes",
+        }, "Save"),
+        React.createElement("button", {
+          className: "mobile-edit-discard",
+          onClick: (e) => { e.stopPropagation(); onCancel(); },
+          "aria-label": "Cancel editing",
+        }, "Cancel")
       )
     );
   }
@@ -3240,9 +3512,11 @@
   const bgRef = useRef(null);
   const containerRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(-1);
+  const [mobileEditIdx, setMobileEditIdx] = useState(-1);
   const mouse = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const bgPos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const scrollY = useRef(0);
+  const isTouch = isCoarsePointer();
 
   useEffect(() => {
     const root = containerRef.current?.closest('.listview-root');
@@ -3276,16 +3550,19 @@
     const container = containerRef.current;
     if (!container) return;
     const onLeave = () => {
-      setActiveIdx(-1);
-      const bg = bgRef.current;
-      if (bg) gsap.to(bg, { opacity: 0, scale: 1.05, duration: 0.6, ease: "power2.inOut" });
-      container.classList.remove("has-active");
+      if (mobileEditIdx === -1) {
+        setActiveIdx(-1);
+        const bg = bgRef.current;
+        if (bg) gsap.to(bg, { opacity: 0, scale: 1.05, duration: 0.6, ease: "power2.inOut" });
+        container.classList.remove("has-active");
+      }
     };
     container.addEventListener("mouseleave", onLeave);
     return () => container.removeEventListener("mouseleave", onLeave);
-  }, []);
+  }, [mobileEditIdx]);
 
   const onEnterRow = (idx, imageUrl) => {
+    if (isTouch) return; // no hover imagery on touch
     setActiveIdx(idx);
     containerRef.current?.classList.add("has-active");
     const bg = bgRef.current;
@@ -3293,6 +3570,18 @@
     bg.style.backgroundImage = `url(${imageUrl})`;
     gsap.set(bg, { opacity: 0, scale: 1.2, transformOrigin: "center center" });
     gsap.to(bg, { opacity: 0.65, scale: 1, duration: 0.9, ease: "power3.out" });
+  };
+
+  const handleMobileRowTap = (e, idx, isEditable) => {
+    if (!isTouch || !isEditable) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setMobileEditIdx(idx === mobileEditIdx ? -1 : idx);
+  };
+
+  const handleMobileCommit = (idx, patch) => {
+    if (onUpdateItem) onUpdateItem(idx, patch);
+    setMobileEditIdx(-1);
   };
 
   return React.createElement(
@@ -3308,14 +3597,21 @@
           const artist = it.title || "—";
           const album = it.caption || "—";
           const image = it.src || "";
-          // Only archive items (have an id starting with "note_") are editable
           const isEditable = !it.placeholder && !it.seed && typeof onUpdateItem === "function";
+          const isMobileEditing = isTouch && mobileEditIdx === idx;
+
+          const rowClasses = [
+            "project-item",
+            activeIdx === idx ? "active" : "",
+            isEditable && isTouch ? "is-editable" : "",
+            isMobileEditing ? "mobile-editing" : "",
+          ].filter(Boolean).join(" ");
 
           return React.createElement(
             "li",
             {
               key: `${it.id || artist}_${idx}`,
-              className: `project-item ${activeIdx === idx ? "active" : ""}`,
+              className: rowClasses,
               onMouseEnter: () => onEnterRow(idx, image),
               onContextMenu: (e) => {
                 e.preventDefault();
@@ -3323,7 +3619,12 @@
                   window.showDeleteConfirm(idx, artist, album, window.deleteFromArchive);
                 }
               },
+              // Touch: tap row to expand edit panel
+              onClick: isEditable && isTouch
+                ? (e) => handleMobileRowTap(e, idx, isEditable)
+                : undefined,
             },
+            // Normal display cells (hidden via CSS when mobile-editing)
             React.createElement(EditableCell, {
               value: artist,
               className: "project-data artist",
@@ -3339,7 +3640,14 @@
               onCommit: (val) => onUpdateItem && onUpdateItem(idx, { caption: val }),
             }),
             React.createElement("span", { className: "project-data label" }, " "),
-            React.createElement("span", { className: "project-data year" }, new Date().getFullYear())
+            React.createElement("span", { className: "project-data year" }, new Date().getFullYear()),
+            // Mobile edit panel — only rendered (but CSS-hidden) when touch
+            isEditable && isTouch && React.createElement(MobileEditPanel, {
+              key: `edit_${it.id || idx}`,
+              item: it,
+              onCommit: (patch) => handleMobileCommit(idx, patch),
+              onCancel: () => setMobileEditIdx(-1),
+            })
           );
         })
       )
