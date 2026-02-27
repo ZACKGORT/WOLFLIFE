@@ -133,6 +133,41 @@
   }
 
   /* ===================================
+     NEWSPAPER THEME (wolfie.love style)
+     =================================== */
+  body.theme-newspaper {
+      --bg-color: #faf8f3;
+      --ink: #1a1410;
+      --ink-2: #2a2420;
+      --ink-3: #5a4e44;
+      --accent: #8b4513;
+      --danger: #c0392b;
+      --surface: rgba(245, 241, 232, 0.92);
+      --surface-raised: rgba(245, 241, 232, 0.98);
+      --border: rgba(0, 0, 0, 0.12);
+      --border-strong: rgba(0, 0, 0, 0.18);
+      --border-color: rgba(0, 0, 0, 0.12);
+      --hover-tint: rgba(139, 69, 19, 0.07);
+      --hover-tint-strong: rgba(139, 69, 19, 0.13);
+      --glass-bg: var(--surface);
+      --glass-bg-hover: var(--hover-tint);
+      --glass-border: var(--border);
+      --vig-opacity: 0.10;
+      --grain-opacity: 0.06;
+      --cursor-bg: transparent;
+      --cursor-border: rgba(0, 0, 0, 0.40);
+      --cursor-blend: normal;
+      --selection-bg: rgba(139, 69, 19, 0.22);
+      --selection-color: #fff;
+  }
+  body.theme-newspaper .cursor-circle { background: #1a1410; }
+  body.theme-newspaper .vignette {
+      background: radial-gradient(120% 90% at 50% 50%, #fff0 var(--vig-inner), rgba(245,241,232,0.4) var(--vig-mid), rgba(235,229,215,0.85) var(--vig-outer));
+  }
+  body.theme-newspaper .edge-blur { display: none; }
+  body.theme-newspaper { color-scheme: light; }
+
+  /* ===================================
      VISUAL EFFECTS
      =================================== */
   .edge-blur {
@@ -294,6 +329,7 @@
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       align-items: center; justify-content: center;
       padding: clamp(16px, 3vw, 32px);
+      cursor: auto;
   }
   .overlay.open { display: flex; }
   .overlay.curved { transform: none !important; transform-style: flat !important; perspective: none !important; }
@@ -303,8 +339,15 @@
       display: none; flex-direction: column;
       background: rgba(0, 0, 0, 0.88);
       backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      cursor: auto;
   }
   .overlay-wrapper.open { display: flex; }
+  .overlay-wrapper *, .overlay * {
+      cursor: auto;
+  }
+  .overlay-wrapper button, .overlay button,
+  .overlay-wrapper summary, .overlay-wrapper .ctx-item,
+  .overlay-wrapper a { cursor: pointer; }
 
   /* ===================================
      DELETE CONFIRM DIALOG
@@ -1295,7 +1338,7 @@
       cols: 10,
       rows: 7,
       tile: 0.32,
-      gap: 0.02,
+      gap: 0.008,
       ambient: 0.2,
       dragEase: 0.14,
       velEase: 0.92,
@@ -1424,26 +1467,39 @@
       ctx.closePath();
   }
   function drawChromeBezel(ctx, s, opts = {}) {
-      const w = Math.max(4, opts.width ?? 1);
-      const r = Math.min(12, opts.radius ?? 4);
+      const w = Math.max(6, opts.width ?? 6);
+      const r = Math.min(14, opts.radius ?? 6);
       ctx.save();
-      ctx.translate(0.5, 0.5);
-      const grad = ctx.createLinearGradient(0, 0, 0, s);
-      grad.addColorStop(0.0, "rgba(255,255,255,0.95)");
-      grad.addColorStop(0.15, "rgba(210,210,210,0.78)");
-      grad.addColorStop(0.5, "rgba(242,242,242,0.95)");
-      grad.addColorStop(0.85, "rgba(210,210,210,0.78)");
-      grad.addColorStop(1.0, "rgba(255,255,255,0.95)");
+      // Frosted glass border — semi-transparent white with subtle blue tint
+      ctx.globalCompositeOperation = "source-over";
+      // Outer rim: soft white frost
+      const grad = ctx.createLinearGradient(0, 0, s, s);
+      grad.addColorStop(0.0,  "rgba(255,255,255,0.38)");
+      grad.addColorStop(0.25, "rgba(220,235,255,0.22)");
+      grad.addColorStop(0.5,  "rgba(255,255,255,0.30)");
+      grad.addColorStop(0.75, "rgba(200,220,255,0.18)");
+      grad.addColorStop(1.0,  "rgba(255,255,255,0.38)");
       ctx.strokeStyle = grad;
       ctx.lineWidth = w;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       roundRect(ctx, w / 2, w / 2, s - w, s - w, r);
       ctx.stroke();
-      ctx.strokeStyle = "rgba(255,255,255,0.95)";
-      ctx.lineWidth = 1;
-      roundRect(ctx, w + 0.5, w + 0.5, s - 2 * w - 1, s - 2 * w - 1, Math.max(2, r - 2));
+      // Inner highlight line — bright top-left edge
+      const hiGrad = ctx.createLinearGradient(0, 0, s * 0.6, s * 0.6);
+      hiGrad.addColorStop(0.0, "rgba(255,255,255,0.70)");
+      hiGrad.addColorStop(0.5, "rgba(255,255,255,0.20)");
+      hiGrad.addColorStop(1.0, "rgba(255,255,255,0.05)");
+      ctx.strokeStyle = hiGrad;
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, w + 1, w + 1, s - 2 * w - 2, s - 2 * w - 2, Math.max(2, r - 3));
       ctx.stroke();
+      // Frosted glass fill overlay on bezel area to simulate glass thickness
+      ctx.fillStyle = "rgba(180,210,255,0.04)";
+      ctx.globalCompositeOperation = "screen";
+      roundRect(ctx, 0, 0, s, s, r + 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
       ctx.restore();
   }
   function makeCardCanvas({ img, title = "[ title ]", caption = "[ caption ]", gps = "", ts = nowTS() }) {
@@ -1609,7 +1665,7 @@
       debounce(() => updateDistortion(distortionShader), 100)
   );
   function BracketOverlay() {
-      const { scene, size } = useThree();
+      const { scene, size, camera } = useThree();
       const matRef = useRef(null);
       useEffect(() => {
           const geom = new THREE.PlaneGeometry(2, 2);
@@ -1621,27 +1677,35 @@
               uniforms: {
                   resolution: { value: new THREE.Vector2(size.width, size.height) },
                   thickness: { value: 2 },
-                  length: { value: 32.0 },
-                  margin: { value: 52.0 },
-                  marginTop: { value: 52.0 },
-                  marginBottom: { value: 52.0 },
-                  edgeSoft: { value: 8.0 },
-                  offset: { value: new THREE.Vector2(0.0, 0.0) },
-                  opacity: { value: 0.98 },
+                  length: { value: 28.0 },
+                  margin: { value: 0.0 },
+                  opacity: { value: 0.85 },
+                  // zoomFrac: 0=fully zoomed out, 1=fully zoomed in
+                  zoomFrac: { value: 0.0 },
               },
               vertexShader: `varying vec2 vUv; void main(){ vUv=position.xy*0.5+0.5; gl_Position=vec4(position.xy,0.0,1.0); }`,
               fragmentShader: `
         precision highp float;
         varying vec2 vUv;
         uniform vec2 resolution;
-        uniform float thickness, length, margin, marginTop, marginBottom, opacity;
-        uniform vec2 offset;
+        uniform float thickness, length, margin, opacity, zoomFrac;
         float inRect(vec2 p, vec2 a, vec2 b){ vec2 s = step(a, p) * step(p, b); return s.x * s.y; }
         void main(){
-          vec2 p = vUv * resolution + offset;
-          float th = thickness, L = length, m = margin, mt = marginTop, mb = marginBottom;
-          vec2 tl = vec2(m, resolution.y - mt), tr = vec2(resolution.x - m, resolution.y - mt);
-          vec2 bl = vec2(m, mb), br = vec2(resolution.x - m, mb);
+          vec2 p = vUv * resolution;
+          float th = thickness, L = length;
+          // Brackets always center on screen center
+          // At zoom=0: brackets near screen edges; at zoom=1: brackets tight to tile edge
+          float minMarginX = resolution.x * 0.04;
+          float maxMarginX = resolution.x * 0.42;
+          float minMarginY = resolution.y * 0.04;
+          float maxMarginY = resolution.y * 0.42;
+          float mx = mix(maxMarginX, minMarginX, zoomFrac);
+          float my = mix(maxMarginY, minMarginY, zoomFrac);
+          vec2 cx = vec2(resolution.x * 0.5, resolution.y * 0.5);
+          vec2 tl = vec2(cx.x - mx, cx.y + my);
+          vec2 tr = vec2(cx.x + mx, cx.y + my);
+          vec2 bl = vec2(cx.x - mx, cx.y - my);
+          vec2 br = vec2(cx.x + mx, cx.y - my);
           float a = 0.0;
           a = max(a, inRect(p, vec2(tl.x, tl.y - th*0.5), vec2(tl.x + L, tl.y + th*0.5)));
           a = max(a, inRect(p, vec2(tl.x - th*0.5, tl.y - L), vec2(tl.x + th*0.5, tl.y)));
@@ -1664,28 +1728,26 @@
           matRef.current = mat;
           return () => {
               scene.remove(mesh);
-              try {
-                  mat.dispose();
-              } catch {}
-              try {
-                  geom.dispose();
-              } catch {}
+              try { mat.dispose(); } catch {}
+              try { geom.dispose(); } catch {}
           };
       }, [scene]);
+      // Update size uniform when viewport changes
       useEffect(() => {
-          const onPointer = (e) => {
-              const rect = document.documentElement.getBoundingClientRect();
-              const cx = rect.left + rect.width / 2;
-              const cy = rect.top + rect.height / 2;
-              const dx = e.clientX - cx;
-              const dy = e.clientY - cy;
-              const fx = -dx * 0.06;
-              const fy = -dy * 0.03;
-              if (matRef.current) matRef.current.uniforms.offset.value.set(fx, fy);
-          };
-          window.addEventListener("pointermove", onPointer, { passive: !0 });
-          return () => window.removeEventListener("pointermove", onPointer);
-      }, []);
+          if (matRef.current) {
+              matRef.current.uniforms.resolution.value.set(size.width, size.height);
+          }
+      }, [size]);
+      // Update zoomFrac each frame from camera z position
+      useFrame(() => {
+          if (!matRef.current || !camera) return;
+          // zoomMin=0.25 (most zoomed in), zoomMax=3.0 (most zoomed out)
+          const zMin = CONFIG.zoomMin, zMax = CONFIG.zoomMax;
+          const cz = camera.position.z;
+          // fraction: 1 when zoomed in fully, 0 when at max out
+          const frac = 1.0 - Math.min(1, Math.max(0, (cz - zMin) / (zMax - zMin)));
+          matRef.current.uniforms.zoomFrac.value += (frac - matRef.current.uniforms.zoomFrac.value) * 0.08;
+      });
       return null;
   }
   class Grid extends THREE.Group{
@@ -2807,7 +2869,7 @@
                   React.createElement(
                       "div",
                       { className: "section" },
-                      React.createElement("h2", { className: "section-title" }, "Help & Controls"),
+                      React.createElement("h2", { className: "section-title" }, "How to Navigate"),
                       React.createElement(
                           "div",
                           { className: "morphing-disclosure", id: "help-disclosure" },
@@ -2817,47 +2879,19 @@
                               React.createElement(
                                   "summary",
                                   null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          d: "M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.237 8.237 0 016 18.75c1.995 0 3.823.707 5.25 1.886V4.533zM12.75 20.636A8.214 8.214 0 0118 18.75c.966 0 1.89.166 2.75.47a.75.75 0 001-.708V4.262a.75.75 0 00-.5-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v16.103z",
-                                      })
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { d: "M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.237 8.237 0 016 18.75c1.995 0 3.823.707 5.25 1.886V4.533zM12.75 20.636A8.214 8.214 0 0118 18.75c.966 0 1.89.166 2.75.47a.75.75 0 001-.708V4.262a.75.75 0 00-.5-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v16.103z" })
                                   ),
-                                  React.createElement("span", null, "Navigation"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("span", null, "Finding Your Way Around"),
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z", clipRule: "evenodd" })
                                   )
                               ),
                               React.createElement(
                                   "div",
                                   { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      React.createElement("strong", null, "Mouse:"),
-                                      " Drag to pan • Wheel to zoom • Click tile to center • Long-press tile to fit view • Right-click to reset"
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      React.createElement("strong", null, "Touch:"),
-                                      " Drag to pan • Pinch to zoom • Tap tile to center • Long-press tile to fit"
-                                  )
+                                  React.createElement("p", null, React.createElement("strong", null, "Mouse:"), " Drag to sniff around • Scroll wheel to zoom • Click a photo to center it • Long-press to zoom fit • Right-click to open the menu"),
+                                  React.createElement("p", null, React.createElement("strong", null, "Touch:"), " Drag to explore • Pinch to zoom in/out • Tap a photo to center it • Long-press to zoom fit")
                               )
                           ),
                           React.createElement(
@@ -2866,57 +2900,19 @@
                               React.createElement(
                                   "summary",
                                   null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M2.25 6a3 3 0 013-3h13.5a3 3 0 013 3v12a3 3 0 01-3 3H5.25a3 3 0 01-3-3V6zm3.97.97a.75.75 0 011.06 0l2.25 2.25a.75.75 0 010 1.06l-2.25 2.25a.75.75 0 01-1.06-1.06l1.72-1.72-1.72-1.72a.75.75 0 010-1.06zm4.28 4.28a.75.75 0 000 1.5h5.25a.75.75 0 000-1.5H10.5z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M2.25 6a3 3 0 013-3h13.5a3 3 0 013 3v12a3 3 0 01-3 3H5.25a3 3 0 01-3-3V6zm3.97.97a.75.75 0 011.06 0l2.25 2.25a.75.75 0 010 1.06l-2.25 2.25a.75.75 0 01-1.06-1.06l1.72-1.72-1.72-1.72a.75.75 0 010-1.06zm4.28 4.28a.75.75 0 000 1.5h5.25a.75.75 0 000-1.5H10.5z", clipRule: "evenodd" })
                                   ),
                                   React.createElement("span", null, "Keyboard Shortcuts"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z", clipRule: "evenodd" })
                                   )
                               ),
                               React.createElement(
                                   "div",
                                   { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      React.createElement("kbd", null, "1"),
-                                      " Flat distortion • ",
-                                      React.createElement("kbd", null, "2"),
-                                      " Curved distortion • ",
-                                      React.createElement("kbd", null, "0"),
-                                      " Reset view"
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      React.createElement("kbd", null, "N"),
-                                      " New note • ",
-                                      React.createElement("kbd", null, "?"),
-                                      " or ",
-                                      React.createElement("kbd", null, "H"),
-                                      " Help dialog"
-                                  )
+                                  React.createElement("p", null, React.createElement("kbd", null, "1"), " Flat layout • ", React.createElement("kbd", null, "2"), " Curved layout • ", React.createElement("kbd", null, "N"), " Add a note"),
+                                  React.createElement("p", null, React.createElement("kbd", null, "?"), " or ", React.createElement("kbd", null, "H"), " — this screen, obviously")
                               )
                           ),
                           React.createElement(
@@ -2925,109 +2921,19 @@
                               React.createElement(
                                   "summary",
                                   null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z", clipRule: "evenodd" })
                                   ),
-                                  React.createElement("span", null, "View Controls"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("span", null, "Zoom & View Controls"),
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z", clipRule: "evenodd" })
                                   )
                               ),
                               React.createElement(
                                   "div",
                                   { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "Toggle between ",
-                                      React.createElement("strong", null, "Grid View"),
-                                      " (default spatial layout) and ",
-                                      React.createElement("strong", null, "List View"),
-                                      " using the buttons in the left sidebar."
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "Use ",
-                                      React.createElement("strong", null, "Zoom Presets"),
-                                      " (25%, 50%, 75%) for quick framing adjustments."
-                                  )
-                              )
-                          ),
-                          React.createElement(
-                              "details",
-                              { name: "help" },
-                              React.createElement(
-                                  "summary",
-                                  null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          d: "M12 9a3.75 3.75 0 100 7.5A3.75 3.75 0 0012 9z",
-                                      }),
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M9.344 3.071a49.52 49.52 0 015.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 01-3 3h-15a3 3 0 01-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.151-.178a1.56 1.56 0 001.11-.71l.822-1.315a2.942 2.942 0 012.332-1.39zM6.75 12.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0zm12-1.5a.75.75 0 100-1.5.75.75 0 000 1.5z",
-                                          clipRule: "evenodd",
-                                      })
-                                  ),
-                                  React.createElement("span", null, "Camera & Leveler"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
-                                  )
-                              ),
-                              React.createElement(
-                                  "div",
-                                  { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "The ",
-                                      React.createElement("strong", null, "leveler"),
-                                      ' appears on the Viewfinder step when creating a new note. Tap "Enable leveler" to use device orientation for perfect horizontals.'
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "Requires ",
-                                      React.createElement("strong", null, "HTTPS"),
-                                      " (or localhost) and device permission."
-                                  )
+                                  React.createElement("p", null, "The right rail has zoom presets: ", React.createElement("strong", null, "75%"), " for a close nose-in inspection, ", React.createElement("strong", null, "50%"), " for the default mid-range, ", React.createElement("strong", null, "25%"), " for a wide survey, and ", React.createElement("strong", null, "0%"), " for full bird's eye — the whole grid at once, every photo, all of it."),
+                                  React.createElement("p", null, "Switch between ", React.createElement("strong", null, "Grid View"), " and ", React.createElement("strong", null, "List View"), " using the buttons on the left side.")
                               )
                           )
                       )
@@ -3035,7 +2941,7 @@
                   React.createElement(
                       "div",
                       { className: "section" },
-                      React.createElement("h2", { className: "section-title" }, "FAQ"),
+                      React.createElement("h2", { className: "section-title" }, "About wolfie.life"),
                       React.createElement(
                           "div",
                           { className: "morphing-disclosure", id: "faq-disclosure" },
@@ -3045,46 +2951,21 @@
                               React.createElement(
                                   "summary",
                                   null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          d: "M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm1.07-7.75l-.9.92A3.49 3.49 0 0112 12.5h-1v-1h1c.28 0 .5-.22.5-.5 0-.13-.05-.26-.14-.36l-.8-.8A2 2 0 0113 6.5a2 2 0 012 2c0 .55-.22 1.05-.58 1.5z",
-                                      })
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { d: "M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm1.07-7.75l-.9.92A3.49 3.49 0 0112 12.5h-1v-1h1c.28 0 .5-.22.5-.5 0-.13-.05-.26-.14-.36l-.8-.8A2 2 0 0113 6.5a2 2 0 012 2c0 .55-.22 1.05-.58 1.5z" })
                                   ),
-                                  React.createElement("span", null, "What is intoview?"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("span", null, "What is this place?"),
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z", clipRule: "evenodd" })
                                   )
                               ),
                               React.createElement(
                                   "div",
                                   { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      React.createElement("strong", null, "intoview.pro"),
-                                      ' is a curated platform and toolkit for creators ~ {designers, developers, and makers} ~ to present high-impact work in context rather than as a traditional résumé. It’s focused on "showing" instead of as "listing": visual, interactive snapshots that communicate influence, intent, and outcomes.'
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      { className: "note-meta" },
-                                      React.createElement("span", null, "🔗 brand: intoview.pro"),
-                                      React.createElement("span", null, "🧭 focus: discovery & framing")
+                                  React.createElement("p", null, "This is ", React.createElement("strong", null, "wolfie.life"), " — Wolfgang's archive. Every photo, every moment, every ridiculous thing he did that turned out to be the best thing that happened that day. He was a mini poodle mix with enormous opinions and zero concept of personal space. He was rescued. He rescued back. This is where it lives."),
+                                  React.createElement("p", { className: "note-meta" },
+                                      React.createElement("span", null, "🐾 resident: Wolfgang"),
+                                      React.createElement("span", null, "📍 location: wherever dad is")
                                   )
                               )
                           ),
@@ -3094,50 +2975,19 @@
                               React.createElement(
                                   "summary",
                                   null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          d: "M3 6a1 1 0 011-1h16a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V6z",
-                                      })
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z", clipRule: "evenodd" })
                                   ),
-                                  React.createElement("span", null, "What's behind intoview?"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("span", null, "Who is Wolfgang?"),
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z", clipRule: "evenodd" })
                                   )
                               ),
                               React.createElement(
                                   "div",
                                   { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "My workflow blends quick iteration and storytelling: identify → deliberate → iterate → deliver impact through ideation."
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      { className: "note-meta" },
-                                      React.createElement(
-                                          "span",
-                                          null,
-                                          "🛠️ methods: rapid prototyping, documentation dulls ideation"
-                                      ),
-                                      React.createElement("span", null, "⚡ #vibecheck")
-                                  )
+                                  React.createElement("p", null, "Wolfgang arrived as a rescue with a mohawk that confirmed his name immediately. He had no leash from day one — not a rule, just how it was. Trust, established immediately. He claimed every hoodie, supervised every work session, and had a standing reservation at every Sheetz and Wawa in the tristate area."),
+                                  React.createElement("p", null, "He made the lowest lows survivable. He made Saturday mornings the best ones. He was small in size, enormous in presence. He is deeply, permanently missed.")
                               )
                           ),
                           React.createElement(
@@ -3146,137 +2996,20 @@
                               React.createElement(
                                   "summary",
                                   null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", { d: "M12 6a6 6 0 100 12 6 6 0 000-12z" })
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { d: "M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z" })
                                   ),
-                                  React.createElement("span", null, "What is intoview for?"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
+                                  React.createElement("span", null, "Why does this exist?"),
+                                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor" },
+                                      React.createElement("path", { fillRule: "evenodd", d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z", clipRule: "evenodd" })
                                   )
                               ),
                               React.createElement(
                                   "div",
                                   { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "Right now I’m using intoview.pro as a digital sandbox for {visual design exploration, tech-stack familiarity, and practical storytelling}."
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      { className: "note-meta" },
-                                      React.createElement("span", null, "📦 current: prototypes & workflows"),
-                                      React.createElement("span", null, "🔁 iteration cadence: frequent")
-                                  )
-                              )
-                          ),
-                          React.createElement(
-                              "details",
-                              { name: "faq" },
-                              React.createElement(
-                                  "summary",
-                                  null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          d: "M6 3h12l2 4H4l2-4zM4 9h16v9a2 2 0 01-2 2H6a2 2 0 01-2-2V9z",
-                                      })
-                                  ),
-                                  React.createElement("span", null, "How do I bring my best ... intoview?"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
-                                  )
-                              ),
-                              React.createElement(
-                                  "div",
-                                  { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "intoview.pro was once just a concept; one that was completely torn down and built anew. This identiy {brand} offers me an environment and platform through which I further my craft. If you want a real case study, this is one in motion."
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      { className: "note-meta" },
-                                      React.createElement("span", null, "🎯 Google the word: Kaizen")
-                                  )
-                              )
-                          ),
-                          React.createElement(
-                              "details",
-                              { name: "faq" },
-                              React.createElement(
-                                  "summary",
-                                  null,
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          d: "M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z",
-                                      })
-                                  ),
-                                  React.createElement("span", null, "Insights/Outlook"),
-                                  React.createElement(
-                                      "svg",
-                                      {
-                                          xmlns: "http://www.w3.org/2000/svg",
-                                          viewBox: "0 0 24 24",
-                                          fill: "currentColor",
-                                      },
-                                      React.createElement("path", {
-                                          fillRule: "evenodd",
-                                          d: "M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z",
-                                          clipRule: "evenodd",
-                                      })
-                                  )
-                              ),
-                              React.createElement(
-                                  "div",
-                                  { className: "content" },
-                                  React.createElement(
-                                      "p",
-                                      null,
-                                      "Ideally, intoview becomes the lightweight, default way makers show their best, most current work — an ecosystem of short-form, interactive artifacts people can easily discover, remix, and use in conversations, applications, and portfolios. Also, ideally, I find myself working somewhere building real things for real people."
-                                  ),
-                                  React.createElement(
-                                      "p",
-                                      { className: "note-meta" },
-                                      React.createElement("span", null, "🚀 aspiration: Think. Make. Walk my dog.")
+                                  React.createElement("p", null, "Because he deserved a proper archive — not a social media grid, not a folder on a hard drive. Something intentional. Something that moves the way memory moves: not in a straight line, not in chronological order, but spatially. You find him the way you'd find a good memory. You wander until you do."),
+                                  React.createElement("p", { className: "note-meta" },
+                                      React.createElement("span", null, "🌐 also at: wolfie.love")
                                   )
                               )
                           )
@@ -3291,6 +3024,7 @@
           { label: "75%", zoomZ: 0.75, title: "Tight View (75% Preset)" },
           { label: "50%", zoomZ: 1.5, title: "Default View (50% Preset)" },
           { label: "25%", zoomZ: 2.5, title: "Wide View (25% Preset)" },
+          { label: "0%", zoomZ: CONFIG.zoomMax, title: "Bird's Eye View (0%)" },
       ];
       const activeLabel = presets.reduce(
           (active, preset) => (Math.abs(zoom - preset.zoomZ) < 0.2 ? preset.label : active),
@@ -3903,24 +3637,7 @@
                           React.createElement("path", { d: "M12 2C8.5 2 6 4.5 6 7.5c0 1.5.6 2.8 1.5 3.8C5.8 12.4 5 13.9 5 15.5 5 18 6.8 20 9 20c.8 0 1.6-.3 2.2-.7L12 19l.8.3c.6.4 1.4.7 2.2.7 2.2 0 4-2 4-4.5 0-1.6-.8-3.1-2.5-4.2.9-1 1.5-2.3 1.5-3.8C18 4.5 15.5 2 12 2zm-5 6.5c0-2 1.5-3.5 3.5-3.5 1 0 2 .4 2.7 1.1C12.9 6.5 13 7 13 7.5c0 .6-.1 1.1-.3 1.6C11.9 9.7 11 10 10 10c-1.7 0-3-1.1-3-1.5zm9.5 8c0 1.4-.9 2.5-2 2.5-.5 0-1-.2-1.4-.5L12 18l-1.1.5c-.4.3-.9.5-1.4.5-1.1 0-2-1.1-2-2.5 0-1.6 1.3-2.8 2.7-3.2.6.1 1.2.2 1.8.2s1.2-.1 1.8-.2c1.4.4 2.7 1.6 2.7 3.2zM15.5 10c-1 0-1.9-.3-2.7-.9-.2-.5-.3-1-.3-1.6 0-.5.1-1 .3-1.4.7-.7 1.7-1.1 2.7-1.1 2 0 3.5 1.5 3.5 3.5 0 .4-1.3 1.5-3 1.5z" })
                       )
                   ),
-                  // ── Zoom reset ──
-                  view === "grid" && React.createElement(
-                      "button",
-                      {
-                          className: "icon-btn",
-                          style: { minWidth: 38, fontFamily: "var(--ui-font)", fontSize: 9, letterSpacing: "0.06em" },
-                          title: "Reset zoom",
-                          "aria-label": "Reset zoom",
-                          onClick: () => { setZoom(CONFIG.zoomOut); gridCtrl.current?.setZoom?.(CONFIG.zoomOut); },
-                      },
-                      React.createElement(
-                          "svg",
-                          { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, role: "img", "aria-hidden": "true" },
-                          React.createElement("circle", { cx: "11", cy: "11", r: "8" }),
-                          React.createElement("line", { x1: "21", y1: "21", x2: "16.65", y2: "16.65" }),
-                          React.createElement("line", { x1: "8", y1: "11", x2: "14", y2: "11" })
-                      )
-                  ),
+                  // ── Zoom reset (removed per request) ──
                   // ── Distortion toggle ──
                   React.createElement(
                       "button",
@@ -3952,29 +3669,28 @@
                           })
                       )
                   ),
+                  // ── (Reset view removed per request) ──
+                  // ── Newspaper theme toggle ──
                   React.createElement(
                       "button",
-                      { className: "icon-btn", onClick: hardReset, title: "Reset view", "aria-label": "Reset view" },
+                      {
+                          className: "icon-btn",
+                          title: "Toggle Newspaper Theme",
+                          "aria-label": "Toggle Newspaper Theme",
+                          onClick: () => {
+                              document.body.classList.toggle("theme-newspaper");
+                          },
+                      },
                       React.createElement(
                           "svg",
-                          { viewBox: "0 0 24 24", role: "img", "aria-hidden": "true" },
-                          React.createElement("rect", {
-                              x: "4",
-                              y: "4",
-                              width: "16",
-                              height: "16",
-                              fill: "none",
-                              stroke: "currentColor",
-                              "stroke-width": "2",
-                          }),
-                          React.createElement("circle", {
-                              cx: "12",
-                              cy: "12",
-                              r: "5.5",
-                              fill: "none",
-                              stroke: "currentColor",
-                              "stroke-width": "2",
-                          })
+                          { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, role: "img", "aria-hidden": "true" },
+                          React.createElement("rect", { x: "3", y: "3", width: "18", height: "18", rx: "2" }),
+                          React.createElement("line", { x1: "3", y1: "9", x2: "21", y2: "9" }),
+                          React.createElement("line", { x1: "9", y1: "9", x2: "9", y2: "21" }),
+                          React.createElement("line", { x1: "6", y1: "13", x2: "8", y2: "13" }),
+                          React.createElement("line", { x1: "6", y1: "16", x2: "8", y2: "16" }),
+                          React.createElement("line", { x1: "12", y1: "13", x2: "19", y2: "13" }),
+                          React.createElement("line", { x1: "12", y1: "16", x2: "17", y2: "16" })
                       )
                   ),
                   React.createElement(
