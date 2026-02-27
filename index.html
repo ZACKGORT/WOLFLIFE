@@ -1335,7 +1335,7 @@
   ];
   const STORAGE_KEY = "intoview_archive_cards_v6";
   const CONFIG = {
-      cols: 10,
+      cols: 9,
       rows: 7,
       tile: 0.32,
       gap: 0.008,
@@ -1667,6 +1667,8 @@
   function BracketOverlay() {
       const { scene, size, camera } = useThree();
       const matRef = useRef(null);
+      const isMobile = window.matchMedia("(pointer: coarse)").matches;
+
       useEffect(() => {
           const geom = new THREE.PlaneGeometry(2, 2);
           const mat = new THREE.ShaderMaterial({
@@ -1676,43 +1678,65 @@
               depthWrite: !1,
               uniforms: {
                   resolution: { value: new THREE.Vector2(size.width, size.height) },
-                  thickness: { value: 2 },
-                  length: { value: 28.0 },
-                  margin: { value: 0.0 },
-                  opacity: { value: 0.85 },
-                  // zoomFrac: 0=fully zoomed out, 1=fully zoomed in
-                  zoomFrac: { value: 0.0 },
+                  thickness: { value: 1.0 },
+                  length:    { value: 22.0 },
+                  opacity:   { value: 0.72 },
+                  zoomFrac:  { value: 0.0 },
+                  // Fixed margins for mobile (px from center)
+                  fixedMX:   { value: Math.min(size.width, size.height) * 0.38 },
+                  fixedMY:   { value: Math.min(size.width, size.height) * 0.38 },
+                  isMobile:  { value: isMobile ? 1.0 : 0.0 },
               },
               vertexShader: `varying vec2 vUv; void main(){ vUv=position.xy*0.5+0.5; gl_Position=vec4(position.xy,0.0,1.0); }`,
               fragmentShader: `
         precision highp float;
         varying vec2 vUv;
         uniform vec2 resolution;
-        uniform float thickness, length, margin, opacity, zoomFrac;
-        float inRect(vec2 p, vec2 a, vec2 b){ vec2 s = step(a, p) * step(p, b); return s.x * s.y; }
+        uniform float thickness, length, opacity, zoomFrac, isMobile, fixedMX, fixedMY;
+        float inRect(vec2 p, vec2 a, vec2 b){ vec2 s = step(a,p)*step(p,b); return s.x*s.y; }
         void main(){
           vec2 p = vUv * resolution;
           float th = thickness, L = length;
-          // Brackets always center on screen center
-          // At zoom=0: brackets near screen edges; at zoom=1: brackets tight to tile edge
-          float minMarginX = resolution.x * 0.04;
-          float maxMarginX = resolution.x * 0.42;
-          float minMarginY = resolution.y * 0.04;
-          float maxMarginY = resolution.y * 0.42;
-          float mx = mix(maxMarginX, minMarginX, zoomFrac);
-          float my = mix(maxMarginY, minMarginY, zoomFrac);
-          vec2 cx = vec2(resolution.x * 0.5, resolution.y * 0.5);
+          vec2 cx = resolution * 0.5;
+
+          float mx, my;
+          if (isMobile > 0.5) {
+            // Mobile: fixed square bracket region, no zoom resize
+            mx = fixedMX;
+            my = fixedMY;
+          } else {
+            // Desktop: margins shrink as we zoom in, and progressively approach 1:1
+            // At zoom=0 (wide out): wide landscape ratio (large x margin relative to y)
+            // At zoom=1 (close in): square 1:1
+            float baseRatioX = 0.42;
+            float baseRatioY = 0.40;
+            float minRatioX = 0.06;
+            float minRatioY = 0.06;
+            // As zoomFrac -> 1, both margins converge to same tight value -> 1:1 square
+            float mxRatio = mix(baseRatioX, minRatioX, zoomFrac);
+            float myRatio = mix(baseRatioY, minRatioY, zoomFrac);
+            // Make the ratio converge to 1:1 at full zoom by blending toward the smaller axis
+            float minRes = min(resolution.x, resolution.y);
+            float targetSquare = minRes * minRatioX;
+            mx = mix(resolution.x * mxRatio, targetSquare, zoomFrac * 0.85);
+            my = mix(resolution.y * myRatio, targetSquare, zoomFrac * 0.85);
+          }
+
           vec2 tl = vec2(cx.x - mx, cx.y + my);
           vec2 tr = vec2(cx.x + mx, cx.y + my);
           vec2 bl = vec2(cx.x - mx, cx.y - my);
           vec2 br = vec2(cx.x + mx, cx.y - my);
           float a = 0.0;
+          // top-left corner
           a = max(a, inRect(p, vec2(tl.x, tl.y - th*0.5), vec2(tl.x + L, tl.y + th*0.5)));
           a = max(a, inRect(p, vec2(tl.x - th*0.5, tl.y - L), vec2(tl.x + th*0.5, tl.y)));
+          // top-right corner
           a = max(a, inRect(p, vec2(tr.x - L, tr.y - th*0.5), vec2(tr.x, tr.y + th*0.5)));
           a = max(a, inRect(p, vec2(tr.x - th*0.5, tr.y - L), vec2(tr.x + th*0.5, tr.y)));
+          // bottom-left corner
           a = max(a, inRect(p, vec2(bl.x, bl.y - th*0.5), vec2(bl.x + L, bl.y + th*0.5)));
           a = max(a, inRect(p, vec2(bl.x - th*0.5, bl.y), vec2(bl.x + th*0.5, bl.y + L)));
+          // bottom-right corner
           a = max(a, inRect(p, vec2(br.x - L, br.y - th*0.5), vec2(br.x, br.y + th*0.5)));
           a = max(a, inRect(p, vec2(br.x - th*0.5, br.y), vec2(br.x + th*0.5, br.y + L)));
           if(a <= 0.0) discard;
@@ -1732,22 +1756,29 @@
               try { geom.dispose(); } catch {}
           };
       }, [scene]);
-      // Update size uniform when viewport changes
+
+      // Update resolution + fixedMX/MY when viewport changes
       useEffect(() => {
-          if (matRef.current) {
-              matRef.current.uniforms.resolution.value.set(size.width, size.height);
-          }
+          if (!matRef.current) return;
+          matRef.current.uniforms.resolution.value.set(size.width, size.height);
+          const s = Math.min(size.width, size.height);
+          matRef.current.uniforms.fixedMX.value = s * 0.38;
+          matRef.current.uniforms.fixedMY.value = s * 0.38;
       }, [size]);
-      // Update zoomFrac each frame from camera z position
+
+      // Drive zoomFrac from camera z each frame (desktop only — mobile keeps 0)
       useFrame(() => {
           if (!matRef.current || !camera) return;
-          // zoomMin=0.25 (most zoomed in), zoomMax=3.0 (most zoomed out)
+          if (isMobile) {
+              matRef.current.uniforms.zoomFrac.value = 0.0;
+              return;
+          }
           const zMin = CONFIG.zoomMin, zMax = CONFIG.zoomMax;
           const cz = camera.position.z;
-          // fraction: 1 when zoomed in fully, 0 when at max out
           const frac = 1.0 - Math.min(1, Math.max(0, (cz - zMin) / (zMax - zMin)));
           matRef.current.uniforms.zoomFrac.value += (frac - matRef.current.uniforms.zoomFrac.value) * 0.08;
       });
+
       return null;
   }
   class Grid extends THREE.Group{
