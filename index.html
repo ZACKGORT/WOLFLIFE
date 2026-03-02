@@ -519,6 +519,16 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 #toast .toast-sub { color: var(--hud-ink-2); font-size: 8px; font-weight: 400; letter-spacing: 0.06em; }
 #toast .toast-dismiss { margin-left: 8px; background: none; border: none; color: var(--hud-ink-3); font-family: var(--ui); font-size: 12px; cursor: pointer; padding: 2px 6px; flex-shrink: 0; transition: color .15s; }
 #toast .toast-dismiss:hover { color: var(--hud-ink); }
+.toast-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.toast-act-btn {
+  font-family: var(--ui); font-size: 8px; letter-spacing: 0.10em; text-transform: uppercase;
+  padding: 5px 11px; border-radius: 5px; border: 1px solid var(--hud-border);
+  background: none; color: var(--hud-ink-2); cursor: pointer; transition: all .14s;
+  white-space: nowrap;
+}
+.toast-act-btn:hover { border-color: var(--hud-accent); color: var(--hud-accent); }
+.toast-act-btn.primary { background: var(--hud-accent); border-color: var(--hud-accent); color: #fff; }
+.toast-act-btn.primary:hover { opacity: 0.85; }
 
 /* wolfie credit */
 #wolfie-credit {
@@ -1284,11 +1294,12 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 <div id="spec-cursor-ghost"><div class="scg-inner"><span class="scg-key" id="scg-key"></span><span class="scg-val" id="scg-val"></span></div></div>
 
 <div id="toast">
-  <span class="toast-icon">&#9671;</span>
+  <span class="toast-icon" id="toast-icon">&#9671;</span>
   <div class="toast-body">
-    <span class="toast-title">Let's talk</span>
-    <span class="toast-sub"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="254d4049494a65524a49434c400b494a5340">[email&#160;protected]</a> &middot; every project starts with a conversation</span>
+    <span class="toast-title" id="toast-title">Let's talk</span>
+    <span class="toast-sub" id="toast-sub"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="254d4049494a65524a49434c400b494a5340">[email&#160;protected]</a> &middot; every project starts with a conversation</span>
   </div>
+  <div class="toast-actions" id="toast-actions"></div>
   <button class="toast-dismiss" onclick="dismissToast()">&#x2715;</button>
 </div>
 
@@ -1587,9 +1598,11 @@ function goTo(n, opts) {
   if (isMobile() && n === navigable.length - 1) {
     setTimeout(function() { openPanelSheet(); }, 480);
   }
+  // End-of-content toast
+  if (n === navigable.length - 1) {
+    setTimeout(showEndToast, 600);
+  }
 }
-function next() { goTo(current + 1); }
-function prev() { goTo(current - 1); }
 
 var autoFlowTimer = null;
 function clearAutoFlow() { if (autoFlowTimer) { clearTimeout(autoFlowTimer); autoFlowTimer = null; } }
@@ -1835,13 +1848,59 @@ function focusPanel() {
 
 // ── TOAST ─────────────────────────────────────────────────────────────────
 var toastTimer = null;
+
 function showToast() {
+  // Standard "Let's talk" toast
+  document.getElementById('toast-icon').textContent = '◇';
+  document.getElementById('toast-title').textContent = "Let's talk";
+  var sub = document.getElementById('toast-sub');
+  sub.innerHTML = '<a href="mailto:hello@wolfie.life">hello@wolfie.life</a> · every project starts with a conversation';
+  document.getElementById('toast-actions').innerHTML = '';
   var t = document.getElementById('toast');
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(dismissToast, 5000);
 }
-function dismissToast() { document.getElementById('toast').classList.remove('show'); }
+
+function showEndToast() {
+  document.getElementById('toast-icon').textContent = '∞';
+  document.getElementById('toast-title').textContent = 'You made it.';
+  document.getElementById('toast-sub').textContent = 'Start over, or keep the story going.';
+  var actions = document.getElementById('toast-actions');
+  actions.innerHTML = '';
+
+  var loop = document.createElement('button');
+  loop.className = 'toast-act-btn';
+  loop.textContent = '↺  Again';
+  loop.onclick = function() { dismissToast(); setTimeout(function() { goTo(0); }, 180); };
+
+  var inf = document.createElement('button');
+  inf.className = 'toast-act-btn primary';
+  inf.textContent = '∞  Keep going';
+  inf.onclick = function() { dismissToast(); setTimeout(function() { goTo(0, { noScroll: false }); infiniteLoop = true; }, 180); };
+
+  actions.appendChild(loop);
+  actions.appendChild(inf);
+
+  var t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(dismissToast, 9000);
+}
+
+function dismissToast() { document.getElementById('toast').classList.remove('show'); clearTimeout(toastTimer); }
+
+// Infinite loop flag — when on, next() wraps from last to first
+var infiniteLoop = false;
+var _origNext = null;
+function next() {
+  if (infiniteLoop && current === navigable.length - 1) {
+    goTo(0);
+  } else {
+    goTo(current + 1);
+  }
+}
+function prev() { goTo(current - 1); }
 
 // ── GRID OVERLAY — live iframe previews, 4:3 tiles ────────────────────────
 var GRID_SITES = [
