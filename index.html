@@ -295,6 +295,10 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
 .sentence.active.spec .spec-val { color: var(--ink); }
 .sentence.revealed { opacity: 0.30; }
 .sentence.revealed.body { color: var(--ink-2); }
+/* past = sentences already read (behind active) — slightly more visible than unread */
+.sentence.past { opacity: 0.16; }
+.sentence.past.body { color: var(--ink-2); }
+.sentence.past.pull { color: var(--ink-2); }
 .sentence:hover:not(.active):not(.break):not(.label) { opacity: 0.55; }
 .sentence.poster.active::before {
   content: ''; position: absolute;
@@ -344,6 +348,7 @@ header:hover #header-overlay { opacity: 1; pointer-events: auto; transform: tran
 body.scroll-free { overflow-y: auto !important; }
 body.scroll-free #stream-col { justify-content: flex-start; min-height: auto; padding-top: 64px; padding-bottom: 80px; }
 body.scroll-free .sentence { opacity: 1 !important; pointer-events: none; }
+body.scroll-free .sentence.past { opacity: 1 !important; }
 body.scroll-free .sentence.body { color: var(--ink-2) !important; }
 body.scroll-free .sentence.spec .spec-val { color: var(--ink-2) !important; }
 body.scroll-free .sentence.label { color: var(--accent) !important; }
@@ -757,6 +762,12 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
     margin: 0 auto 20px; flex-shrink: 0;
   }
   .nw-action-btn#nw-panel-btn { display: flex; }
+  /* 2-up grid on mobile */
+  #grid-tiles {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 16px;
+    gap: 12px;
+  }
 }
 @media (min-width: 761px) {
   #panel-overlay-backdrop { display: none; }
@@ -1078,15 +1089,18 @@ function goTo(n, opts) {
   var noScroll = opts && opts.noScroll;
   n = Math.max(0, Math.min(navigable.length - 1, n));
   navigable.forEach(function(el, i) {
-    el.classList.remove('active', 'revealed');
-    if (i < n) el.classList.add('revealed');
+    el.classList.remove('active', 'revealed', 'past');
+    if (i < n) el.classList.add('past');
     else if (i === n) el.classList.add('active');
+    else el.classList.add('revealed');
   });
   all.forEach(function(el) {
     if (el.classList.contains('break') || el.classList.contains('label') || el.classList.contains('cta-sentence')) {
       var idx = parseInt(el.dataset.idx);
       var navBefore = navigable.filter(function(nb) { return parseInt(nb.dataset.idx) < idx; });
-      if (navBefore.length > 0 && navBefore[navBefore.length - 1].classList.contains('revealed')) {
+      if (navBefore.length > 0 && navBefore[navBefore.length - 1].classList.contains('past')) {
+        el.classList.add('past');
+      } else if (navBefore.length > 0 && navBefore[navBefore.length - 1].classList.contains('revealed')) {
         el.classList.add('revealed');
       } else if (navigable[n] && parseInt(navigable[n].dataset.idx) >= idx - 1) {
         el.classList.add('revealed');
@@ -1112,6 +1126,10 @@ function goTo(n, opts) {
   });
   updateChapterWidget(ch);
   updatePanelService(ch);
+  // On mobile: auto-surface the work panel when reaching the last sentence
+  if (isMobile() && n === navigable.length - 1) {
+    setTimeout(function() { openPanelSheet(); }, 480);
+  }
 }
 function next() { goTo(current + 1); }
 function prev() { goTo(current - 1); }
@@ -1126,7 +1144,7 @@ function scheduleAutoFlow(n) {
   while (firstAF > 0 && navigable[firstAF - 1] && navigable[firstAF - 1].classList.contains('auto-flow')) firstAF--;
   var i = firstAF;
   while (i < navigable.length && navigable[i] && navigable[i].classList.contains('auto-flow')) {
-    if (i !== n) { navigable[i].classList.remove('active'); navigable[i].classList.add('revealed'); }
+    if (i !== n) { navigable[i].classList.remove('active'); navigable[i].classList.add(i < n ? 'past' : 'revealed'); }
     i++;
   }
 }
@@ -1306,14 +1324,18 @@ streamCol.addEventListener('click', function(e) {
 // ── MOBILE PANEL SHEET ────────────────────────────────────────────────────
 function isMobile() { return window.innerWidth <= 760; }
 function openPanelSheet() {
-  document.getElementById('panel').classList.add('sheet-open');
+  var p = document.getElementById('panel');
+  p.style.background = 'rgba(248,246,238,0.98)';
+  p.classList.add('sheet-open');
   document.getElementById('panel-overlay-backdrop').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
 function closePanelSheet() {
-  document.getElementById('panel').classList.remove('sheet-open');
+  var p = document.getElementById('panel');
+  p.classList.remove('sheet-open');
   document.getElementById('panel-overlay-backdrop').classList.remove('show');
   document.body.style.overflow = '';
+  setTimeout(function() { p.style.background = ''; }, 400);
 }
 document.getElementById('panel-overlay-backdrop').addEventListener('click', closePanelSheet);
 
