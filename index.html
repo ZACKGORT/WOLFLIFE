@@ -523,7 +523,7 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 /* chapter widget */
 #chapter-widget {
   position: fixed; top: calc(52px + 14px); left: 0; right: 320px;
-  z-index: 301; display: flex; justify-content: center;
+  z-index: 10001; display: flex; justify-content: center;
   pointer-events: none; user-select: none;
 }
 .cw-trigger {
@@ -561,8 +561,8 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 #grid-overlay {
   position: fixed;
   inset: 0;
-  z-index: 5555;
-  background: rgba(8,7,4,0.96);
+  z-index: 9600;
+  background: rgba(8,7,4,0.97);
   backdrop-filter: blur(24px);
   display: none;
   flex-direction: column;
@@ -719,7 +719,7 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
   .nw-btn-next { border-radius: 0 24px 24px 0; }
   #toast { bottom: calc(96px + env(safe-area-inset-bottom)); }
   #wolfie-credit { bottom: calc(88px + env(safe-area-inset-bottom)); }
-  #chapter-widget { right: 0; top: calc(52px + 10px); }
+  #chapter-widget { right: 0; top: calc(52px + 10px); padding-right: 64px; }
 
   /* mobile panel overlay */
   #panel {
