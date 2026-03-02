@@ -792,6 +792,226 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
   .nw-action-btn#nw-panel-btn { display: flex; }
 }
 
+
+/* ── Interest Panel ── */
+#interest-panel {
+  position: fixed;
+  right: 90px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.97);
+  z-index: 9010;
+  width: 290px;
+  background: var(--hud-bg);
+  border: 1px solid var(--hud-border);
+  border-radius: 12px;
+  padding: 16px 16px 14px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.10);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1), visibility 0.22s;
+}
+#interest-panel.open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transform: translateY(-50%) scale(1);
+}
+.ip-anchor {
+  font-family: var(--ui);
+  font-size: 8px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--hud-accent);
+  margin-bottom: 5px;
+}
+.ip-sentence {
+  font-family: var(--disp);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--hud-ink-2);
+  border-left: 2px solid var(--hud-accent);
+  padding-left: 9px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.75;
+}
+.ip-prompt {
+  font-family: var(--ui);
+  font-size: 8.5px;
+  letter-spacing: 0.05em;
+  color: var(--hud-ink-2);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.ip-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.ip-pill {
+  font-family: var(--ui);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--hud-border);
+  background: none;
+  color: var(--hud-ink-2);
+  cursor: pointer;
+  transition: all 0.14s ease;
+  user-select: none;
+}
+.ip-pill:hover { border-color: var(--hud-accent); color: var(--hud-accent); background: rgba(200,144,42,0.06); }
+.ip-pill.selected { border-color: var(--hud-accent); color: var(--hud-ink); background: rgba(200,144,42,0.12); font-weight: 700; }
+.ip-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.ip-hint {
+  font-family: var(--ui);
+  font-size: 7.5px;
+  letter-spacing: 0.06em;
+  color: var(--hud-ink-3);
+  opacity: 0.7;
+  flex: 1;
+  line-height: 1.5;
+}
+.ip-cta {
+  font-family: var(--ui);
+  font-size: 8px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--hud-border);
+  background: none;
+  color: var(--hud-ink-3);
+  cursor: pointer;
+  transition: all 0.14s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ip-cta:not(:disabled):hover { background: var(--hud-accent); color: #fff; border-color: var(--hud-accent); }
+.ip-cta:disabled { opacity: 0.35; cursor: default; }
+.ip-sent {
+  font-family: var(--ui);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: var(--hud-accent);
+  text-align: center;
+  padding: 4px 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  pointer-events: none;
+}
+.ip-sent.show { opacity: 1; }
+/* Trigger button in the HUD */
+.nw-interest-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 10px;
+  gap: 3px;
+  border-bottom: 1px solid var(--hud-border);
+  width: 100%;
+  flex-shrink: 0;
+  font-family: var(--ui);
+  font-size: 13px;
+  color: var(--hud-ink-2);
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  transition: color .12s, background .12s;
+  cursor: pointer;
+  border-radius: 0;
+}
+.nw-interest-btn .nw-action-label {
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hud-ink-3);
+  transition: color .12s;
+}
+.nw-interest-btn:hover { color: var(--hud-accent); background: rgba(0,0,0,0.04); }
+.nw-interest-btn:hover .nw-action-label { color: var(--hud-accent); }
+.nw-interest-btn.active { color: var(--hud-accent); }
+.nw-interest-btn.active .nw-action-label { color: var(--hud-accent); }
+@media (max-width: 760px) {
+  #interest-panel {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: 100px;
+    transform: translateX(-50%) scale(0.97);
+    width: min(290px, 92vw);
+  }
+  #interest-panel.open {
+    transform: translateX(-50%) scale(1);
+  }
+  .nw-interest-btn { flex: 1; border: none; border-right: 1px solid var(--hud-border); border-radius: 0; padding: 12px 14px 10px; font-size: 15px; gap: 3px; cursor: pointer; }
+}
+/* ── Spec detail cursor follower ── */
+#spec-cursor-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9100;
+  opacity: 0;
+  transform: translate(0, 0);
+  transition: opacity 0.18s ease;
+  will-change: transform;
+}
+#spec-cursor-ghost.visible { opacity: 1; }
+.scg-inner {
+  background: var(--hud-bg);
+  border: 1px solid var(--hud-border);
+  border-radius: 6px;
+  padding: 8px 13px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  white-space: nowrap;
+}
+.scg-key {
+  font-family: var(--ui);
+  font-size: 7.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--hud-accent);
+  min-width: 48px;
+  flex-shrink: 0;
+}
+.scg-val {
+  font-family: var(--ui);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--hud-ink);
+}
+/* When a spec is active and the ghost is tracking it, dim the original in stream */
+.sentence.spec.auto-flow.ghost-active {
+  opacity: 0.08 !important;
+  transition: opacity 0.18s ease;
+}
+@media (max-width: 760px) {
+  #spec-cursor-ghost { display: none; }
+  .sentence.spec.auto-flow.ghost-active { opacity: 1 !important; }
+}
 </style>
 </head>
 <body class="no-transitions">
@@ -1032,6 +1252,9 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
     <button class="nw-action-btn" onclick="openGrid()" title="Grid view">
       <span class="nw-cell-value">&#9638;</span><span class="nw-action-label">Grid</span>
     </button>
+    <button class="nw-interest-btn" id="nw-interest-btn" title="I'm interested" onclick="toggleInterestPanel()">
+      <span class="nw-cell-value">&#9671;</span><span class="nw-action-label">Interest</span>
+    </button>
     <div class="nw-divider"></div>
     <div class="nw-nav">
       <button class="nw-btn-prev" id="nw-prev" aria-label="Previous">&#8593;</button>
@@ -1043,6 +1266,22 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
     </div>
   </div>
 </div>
+
+<!-- Interest panel -->
+<div id="interest-panel" role="dialog" aria-label="Express interest">
+  <div class="ip-anchor" id="ip-anchor">Currently reading</div>
+  <div class="ip-sentence" id="ip-sentence">—</div>
+  <div class="ip-prompt" id="ip-prompt">What sounds interesting to you?</div>
+  <div class="ip-pills" id="ip-pills"></div>
+  <div class="ip-footer">
+    <span class="ip-hint" id="ip-hint">Pick one or more, then send.</span>
+    <button class="ip-cta" id="ip-cta" disabled onclick="sendInterest()">I'm interested!</button>
+  </div>
+  <span class="ip-sent" id="ip-sent">Opening mail… ✦</span>
+</div>
+
+<!-- Spec cursor ghost -->
+<div id="spec-cursor-ghost"><div class="scg-inner"><span class="scg-key" id="scg-key"></span><span class="scg-val" id="scg-val"></span></div></div>
 
 <div id="toast">
   <span class="toast-icon">&#9671;</span>
@@ -1068,7 +1307,9 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 // ── CURSOR ────────────────────────────────────────────────────────────────
 var cursor = document.getElementById('cursor');
 var cursorVisible = false;
+var mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
 document.addEventListener('mousemove', function(e) {
+  mouseX = e.clientX; mouseY = e.clientY;
   cursor.style.left = e.clientX + 'px';
   cursor.style.top  = e.clientY + 'px';
   if (!cursorVisible) { cursor.style.opacity = '1'; cursorVisible = true; }
@@ -1076,6 +1317,81 @@ document.addEventListener('mousemove', function(e) {
 document.addEventListener('touchstart', function() {
   cursor.style.opacity = '0'; cursorVisible = false;
 }, {passive: true});
+
+// ── SPEC GHOST — follows cursor when sequencing, anchors on hover ──────────
+(function() {
+  var ghost = document.getElementById('spec-cursor-ghost');
+  var ghostKey = document.getElementById('scg-key');
+  var ghostVal = document.getElementById('scg-val');
+  var ghostVisible = false;
+  var isFollowing = false;
+  var ghostX = 0, ghostY = 0;
+  var targetX = 0, targetY = 0;
+  var rafId = null;
+  var OFFSET_X = 24, OFFSET_Y = -18;
+  var LERP = 0.11;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function tick() {
+    if (!isFollowing) { rafId = null; return; }
+    ghostX = lerp(ghostX, targetX, LERP);
+    ghostY = lerp(ghostY, targetY, LERP);
+    var w = ghost.offsetWidth || 220;
+    var h = ghost.offsetHeight || 42;
+    var cx = Math.max(8, Math.min(ghostX, window.innerWidth  - w - 8));
+    var cy = Math.max(8, Math.min(ghostY, window.innerHeight - h - 8));
+    ghost.style.left = cx + 'px';
+    ghost.style.top  = cy + 'px';
+    if (ghostVisible && isFollowing) rafId = requestAnimationFrame(tick);
+  }
+
+  function populate(keyText, valText) {
+    ghostKey.textContent = keyText;
+    ghostVal.textContent = valText;
+  }
+
+  // Cursor-following mode (sequencing)
+  function showFollowing(keyText, valText) {
+    populate(keyText, valText);
+    isFollowing = true;
+    ghostX = mouseX + OFFSET_X;
+    ghostY = mouseY + OFFSET_Y;
+    ghost.style.transition = 'opacity 0.18s ease';
+    ghost.style.left = ghostX + 'px';
+    ghost.style.top  = ghostY + 'px';
+    ghost.classList.add('visible');
+    ghostVisible = true;
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  function hideGhost() {
+    ghost.classList.remove('visible');
+    ghostVisible = false;
+    isFollowing = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  document.addEventListener('mousemove', function(e) {
+    targetX = e.clientX + OFFSET_X;
+    targetY = e.clientY + OFFSET_Y;
+  });
+
+  // Hook into goTo — cursor-follow when sequencing lands on a spec
+  window._specGhostUpdate = function(el) {
+    document.querySelectorAll('.ghost-active').forEach(function(s) { s.classList.remove('ghost-active'); });
+    if (el && el.classList.contains('spec') && el.classList.contains('auto-flow')) {
+      var keyEl = el.querySelector('.spec-key');
+      var valEl = el.querySelector('.spec-val');
+      if (keyEl && valEl) {
+        el.classList.add('ghost-active');
+        showFollowing(keyEl.textContent, valEl.textContent);
+        return;
+      }
+    }
+    hideGhost();
+  };
+})();
 document.querySelectorAll('a,button,[data-idx]').forEach(function(el) {
   el.addEventListener('mouseenter', function() { cursor.classList.add('big'); });
   el.addEventListener('mouseleave', function() { cursor.classList.remove('big'); });
@@ -1144,6 +1460,7 @@ function goTo(n, opts) {
   });
   updateChapterWidget(ch);
   updatePanelService(ch);
+  if (window._specGhostUpdate) window._specGhostUpdate(activeEl);
   // On mobile: auto-surface the work panel when reaching the last sentence
   if (isMobile() && n === navigable.length - 1) {
     setTimeout(function() { openPanelSheet(); }, 480);
@@ -1491,6 +1808,168 @@ function closeGrid() {
     document.body.style.overflow = '';
   }, 300);
 }
+
+// ── INTEREST PANEL ────────────────────────────────────────────────────────────
+(function() {
+  var CONTACT_EMAIL = 'hello@wolfie.life'; // TBD — replace with real address
+
+  // Context-aware pill options per chapter
+  var CHAPTER_CONTEXT = {
+    1: {
+      prompt: 'What brings you here?',
+      pills: ['Just browsing', 'Potential collaboration', 'A specific project', 'Learning more']
+    },
+    2: {
+      prompt: 'What interests you about wolfie.love?',
+      pills: ['The platform itself', 'Design system', 'Identity work', 'All of it']
+    },
+    3: {
+      prompt: 'What kind of shop are you thinking about?',
+      pills: ['I make things', 'I have a store', 'Boutique retail', 'A curated collection']
+    },
+    4: {
+      prompt: 'What\'s your real estate interest?',
+      pills: ['I\'m a broker', 'I\'m a developer', 'Architectural property', 'Just curious']
+    },
+    5: {
+      prompt: 'What kind of event do you have in mind?',
+      pills: ['A wedding', 'A brand event', 'A private gathering', 'An opening']
+    },
+    6: {
+      prompt: 'Tell me a bit about your place.',
+      pills: ['A restaurant', 'A bar or brewery', 'A wine bar', 'Something else']
+    }
+  };
+
+  var panelOpen = false;
+  var selectedPills = new Set();
+  var anchoredSentence = '';
+  var anchoredCh = 1;
+
+  function getCurrentSentenceText() {
+    var el = navigable[current];
+    if (!el) return '';
+    // Strip inner HTML tags, get text
+    return el.textContent.trim().replace(/\s+/g, ' ').slice(0, 80);
+  }
+
+  function getCurrentCh() {
+    var el = navigable[current];
+    return el ? (parseInt(el.dataset.ch) || 1) : 1;
+  }
+
+  function buildPills(ch) {
+    var ctx = CHAPTER_CONTEXT[ch] || CHAPTER_CONTEXT[1];
+    var container = document.getElementById('ip-pills');
+    container.innerHTML = '';
+    selectedPills.clear();
+    ctx.pills.forEach(function(label) {
+      var btn = document.createElement('button');
+      btn.className = 'ip-pill';
+      btn.textContent = label;
+      btn.addEventListener('click', function() {
+        if (selectedPills.has(label)) {
+          selectedPills.delete(label);
+          btn.classList.remove('selected');
+        } else {
+          selectedPills.add(label);
+          btn.classList.add('selected');
+        }
+        document.getElementById('ip-cta').disabled = selectedPills.size === 0;
+      });
+      container.appendChild(btn);
+    });
+    var prompt = document.getElementById('ip-prompt');
+    if (prompt) prompt.textContent = ctx.prompt;
+    document.getElementById('ip-cta').disabled = true;
+  }
+
+  function openPanel() {
+    anchoredCh = getCurrentCh();
+    anchoredSentence = getCurrentSentenceText();
+
+    var chNames = ['', 'Wolfgang & Co', 'wolfie.love', 'Shop', 'Real Estate', 'Invite', 'Food'];
+    var anchor = document.getElementById('ip-anchor');
+    if (anchor) anchor.textContent = (chNames[anchoredCh] || 'Wolfgang & Co').toUpperCase() + '  ·  Currently reading';
+
+    var sentEl = document.getElementById('ip-sentence');
+    if (sentEl) sentEl.textContent = anchoredSentence || '—';
+
+    buildPills(anchoredCh);
+
+    var sent = document.getElementById('ip-sent');
+    if (sent) sent.classList.remove('show');
+
+    document.getElementById('interest-panel').classList.add('open');
+    var btn = document.getElementById('nw-interest-btn');
+    if (btn) btn.classList.add('active');
+    panelOpen = true;
+  }
+
+  function closePanel() {
+    document.getElementById('interest-panel').classList.remove('open');
+    var btn = document.getElementById('nw-interest-btn');
+    if (btn) btn.classList.remove('active');
+    panelOpen = false;
+  }
+
+  window.toggleInterestPanel = function() {
+    panelOpen ? closePanel() : openPanel();
+  };
+
+  window.sendInterest = function() {
+    if (selectedPills.size === 0) return;
+    var chNames = ['', 'Wolfgang & Co', 'wolfie.love', 'Wolfie Shop', 'Wolfie Real Estate', 'Wolfie Invite', 'Wolfie Food'];
+    var chName = chNames[anchoredCh] || 'Wolfgang & Co';
+    var choices = Array.from(selectedPills).join(', ');
+    var subject = encodeURIComponent('Interest: ' + chName);
+    var body = encodeURIComponent(
+      'Hi,\n\nI came across wolfie.life and I\'m interested in ' + chName + '.\n\n' +
+      'Context: ' + (anchoredSentence || '(browsing)') + '\n\n' +
+      'What caught my eye: ' + choices + '\n\n' +
+      'I\'d love to start a conversation.\n\n—'
+    );
+    var sent = document.getElementById('ip-sent');
+    if (sent) { sent.classList.add('show'); }
+    setTimeout(function() {
+      window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + subject + '&body=' + body;
+      setTimeout(closePanel, 1600);
+    }, 400);
+  };
+
+  // Close on outside click
+  document.addEventListener('click', function(e) {
+    if (!panelOpen) return;
+    if (e.target.closest('#interest-panel') || e.target.closest('#nw-interest-btn')) return;
+    closePanel();
+  });
+
+  // Update panel context when sentence changes (hook into goTo)
+  var _origGoTo = window.goTo || null;
+  // We wrap after DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', function() {
+    var origGoTo = window.goTo;
+    if (origGoTo) {
+      window.goTo = function(n, opts) {
+        origGoTo.call(this, n, opts);
+        if (panelOpen) {
+          // Refresh pill context if chapter changed
+          var newCh = getCurrentCh();
+          if (newCh !== anchoredCh) {
+            anchoredCh = newCh;
+            var chNames = ['', 'Wolfgang & Co', 'wolfie.love', 'Shop', 'Real Estate', 'Invite', 'Food'];
+            var anchor = document.getElementById('ip-anchor');
+            if (anchor) anchor.textContent = (chNames[newCh] || 'Wolfgang & Co').toUpperCase() + '  ·  Currently reading';
+            buildPills(newCh);
+          }
+          anchoredSentence = getCurrentSentenceText();
+          var sentEl = document.getElementById('ip-sentence');
+          if (sentEl) sentEl.textContent = anchoredSentence || '—';
+        }
+      };
+    }
+  });
+})();
 </script>
 </body>
 </html>
