@@ -118,7 +118,7 @@ body::after {
 #cursor {
   position: fixed; width: 7px; height: 7px;
   border-radius: 50%; background: var(--accent);
-  pointer-events: none; z-index: 9999;
+  pointer-events: none; z-index: 10001;
   transform: translate(-50%,-50%);
   transition: width .14s, height .14s, background .2s, opacity .2s;
   display: flex; align-items: center; justify-content: center;
@@ -526,7 +526,7 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 /* chapter widget */
 #chapter-widget {
   position: fixed; top: calc(52px + 14px); left: 0; right: 320px;
-  z-index: 10001; display: flex; justify-content: center;
+  z-index: 8888; display: flex; justify-content: center;
   pointer-events: none; user-select: none;
 }
 .cw-trigger {
