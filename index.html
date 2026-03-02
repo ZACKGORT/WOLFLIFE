@@ -1318,74 +1318,196 @@ document.addEventListener('touchstart', function() {
   cursor.style.opacity = '0'; cursorVisible = false;
 }, {passive: true});
 
-// ── SPEC GHOST — follows cursor when sequencing, anchors on hover ──────────
+// ── SPEC GHOST — magnetic, avoids HUD/panel, left=cursor right=anchored ─────
 (function() {
-  var ghost = document.getElementById('spec-cursor-ghost');
-  var ghostKey = document.getElementById('scg-key');
-  var ghostVal = document.getElementById('scg-val');
+  var ghost     = document.getElementById('spec-cursor-ghost');
+  var ghostKey  = document.getElementById('scg-key');
+  var ghostVal  = document.getElementById('scg-val');
   var ghostVisible = false;
-  var isFollowing = false;
+  var isFollowing  = false;
   var ghostX = 0, ghostY = 0;
   var targetX = 0, targetY = 0;
+  var idleX = 0,  idleY = 0;   // magnetic resting position
   var rafId = null;
+  var LERP_FOLLOW = 0.11;
+  var LERP_IDLE   = 0.07;      // slower drift back to idle
   var OFFSET_X = 24, OFFSET_Y = -18;
-  var LERP = 0.11;
+  var PADDING = 12;             // clearance from any UI boundary
+  var activeSpecEl = null;
 
   function lerp(a, b, t) { return a + (b - a) * t; }
 
+  // ── Exclusion zones — returns array of {left,top,right,bottom} rects ──
+  function exclusionRects() {
+    var rects = [];
+    // Right panel (always present)
+    rects.push({ left: window.innerWidth - 320, top: 52, right: window.innerWidth, bottom: window.innerHeight });
+    // Nav-widget
+    var nw = document.getElementById('nav-widget');
+    if (nw) { var r = nw.getBoundingClientRect(); rects.push({ left: r.left - PADDING, top: r.top - PADDING, right: r.right + PADDING, bottom: r.bottom + PADDING }); }
+    // Chapter widget
+    var cw = document.getElementById('chapter-widget');
+    if (cw) { var t = cw.querySelector('.cw-trigger'); if (t) { var r2 = t.getBoundingClientRect(); rects.push({ left: r2.left - PADDING, top: r2.top - PADDING, right: r2.right + PADDING, bottom: r2.bottom + PADDING }); } }
+    // Header bar
+    rects.push({ left: 0, top: 0, right: window.innerWidth, bottom: 52 });
+    return rects;
+  }
+
+  // ── Check if a rect {x,y,w,h} intersects any exclusion zone ──
+  function intersectsUI(x, y, w, h) {
+    var zones = exclusionRects();
+    for (var i = 0; i < zones.length; i++) {
+      var z = zones[i];
+      if (x < z.right && x + w > z.left && y < z.bottom && y + h > z.top) return true;
+    }
+    return false;
+  }
+
+  // ── Find the magnetic idle position: near the sentence, in clear space ──
+  function computeIdlePosition() {
+    if (!activeSpecEl) return { x: ghostX, y: ghostY };
+    var rect  = activeSpecEl.getBoundingClientRect();
+    var gw    = ghost.offsetWidth  || 220;
+    var gh    = ghost.offsetHeight || 42;
+    var col   = document.getElementById('stream-col');
+    var colR  = col ? col.getBoundingClientRect() : { left: 0, right: window.innerWidth - 320 };
+
+    // Candidate positions in priority order: above, below, left-flush
+    var candidates = [
+      { x: rect.left,                    y: rect.top  - gh - 10 },
+      { x: rect.left,                    y: rect.bottom + 10     },
+      { x: colR.left + 8,               y: rect.top  - gh - 10 },
+      { x: colR.left + 8,               y: rect.bottom + 10     },
+      { x: colR.right - gw - 8 - 340,  y: rect.top  - gh - 10 }, // clear of panel+hud
+    ];
+
+    for (var i = 0; i < candidates.length; i++) {
+      var c = candidates[i];
+      var cx = Math.max(colR.left + 4, Math.min(c.x, colR.right - gw - 340)); // stay left of HUD
+      var cy = Math.max(60, Math.min(c.y, window.innerHeight - gh - 8));
+      if (!intersectsUI(cx, cy, gw, gh)) return { x: cx, y: cy };
+    }
+    // Fallback: top-left of stream column
+    return { x: colR.left + 8, y: 60 };
+  }
+
+  // ── Midpoint of stream column (left/right hotzone boundary) ──
+  function streamMidX() {
+    var col = document.getElementById('stream-col');
+    if (!col) return window.innerWidth / 2;
+    var r = col.getBoundingClientRect();
+    return r.left + r.width / 2;
+  }
+
+  // ── Clamp a follow position away from all UI ──
+  function clampFollowPos(x, y) {
+    var gw = ghost.offsetWidth  || 220;
+    var gh = ghost.offsetHeight || 42;
+    var col = document.getElementById('stream-col');
+    var colR = col ? col.getBoundingClientRect() : { left: 0, right: window.innerWidth - 320 };
+    var maxX = colR.right - gw - 340; // hard stop before HUD
+    x = Math.max(colR.left + 4, Math.min(x, maxX));
+    y = Math.max(60, Math.min(y, window.innerHeight - gh - 8));
+    // If still in a UI zone, nudge up
+    if (intersectsUI(x, y, gw, gh)) y = Math.max(60, y - gh - 16);
+    return { x: x, y: y };
+  }
+
+  // ── RAF loop ──
   function tick() {
-    if (!isFollowing) { rafId = null; return; }
-    ghostX = lerp(ghostX, targetX, LERP);
-    ghostY = lerp(ghostY, targetY, LERP);
-    var w = ghost.offsetWidth || 220;
-    var h = ghost.offsetHeight || 42;
-    var cx = Math.max(8, Math.min(ghostX, window.innerWidth  - w - 8));
-    var cy = Math.max(8, Math.min(ghostY, window.innerHeight - h - 8));
-    ghost.style.left = cx + 'px';
-    ghost.style.top  = cy + 'px';
-    if (ghostVisible && isFollowing) rafId = requestAnimationFrame(tick);
-  }
+    var gw = ghost.offsetWidth  || 220;
+    var gh = ghost.offsetHeight || 42;
 
-  function populate(keyText, valText) {
-    ghostKey.textContent = keyText;
-    ghostVal.textContent = valText;
-  }
+    if (isFollowing) {
+      var clamped = clampFollowPos(targetX, targetY);
+      ghostX = lerp(ghostX, clamped.x, LERP_FOLLOW);
+      ghostY = lerp(ghostY, clamped.y, LERP_FOLLOW);
+    } else {
+      // Drift to idle — magnetic pull
+      ghostX = lerp(ghostX, idleX, LERP_IDLE);
+      ghostY = lerp(ghostY, idleY, LERP_IDLE);
+    }
 
-  // Cursor-following mode (sequencing)
-  function showFollowing(keyText, valText) {
-    populate(keyText, valText);
-    isFollowing = true;
-    ghostX = mouseX + OFFSET_X;
-    ghostY = mouseY + OFFSET_Y;
-    ghost.style.transition = 'opacity 0.18s ease';
     ghost.style.left = ghostX + 'px';
     ghost.style.top  = ghostY + 'px';
+    if (ghostVisible) rafId = requestAnimationFrame(tick);
+    else rafId = null;
+  }
+
+  function enterFollowMode() {
+    if (isFollowing) return;
+    isFollowing = true;
+    ghost.style.transition = 'opacity 0.18s ease';
+    if (!rafId && ghostVisible) rafId = requestAnimationFrame(tick);
+  }
+
+  function enterIdleMode() {
+    if (!isFollowing) return;
+    isFollowing = false;
+    // Recompute idle and let tick drift there
+    var pos = computeIdlePosition();
+    idleX = pos.x; idleY = pos.y;
+    ghost.style.transition = 'opacity 0.18s ease';
+    if (!rafId && ghostVisible) rafId = requestAnimationFrame(tick);
+  }
+
+  function applyZone(mx) {
+    if (mx < streamMidX()) enterFollowMode();
+    else enterIdleMode();
+  }
+
+  function showGhost() {
+    // Compute idle first so we have a valid starting position
+    var pos = computeIdlePosition();
+    idleX = pos.x; idleY = pos.y;
+
+    if (!ghostVisible) {
+      // Snap to idle on first appear, then animate from there
+      ghostX = idleX; ghostY = idleY;
+      ghost.style.left = ghostX + 'px';
+      ghost.style.top  = ghostY + 'px';
+    }
+    ghost.style.transition = 'opacity 0.22s ease';
     ghost.classList.add('visible');
     ghostVisible = true;
     if (!rafId) rafId = requestAnimationFrame(tick);
+    applyZone(mouseX);
   }
 
   function hideGhost() {
     ghost.classList.remove('visible');
     ghostVisible = false;
     isFollowing = false;
+    activeSpecEl = null;
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   }
 
   document.addEventListener('mousemove', function(e) {
     targetX = e.clientX + OFFSET_X;
     targetY = e.clientY + OFFSET_Y;
+    if (ghostVisible) applyZone(e.clientX);
   });
 
-  // Hook into goTo — cursor-follow when sequencing lands on a spec
+  // Re-anchor idle when window resizes
+  window.addEventListener('resize', function() {
+    if (ghostVisible && !isFollowing) {
+      var pos = computeIdlePosition();
+      idleX = pos.x; idleY = pos.y;
+    }
+  });
+
   window._specGhostUpdate = function(el) {
     document.querySelectorAll('.ghost-active').forEach(function(s) { s.classList.remove('ghost-active'); });
+    activeSpecEl = null;
     if (el && el.classList.contains('spec') && el.classList.contains('auto-flow')) {
       var keyEl = el.querySelector('.spec-key');
       var valEl = el.querySelector('.spec-val');
       if (keyEl && valEl) {
         el.classList.add('ghost-active');
-        showFollowing(keyEl.textContent, valEl.textContent);
+        activeSpecEl = el;
+        ghostKey.textContent = keyEl.textContent;
+        ghostVal.textContent = valEl.textContent;
+        showGhost();
         return;
       }
     }
