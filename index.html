@@ -698,8 +698,17 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 
 /* mobile */
 @media (max-width: 760px) {
-  #shell { grid-template-columns: 1fr; grid-template-rows: 52px auto; }
-  #stream-col { grid-row: 2; min-height: auto; padding: 40px 24px 140px; }
+  #shell { 
+    grid-template-columns: 1fr; 
+    grid-template-rows: 52px auto; 
+    z-index: auto; /* Frees the panel from the z-index trap */
+  }
+  #stream-col { 
+    grid-row: 2; 
+    min-height: auto; 
+    padding: 40px 24px 140px; 
+    z-index: 10; /* Keeps your text above the background images */
+  }
   .h-center { display: none; }
   .sentence.poster { font-size: clamp(40px,11vw,72px); }
   .sentence.poster.active::before { left: -16px; }
@@ -750,7 +759,12 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
   #panel .service-row { border-color: rgba(0,0,0,0.07); }
   #panel .panel-tagline { color: #555; }
   #panel .panel-wolfie { color: #aaa; border-color: rgba(0,0,0,0.08); }
-  #panel::before { background: rgba(0,0,0,0.18); }
+  #panel::before {
+    content: ''; display: block; width: 36px; height: 4px;
+    border-radius: 2px; 
+    background: rgba(0,0,0,0.18); /* Changed to dark so it's visible */
+    margin: 0 auto 20px; flex-shrink: 0;
+  }
   #panel .service-dot { background: #c8902a; }
   #panel-overlay-backdrop {
     display: block;
