@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentence-Progressive Ambient Interface — Technical Disclosure · Wolfgang & Co</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+
+:root {
+    --bg-color: #0d0d0d;
+    --ink: #f0ece4;
+    --ink-2: #b8b0a4;
+    --ink-3: #726a60;
+    --accent: #c9a96e;
+    --accent-dim: rgba(201,169,110,0.12);
+    --surface: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.13);
+    --ui-font: 'Space Mono', monospace;
+    --body-font: 'Crimson Text', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { color-scheme: dark; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+    background: var(--bg-color);
+    color: var(--ink);
+    font-family: var(--body-font);
+    font-size: clamp(17px, 1.8vw, 21px);
+    line-height: 1.75;
+    margin: 0; padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body::after {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 999; opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.45'/%3E%3C/svg%3E");
+    background-size: 120px 120px;
+}
+
+::selection { background: rgba(201,169,110,0.25); color: #fff; }
+
+.page-wrap { max-width: 740px; margin: 0 auto; padding: 0 clamp(24px, 6vw, 64px); }
+
+/* HEADER */
+.site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,13,13,0.88);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+}
+.site-header .page-wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.header-brand {
+    font-family: var(--ui-font); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-3); text-decoration: none;
+    transition: color 0.2s ease; display: flex; align-items: center; gap: 8px;
+}
+.header-brand:hover { color: var(--accent); }
+.header-label {
+    font-family: var(--ui-font); font-size: 9px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-3);
+    border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px;
+}
+
+/* DISCLOSURE BADGE */
+.disclosure-stamp {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--ui-font); font-size: 8px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent);
+    border: 1px solid rgba(201,169,110,0.3); padding: 4px 10px; border-radius: 2px;
+    background: var(--accent-dim); margin-bottom: 28px;
+}
+.disclosure-stamp::before { content: '◇'; opacity: 0.7; }
+
+/* HERO */
+.hero { padding: 80px 0 60px; border-bottom: 1px solid var(--border); }
+.hero-eyebrow {
+    font-family: var(--ui-font); font-size: 9px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 20px; opacity: 0.85;
+}
+.hero h1 {
+    font-family: var(--body-font); font-size: clamp(30px, 4.5vw, 50px);
+    font-weight: 400; line-height: 1.15; color: var(--ink);
+    margin: 0 0 24px; letter-spacing: -0.02em;
+}
+.hero h1 em { font-style: italic; color: var(--ink-2); }
+.hero-lead { font-size: clamp(15px, 1.55vw, 19px); color: var(--ink-2); line-height: 1.72; margin: 0; max-width: 580px; }
+
+/* META TABLE */
+.meta-table {
+    width: 100%; border-collapse: collapse; margin: 40px 0;
+    font-family: var(--ui-font); font-size: 10px;
+}
+.meta-table td { padding: 9px 0; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+.meta-table tr:last-child td { border-bottom: none; }
+.meta-table .mk { color: var(--ink-3); letter-spacing: 0.12em; text-transform: uppercase; width: 180px; padding-right: 24px; flex-shrink: 0; }
+.meta-table .mv { color: var(--ink-2); }
+.meta-table .mv strong { color: var(--ink); font-weight: 700; }
+
+/* TOC */
+.toc { padding: 40px 0; border-bottom: 1px solid var(--border); }
+.toc-label { font-family: var(--ui-font); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 16px; }
+.toc-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 32px; }
+@media (max-width: 560px) { .toc-list { grid-template-columns: 1fr; } }
+.toc-list li { display: flex; align-items: baseline; gap: 8px; }
+.toc-list a { font-family: var(--ui-font); font-size: 10px; letter-spacing: 0.04em; color: var(--ink-3); text-decoration: none; text-transform: uppercase; transition: color 0.15s ease; padding: 4px 0; }
+.toc-list a:hover { color: var(--accent); }
+.toc-num { font-family: var(--ui-font); font-size: 9px; color: var(--border-strong); flex-shrink: 0; letter-spacing: 0.02em; }
+
+/* SECTIONS */
+.section { padding: 64px 0 48px; border-bottom: 1px solid var(--border); }
+.section:last-of-type { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 28px; }
+.section-num { font-family: var(--ui-font); font-size: 10px; color: var(--ink-3); letter-spacing: 0.08em; flex-shrink: 0; padding-top: 4px; }
+.section h2 { font-family: var(--body-font); font-size: clamp(22px, 2.8vw, 30px); font-weight: 600; line-height: 1.2; color: var(--ink); margin: 0; letter-spacing: -0.01em; }
+.section p { color: var(--ink-2); margin: 0 0 18px; line-height: 1.75; }
+.section p:last-child { margin-bottom: 0; }
+.section p strong { color: var(--ink); font-weight: 600; }
+.section p em { font-style: italic; }
+
+/* MECHANIC BLOCKS */
+.mechanic-block {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 20px 24px; margin: 24px 0;
+}
+.mechanic-block + .mechanic-block { margin-top: 10px; }
+.mechanic-title {
+    font-family: var(--ui-font); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 10px; opacity: 0.9;
+}
+.mechanic-block p { font-size: clamp(14px, 1.4vw, 16px); margin: 0; color: var(--ink-2); line-height: 1.65; }
+.mechanic-block p + p { margin-top: 10px; }
+
+/* CLAIM BLOCK — distinct from mechanic */
+.claim-block {
+    background: rgba(201,169,110,0.06);
+    border: 1px solid rgba(201,169,110,0.22);
+    border-radius: 6px; padding: 20px 24px; margin: 24px 0;
+}
+.claim-block + .claim-block { margin-top: 10px; }
+.claim-num {
+    font-family: var(--ui-font); font-size: 8px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 10px; display: block;
+}
+.claim-block p { font-size: clamp(14px, 1.4vw, 16px); margin: 0; color: var(--ink-2); line-height: 1.65; }
+
+/* CALLOUT */
+.callout {
+    border-left: 2px solid var(--accent); padding: 14px 20px; margin: 24px 0;
+    background: var(--accent-dim); border-radius: 0 4px 4px 0;
+}
+.callout p { margin: 0; font-style: italic; color: var(--ink-2); font-size: clamp(15px, 1.5vw, 18px); line-height: 1.65; }
+
+/* INLINE CODE */
+code {
+    font-family: var(--ui-font); font-size: 0.8em;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    border-radius: 2px; padding: 1px 6px; color: var(--accent); letter-spacing: 0.02em;
+}
+
+/* ORNAMENT */
+.ornament {
+    display: block; text-align: center; font-family: var(--ui-font);
+    font-size: 10px; color: var(--ink-3); letter-spacing: 0.3em;
+    opacity: 0.3; margin: 8px 0; user-select: none;
+}
+
+/* FOOTER */
+.site-footer { border-top: 1px solid var(--border); padding: 40px 0 60px; }
+.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.footer-brand { font-family: var(--ui-font); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+.footer-link {
+    font-family: var(--ui-font); font-size: 9px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-3); text-decoration: none;
+    border-bottom: 1px solid var(--border); padding-bottom: 1px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+.footer-link:hover { color: var(--accent); border-color: var(--accent); }
+
+/* SCROLL REVEAL */
+@media (prefers-reduced-motion: no-preference) {
+    .section { opacity: 0; transform: translateY(14px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .section.visible { opacity: 1; transform: translateY(0); }
+    .hero, .toc { animation: fadeUp 0.6s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+}
+@media (prefers-reduced-motion: reduce) { .section { opacity: 1; transform: none; } }
+
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="page-wrap">
+            <a href="https://wolfie.life" class="header-brand">◇ wolfie.life</a>
+            <span class="header-label">IP Disclosure</span>
+        </div>
+    </header>
+
+    <div class="page-wrap">
+
+        <!-- HERO -->
+        <section class="hero">
+            <p class="hero-eyebrow">Technical Disclosure · Prior Art Publication</p>
+            <h1>Sentence-Progressive<br><em>Ambient Interface System</em></h1>
+            <p class="hero-lead">A novel method for rendering structured content — narrative, data, or professional record — as a sequentially navigable stream of discrete units, each carrying metadata that drives ambient, synchronized state changes across a multi-region viewport. Invented and implemented by Zack Gort under Wolfgang &amp; Co. This document constitutes a public technical disclosure establishing authorship and priority of invention.</p>
+        </section>
+
+        <!-- META -->
+        <table class="meta-table">
+            <tr><td class="mk">Inventor</td><td class="mv"><strong>Zack Gort</strong> · Wolfgang &amp; Co · wolfie.life</td></tr>
+            <tr><td class="mk">Disclosure Date</td><td class="mv" id="disc-date"><strong>2026</strong></td></tr>
+            <tr><td class="mk">Contact</td><td class="mv">hello@wolfie.life</td></tr>
+            <tr><td class="mk">Implementations</td><td class="mv">wolfie.life · wolfie.love · link.html (Zack Gort — Open to Work) · dash.html (Client Dispatch)</td></tr>
+            <tr><td class="mk">Status</td><td class="mv">Public prior art disclosure. Provisional patent application in preparation.</td></tr>
+            <tr><td class="mk">Classification</td><td class="mv">User interface design method · Content presentation system · Data visualization · Professional identity platform</td></tr>
+        </table>
+
+        <!-- TOC -->
+        <nav class="toc" aria-label="Table of contents">
+            <p class="toc-label">Contents</p>
+            <ul class="toc-list">
+                <li><span class="toc-num">01</span><a href="#summary">Summary of Invention</a></li>
+                <li><span class="toc-num">02</span><a href="#sentence-engine">The Sentence Engine</a></li>
+                <li><span class="toc-num">03</span><a href="#ambient-state">Ambient State Architecture</a></li>
+                <li><span class="toc-num">04</span><a href="#ghost-overlay">Ghost Overlay System</a></li>
+                <li><span class="toc-num">05</span><a href="#context-surface">Context-Aware Surfaces</a></li>
+                <li><span class="toc-num">06</span><a href="#dispatch">The Dispatch Application</a></li>
+                <li><span class="toc-num">07</span><a href="#social">Professional:Social Application</a></li>
+                <li><span class="toc-num">08</span><a href="#platform">Multi-Vertical Platform Architecture</a></li>
+                <li><span class="toc-num">09</span><a href="#prior-art">Prior Art Distinction</a></li>
+                <li><span class="toc-num">10</span><a href="#claims">Core Claims</a></li>
+            </ul>
+        </nav>
+
+        <!-- 01 SUMMARY -->
+        <section class="section" id="summary">
+            <div class="section-header">
+                <span class="section-num">01</span>
+                <h2>Summary of Invention</h2>
+            </div>
+
+            <p>This disclosure describes a user interface method and system in which a body of structured content — whether narrative prose, professional history, analytics data, or product information — is decomposed into discrete, sequentially navigable units called <strong>sentences</strong> or <strong>nodes</strong>. Each unit carries typed metadata that drives synchronized, ambient changes across the entire interface at the moment of activation.</p>
+
+            <p>The invention is distinguished from conventional content scrolling, pagination, carousels, or slideshow interfaces by three interlocking properties:</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">1. Unit-Level Metadata Drives Global State</p>
+                <p>Each content unit carries a typed payload — chapter index, visual theme identifier, associated image reference, section classification, and optional structured data. Activating a unit triggers ambient state transitions across the full viewport: background palette shifts, panel content updates, image layer transitions, and navigation widget state updates all resolve in synchrony from a single unit activation event.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">2. Sequential Navigation as the Primary Reading Contract</p>
+                <p>The interface does not scroll. Content is consumed one unit at a time, in forward or reverse sequence, via any input modality — scroll wheel, keyboard, swipe gesture, direct tap, or automated flow. The reading pace is the reader's own; the reading <em>order</em> is the author's. This contract is the format's argument.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">3. Content-Type Agnosticism</p>
+                <p>The identical engine, interaction model, and visual system has been implemented across categorically distinct content domains: literary narrative, professional biography, client analytics reporting, hospitality branding, retail commerce, real estate presentation, and event invitation. The system is a medium, not a template.</p>
+            </div>
+
+            <div class="callout">
+                <p>The interface is the argument. The format is not chosen to present the content — it is chosen because it <em>is</em> the content's correct form.</p>
+            </div>
+        </section>
+
+        <!-- 02 SENTENCE ENGINE -->
+        <section class="section" id="sentence-engine">
+            <div class="section-header">
+                <span class="section-num">02</span>
+                <h2>The Sentence Engine</h2>
+            </div>
+
+            <p>The sentence engine is the core navigable structure of the system. At render time, content is parsed into an ordered array of DOM elements — the <strong>navigable set</strong>. Each element in the set carries typed metadata via <code>data-*</code> attributes that define its role, its chapter membership, its associated image index, and any structured payload data.</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Unit Types</p>
+                <p>The system defines the following unit types, each with distinct rendering and behavioral properties: <code>poster</code> (large display typography, primary visual impact), <code>body</code> (narrative or informational prose), <code>pull</code> (extracted emphasis, left-bordered, metric-capable), <code>spec</code> (key-value data row, scannable, hoverable), <code>label</code> (section marker, accent-colored, low opacity), <code>break</code> (structural separator), <code>greeting</code> (addressee or opener), and <code>remark-thread</code> (embedded annotation collection).</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Active/Revealed/Past State Model</p>
+                <p>At any moment, exactly one unit in the navigable set is <strong>active</strong> — rendered at full opacity with ambient state reflecting its metadata. Units that have previously been active are <strong>past</strong> — rendered at reduced opacity, slightly more visible than <strong>revealed</strong> units that are ahead of the active position. This three-state opacity model provides spatial context for reading position without requiring a visible scroll position indicator.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Navigation Resolution</p>
+                <p>Navigation events — from any input modality — resolve to a target index in the navigable set. The engine applies the active state to the target unit, updates the past/revealed states of all other units, triggers the ambient state resolution pipeline, and scrolls the active unit into centered viewport position. All state updates are batched to a single animation frame.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Chapter Membership</p>
+                <p>Each unit carries a <code>data-ch</code> integer that assigns it to a chapter. Chapter membership is the primary axis of the ambient state system — background palette, HUD color scheme, panel content, and chapter widget state all resolve from the active unit's chapter value. The chapter set is sparse: only chapter transitions trigger full ambient re-theming, while intra-chapter navigation produces only unit-level state changes.</p>
+            </div>
+        </section>
+
+        <!-- 03 AMBIENT STATE ARCHITECTURE -->
+        <section class="section" id="ambient-state">
+            <div class="section-header">
+                <span class="section-num">03</span>
+                <h2>Ambient State Architecture</h2>
+            </div>
+
+            <p>The ambient state system synchronizes the full visual environment of the interface to the active content unit. It operates on a CSS custom property token architecture, enabling smooth transitions across all affected elements simultaneously from a single JavaScript state change.</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Chapter-Keyed Color Palettes</p>
+                <p>Each chapter in the system is assigned a complete color palette, expressed as a set of CSS custom property overrides applied to the <code>body</code> element via a chapter class (e.g. <code>body.ch-3</code>). The palette defines background color, three ink levels (primary, secondary, tertiary), accent color, accent-transparent, and border color. When the active unit's chapter value changes, the body class updates and all palette-consuming elements transition simultaneously via a shared <code>transition-duration</code> of 1.6–1.8 seconds.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">HUD Palette Inversion</p>
+                <p>The navigation HUD (a floating widget that provides prev/next controls, section navigation, and interest triggers) maintains an inverted palette relative to the main viewport — light-on-dark when the main interface is dark, with chapter-keyed warm/cool tinting. This is achieved via a parallel set of <code>--hud-*</code> custom properties that also update on chapter transition, maintaining the HUD's legibility and visual distinction across all chapter palette states.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Image Layer Synchronization</p>
+                <p>A fixed full-viewport image layer behind the content stream carries a set of pre-loaded images indexed to match content unit <code>data-img</code> values. When the active unit's image index changes, the current image fades out and the indexed image fades in, with a simultaneous slow-scale transition (transform from 1.03 to 1.0 over 8 seconds) that produces an ambient parallax effect. The image layer is masked by a gradient overlay that preserves text legibility at all image states.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Panel Content Synchronization</p>
+                <p>The right-rail panel displays contextual information — product listings, portfolio entries, analytics stats, or biographical timeline — that updates as the reader moves through chapter-level transitions. The panel reflects the current chapter's subject matter, converting the right column from a static sidebar into an ambient companion to the stream.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Progress Indicator</p>
+                <p>A 2px fixed bar at the bottom of the viewport reflects the reader's position through the full navigable set as a percentage. The bar uses the active chapter's accent color, participating in the ambient palette system. This is the only positional indicator in the interface — there is no scrollbar.</p>
+            </div>
+        </section>
+
+        <!-- 04 GHOST OVERLAY SYSTEM -->
+        <section class="section" id="ghost-overlay">
+            <div class="section-header">
+                <span class="section-num">04</span>
+                <h2>Ghost Overlay System</h2>
+            </div>
+
+            <p>The ghost overlay is a floating detail card that surfaces structured secondary data associated with specific content units. It is a core innovation of the system's data presentation mode — enabling dense information to remain legible in the stream while making its full detail available on demand, without modals, drawers, or page navigation.</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Inline JSON Payloads</p>
+                <p>Hoverable content units carry structured data directly in their markup via a <code>data-ghost</code> attribute containing a JSON array of key-value pairs, each with an optional color-class designator (<code>up</code>, <code>dn</code>, or neutral). This architecture keeps the data co-located with the content unit that references it, eliminating the need for a separate data layer or API call for detail rendering.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Exclusion Zone Positioning</p>
+                <p>The ghost overlay uses a computed exclusion zone system to determine its resting position. At initialization, the system calculates bounding rectangles for all persistent UI elements — the navigation HUD, the right-rail panel, the sticky header, and the chapter widget — and stores them as exclusion zones. The ghost's idle position is computed by testing a priority-ordered set of candidate positions (above the trigger, below the trigger, left-flush of the stream column) against the exclusion zones, selecting the first non-overlapping candidate. This ensures the ghost never obscures interactive UI elements regardless of scroll position or viewport size.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Cursor-Following with Zone Transition</p>
+                <p>When the user's cursor is in the left half of the stream column, the ghost follows the cursor via a lerp-interpolated animation loop (follow factor 0.11). When the cursor crosses the stream midpoint toward the right, the ghost transitions to its computed idle position via a slower lerp (idle factor 0.07), drifting magnetically to clear space. This zone-based behavioral split means the ghost is always simultaneously accessible (following the cursor for precision reading) and unobtrusive (self-parking when the user approaches other UI).</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Panel Stat Cross-Trigger</p>
+                <p>Ghost overlays can be triggered not only by stream content units but also by stat cards in the right-rail panel. When a panel stat is hovered, the ghost anchors into the stream column area — specifically to the right side of the stream at the vertical position of the triggering stat — establishing a visual bridge between the panel and the stream without the ghost intruding into the panel itself.</p>
+            </div>
+        </section>
+
+        <!-- 05 CONTEXT-AWARE SURFACES -->
+        <section class="section" id="context-surface">
+            <div class="section-header">
+                <span class="section-num">05</span>
+                <h2>Context-Aware Interaction Surfaces</h2>
+            </div>
+
+            <p>The system includes interaction surfaces whose content and behavior adapt dynamically to the reader's current position in the navigable set — specifically their current chapter and active sentence. These surfaces are not static UI components; they are responsive extensions of the reading state.</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">The Interest Panel</p>
+                <p>A collapsible panel anchored to the navigation HUD presents a set of context-specific interaction options — rendered as selectable pill buttons — whose labels and prompt text are drawn from a chapter-indexed lookup table. When the panel opens, it reads the active unit's chapter value and renders the corresponding pill set. If the reader navigates to a new chapter while the panel is open, the pill set and prompt text update to reflect the new chapter context. The panel surfaces the current sentence text as a reading anchor, attributing the contact initiation to a specific moment in the reading. On submission, the selected pill values and anchored sentence text are incorporated into a pre-composed email draft addressed to the author.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Chapter Widget</p>
+                <p>A floating chapter navigation widget, positioned at the top-right of the viewport, displays the current chapter name and provides a dropdown of all chapters with their ordinal numbers. The active chapter item updates in real time as the reader moves through the stream. The widget is independently draggable — its position is set by the user and persists across open/close cycles for the session. On mobile, the widget collapses to a compact bar.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Header Overlay</p>
+                <p>The sticky header reveals a four-column information overlay on hover — displaying contextual data relevant to the current document's subject (account details, recent activity, product listings, or career summary depending on implementation context). This overlay is not a navigation element; it is ambient detail that rewards curiosity without interrupting the reading state.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Narrative Toasts</p>
+                <p>The system supports author-embedded toast messages anchored to specific content units, which fire each time that unit is activated. These are not system notifications — they are part of the authored piece, a second voice that speaks alongside the sentence. Toast content can carry action buttons that drive navigation or external links.</p>
+            </div>
+        </section>
+
+        <!-- 06 DISPATCH -->
+        <section class="section" id="dispatch">
+            <div class="section-header">
+                <span class="section-num">06</span>
+                <h2>The Dispatch Application</h2>
+            </div>
+
+            <p>The Dispatch is an application of the sentence-progressive interface to client analytics reporting. It demonstrates that the identical engine used for literary narrative and professional biography is equally valid as a medium for presenting structured business data — and that the presentation mode itself transforms the reader's relationship to the data.</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Analytics as Authored Prose</p>
+                <p>Monthly performance data — visit counts, session durations, chapter completion rates, traffic sources, remark counts — is authored as navigable prose using the full sentence type vocabulary. A <code>pull</code> node renders a large metric with delta indicator. A <code>spec</code> node renders a scannable key-value row with color-coded performance signals. A <code>body</code> node provides editorial context for the data. The reader navigates the report the same way they navigate a narrative — one sentence at a time, in sequence, the data arriving with considered editorial framing.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Hoverable Data Nodes</p>
+                <p>Spec nodes in the Dispatch carry <code>data-ghost</code> JSON payloads with full metric breakdowns — sub-metrics, month-over-month comparisons, segment splits — surfaced via the ghost overlay system on hover. The stream renders summary data; full detail is available on demand without leaving the reading flow. Panel stat cards trigger the same ghost overlay, projecting detail into the stream column when the panel is hovered.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Sections as Chapters</p>
+                <p>Report sections (Overview, Engagement, Remarks, Products, Looking Ahead) map directly to the chapter system — each with its own chapter-keyed palette, its own panel context, and its own section-widget label. The same ambient re-theming that moves a reader from Early Days to Agency Life in a biographical context moves a client from Overview to Engagement in a reporting context.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Live Sparkline and Bar Charts</p>
+                <p>The right-rail panel in the Dispatch implementation renders a JavaScript-generated sparkline (daily traffic over the reporting period) and a set of animated bar charts (chapter reach percentages) using only the native Canvas API and DOM — no charting library. These components participate in the panel's hover-inversion palette system, converting from dark to light when the panel is hovered.</p>
+            </div>
+
+            <div class="callout">
+                <p>The Dispatch does not present analytics. It presents a story about performance — authored with the same care as the platform it describes. Data delivered as dispatch.</p>
+            </div>
+        </section>
+
+        <!-- 07 PROFESSIONAL:SOCIAL -->
+        <section class="section" id="social">
+            <div class="section-header">
+                <span class="section-num">07</span>
+                <h2>Professional:Social Application</h2>
+            </div>
+
+            <p>The sentence-progressive interface constitutes a direct reimagination of the professional social profile — most commonly exemplified by LinkedIn — as a narrative medium rather than a data entry form. This application is fully realized in the implementation referred to herein as <em>link.html</em>, subtitled "Open to Work."</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">The Core Argument</p>
+                <p>A conventional professional profile forces every person into an identical grid: job title, company, tenure, bullet points. The sentence-progressive format allows a career to be presented as it actually was — a sequence of choices, observations, environments, and consequences, told in the author's voice, navigated at the reader's pace. The format is not decorative. It is epistemological: it argues that a person cannot be adequately represented by a form.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Career Chapters as Chapter Palettes</p>
+                <p>Each era of a professional history maps to a named chapter with its own color palette. Early career, agency years, large-agency tenure, and independent work each carry their own ambient visual identity — warm amber for origin, slate indigo for urban agency, cool steel for corporate scale, rose for the present. The reader does not just read about these eras; they inhabit them visually as they move through the narrative.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Context-Aware Contact Initiation</p>
+                <p>The Interest Panel in this implementation reads the reader's current chapter and presents pill options calibrated to that career era — "The commute story," "WCAG / Pharma," "Cards Against Bad UX" for the NYC agency chapter; "A product," "A design system," "Let's just talk" for the Building chapter. The contact email pre-populates with the selected pills and the sentence the reader was on when they opened the panel. The hiring manager or collaborator who reaches out does so anchored to the specific moment in the narrative that resonated.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Grid Overlay with Live Portfolio Iframes</p>
+                <p>A grid overlay, triggered from the navigation HUD, renders all referenced web products as live iframe previews in a scaled tile layout — each tile a 4:3 viewport-scaled rendering of the actual live site. Clicking any tile opens the site in a new tab. This transforms the portfolio section from a list of links into a visual gallery of living products.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Platform Extension</p>
+                <p>The Professional:Social application extends the wolfie.life platform as a named vertical — <strong>wolfie.link</strong> — offering the sentence-progressive professional profile as a product to individuals who believe their career cannot be accurately represented by a form. The same design system, the same engine, the same conviction.</p>
+            </div>
+        </section>
+
+        <!-- 08 PLATFORM ARCHITECTURE -->
+        <section class="section" id="platform">
+            <div class="section-header">
+                <span class="section-num">08</span>
+                <h2>Multi-Vertical Platform Architecture</h2>
+            </div>
+
+            <p>The full system is implemented as a multi-vertical platform operating under the <strong>Wolfgang &amp; Co</strong> studio identity at wolfie.life. Each vertical is a domain-specific application of the identical sentence-progressive engine and design system to a distinct content category.</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">wolfie.love — Platform &amp; Identity</p>
+                <p>The origin implementation. A literary memorial narrative for a dog named Wolfgang. Establishes the full engine vocabulary: sentence navigation, chapter-keyed palettes, image layer, ghost overlay, flow mode, visitor remarks, interstitial dark moment, narrative toasts, and all view modes. The platform's own proof of concept.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">wolfie.food — Hospitality</p>
+                <p>Restaurant and hospitality digital presence. The sentence-progressive format applied to a restaurant's story — its ethos, its dishes, its welcome. Live menus. Operator dashboards. The Dispatch as monthly performance report.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">wolfie.shop — Commerce</p>
+                <p>Retail and maker commerce presentation. Products authored as sentences. The store as editorial — the difference between a decision and a transaction surfaced through format alone.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">wolfie.real — Real Estate</p>
+                <p>Property presence for independent brokers and boutique developers. A home presented as it feels, not as it measures. The sentence-progressive format applied to the most physical of digital representations.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">wolfie.invite — Events</p>
+                <p>Digital invitation experience for occasions that matter. Weddings, openings, private gatherings. The invitation as the first act of the event — authored, navigated, remembered.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">wolfie.link — Professional:Social</p>
+                <p>Career narrative as sentence-progressive interface. The professional profile reimagined as a story rather than a form. Context-aware contact initiation. Live portfolio grid. Twenty years of scar tissue, told with conviction.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">Shared Design System</p>
+                <p>All verticals share the identical typographic system (Space Mono + Barlow Condensed), token architecture (CSS custom property palettes), interaction model (sentence engine, HUD widget, chapter widget, ghost overlay), and component vocabulary (spec nodes, pull nodes, poster nodes, interest panel). A product built on wolfie.life is recognizably wolfie.life regardless of its content domain.</p>
+            </div>
+        </section>
+
+        <!-- 09 PRIOR ART -->
+        <section class="section" id="prior-art">
+            <div class="section-header">
+                <span class="section-num">09</span>
+                <h2>Prior Art Distinction</h2>
+            </div>
+
+            <p>The following distinctions are made from existing known systems and interaction paradigms.</p>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">vs. Scroll-Based Storytelling (e.g. NYT Snowfall, Scrollytelling)</p>
+                <p>Scroll-based narrative interfaces advance content via continuous scroll position. The sentence-progressive system does not scroll — each navigation event is a discrete state transition. Scroll position is not the navigation primitive; sentence index is. The interface does not degrade to a scrollable page.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">vs. Presentation Software (PowerPoint, Keynote, Slides)</p>
+                <p>Slide-based systems navigate between full-screen frames, each replacing the previous. The sentence-progressive system maintains all units in the DOM simultaneously — the stream is always present, with past and future units visible at reduced opacity. The reading context is spatial, not sequential-replacement.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">vs. E-Reader / Digital Book Interfaces</p>
+                <p>E-reader systems paginate text into page-sized blocks and navigate between pages. The sentence-progressive system navigates individual semantic units, each of which may be a single clause, a metric, a specification row, or a structural break. The unit granularity is authorial and semantic, not typographic.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">vs. Dashboard / Analytics Interfaces</p>
+                <p>Conventional analytics dashboards present data in simultaneous multi-chart layouts for parallel visual comparison. The Dispatch implementation presents analytics sequentially, as authored prose with hoverable detail overlays. The reading mode is linear and editorial, not spatial and comparative.</p>
+            </div>
+
+            <div class="mechanic-block">
+                <p class="mechanic-title">vs. Professional Profile Platforms (LinkedIn et al.)</p>
+                <p>LinkedIn and analogous platforms represent professional identity as structured form data — job titles, tenures, bullet-pointed accomplishments — rendered in a standardized grid identical for all users. The wolfie.link implementation represents professional identity as sequential narrative with chapter-keyed ambient states, context-aware contact initiation, and authored editorial voice. The format is not customization of a template; it is a categorically different reading experience.</p>
+            </div>
+
+            <div class="callout">
+                <p>The novelty is not in any single component. It is in the system: unit-level metadata driving full-viewport ambient state, across categorically distinct content domains, via an identical engine.</p>
+            </div>
+        </section>
+
+        <!-- 10 CLAIMS -->
+        <section class="section" id="claims">
+            <div class="section-header">
+                <span class="section-num">10</span>
+                <h2>Core Claims</h2>
+            </div>
+
+            <p>The following claims describe the novel aspects of the invention as implemented. They are written for comprehension by a technically literate reader and to support subsequent formal patent claim drafting.</p>
+
+            <div class="claim-block">
+                <span class="claim-num">Claim 1 — Sentence-Progressive Navigation</span>
+                <p>A method of rendering structured content as an ordered set of discrete DOM elements, each assigned a sequential index, wherein user navigation events advance or retreat the active index by one position, the active element is rendered at full opacity and scrolled to a centered viewport position, and all other elements are rendered at reduced opacity according to their position relative to the active index.</p>
+            </div>
+
+            <div class="claim-block">
+                <span class="claim-num">Claim 2 — Unit-Metadata-Driven Ambient State</span>
+                <p>A method wherein each navigable content unit carries a chapter membership value, and wherein a change in the active unit's chapter membership triggers a synchronized update of a complete set of CSS custom property tokens applied to the root element, producing simultaneous ambient transitions of background color, text color hierarchy, accent color, border color, and HUD palette across all affected viewport regions, with a shared transition duration.</p>
+            </div>
+
+            <div class="claim-block">
+                <span class="claim-num">Claim 3 — Exclusion-Zone Ghost Overlay</span>
+                <p>A method of positioning a floating detail overlay wherein the overlay's idle position is computed at runtime by testing a priority-ordered set of candidate positions against a set of bounding rectangles derived from persistent UI elements, selecting the first candidate position that does not intersect any exclusion zone, and wherein the overlay transitions between cursor-following behavior and computed idle position based on the cursor's horizontal position relative to a computed midpoint of the content stream column.</p>
+            </div>
+
+            <div class="claim-block">
+                <span class="claim-num">Claim 4 — Inline Structured Data Payloads</span>
+                <p>A system wherein hoverable content units carry structured secondary data as inline JSON encoded in a <code>data-ghost</code> HTML attribute, said data comprising an array of key-value pairs with optional visual classification designators, rendered on demand in the ghost overlay without external data fetching or state management beyond the DOM element itself.</p>
+            </div>
+
+            <div class="claim-block">
+                <span class="claim-num">Claim 5 — Context-Aware Contact Initiation</span>
+                <p>A method wherein an interaction surface presents a set of selectable options whose labels and prompt text are drawn from a lookup table indexed by the active content unit's chapter membership value, and wherein the surface also captures the text content of the active content unit at the time of opening, incorporating both the selected options and the captured text into a pre-composed outbound communication addressed to the content author.</p>
+            </div>
+
+            <div class="claim-block">
+                <span class="claim-num">Claim 6 — Cross-Domain Engine Application</span>
+                <p>A platform comprising multiple distinct product verticals — including literary narrative, professional biography, client analytics reporting, hospitality branding, retail commerce, real estate presentation, and event invitation — all implemented using the identical sentence-progressive navigation engine, design token system, and interaction component vocabulary described in Claims 1–5, such that a reader who has encountered any one vertical will immediately recognize and be fluent in any other.</p>
+            </div>
+
+            <div class="claim-block">
+                <span class="claim-num">Claim 7 — Analytics-as-Authored-Prose (Dispatch)</span>
+                <p>A method of presenting periodic business analytics wherein quantitative data — visit counts, session durations, conversion metrics, segment distributions — is authored as a sequentially navigable set of typed content units including prose sentences providing editorial context, pull nodes rendering large metrics with delta indicators, and spec nodes rendering scannable key-value data rows with inline hover-activated detail overlays, delivered within the sentence-progressive interface system.</p>
+            </div>
+
+            <span class="ornament">· · ·</span>
+
+            <p style="margin-top: 40px; font-size: clamp(13px, 1.3vw, 15px);">This document constitutes a public technical disclosure. Publication of this document establishes prior art as of the date of publication, preventing third parties from obtaining patent protection on the disclosed subject matter. The inventor reserves all rights to pursue utility patent, design patent, and copyright protection for the described system and its implementations.</p>
+
+        </section>
+
+        <span class="ornament">· · ·</span>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="page-wrap">
+            <div class="footer-inner">
+                <span class="footer-brand">Wolfgang &amp; Co · wolfie.life · Zack Gort · <span id="footer-year"></span></span>
+                <a href="https://wolfie.life" class="footer-link">← wolfie.life</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.entries ? entries.entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } }) : null;
+        }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+        // Set dates
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('disc-date').innerHTML = '<strong>' + dateStr + '</strong>';
+        document.getElementById('footer-year').textContent = now.getFullYear();
+
+        // Fix observer call
+        const obs2 = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs2.unobserve(e.target); } });
+        }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.section').forEach(s => obs2.observe(s));
+    </script>
+
+</body>
+</html>
