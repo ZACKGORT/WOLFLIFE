@@ -1255,12 +1255,12 @@ body.ch-6 { --hud-bg: rgba(248,240,216,0.97); --hud-ink: #2a1a00; --hud-ink-2: #
 <div id="nav-widget">
   <div class="nw-shell">
     <div class="nw-handle" id="nw-handle"><div class="nw-drag-dots">&middot; &middot; &middot;</div></div>
-    <div class="nw-divider"></div>
-    <button class="nw-action-btn" id="nw-panel-btn" onclick="focusPanel()" title="Portfolio">
-      <span class="nw-cell-value">&#8865;</span><span class="nw-action-label">Work</span>
-    </button>
+
     <button class="nw-action-btn" onclick="openGrid()" title="Grid view">
       <span class="nw-cell-value">&#9638;</span><span class="nw-action-label">Grid</span>
+    </button>
+    <button class="nw-action-btn" id="nw-ch-btn" title="Sections">
+      <span class="nw-cell-value">&#9661;</span><span class="nw-action-label">Sections</span>
     </button>
     <button class="nw-interest-btn" id="nw-interest-btn" title="I'm interested" onclick="toggleInterestPanel()">
       <span class="nw-cell-value">&#9671;</span><span class="nw-action-label">Interest</span>
@@ -1645,6 +1645,7 @@ function updateChapterWidget(ch) {
   function openDD()  { open = true;  widget.classList.add('open');    trigger.setAttribute('aria-expanded', 'true'); }
   function closeDD() { open = false; widget.classList.remove('open'); trigger.setAttribute('aria-expanded', 'false'); }
   trigger.addEventListener('click', function(e) { e.stopPropagation(); open ? closeDD() : openDD(); });
+  document.getElementById('nw-ch-btn').addEventListener('click', function(e) { e.stopPropagation(); open ? closeDD() : openDD(); });
   document.getElementById('cw-dropdown').querySelectorAll('.cw-item').forEach(function(item) {
     item.addEventListener('click', function(e) {
       e.stopPropagation(); closeDD();
