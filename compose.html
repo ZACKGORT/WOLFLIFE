@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>wolfie · dialogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,300;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+/* ── TOKENS ──────────────────────────────────────────────────────────────── */
+:root {
+  --bg:        #f4f1ea;
+  --bg-2:      #ede9e0;
+  --ink:       #1a1714;
+  --ink-2:     #6a6458;
+  --ink-3:     #b0a898;
+  --ink-4:     #d8d0c4;
+  --accent:    #c8902a;
+  --accent-l:  rgba(200,144,42,0.10);
+  --accent-ll: rgba(200,144,42,0.05);
+  --aside-bg:  rgba(26,23,20,0.04);
+  --aside-ink: #5a5448;
+  --border:    rgba(26,23,20,0.08);
+  --border-2:  rgba(26,23,20,0.14);
+  --ui:        'Space Mono', monospace;
+  --disp:      'Barlow Condensed', sans-serif;
+  --col-w:     640px;
+}
+
+/* ── RESET ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { color-scheme: light; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--ui); font-size: 12px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh; cursor: default;
+  overflow-x: hidden;
+}
+
+/* ── GRAIN ────────────────────────────────────────────────────────────────── */
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9000;
+  opacity: 0.028;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0/180px;
+}
+
+/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+#shell {
+  display: grid;
+  grid-template-columns: 1fr var(--col-w) 220px 1fr;
+  grid-template-rows: 52px 1fr;
+  min-height: 100vh;
+}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+header {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; border-bottom: 1px solid var(--border);
+  background: var(--bg); position: sticky; top: 0; z-index: 200;
+}
+.h-mark {
+  font-family: var(--disp); font-weight: 900; font-size: 17px;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink);
+}
+.h-mark span { color: var(--accent); }
+.h-sub {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-3);
+  position: absolute; left: 50%; transform: translateX(-50%);
+}
+.h-actions { display: flex; gap: 8px; align-items: center; }
+.h-btn {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.12em;
+  text-transform: uppercase; background: none;
+  border: 1px solid var(--border-2); color: var(--ink-2);
+  padding: 5px 11px; transition: all .15s; cursor: pointer;
+}
+.h-btn:hover { border-color: var(--accent); color: var(--accent); }
+.h-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-l); }
+#syntax-toggle-btn { display: flex; align-items: center; gap: 5px; }
+
+/* ── STREAM ───────────────────────────────────────────────────────────────── */
+#stream-col {
+  grid-column: 2; grid-row: 2;
+  display: flex; flex-direction: column;
+  min-height: calc(100vh - 52px);
+  border-right: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+#stream-scroll {
+  flex: 1; overflow-y: auto; padding: 48px 48px 24px;
+}
+#stream-scroll::-webkit-scrollbar { width: 4px; }
+#stream-scroll::-webkit-scrollbar-track { background: transparent; }
+#stream-scroll::-webkit-scrollbar-thumb { background: var(--ink-4); border-radius: 2px; }
+
+/* ── EXCHANGE ─────────────────────────────────────────────────────────────── */
+.exchange {
+  margin-bottom: 52px;
+  opacity: 0; animation: exchIn 0.4s ease forwards;
+}
+@keyframes exchIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── WHO LABEL ────────────────────────────────────────────────────────────── */
+.who {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.22em;
+  text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.who-name { color: var(--ink-3); }
+.who-mode {
+  color: var(--accent); font-size: 7px; letter-spacing: 0.14em;
+  padding: 1px 6px; border: 1px solid var(--accent-l);
+  border-radius: 10px; background: var(--accent-ll);
+}
+.who::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── SENTENCE TYPES — user input ──────────────────────────────────────────── */
+.u-plain {
+  font-family: var(--disp); font-weight: 400; font-size: 20px;
+  color: var(--ink); line-height: 1.35; margin-bottom: 4px;
+}
+.u-poster {
+  font-family: var(--disp); font-weight: 900;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 0.92; letter-spacing: -0.02em; text-transform: uppercase;
+  color: var(--ink); margin-bottom: 4px;
+  border-left: 3px solid var(--accent); padding-left: 16px;
+}
+.u-pull {
+  font-family: var(--disp); font-style: italic; font-weight: 300;
+  font-size: 22px; line-height: 1.25;
+  color: var(--ink-2); border-left: 1px solid var(--ink-3);
+  padding: 6px 0 6px 16px; margin-bottom: 4px;
+}
+.u-aside {
+  font-family: var(--ui); font-size: 11px; line-height: 1.55;
+  color: var(--aside-ink); background: var(--aside-bg);
+  border-left: 2px solid var(--ink-4);
+  padding: 6px 12px; margin-bottom: 4px;
+  border-radius: 0 3px 3px 0;
+}
+.u-spec-row {
+  font-family: var(--ui); font-size: 10px; letter-spacing: 0.04em;
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 3px 0; color: var(--ink-2);
+  border-bottom: 1px solid var(--border);
+}
+.u-spec-row:last-child { border-bottom: none; }
+.spec-k {
+  font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-3); min-width: 80px; flex-shrink: 0;
+}
+.spec-v { color: var(--ink); }
+.u-break {
+  padding: 8px 0; margin: 4px 0;
+  border-top: 1px solid var(--border);
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+
+/* ── SENTENCE TYPES — AI response ─────────────────────────────────────────── */
+.r-body {
+  font-family: var(--disp); font-weight: 300; font-size: 19px;
+  line-height: 1.5; color: var(--ink-2); max-width: 520px; margin-bottom: 6px;
+}
+.r-body em, .r-body .em { font-style: italic; font-weight: 700; color: var(--ink); }
+.r-body .ac { color: var(--accent); }
+.r-poster {
+  font-family: var(--disp); font-weight: 900;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 0.94; letter-spacing: -0.02em; text-transform: uppercase;
+  color: var(--ink); margin-bottom: 8px;
+}
+.r-poster .ac { color: var(--accent); }
+.r-pull {
+  font-family: var(--disp); font-style: italic; font-weight: 300;
+  font-size: 20px; line-height: 1.3;
+  color: var(--ink-2); max-width: 460px;
+  padding: 8px 0 8px 18px; border-left: 1px solid var(--ink-3);
+  margin: 6px 0;
+}
+.r-pull .ac { color: var(--accent); }
+.r-spec {
+  font-family: var(--ui); font-size: 10px; letter-spacing: 0.04em;
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 4px 0; color: var(--ink-2);
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.r-spec:last-of-type { border-bottom: none; }
+.r-spec .spec-k { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3); min-width: 80px; flex-shrink: 0; }
+.r-spec .spec-v { color: var(--ink); }
+.r-spec::after {
+  content: ''; position: absolute; bottom: 0; left: 0; height: 1px;
+  background: var(--accent); width: 0;
+  animation: specScan 0.7s ease forwards 0.2s;
+}
+@keyframes specScan { to { width: 100%; } }
+.r-aside {
+  font-family: var(--ui); font-size: 11px; line-height: 1.55;
+  color: var(--aside-ink); background: var(--aside-bg);
+  border-left: 2px solid var(--ink-4); padding: 6px 12px;
+  border-radius: 0 3px 3px 0; margin: 4px 0;
+  font-style: italic;
+}
+.r-break {
+  padding: 6px 0; border-top: 1px solid var(--border); margin: 4px 0;
+}
+.r-list { margin: 4px 0 6px 0; padding-left: 0; list-style: none; }
+.r-list li {
+  font-family: var(--disp); font-weight: 300; font-size: 18px;
+  line-height: 1.4; color: var(--ink-2); padding: 3px 0;
+  padding-left: 18px; position: relative;
+}
+.r-list li::before {
+  content: '◇'; position: absolute; left: 0;
+  color: var(--accent); font-size: 8px; top: 6px;
+}
+
+/* ── SYNTAX BADGE — inline indicator for parsed type ─────────────────────── */
+.syntax-badge {
+  display: inline-block; font-family: var(--ui); font-size: 7px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); margin-right: 6px; opacity: 0.7;
+  vertical-align: middle;
+}
+
+/* ── TYPING INDICATOR ─────────────────────────────────────────────────────── */
+.typing { display: flex; align-items: center; gap: 4px; padding: 8px 0; }
+.typing-dot {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--ink-3);
+  animation: tdot 1.1s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.18s; }
+.typing-dot:nth-child(3) { animation-delay: 0.36s; }
+@keyframes tdot { 0%,80%,100% { transform: scale(0.6); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; } }
+
+/* ── COMPOSE AREA ─────────────────────────────────────────────────────────── */
+#compose-area {
+  border-top: 1px solid var(--border);
+  background: var(--bg); padding: 16px 48px 20px; flex-shrink: 0;
+}
+.compose-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.compose-mode-label {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--accent);
+  display: flex; align-items: center; gap: 6px;
+}
+.compose-mode-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
+  animation: modePulse 2s ease-in-out infinite;
+}
+@keyframes modePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+.compose-mode-name { font-weight: 700; }
+.compose-shortcuts {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.06em;
+  color: var(--ink-3); display: flex; gap: 12px;
+}
+.compose-shortcuts kbd {
+  background: var(--bg-2); border: 1px solid var(--border-2);
+  border-radius: 2px; padding: 1px 5px; font-family: var(--ui);
+  font-size: 7px; color: var(--ink-2);
+}
+.compose-input-wrap { position: relative; }
+#compose-input {
+  width: 100%; background: none; border: none;
+  border-bottom: 2px solid var(--border-2);
+  font-family: var(--disp); font-weight: 300;
+  font-size: clamp(20px, 2.8vw, 32px); color: var(--ink);
+  outline: none; resize: none; line-height: 1.2;
+  caret-color: var(--accent); padding: 8px 0 8px;
+  min-height: 48px; max-height: 160px;
+  transition: border-color 0.2s;
+}
+#compose-input::placeholder { color: var(--ink-4); }
+#compose-input:focus { border-bottom-color: var(--accent); }
+
+/* Live syntax highlight in input */
+#compose-input.mode-pull { border-bottom-color: var(--accent); font-style: italic; }
+#compose-input.mode-spec { font-family: var(--ui); font-size: 14px; }
+#compose-input.mode-aside { color: var(--aside-ink); }
+#compose-input.mode-poster { font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; }
+
+.compose-ghost-hint {
+  position: absolute; right: 0; bottom: 12px;
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.10em;
+  text-transform: uppercase; color: var(--ink-3); opacity: 0;
+  transition: opacity 0.2s; pointer-events: none;
+}
+.compose-ghost-hint.visible { opacity: 1; }
+.compose-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 10px;
+}
+.compose-parsed-preview {
+  font-family: var(--ui); font-size: 8px; letter-spacing: 0.08em;
+  color: var(--ink-3); display: flex; align-items: center; gap: 6px;
+  min-height: 16px;
+}
+.parse-tag {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 2px 7px;
+  border-radius: 10px; background: var(--accent-l);
+  color: var(--accent); border: 1px solid rgba(200,144,42,0.2);
+}
+.parse-desc { color: var(--ink-3); }
+.compose-send {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.14em;
+  text-transform: uppercase; background: var(--ink);
+  border: none; color: var(--bg); padding: 8px 18px;
+  font-weight: 700; cursor: pointer; transition: background 0.15s, opacity 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.compose-send:hover { background: var(--accent); color: #fff; }
+.compose-send:disabled { opacity: 0.3; pointer-events: none; }
+
+/* ── SYNTAX REFERENCE — right rail ───────────────────────────────────────── */
+#syntax-rail {
+  grid-column: 3; grid-row: 2;
+  padding: 32px 20px 32px 24px;
+  border-left: 1px solid var(--border);
+  overflow-y: auto; position: sticky; top: 52px;
+  height: calc(100vh - 52px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+#syntax-rail.hidden { opacity: 0; pointer-events: none; transform: translateX(8px); }
+#syntax-rail::-webkit-scrollbar { width: 0; }
+
+.sr-heading {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 20px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sr-section { margin-bottom: 22px; }
+.sr-section-title {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px;
+}
+.sr-item {
+  margin-bottom: 10px; cursor: pointer; padding: 8px 10px;
+  border: 1px solid transparent; border-radius: 3px; transition: all 0.12s;
+}
+.sr-item:hover { border-color: var(--border-2); background: var(--bg-2); }
+.sr-item:active { background: var(--accent-ll); border-color: var(--accent-l); }
+.sr-syntax {
+  font-family: var(--ui); font-size: 9px; letter-spacing: 0.04em;
+  color: var(--accent); margin-bottom: 3px; font-weight: 700;
+}
+.sr-desc {
+  font-family: var(--disp); font-weight: 300; font-size: 13px;
+  color: var(--ink-2); line-height: 1.3;
+}
+.sr-effect {
+  font-family: var(--ui); font-size: 7px; letter-spacing: 0.08em;
+  color: var(--ink-3); margin-top: 2px; font-style: italic;
+}
+.sr-divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────────────── */
+#empty-state {
+  padding: 60px 0; display: flex; flex-direction: column; gap: 6px;
+}
+.es-title {
+  font-family: var(--disp); font-weight: 900; font-size: 48px;
+  line-height: 0.9; letter-spacing: -0.02em; text-transform: uppercase;
+  color: var(--ink);
+}
+.es-title span { color: var(--accent); }
+.es-body {
+  font-family: var(--disp); font-weight: 300; font-size: 18px;
+  color: var(--ink-2); line-height: 1.5; max-width: 400px; margin-top: 12px;
+}
+.es-examples {
+  margin-top: 24px; display: flex; flex-direction: column; gap: 8px;
+}
+.es-example {
+  font-family: var(--ui); font-size: 10px; letter-spacing: 0.04em;
+  color: var(--ink-3); display: flex; align-items: baseline; gap: 10px;
+  padding: 8px 12px; border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.12s;
+}
+.es-example:hover { border-color: var(--accent); color: var(--ink); background: var(--accent-ll); }
+.es-example .ex-tag { color: var(--accent); font-size: 8px; letter-spacing: 0.14em; min-width: 52px; flex-shrink: 0; }
+.es-example .ex-text { color: var(--ink-2); }
+.es-example:hover .ex-text { color: var(--ink); }
+
+/* ── PROGRESS ─────────────────────────────────────────────────────────────── */
+#progress {
+  position: fixed; bottom: 0; left: 0; height: 2px;
+  background: var(--accent); z-index: 300;
+  width: 0%; transition: width 0.3s ease;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  #shell { grid-template-columns: 1fr; grid-template-rows: 52px 1fr; }
+  #stream-col { grid-column: 1; border: none; }
+  #syntax-rail { display: none; }
+  #stream-scroll { padding: 32px 24px 16px; }
+  #compose-area { padding: 14px 24px 18px; }
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<div id="shell">
+
+  <header>
+    <div class="h-mark">wolfie<span>.</span>dialogue</div>
+    <div class="h-sub">syntax-directed · intent-first</div>
+    <div class="h-actions">
+      <button class="h-btn active" id="syntax-toggle-btn" onclick="toggleSyntaxRail()">
+        <span id="syntax-btn-label">[ ] Syntax</span>
+      </button>
+      <button class="h-btn" onclick="clearThread()">↺ Clear</button>
+    </div>
+  </header>
+
+  <!-- Stream -->
+  <main id="stream-col">
+    <div id="stream-scroll">
+      <div id="narrative-root">
+        <!-- Empty state -->
+        <div id="empty-state">
+          <div class="es-title">Start<br>with a<br><span>sentence.</span></div>
+          <div class="es-body">Plain text thinks out loud. Brackets direct the model's mode of response. Try one below, or write your own.</div>
+          <div class="es-examples" id="es-examples">
+            <div class="es-example" onclick="prefill('What does it mean to think in systems?')">
+              <span class="ex-tag">plain</span>
+              <span class="ex-text">What does it mean to think in systems?</span>
+            </div>
+            <div class="es-example" onclick="prefill('[pull] The relationship between craft and speed.')">
+              <span class="ex-tag">[pull]</span>
+              <span class="ex-text">The relationship between craft and speed.</span>
+            </div>
+            <div class="es-example" onclick="prefill('[spec] Design system :: what makes one actually good?')">
+              <span class="ex-tag">[spec]</span>
+              <span class="ex-text">Design system :: what makes one actually good?</span>
+            </div>
+            <div class="es-example" onclick="prefill('[poster] What is the hardest problem in product design?')">
+              <span class="ex-tag">[poster]</span>
+              <span class="ex-text">What is the hardest problem in product design?</span>
+            </div>
+            <div class="es-example" onclick="prefill('How do constraints shape creative work? (and does more constraint always mean better output?)')">
+              <span class="ex-tag">plain + (aside)</span>
+              <span class="ex-text">How do constraints shape creative work? (and does more constraint always mean better output?)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="typing-wrap" style="display:none">
+        <div class="who"><span class="who-name">wolfie</span></div>
+        <div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+      </div>
+    </div>
+
+    <!-- Compose -->
+    <div id="compose-area">
+      <div class="compose-top">
+        <div class="compose-mode-label">
+          <div class="compose-mode-dot"></div>
+          <span>Mode:</span>
+          <span class="compose-mode-name" id="compose-mode-name">plain</span>
+        </div>
+        <div class="compose-shortcuts">
+          <span><kbd>Enter</kbd> send</span>
+          <span><kbd>Shift+Enter</kbd> newline</span>
+          <span><kbd>[ ]</kbd> bracket to direct</span>
+        </div>
+      </div>
+      <div class="compose-input-wrap">
+        <textarea id="compose-input"
+          placeholder="Write a sentence. Or [pull] isolate a question. Or [spec] key :: value."
+          rows="1" spellcheck="true" autofocus></textarea>
+        <div class="compose-ghost-hint" id="compose-ghost-hint"></div>
+      </div>
+      <div class="compose-bottom">
+        <div class="compose-parsed-preview" id="parsed-preview"></div>
+        <button class="compose-send" id="send-btn" onclick="submit()">Send ↗</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Syntax reference rail -->
+  <aside id="syntax-rail">
+    <div class="sr-heading">Syntax Reference</div>
+
+    <div class="sr-section">
+      <div class="sr-section-title">Input types</div>
+
+      <div class="sr-item" onclick="insertSyntax('')">
+        <div class="sr-syntax">plain sentence</div>
+        <div class="sr-desc">Conversational. Think out loud.</div>
+        <div class="sr-effect">Model responds in kind — narrative, exploratory</div>
+      </div>
+
+      <div class="sr-item" onclick="insertSyntax('[pull] ')">
+        <div class="sr-syntax">[pull] question</div>
+        <div class="sr-desc">Isolate the one thing. Distill.</div>
+        <div class="sr-effect">Model gives you the single truest answer — no padding</div>
+      </div>
+
+      <div class="sr-item" onclick="insertSyntax('[spec] key :: ')">
+        <div class="sr-syntax">[spec] key :: value</div>
+        <div class="sr-desc">Structured. Factual. No narrative.</div>
+        <div class="sr-effect">Model responds as structured data — spec rows</div>
+      </div>
+
+      <div class="sr-item" onclick="insertSyntax('[poster] ')">
+        <div class="sr-syntax">[poster] topic</div>
+        <div class="sr-desc">Demand a declarative headline.</div>
+        <div class="sr-effect">Model answers with a bold, committed statement</div>
+      </div>
+
+      <div class="sr-item" onclick="insertSyntax('[aside] ')">
+        <div class="sr-syntax">[aside] detail</div>
+        <div class="sr-desc">Parenthetical. Scrutinized detail.</div>
+        <div class="sr-effect">Model treats this quietly — brief, footnote-level</div>
+      </div>
+
+      <div class="sr-item" onclick="insertSyntax('[list] ')">
+        <div class="sr-syntax">[list] topic</div>
+        <div class="sr-desc">Enumerate without prose.</div>
+        <div class="sr-effect">Model responds as a clean list — no filler sentences</div>
+      </div>
+
+    </div>
+
+    <div class="sr-divider"></div>
+
+    <div class="sr-section">
+      <div class="sr-section-title">Inline modifiers</div>
+
+      <div class="sr-item" onclick="insertSyntax('', ' (your aside here)')">
+        <div class="sr-syntax">(parenthetical)</div>
+        <div class="sr-desc">Embed a quiet aside in any sentence.</div>
+        <div class="sr-effect">Model addresses this briefly, separately</div>
+      </div>
+
+      <div class="sr-item" onclick="insertSyntax('—\n')">
+        <div class="sr-syntax">—</div>
+        <div class="sr-desc">Break. New thread of thought.</div>
+        <div class="sr-effect">Resets context within the session</div>
+      </div>
+
+    </div>
+
+    <div class="sr-divider"></div>
+
+    <div class="sr-section">
+      <div class="sr-section-title">About</div>
+      <div class="sr-desc" style="font-size:12px;line-height:1.5;color:var(--ink-2);">
+        Syntax isn't formatting. It's intent declaration — you tell the model <em>how to think</em>, not how to display.<br><br>
+        One bracket doing the work of three sentences of prompt engineering.
+      </div>
+    </div>
+  </aside>
+
+</div><!-- /shell -->
+
+<script>
+// ── SYSTEM PROMPT ─────────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are Wolfie — a thinking partner inside a syntax-directed dialogue interface called wolfie.dialogue.
+
+The user writes in a structured compose syntax. Your responses must respect the declared intent of their input type.
+
+INPUT TYPES and how you must respond:
+
+PLAIN SENTENCE — no bracket prefix
+The user is thinking out loud. Respond conversationally and exploratorily. Use prose. Think with them.
+Format your response as one or more [body] sentences.
+
+[pull] question
+The user wants the single truest, most distilled answer. No padding, no "on one hand / on the other hand". One essential thing. Be declarative.
+Respond with a [pull] statement — the core truth — optionally followed by 1-2 [body] sentences of support.
+
+[spec] key :: context
+The user wants structured, factual output. No narrative.
+Respond with multiple [spec] key :: value rows. Be precise. No filler.
+
+[poster] topic
+The user wants a bold, committed declarative statement — a headline answer.
+Respond with a [poster] statement (all caps internally is fine) then optionally 1-2 [body] sentences.
+
+[aside] detail
+The user is flagging a parenthetical concern or scrutinized detail. Treat it quietly.
+Respond with a single [aside] sentence — brief, footnote-level. No elaboration unless asked.
+
+[list] topic
+The user wants enumeration without prose.
+Respond with [list] followed by items as — item per line.
+
+(parenthetical) inside any sentence
+Address the parenthetical briefly as a [aside] after your main response.
+
+— (em dash alone on a line)
+The user is breaking the thread. Acknowledge briefly and await the new direction.
+
+FORMATTING RULES:
+- Always prefix each response sentence with its type in brackets: [body], [pull], [poster], [spec], [aside], [list]
+- [spec] format: [spec] Key :: Value
+- [list] format: [list]\n— item\n— item\n— item
+- Keep responses tight. This is not a chat interface. It is a thinking tool.
+- Never use markdown headers or bullet points outside the defined syntax.
+- Never start a response with "Certainly" or "Of course" or any filler affirmation.
+- Your voice: direct, considered, precise. Not casual, not corporate.`;
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+var exchanges = [];
+var syntaxRailVisible = true;
+var isThinking = false;
+var conversationHistory = [];
+
+// ── SYNTAX PARSER ─────────────────────────────────────────────────────────────
+const SYNTAX_DEFS = {
+  pull:   { tag: '[pull]',   desc: 'Distill to one truth',   mode: 'pull'   },
+  spec:   { tag: '[spec]',   desc: 'Structured · factual',   mode: 'spec'   },
+  poster: { tag: '[poster]', desc: 'Bold declaration',        mode: 'poster' },
+  aside:  { tag: '[aside]',  desc: 'Quiet scrutiny',         mode: 'aside'  },
+  list:   { tag: '[list]',   desc: 'Enumerate cleanly',      mode: 'list'   },
+  break:  { tag: '—',        desc: 'Break thread',           mode: 'break'  },
+};
+
+function parseInput(raw) {
+  raw = raw.trim();
+  if (!raw) return null;
+
+  // Em dash break
+  if (raw === '—' || raw === '--') return { type: 'break', content: raw, mode: 'break' };
+
+  // Bracket type
+  var m = raw.match(/^\[([a-z]+)\]\s*(.*)/s);
+  if (m) {
+    var type = m[1];
+    var content = m[2].trim();
+    // spec: key :: val
+    if (type === 'spec') {
+      var sep = content.indexOf('::');
+      if (sep !== -1) {
+        return { type: 'spec', key: content.slice(0,sep).trim(), val: content.slice(sep+2).trim(), mode: 'spec' };
+      }
+      return { type: 'spec', key: content, val: '', mode: 'spec' };
+    }
+    return { type, content, mode: type };
+  }
+
+  // Plain — check for inline (aside)
+  var asideMatch = raw.match(/^(.*?)\s*\(([^)]+)\)\s*(.*)$/);
+  if (asideMatch) {
+    return {
+      type: 'plain-aside',
+      main: (asideMatch[1] + (asideMatch[3] ? ' ' + asideMatch[3] : '')).trim(),
+      aside: asideMatch[2].trim(),
+      mode: 'plain'
+    };
+  }
+
+  return { type: 'plain', content: raw, mode: 'plain' };
+}
+
+function getModeLabel(parsed) {
+  if (!parsed) return 'plain';
+  if (parsed.type === 'break') return 'break';
+  if (parsed.type === 'plain-aside') return 'plain + aside';
+  return parsed.mode || 'plain';
+}
+
+// ── RESPONSE PARSER — parse model output into sentence objects ────────────────
+function parseResponse(text) {
+  var lines = text.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+  var sentences = [];
+  var listItems = [];
+  var inList = false;
+
+  lines.forEach(function(line) {
+    // List item
+    if (line.startsWith('— ') || line.startsWith('- ')) {
+      listItems.push(line.replace(/^[—\-]\s*/, ''));
+      inList = true;
+      return;
+    }
+    // Flush list
+    if (inList && !line.startsWith('—') && !line.startsWith('-')) {
+      sentences.push({ type: 'list', items: listItems.slice() });
+      listItems = []; inList = false;
+    }
+
+    var m = line.match(/^\[([a-z]+)\]\s*(.*)/s);
+    if (!m) { sentences.push({ type: 'body', text: line }); return; }
+    var type = m[1], content = m[2].trim();
+
+    if (type === 'spec') {
+      var sep = content.indexOf('::');
+      if (sep !== -1) sentences.push({ type: 'spec', key: content.slice(0,sep).trim(), val: content.slice(sep+2).trim() });
+      else sentences.push({ type: 'spec', key: content, val: '' });
+    } else if (type === 'list') {
+      // list items follow on next lines — handled above
+      // but sometimes inline: [list] item1, item2
+      if (content) sentences.push({ type: 'body', text: content });
+    } else {
+      sentences.push({ type, text: content });
+    }
+  });
+  if (inList && listItems.length) sentences.push({ type: 'list', items: listItems });
+  return sentences;
+}
+
+// ── RENDER USER INPUT ─────────────────────────────────────────────────────────
+function renderUserInput(parsed) {
+  var frag = document.createDocumentFragment();
+
+  function makeWho() {
+    var w = document.createElement('div');
+    w.className = 'who';
+    var name = document.createElement('span');
+    name.className = 'who-name';
+    name.textContent = 'You';
+    w.appendChild(name);
+    if (parsed.mode && parsed.mode !== 'plain') {
+      var tag = document.createElement('span');
+      tag.className = 'who-mode';
+      tag.textContent = parsed.mode;
+      w.appendChild(tag);
+    }
+    return w;
+  }
+  frag.appendChild(makeWho());
+
+  if (parsed.type === 'break') {
+    var br = document.createElement('div');
+    br.className = 'u-break';
+    br.textContent = '— new thread';
+    frag.appendChild(br);
+  } else if (parsed.type === 'plain') {
+    var el = document.createElement('div');
+    el.className = 'u-plain';
+    el.textContent = parsed.content;
+    frag.appendChild(el);
+  } else if (parsed.type === 'plain-aside') {
+    var el = document.createElement('div');
+    el.className = 'u-plain';
+    el.textContent = parsed.main;
+    frag.appendChild(el);
+    var as = document.createElement('div');
+    as.className = 'u-aside';
+    as.textContent = '(' + parsed.aside + ')';
+    frag.appendChild(as);
+  } else if (parsed.type === 'pull') {
+    var el = document.createElement('div');
+    el.className = 'u-pull';
+    el.textContent = parsed.content;
+    frag.appendChild(el);
+  } else if (parsed.type === 'poster') {
+    var el = document.createElement('div');
+    el.className = 'u-poster';
+    el.textContent = parsed.content;
+    frag.appendChild(el);
+  } else if (parsed.type === 'aside') {
+    var el = document.createElement('div');
+    el.className = 'u-aside';
+    el.textContent = parsed.content;
+    frag.appendChild(el);
+  } else if (parsed.type === 'spec') {
+    var row = document.createElement('div');
+    row.className = 'u-spec-row';
+    row.innerHTML = '<span class="spec-k">' + parsed.key + '</span><span class="spec-v">' + (parsed.val||'—') + '</span>';
+    frag.appendChild(row);
+  } else if (parsed.type === 'list') {
+    var el = document.createElement('div');
+    el.className = 'u-plain';
+    el.textContent = parsed.content;
+    frag.appendChild(el);
+  }
+  return frag;
+}
+
+// ── RENDER AI RESPONSE SENTENCE ───────────────────────────────────────────────
+function renderResponseSentence(s) {
+  var el;
+  if (s.type === 'body') {
+    el = document.createElement('div');
+    el.className = 'r-body';
+    el.innerHTML = s.text;
+  } else if (s.type === 'pull') {
+    el = document.createElement('div');
+    el.className = 'r-pull';
+    el.innerHTML = s.text;
+  } else if (s.type === 'poster') {
+    el = document.createElement('div');
+    el.className = 'r-poster';
+    el.innerHTML = s.text;
+  } else if (s.type === 'aside') {
+    el = document.createElement('div');
+    el.className = 'r-aside';
+    el.textContent = s.text;
+  } else if (s.type === 'spec') {
+    el = document.createElement('div');
+    el.className = 'r-spec';
+    el.innerHTML = '<span class="spec-k">' + (s.key||'') + '</span><span class="spec-v">' + (s.val||'') + '</span>';
+  } else if (s.type === 'list') {
+    el = document.createElement('ul');
+    el.className = 'r-list';
+    (s.items||[]).forEach(function(item) {
+      var li = document.createElement('li');
+      li.textContent = item;
+      el.appendChild(li);
+    });
+  } else {
+    el = document.createElement('div');
+    el.className = 'r-body';
+    el.innerHTML = s.text || '';
+  }
+  return el;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
+function submit() {
+  var raw = document.getElementById('compose-input').value;
+  if (!raw.trim() || isThinking) return;
+
+  var parsed = parseInput(raw);
+  if (!parsed) return;
+
+  // Clear empty state
+  var es = document.getElementById('empty-state');
+  if (es) es.remove();
+
+  var root = document.getElementById('narrative-root');
+
+  // Render exchange wrapper
+  var wrap = document.createElement('div');
+  wrap.className = 'exchange';
+
+  // User input
+  var userFrag = renderUserInput(parsed);
+  wrap.appendChild(userFrag);
+  root.appendChild(wrap);
+
+  // Clear input
+  document.getElementById('compose-input').value = '';
+  document.getElementById('compose-input').style.height = '';
+  document.getElementById('parsed-preview').innerHTML = '';
+  document.getElementById('compose-mode-name').textContent = 'plain';
+  updateProgress();
+
+  // Scroll
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+  // Show typing
+  isThinking = true;
+  document.getElementById('typing-wrap').style.display = 'block';
+  document.getElementById('typing-wrap').scrollIntoView({ behavior: 'smooth', block: 'end' });
+  document.getElementById('send-btn').disabled = true;
+
+  // Build message for API
+  var userMsg = buildUserMessage(parsed, raw);
+  conversationHistory.push({ role: 'user', content: userMsg });
+
+  // Call API
+  callClaude(conversationHistory).then(function(responseText) {
+    document.getElementById('typing-wrap').style.display = 'none';
+    isThinking = false;
+    document.getElementById('send-btn').disabled = false;
+
+    // Add wolfie who label
+    var aiWho = document.createElement('div');
+    aiWho.className = 'who';
+    aiWho.style.marginTop = '20px';
+    var aiName = document.createElement('span');
+    aiName.className = 'who-name';
+    aiName.textContent = 'wolfie';
+    aiWho.appendChild(aiName);
+    wrap.appendChild(aiWho);
+
+    // Parse and render
+    var sentences = parseResponse(responseText);
+    sentences.forEach(function(s, i) {
+      var el = renderResponseSentence(s);
+      el.style.animationDelay = (i * 60) + 'ms';
+      wrap.appendChild(el);
+    });
+
+    conversationHistory.push({ role: 'assistant', content: responseText });
+    exchanges.push({ wrap, parsed, responseText });
+
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    updateProgress();
+
+  }).catch(function(err) {
+    document.getElementById('typing-wrap').style.display = 'none';
+    isThinking = false;
+    document.getElementById('send-btn').disabled = false;
+    var errEl = document.createElement('div');
+    errEl.className = 'r-aside';
+    errEl.textContent = 'Connection failed. ' + (err.message || 'Check your setup.');
+    wrap.appendChild(errEl);
+  });
+}
+
+function buildUserMessage(parsed, raw) {
+  // Pass raw input so the model sees the syntax exactly as written
+  return raw;
+}
+
+// ── CLAUDE API CALL ───────────────────────────────────────────────────────────
+async function callClaude(history) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: SYSTEM_PROMPT,
+      messages: history
+    })
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message || 'API error');
+  return data.content.map(function(b) { return b.type === 'text' ? b.text : ''; }).join('\n');
+}
+
+// ── COMPOSE INPUT — live parse feedback ───────────────────────────────────────
+var composeEl = document.getElementById('compose-input');
+
+composeEl.addEventListener('input', function() {
+  // Auto-resize
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+
+  var val = this.value;
+  var parsed = parseInput(val);
+  var preview = document.getElementById('parsed-preview');
+  var modeName = document.getElementById('compose-mode-name');
+  var ghostHint = document.getElementById('compose-ghost-hint');
+
+  // Remove all mode classes
+  this.className = '';
+
+  if (!val.trim()) {
+    preview.innerHTML = '';
+    modeName.textContent = 'plain';
+    ghostHint.classList.remove('visible');
+    return;
+  }
+
+  if (!parsed) return;
+  var mode = getModeLabel(parsed);
+  modeName.textContent = mode;
+  this.classList.add('mode-' + (parsed.mode || 'plain'));
+
+  // Preview tag + description
+  var tag = SYNTAX_DEFS[parsed.type];
+  if (tag || (parsed.type === 'plain-aside')) {
+    var tagLabel = parsed.type === 'plain-aside' ? 'plain + aside' : (tag ? tag.tag : '');
+    var tagDesc  = parsed.type === 'plain-aside' ? 'Main thought + quiet scrutiny' : (tag ? tag.desc : '');
+    preview.innerHTML = '<span class="parse-tag">' + tagLabel + '</span><span class="parse-desc">' + tagDesc + '</span>';
+  } else {
+    preview.innerHTML = '<span class="parse-desc">plain · conversational</span>';
+  }
+
+  // Ghost hint
+  var hints = {
+    pull:   'Model will distill one truth',
+    spec:   'Model will respond as structured data',
+    poster: 'Model will make a bold declaration',
+    aside:  'Model will respond quietly, briefly',
+    list:   'Model will enumerate without prose',
+    break:  'Breaks the thread',
+    'plain-aside': 'Main + quiet aside addressed separately'
+  };
+  var hint = hints[parsed.type] || hints[parsed.mode] || '';
+  if (hint) {
+    ghostHint.textContent = hint;
+    ghostHint.classList.add('visible');
+  } else {
+    ghostHint.classList.remove('visible');
+  }
+});
+
+composeEl.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
+});
+
+// ── SYNTAX RAIL ───────────────────────────────────────────────────────────────
+function toggleSyntaxRail() {
+  syntaxRailVisible = !syntaxRailVisible;
+  document.getElementById('syntax-rail').classList.toggle('hidden', !syntaxRailVisible);
+  document.getElementById('syntax-toggle-btn').classList.toggle('active', syntaxRailVisible);
+  document.getElementById('syntax-btn-label').textContent = syntaxRailVisible ? '[ ] Syntax' : '[ ] Syntax';
+}
+function insertSyntax(prefix, suffix) {
+  var input = document.getElementById('compose-input');
+  var current = input.value;
+  if (!current.startsWith(prefix.trim()) || !prefix.trim()) {
+    input.value = prefix + (suffix || '');
+  }
+  input.focus();
+  input.dispatchEvent(new Event('input'));
+  var pos = prefix.length;
+  input.setSelectionRange(pos, pos);
+}
+
+// ── PREFILL ───────────────────────────────────────────────────────────────────
+function prefill(text) {
+  var input = document.getElementById('compose-input');
+  input.value = text;
+  input.dispatchEvent(new Event('input'));
+  input.focus();
+}
+
+// ── CLEAR ─────────────────────────────────────────────────────────────────────
+function clearThread() {
+  var root = document.getElementById('narrative-root');
+  root.innerHTML = '';
+  exchanges = [];
+  conversationHistory = [];
+  updateProgress();
+  // Re-add empty state
+  var es = document.createElement('div');
+  es.id = 'empty-state';
+  es.innerHTML = document.createElement('div').innerHTML; // blank — rebuild below
+  root.appendChild(es);
+  es.innerHTML = `
+    <div class="es-title">Start<br>with a<br><span style="color:var(--accent)">sentence.</span></div>
+    <div class="es-body">Plain text thinks out loud. Brackets direct the model's mode of response.</div>
+    <div class="es-examples">
+      <div class="es-example" onclick="prefill('What does it mean to think in systems?')">
+        <span class="ex-tag">plain</span><span class="ex-text">What does it mean to think in systems?</span>
+      </div>
+      <div class="es-example" onclick="prefill('[pull] The relationship between craft and speed.')">
+        <span class="ex-tag">[pull]</span><span class="ex-text">The relationship between craft and speed.</span>
+      </div>
+      <div class="es-example" onclick="prefill('[spec] Design system :: what makes one actually good?')">
+        <span class="ex-tag">[spec]</span><span class="ex-text">Design system :: what makes one actually good?</span>
+      </div>
+      <div class="es-example" onclick="prefill('[poster] What is the hardest problem in product design?')">
+        <span class="ex-tag">[poster]</span><span class="ex-text">What is the hardest problem in product design?</span>
+      </div>
+    </div>`;
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────────────────────
+function updateProgress() {
+  var pct = Math.min(exchanges.length * 12, 100);
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+</script>
+</body>
+</html>
