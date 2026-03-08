@@ -8,9 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 
-/* ═══════════════════════════════════════════════
-   THEME: DARK (default)
-═══════════════════════════════════════════════ */
 :root {
   --bg: #09090b;
   --bg2: #111115;
@@ -36,8 +33,6 @@
   --mono: 'Space Mono', monospace;
   --sans: 'Space Grotesk', sans-serif;
   --display: 'Syne', sans-serif;
-
-  /* ghost tokens */
   --ghost-bg: rgba(6,6,16,0.93);
   --ghost-border: rgba(100,130,255,0.2);
   --ghost-ink: #c8d4f8;
@@ -46,72 +41,33 @@
   --ghost-green: #38c878;
   --ghost-red: #ff5555;
   --ghost-amber: #ffb030;
-
-  /* radius */
   --r-card: 10px;
   --r-item: 7px;
   --r-badge: 20px;
   --r-hm: 3px;
   --r-bar: 2px;
-
-  /* topbar */
   --tb-bg: rgba(9,9,11,0.95);
-
-  /* scrollbar */
   --sb: var(--border2);
-
-  /* grain / dither */
   --grain: 0.028;
   --dither: 0;
 }
 
-/* ═══════════════════════════════════════════════
-   THEME: 32-BIT (retro)
-═══════════════════════════════════════════════ */
 [data-theme="retro"] {
-  --bg: #c8c4bc;
-  --bg2: #d4d0c8;
-  --bg3: #bcb8b0;
-  --bg4: #b0aca4;
-  --border: rgba(60,52,44,0.45);
-  --border2: rgba(60,52,44,0.75);
-  --ink: #0c0c0c;
-  --ink2: #2c2c2c;
-  --ink3: #606060;
-  --accent: #1c2b8c;
-  --accent2: #2040c0;
-  --accent-l: rgba(28,43,140,0.12);
-  --warn: #b85000;
-  --warn-l: rgba(184,80,0,0.12);
-  --green: #005800;
-  --green-l: rgba(0,88,0,0.10);
-  --red: #880000;
-  --red-l: rgba(136,0,0,0.10);
-  --amber: #786000;
-  --amber-l: rgba(120,96,0,0.10);
-
-  --ghost-bg: rgba(8,10,24,0.95);
-  --ghost-border: rgba(80,110,220,0.35);
-  --ghost-ink: #bccef8;
-  --ghost-dim: #5060a0;
-  --ghost-accent: #6080ff;
-  --ghost-green: #28c060;
-  --ghost-red: #ff4848;
-  --ghost-amber: #ffb020;
-
-  --r-card: 0px;
-  --r-item: 0px;
-  --r-badge: 0px;
-  --r-hm: 0px;
-  --r-bar: 0px;
-
-  --tb-bg: #1c2b8c;
-  --sb: #909090;
-  --grain: 0;
-  --dither: 1;
+  --bg: #c8c4bc; --bg2: #d4d0c8; --bg3: #bcb8b0; --bg4: #b0aca4;
+  --border: rgba(60,52,44,0.45); --border2: rgba(60,52,44,0.75);
+  --ink: #0c0c0c; --ink2: #2c2c2c; --ink3: #606060;
+  --accent: #1c2b8c; --accent2: #2040c0; --accent-l: rgba(28,43,140,0.12);
+  --warn: #b85000; --warn-l: rgba(184,80,0,0.12);
+  --green: #005800; --green-l: rgba(0,88,0,0.10);
+  --red: #880000; --red-l: rgba(136,0,0,0.10);
+  --amber: #786000; --amber-l: rgba(120,96,0,0.10);
+  --ghost-bg: rgba(8,10,24,0.95); --ghost-border: rgba(80,110,220,0.35);
+  --ghost-ink: #bccef8; --ghost-dim: #5060a0; --ghost-accent: #6080ff;
+  --ghost-green: #28c060; --ghost-red: #ff4848; --ghost-amber: #ffb020;
+  --r-card: 0px; --r-item: 0px; --r-badge: 0px; --r-hm: 0px; --r-bar: 0px;
+  --tb-bg: #1c2b8c; --sb: #909090; --grain: 0; --dither: 1;
 }
 
-/* ── base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -123,8 +79,6 @@ body {
   overflow-x: hidden;
   transition: background .25s, color .25s;
 }
-
-/* grain — dark */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -133,7 +87,6 @@ body::before {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0/200px;
   transition: opacity .25s;
 }
-/* dither — retro */
 body::after {
   content: '';
   position: fixed; inset: 0; z-index: 0;
@@ -143,7 +96,6 @@ body::after {
   transition: opacity .25s;
 }
 
-/* ── shell layout ── */
 .shell {
   position: relative; z-index: 1;
   display: grid;
@@ -169,50 +121,22 @@ body::after {
   box-shadow: 0 2px 0 rgba(0,0,0,.35), inset 0 -1px 0 rgba(255,255,255,.15);
 }
 
-.tb-logo {
-  font-family: var(--display);
-  font-weight: 800; font-size: 12px;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: #fff;
-  transition: font-family .25s;
-}
+.tb-logo { font-family: var(--display); font-weight: 800; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #fff; transition: font-family .25s; }
 .tb-logo span { color: #a0b4ff; }
 [data-theme="retro"] .tb-logo { font-family: var(--mono); }
 [data-theme="retro"] .tb-logo span { color: #ffd080; }
-
 .tb-sep { width: 1px; height: 18px; background: rgba(255,255,255,.18); }
-
-.tb-breadcrumb {
-  font-family: var(--mono); font-size: 9px;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: rgba(255,255,255,.4);
-}
+.tb-breadcrumb { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); }
 .tb-breadcrumb b { color: rgba(255,255,255,.72); }
-
 .tb-spacer { flex: 1; }
-
-.tb-live {
-  display: flex; align-items: center; gap: 6px;
-  font-family: var(--mono); font-size: 8px;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: #4ade80;
-}
+.tb-live { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: #4ade80; }
 [data-theme="retro"] .tb-live { color: #50ff70; }
-
-.live-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #4ade80;
-  animation: livepulse 2s ease-in-out infinite;
-}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: livepulse 2s ease-in-out infinite; }
 [data-theme="retro"] .live-dot { border-radius: 0; background: #50ff70; }
-
 @keyframes livepulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.85)} }
-
 .tb-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
 .tb-stat-val { font-family: var(--mono); font-size: 12px; font-weight: 700; color: #fff; }
 .tb-stat-label { font-family: var(--mono); font-size: 7px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.38); }
-
-/* ── theme toggle ── */
 .theme-toggle {
   display: flex; align-items: center; gap: 6px;
   padding: 4px 10px;
@@ -228,15 +152,7 @@ body::after {
 }
 .theme-toggle:hover { background: rgba(255,255,255,.15); color: #fff; }
 .toggle-icon { font-size: 11px; line-height: 1; }
-
-[data-theme="retro"] .theme-toggle {
-  border-radius: 0;
-  background: #d4d0c8;
-  color: #101010;
-  border: 1px solid;
-  border-color: #ffffff #606050 #606050 #ffffff;
-  box-shadow: inset -1px -1px 0 #404030, inset 1px 1px 0 #f0ede8;
-}
+[data-theme="retro"] .theme-toggle { border-radius: 0; background: #d4d0c8; color: #101010; border: 1px solid; border-color: #ffffff #606050 #606050 #ffffff; box-shadow: inset -1px -1px 0 #404030, inset 1px 1px 0 #f0ede8; }
 [data-theme="retro"] .theme-toggle:hover { background: #e0dcd4; }
 
 /* ═══ LEFT NAV ═══ */
@@ -250,24 +166,10 @@ body::after {
 }
 .leftnav::-webkit-scrollbar { width: 3px; }
 .leftnav::-webkit-scrollbar-thumb { background: var(--sb); }
-
-[data-theme="retro"] .leftnav {
-  border-right: 1px solid var(--border2);
-  box-shadow: inset -1px 0 0 rgba(255,255,255,.5);
-}
-
+[data-theme="retro"] .leftnav { border-right: 1px solid var(--border2); box-shadow: inset -1px 0 0 rgba(255,255,255,.5); }
 .nav-section { padding: 18px 16px 6px; }
-.nav-section-label {
-  font-family: var(--mono); font-size: 7px;
-  letter-spacing: .22em; text-transform: uppercase;
-  color: var(--ink3); margin-bottom: 8px;
-  transition: color .25s;
-}
-[data-theme="retro"] .nav-section-label {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 3px;
-}
-
+.nav-section-label { font-family: var(--mono); font-size: 7px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; transition: color .25s; }
+[data-theme="retro"] .nav-section-label { border-bottom: 1px solid var(--border); padding-bottom: 3px; }
 .nav-item {
   display: flex; align-items: center; gap: 8px;
   padding: 7px 10px;
@@ -279,34 +181,191 @@ body::after {
 }
 .nav-item:hover { background: var(--bg3); color: var(--ink); }
 .nav-item.active { background: var(--accent-l); color: var(--accent2); }
-
 [data-theme="retro"] .nav-item:hover { background: #1c2b8c; color: #fff; }
 [data-theme="retro"] .nav-item.active { background: #1c2b8c; color: #fff; font-family: var(--mono); font-size: 11px; }
-
 .nav-item-icon { font-size: 11px; width: 16px; text-align: center; flex-shrink: 0; }
-
 .nav-badge {
   margin-left: auto; font-family: var(--mono); font-size: 8px;
   background: var(--bg4); color: var(--ink2);
   padding: 1px 6px; border-radius: var(--r-badge);
   transition: all .25s;
 }
-.nav-badge.warn  { background: var(--warn-l); color: var(--warn); }
-.nav-badge.accent{ background: var(--accent-l); color: var(--accent2); }
-
-[data-theme="retro"] .nav-badge.warn  { background: #600000; color: #ff9090; }
-[data-theme="retro"] .nav-badge.accent{ background: #0a1550; color: #8090ff; }
+.nav-badge.warn { background: var(--warn-l); color: var(--warn); }
+.nav-badge.accent { background: var(--accent-l); color: var(--accent2); }
+[data-theme="retro"] .nav-badge.warn { background: #600000; color: #ff9090; }
+[data-theme="retro"] .nav-badge.accent { background: #0a1550; color: #8090ff; }
 
 /* ═══ MAIN ═══ */
 .main {
   grid-column: 2;
-  overflow-y: auto; padding: 24px;
-  display: flex; flex-direction: column; gap: 20px;
-  transition: padding .25s, gap .25s;
+  overflow-y: auto; padding: 0;
+  display: flex; flex-direction: column;
+  transition: gap .25s;
+  position: relative;
 }
 .main::-webkit-scrollbar { width: 3px; }
 .main::-webkit-scrollbar-thumb { background: var(--sb); }
-[data-theme="retro"] .main { padding: 12px 14px; gap: 12px; }
+
+/* ═══ VIEW TOGGLE BAR ═══ */
+.view-toggle-bar {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  height: 44px;
+  flex-shrink: 0;
+  transition: background .25s, border-color .25s;
+}
+[data-theme="retro"] .view-toggle-bar { border-bottom: 2px solid var(--border2); padding: 0 14px; }
+
+.view-toggle-title {
+  font-family: var(--display); font-size: 11px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink2);
+  transition: color .25s, font-family .25s;
+}
+[data-theme="retro"] .view-toggle-title { font-family: var(--mono); font-size: 9px; }
+
+.view-toggle-pills {
+  display: flex; gap: 0;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all .25s;
+}
+[data-theme="retro"] .view-toggle-pills { border-radius: 0; }
+
+.view-pill {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 12px;
+  font-family: var(--mono); font-size: 8px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink3);
+  cursor: pointer; user-select: none;
+  transition: all .15s;
+  border: none; background: none;
+}
+.view-pill:hover { color: var(--ink2); background: var(--bg3); }
+.view-pill.active { background: var(--accent-l); color: var(--accent2); }
+.view-pill + .view-pill { border-left: 1px solid var(--border2); }
+.view-pill-icon { font-size: 10px; }
+[data-theme="retro"] .view-pill.active { background: #1c2b8c; color: #fff; }
+
+/* ═══ MAIN CONTENT AREA ═══ */
+.main-content {
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 20px;
+  flex: 1;
+}
+[data-theme="retro"] .main-content { padding: 12px 14px; gap: 12px; }
+
+/* ═══ NARRATIVE VIEW ═══ */
+.narrative-view {
+  padding: 32px 36px;
+  display: flex; flex-direction: column; gap: 0;
+  flex: 1;
+}
+[data-theme="retro"] .narrative-view { padding: 20px; }
+
+.narrative-header {
+  margin-bottom: 28px;
+}
+.narrative-label {
+  font-family: var(--mono); font-size: 7.5px;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+  transition: color .25s;
+}
+.narrative-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.narrative-title {
+  font-family: var(--display); font-size: 22px; font-weight: 800;
+  color: var(--ink); line-height: 1.2; margin-bottom: 6px;
+  transition: color .25s, font-family .25s;
+}
+[data-theme="retro"] .narrative-title { font-family: var(--mono); font-size: 16px; }
+.narrative-meta {
+  font-family: var(--mono); font-size: 8px;
+  color: var(--ink3); letter-spacing: .1em; text-transform: uppercase;
+  transition: color .25s;
+}
+
+.narrative-body { display: flex; flex-direction: column; gap: 6px; }
+
+.n-sentence {
+  font-size: 13.5px; line-height: 1.75;
+  color: var(--ink2);
+  padding: 9px 14px;
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--r-item) var(--r-item) 0;
+  cursor: pointer;
+  transition: all .16s;
+  position: relative;
+}
+.n-sentence:hover {
+  background: var(--bg3);
+  border-left-color: var(--accent);
+  color: var(--ink);
+}
+.n-sentence.active {
+  background: var(--accent-ll);
+  border-left-color: var(--accent2);
+  color: var(--ink);
+}
+[data-theme="retro"] .n-sentence { font-family: var(--mono); font-size: 10.5px; line-height: 1.65; border-radius: 0; }
+[data-theme="retro"] .n-sentence:hover { background: rgba(28,43,140,.12); border-left-color: #2040c0; }
+[data-theme="retro"] .n-sentence.active { background: rgba(28,43,140,.2); border-left-color: #2040c0; }
+
+.n-sentence em { color: var(--accent2); font-style: normal; font-weight: 600; }
+.n-sentence b { color: var(--ink); font-weight: 700; }
+.n-sentence .n-crit { color: var(--red); font-weight: 600; }
+.n-sentence .n-ok { color: var(--green); font-weight: 600; }
+.n-sentence .n-warn { color: var(--warn); font-weight: 600; }
+
+.n-chip {
+  display: inline-flex; align-items: center;
+  font-family: var(--mono); font-size: 7px;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 1px 6px; border-radius: 3px;
+  border: 1px solid;
+  vertical-align: middle; margin: 0 2px;
+  transition: all .25s;
+}
+.n-chip.r { border-color: rgba(239,68,68,.3); color: var(--red); background: var(--red-l); }
+.n-chip.g { border-color: rgba(34,197,94,.3); color: var(--green); background: var(--green-l); }
+.n-chip.a { border-color: rgba(245,158,11,.3); color: var(--amber); background: var(--amber-l); }
+.n-chip.p { border-color: rgba(124,106,247,.3); color: var(--accent2); background: var(--accent-l); }
+[data-theme="retro"] .n-chip { border-radius: 0; }
+
+.n-section-break {
+  margin: 20px 0 14px;
+  font-family: var(--mono); font-size: 7.5px;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink3); padding-left: 14px;
+  display: flex; align-items: center; gap: 10px;
+  transition: color .25s;
+}
+.n-section-break::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.n-click-hint {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 7.5px;
+  color: var(--ink3); letter-spacing: .1em;
+  padding: 0 14px 20px;
+  transition: color .25s;
+}
+.n-click-hint-icon { font-size: 9px; color: var(--accent); }
+
+/* ═══ DASHBOARD HIGHLIGHT (scroll target) ═══ */
+.card.highlight-target {
+  animation: cardHighlight 2s ease forwards;
+}
+@keyframes cardHighlight {
+  0%   { box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(124,106,247,.3); border-color: rgba(124,106,247,.5); }
+  60%  { box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(124,106,247,.3); border-color: rgba(124,106,247,.5); }
+  100% { box-shadow: none; border-color: var(--border); }
+}
 
 /* ═══ RIGHT PANEL ═══ */
 .rightpanel {
@@ -319,10 +378,7 @@ body::after {
 }
 .rightpanel::-webkit-scrollbar { width: 3px; }
 .rightpanel::-webkit-scrollbar-thumb { background: var(--sb); }
-[data-theme="retro"] .rightpanel {
-  border-left: 1px solid var(--border2);
-  box-shadow: inset 1px 0 0 rgba(255,255,255,.5);
-}
+[data-theme="retro"] .rightpanel { border-left: 1px solid var(--border2); box-shadow: inset 1px 0 0 rgba(255,255,255,.5); }
 
 /* ═══ CARDS ═══ */
 .card {
@@ -330,266 +386,109 @@ body::after {
   border: 1px solid var(--border);
   border-radius: var(--r-card);
   overflow: hidden;
-  transition: border-color .2s, background .25s, border-radius .25s;
+  transition: border-color .2s, background .25s, border-radius .25s, box-shadow .3s;
   position: relative;
 }
 .card:hover { border-color: var(--border2); }
-
-[data-theme="retro"] .card {
-  border: none;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #404030,
-              1px 1px 0 #fff, -1px -1px 0 #808070;
-}
-
+[data-theme="retro"] .card { border: none; box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #404030, 1px 1px 0 #fff, -1px -1px 0 #808070; }
 .card-header {
   padding: 14px 16px 12px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 10px;
   transition: border-color .25s, background .25s, padding .25s;
 }
-[data-theme="retro"] .card-header {
-  background: #1c2b8c;
-  border-bottom: none;
-  padding: 5px 8px;
-}
-
-.card-title {
-  font-family: var(--display); font-size: 12px; font-weight: 700;
-  letter-spacing: .03em; text-transform: uppercase;
-  color: var(--ink);
-  transition: color .25s, font-family .25s, font-size .25s;
-}
-[data-theme="retro"] .card-title {
-  font-family: var(--mono); font-size: 10px; color: #fff;
-}
-
-.card-subtitle {
-  font-family: var(--mono); font-size: 8px;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ink3); margin-top: 2px;
-  transition: color .25s;
-}
+[data-theme="retro"] .card-header { background: #1c2b8c; border-bottom: none; padding: 5px 8px; }
+.card-title { font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--ink); transition: color .25s, font-family .25s, font-size .25s; }
+[data-theme="retro"] .card-title { font-family: var(--mono); font-size: 10px; color: #fff; }
+.card-subtitle { font-family: var(--mono); font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-top: 2px; transition: color .25s; }
 [data-theme="retro"] .card-subtitle { color: rgba(255,255,255,.5); }
+.card-badge { margin-left: auto; font-family: var(--mono); font-size: 8px; padding: 2px 8px; border-radius: var(--r-badge); border: 1px solid; white-space: nowrap; transition: all .25s; }
+.card-badge.green { border-color: rgba(34,197,94,.3); color: var(--green); background: var(--green-l); }
+.card-badge.warn { border-color: rgba(249,115,22,.3); color: var(--warn); background: var(--warn-l); }
+.card-badge.red { border-color: rgba(239,68,68,.3); color: var(--red); background: var(--red-l); }
+.card-badge.accent { border-color: rgba(124,106,247,.3); color: var(--accent2); background: var(--accent-l); }
+[data-theme="retro"] .card-badge { border-radius: 0; }
+[data-theme="retro"] .card-badge.red { background:#380000; color:#ff9090; border-color:#ff7070; }
+[data-theme="retro"] .card-badge.warn { background:#3c1800; color:#ffb070; border-color:#ffb060; }
+[data-theme="retro"] .card-badge.green { background:#002800; color:#50ff70; border-color:#40c060; }
+[data-theme="retro"] .card-badge.accent { background:#0a1550; color:#8090ff; border-color:#4060d0; }
 
-.card-badge {
-  margin-left: auto; font-family: var(--mono); font-size: 8px;
-  padding: 2px 8px; border-radius: var(--r-badge); border: 1px solid;
-  white-space: nowrap; transition: all .25s;
-}
-.card-badge.green  { border-color: rgba(34,197,94,.3);   color: var(--green);  background: var(--green-l); }
-.card-badge.warn   { border-color: rgba(249,115,22,.3);  color: var(--warn);   background: var(--warn-l); }
-.card-badge.accent { border-color: rgba(124,106,247,.3); color: var(--accent2);background: var(--accent-l); }
-.card-badge.red    { border-color: rgba(239,68,68,.3);   color: var(--red);    background: var(--red-l); }
-
-[data-theme="retro"] .card-badge { font-size: 7px; padding: 1px 5px; }
-[data-theme="retro"] .card-badge.green  { background:#003000; color:#80ff80; border-color:#80ff80; }
-[data-theme="retro"] .card-badge.warn   { background:#401800; color:#ffb060; border-color:#ffb060; }
-[data-theme="retro"] .card-badge.accent { background:#080d40; color:#8090ff; border-color:#8090ff; }
-[data-theme="retro"] .card-badge.red    { background:#380000; color:#ff8080; border-color:#ff8080; }
-
-.card-body { padding: 16px; transition: padding .25s; }
-[data-theme="retro"] .card-body { padding: 10px; }
+.card-body { padding: 14px 16px; transition: padding .25s; }
+[data-theme="retro"] .card-body { padding: 10px 12px; }
 
 /* ═══ STAT GRID ═══ */
-.stat-grid {
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
-  transition: gap .25s;
-}
-[data-theme="retro"] .stat-grid { gap: 5px; }
-
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; transition: gap .25s; }
+[data-theme="retro"] .stat-grid { gap: 6px; }
 .stat-cell {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 8px; padding: 14px 14px 12px;
-  transition: all .2s; position: relative; overflow: hidden;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r-card); padding: 14px;
+  display: flex; flex-direction: column; gap: 2px;
+  transition: border-color .2s, background .25s, border-radius .25s, padding .25s;
 }
-.stat-cell:hover { border-color: var(--border2); transform: translateY(-1px); }
-
-[data-theme="retro"] .stat-cell {
-  border: none; border-radius: 0;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #606050;
-}
-[data-theme="retro"] .stat-cell:hover { transform: none; }
-
-.stat-val {
-  font-family: var(--mono); font-size: 22px; font-weight: 700;
-  color: var(--ink); line-height: 1; margin-bottom: 5px;
-  transition: color .25s;
-}
+[data-theme="retro"] .stat-cell { border: none; box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #404030, 1px 1px 0 #fff, -1px -1px 0 #808070; padding: 8px 10px; }
+.stat-val { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1; transition: color .25s; }
 .stat-val.accent { color: var(--accent2); }
-.stat-val.warn   { color: var(--warn); }
-.stat-val.green  { color: var(--green); }
-.stat-val.red    { color: var(--red); }
-
-.stat-label {
-  font-family: var(--mono); font-size: 7.5px;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: var(--ink3); line-height: 1.3; transition: color .25s;
-}
-.stat-delta { font-family: var(--mono); font-size: 8px; margin-top: 6px; color: var(--green); transition: color .25s; }
+.stat-val.warn { color: var(--warn); }
+.stat-val.green { color: var(--green); }
+.stat-val.red { color: var(--red); }
+[data-theme="retro"] .stat-val { font-size: 18px; }
+.stat-label { font-family: var(--mono); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); line-height: 1.4; margin-top: 4px; transition: color .25s; }
+.stat-delta { font-family: var(--mono); font-size: 8.5px; color: var(--green); margin-top: 4px; transition: color .25s; }
 .stat-delta.neg { color: var(--red); }
 
 /* ═══ HEATMAP ═══ */
-#heatmap-wrap { display: grid; grid-template-columns: 42px 1fr; align-items: start; }
-.hm-yaxis { display: flex; flex-direction: column; padding-top: 2px; }
-
-.hm-ylabel {
-  font-family: var(--mono); font-size: 7.5px; color: var(--ink3);
-  display: flex; align-items: center; justify-content: flex-end;
-  padding-right: 8px; letter-spacing: .06em;
-  height: 24px; transition: color .25s, height .25s;
-}
-[data-theme="retro"] .hm-ylabel { height: 20px; }
-
-.hm-grid { display: flex; flex-direction: column; gap: 2px; position: relative; }
-.hm-row { display: flex; gap: 2px; height: 22px; transition: height .25s, gap .25s; }
-[data-theme="retro"] .hm-row { height: 18px; gap: 1px; }
-
-.hm-cell {
-  flex: 1; border-radius: var(--r-hm);
-  cursor: pointer; transition: all .12s; position: relative;
-}
-.hm-cell:hover { transform: scale(1.12); z-index: 10; }
-.hm-cell::after {
-  content: attr(data-tip);
-  position: absolute; bottom: calc(100% + 5px); left: 50%;
-  transform: translateX(-50%);
-  background: rgba(9,9,11,.96); border: 1px solid var(--border2);
-  color: var(--ink); font-family: var(--mono); font-size: 8px;
-  padding: 4px 8px; border-radius: 4px;
-  white-space: nowrap; opacity: 0; pointer-events: none;
-  transition: opacity .12s; z-index: 100;
-}
-.hm-cell:hover::after { opacity: 1; }
-[data-theme="retro"] .hm-cell:hover { transform: none; outline: 1px solid #fff; }
-[data-theme="retro"] .hm-cell::after { border-radius: 0; background: #080a1c; border-color: #4050b0; color: #b8c8f8; font-size: 7px; }
-
-.hm-xaxis { display: flex; gap: 2px; margin-top: 5px; }
-[data-theme="retro"] .hm-xaxis { gap: 1px; }
-.hm-xlabel { flex: 1; font-family: var(--mono); font-size: 7px; color: var(--ink3); text-align: center; letter-spacing: .04em; transition: color .25s; }
-
-.hm-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); transition: border-color .25s; }
-.hm-leg-label { font-family: var(--mono); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); transition: color .25s; }
-.hm-leg-grad {
-  flex: 1; height: 6px; border-radius: 3px;
-  background: linear-gradient(to right, #1a1a2e, #3a2f80, #7c6af7, #a594f9, #f97316, #ef4444);
-  transition: all .25s;
-}
-[data-theme="retro"] .hm-leg-grad {
-  border-radius: 0;
-  background: linear-gradient(to right, #001018,#002858,#0044a0,#2060c8,#804000,#800000);
-  border: 1px solid var(--border);
-}
-.hm-leg-val { font-family: var(--mono); font-size: 8px; color: var(--ink3); transition: color .25s; }
+#heatmap-wrap { display: flex; gap: 8px; align-items: flex-start; padding: 0; }
+.hm-yaxis { display: flex; flex-direction: column; gap: 2px; padding-top: 2px; }
+.hm-ylabel { font-family: var(--mono); font-size: 7px; color: var(--ink3); text-align: right; height: 18px; display: flex; align-items: center; justify-content: flex-end; white-space: nowrap; transition: color .25s; }
+.hm-grid { display: flex; flex-direction: column; gap: 2px; }
+.hm-row { display: flex; gap: 2px; }
+.hm-cell { width: 28px; height: 18px; border-radius: var(--r-hm); cursor: pointer; transition: opacity .15s, border-radius .25s; }
+.hm-cell:hover { opacity: .75; outline: 1.5px solid rgba(255,255,255,.4); }
+.hm-xaxis { display: flex; gap: 2px; margin-top: 4px; }
+.hm-xlabel { width: 28px; font-family: var(--mono); font-size: 6px; color: var(--ink3); text-align: center; transition: color .25s; }
+.hm-legend { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-family: var(--mono); font-size: 7.5px; color: var(--ink3); transition: color .25s; }
+.hm-leg-grad { flex: 1; height: 6px; border-radius: 3px; background: linear-gradient(to right, rgba(58,47,128,.4), rgba(124,106,247,.9), rgba(240,100,40,.9), rgba(239,68,68,1)); transition: border-radius .25s; }
+[data-theme="retro"] .hm-leg-grad { border-radius: 0; }
 
 /* ═══ STALL LIST ═══ */
-.stall-list { display: flex; flex-direction: column; gap: 8px; transition: gap .25s; }
-[data-theme="retro"] .stall-list { gap: 3px; }
-
-.stall-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 12px; border-radius: var(--r-item);
-  background: var(--bg3); border: 1px solid var(--border);
-  cursor: pointer; transition: all .14s; position: relative; overflow: hidden;
-}
-.stall-item:hover { border-color: var(--border2); background: var(--bg4); }
-.stall-item.critical { border-color: rgba(239,68,68,.25); background: rgba(239,68,68,.03); }
-.stall-item.critical:hover { border-color: rgba(239,68,68,.45); }
-
-[data-theme="retro"] .stall-item {
-  border: none; border-radius: 0;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #606050;
-}
-[data-theme="retro"] .stall-item:hover {
-  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #404030;
-}
-[data-theme="retro"] .stall-item.critical {
-  background: #c8b8b4;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #700000;
-}
-
-.stall-rank { font-family: var(--mono); font-size: 9px; color: var(--ink3); min-width: 22px; text-align: center; transition: color .25s; }
-.stall-node-id { font-family: var(--mono); font-size: 9px; color: var(--accent2); min-width: 56px; transition: color .25s; }
-.stall-excerpt { flex: 1; font-size: 11px; color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .25s; }
+.stall-list { display: flex; flex-direction: column; gap: 6px; }
+.stall-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-item); background: var(--bg3); border: 1px solid var(--border); transition: all .25s; }
+.stall-item.critical { border-color: rgba(239,68,68,.25); }
+[data-theme="retro"] .stall-item { border-radius: 0; border: none; box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #606050; }
+[data-theme="retro"] .stall-item.critical { box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #700000; }
+.stall-rank { font-family: var(--mono); font-size: 8px; color: var(--ink3); min-width: 16px; transition: color .25s; }
+.stall-node-id { font-family: var(--mono); font-size: 8px; color: var(--accent2); min-width: 36px; transition: color .25s; }
+[data-theme="retro"] .stall-node-id { color: var(--accent); }
+.stall-excerpt { font-size: 11px; color: var(--ink2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .25s; }
 [data-theme="retro"] .stall-excerpt { font-family: var(--mono); font-size: 9px; }
+.stall-bar { width: 80px; height: 4px; background: var(--bg4); border-radius: var(--r-bar); overflow: hidden; flex-shrink: 0; transition: border-radius .25s, background .25s; }
+[data-theme="retro"] .stall-bar { border-radius: 0; height: 6px; border: 1px solid var(--border2); background: #a8a49c; }
+.stall-bar-fill { height: 100%; border-radius: var(--r-bar); transition: border-radius .25s; }
+[data-theme="retro"] .stall-bar-fill { border-radius: 0; }
+.stall-pct { font-family: var(--mono); font-size: 9px; min-width: 32px; text-align: right; transition: color .25s; }
+.stall-action { font-family: var(--mono); font-size: 7px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; white-space: nowrap; transition: all .25s; }
+.stall-action.rewrite { background: var(--red-l); color: var(--red); border: 1px solid rgba(239,68,68,.3); }
+.stall-action.expand { background: var(--accent-l); color: var(--accent2); border: 1px solid rgba(124,106,247,.3); }
+[data-theme="retro"] .stall-action { border-radius: 0; }
 
-.stall-pct { font-family: var(--mono); font-size: 9px; font-weight: 700; min-width: 40px; text-align: right; }
-.stall-bar { width: 60px; height: 4px; background: var(--bg4); border-radius: var(--r-bar); overflow: hidden; transition: background .25s, height .25s; }
-[data-theme="retro"] .stall-bar { border: 1px solid var(--border2); background: #a8a49c; height: 6px; }
-.stall-bar-fill { height: 100%; border-radius: var(--r-bar); transition: width .6s ease; }
-
-.stall-action {
-  font-family: var(--mono); font-size: 7px; letter-spacing: .1em; text-transform: uppercase;
-  padding: 2px 7px; border-radius: 3px; border: 1px solid;
-  cursor: pointer; transition: all .14s;
-}
-.stall-action.rewrite { border-color: rgba(249,115,22,.3); color: var(--warn); }
-.stall-action.rewrite:hover { background: var(--warn-l); }
-.stall-action.expand  { border-color: rgba(124,106,247,.3); color: var(--accent2); }
-.stall-action.expand:hover { background: var(--accent-l); }
-
-[data-theme="retro"] .stall-action {
-  border-radius: 0; border-color: transparent;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #404030;
-  background: var(--bg3);
-}
-[data-theme="retro"] .stall-action:hover {
-  box-shadow: inset 1px 1px 0 #404030, inset -1px -1px 0 #f0ede8;
-}
-
-/* ═══ TRAVERSAL FLOW ═══ */
-.flow-wrap { display: flex; flex-direction: column; gap: 3px; position: relative; transition: gap .25s; }
-[data-theme="retro"] .flow-wrap { gap: 2px; }
-
-.flow-node { display: flex; align-items: center; position: relative; }
-
-.flow-node-bar {
-  height: 28px; border-radius: 3px;
-  display: flex; align-items: center; padding: 0 10px;
-  min-width: 0; flex-shrink: 0;
-  cursor: pointer; position: relative; overflow: hidden;
-  transition: all .3s ease;
-}
-.flow-node-bar::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(to right, transparent 80%, rgba(255,255,255,.04));
-}
-[data-theme="retro"] .flow-node-bar { border-radius: 0; height: 20px; }
-[data-theme="retro"] .flow-node-bar::before { display: none; }
-
-.flow-node-label {
-  font-family: var(--mono); font-size: 8px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  position: relative; z-index: 1;
-}
+/* ═══ FLOW ═══ */
+.flow-wrap { display: flex; flex-direction: column; gap: 4px; }
+.flow-node { display: flex; align-items: center; gap: 0; transition: gap .25s; }
+.flow-node-bar { flex: 1; height: 22px; display: flex; align-items: center; padding: 0 8px; border-radius: var(--r-item); transition: all .25s; }
+[data-theme="retro"] .flow-node-bar { border-radius: 0; height: 18px; }
+.flow-node-label { font-size: 7.5px; font-family: var(--mono); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .25s, font-size .25s; }
 .flow-node-meta { font-family: var(--mono); font-size: 7.5px; color: var(--ink3); margin-left: 10px; white-space: nowrap; transition: color .25s; }
 .flow-node-flag { margin-left: 8px; font-size: 9px; animation: flagpulse 1.8s ease-in-out infinite; }
 @keyframes flagpulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 .flow-node-id { font-family: var(--mono); font-size: 7px; color: var(--ink3); min-width: 52px; text-align: right; padding-right: 10px; transition: color .25s; }
 
 /* ═══ LEDGER ═══ */
-.ledger-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  transition: background .14s, border-color .25s, padding .25s;
-  cursor: pointer; position: relative; overflow: hidden;
-}
+.ledger-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); transition: background .14s, border-color .25s, padding .25s; cursor: pointer; position: relative; overflow: hidden; }
 .ledger-item:hover { background: var(--bg3); }
 [data-theme="retro"] .ledger-item { padding: 6px 10px; }
 [data-theme="retro"] .ledger-item:hover { background: #c0bcb4; }
-
-.ledger-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--bg4); border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; flex-shrink: 0;
-  font-family: var(--mono); color: var(--ink2);
-  transition: all .25s;
-}
-[data-theme="retro"] .ledger-avatar {
-  border-radius: 0; background: #1c2b8c; color: #fff;
-  border: none; box-shadow: inset 1px 1px 0 #3050c0, inset -1px -1px 0 #0a1060;
-}
-
+.ledger-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--bg4); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; font-family: var(--mono); color: var(--ink2); transition: all .25s; }
+[data-theme="retro"] .ledger-avatar { border-radius: 0; background: #1c2b8c; color: #fff; border: none; box-shadow: inset 1px 1px 0 #3050c0, inset -1px -1px 0 #0a1060; }
 .ledger-name { font-size: 12px; font-weight: 600; color: var(--ink); transition: color .25s; }
 .ledger-meta { font-family: var(--mono); font-size: 8px; color: var(--ink3); margin-top: 2px; transition: color .25s; }
 .ledger-score { margin-left: auto; text-align: right; }
@@ -604,58 +503,23 @@ body::after {
 /* ═══ RIGHT PANEL SECTIONS ═══ */
 .rp-section { border-bottom: 1px solid var(--border); padding: 16px; transition: border-color .25s, padding .25s; }
 [data-theme="retro"] .rp-section { padding: 12px; }
-
-.rp-title {
-  font-family: var(--display); font-size: 10px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ink2); margin-bottom: 12px;
-  transition: color .25s, font-family .25s;
-}
-[data-theme="retro"] .rp-title {
-  font-family: var(--mono); color: var(--ink3);
-  border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px;
-}
-
-.intervention-card {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--r-item); padding: 11px 12px; margin-bottom: 8px;
-  transition: all .14s; cursor: pointer; position: relative; overflow: hidden;
-}
+.rp-title { font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); margin-bottom: 12px; transition: color .25s, font-family .25s; }
+[data-theme="retro"] .rp-title { font-family: var(--mono); color: var(--ink3); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px; }
+.intervention-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-item); padding: 11px 12px; margin-bottom: 8px; transition: all .14s; cursor: pointer; position: relative; overflow: hidden; }
 .intervention-card:hover { border-color: var(--border2); }
 .intervention-card.flagged { border-color: rgba(249,115,22,.3); }
-
-[data-theme="retro"] .intervention-card {
-  border: none; border-radius: 0; margin-bottom: 4px; padding: 8px 10px;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #606050;
-}
-[data-theme="retro"] .intervention-card.flagged {
-  background: #c8beb8;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #700000;
-}
-
+[data-theme="retro"] .intervention-card { border: none; border-radius: 0; margin-bottom: 4px; padding: 8px 10px; box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #606050; }
+[data-theme="retro"] .intervention-card.flagged { background: #c8beb8; box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #700000; }
 .interv-type { font-family: var(--mono); font-size: 7px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 5px; }
 .interv-title { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 3px; transition: color .25s; }
 .interv-body { font-size: 10px; color: var(--ink2); line-height: 1.45; transition: color .25s; }
 [data-theme="retro"] .interv-body { font-size: 9px; }
-
 .interv-footer { display: flex; align-items: center; gap: 6px; margin-top: 7px; }
 .interv-node { font-family: var(--mono); font-size: 7.5px; color: var(--ink3); transition: color .25s; }
-.interv-action {
-  margin-left: auto; font-family: var(--mono); font-size: 7px;
-  letter-spacing: .1em; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 3px;
-  border: 1px solid rgba(124,106,247,.3); color: var(--accent2);
-  cursor: pointer; transition: all .14s;
-}
+.interv-action { margin-left: auto; font-family: var(--mono); font-size: 7px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(124,106,247,.3); color: var(--accent2); cursor: pointer; transition: all .14s; }
 .interv-action:hover { background: var(--accent-l); }
-[data-theme="retro"] .interv-action {
-  border-radius: 0; border-color: transparent;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #404030;
-}
-[data-theme="retro"] .interv-action:hover {
-  box-shadow: inset 1px 1px 0 #404030, inset -1px -1px 0 #f0ede8;
-}
-
+[data-theme="retro"] .interv-action { border-radius: 0; border-color: transparent; box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #404030; }
+[data-theme="retro"] .interv-action:hover { box-shadow: inset 1px 1px 0 #404030, inset -1px -1px 0 #f0ede8; }
 .grit-meter { display: flex; flex-direction: column; gap: 5px; }
 .grit-row { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 8px; }
 .grit-label { min-width: 48px; color: var(--ink3); letter-spacing: .06em; text-transform: uppercase; transition: color .25s; }
@@ -667,93 +531,48 @@ body::after {
 
 /* ═══ FEED ═══ */
 .feed-list { display: flex; flex-direction: column; overflow: hidden; }
-.feed-item {
-  display: flex; align-items: flex-start; gap: 8px;
-  padding: 7px 14px; border-bottom: 1px solid var(--border);
-  font-size: 10px;
-  animation: feedin .35s ease forwards;
-  transition: border-color .25s;
-}
+.feed-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 14px; border-bottom: 1px solid var(--border); font-size: 10px; animation: feedin .35s ease forwards; transition: border-color .25s; }
 @keyframes feedin { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-
 .feed-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; transition: border-radius .25s; }
 [data-theme="retro"] .feed-dot { border-radius: 0; width: 6px; height: 6px; }
-
 .feed-text { color: var(--ink2); line-height: 1.4; transition: color .25s; }
 .feed-text b { color: var(--ink); font-weight: 600; transition: color .25s; }
 [data-theme="retro"] .feed-text { font-family: var(--mono); font-size: 8.5px; }
 .feed-time { margin-left: auto; font-family: var(--mono); font-size: 8px; color: var(--ink3); white-space: nowrap; flex-shrink: 0; transition: color .25s; }
 
 /* ═══ MISC ═══ */
-.section-eyebrow {
-  font-family: var(--mono); font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--ink3); margin-bottom: 8px;
-  display: flex; align-items: center; gap: 8px; transition: color .25s;
-}
+.section-eyebrow { font-family: var(--mono); font-size: 7.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; transition: color .25s; }
 .section-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); transition: background .25s; }
-
 .adv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; transition: gap .25s; }
 [data-theme="retro"] .adv-grid { gap: 4px; }
-
-.adv-cell {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: 6px; padding: 10px 12px; transition: all .25s;
-}
-[data-theme="retro"] .adv-cell {
-  border: none; border-radius: 0;
-  box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #606050;
-}
-
+.adv-cell { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; transition: all .25s; }
+[data-theme="retro"] .adv-cell { border: none; border-radius: 0; box-shadow: inset 1px 1px 0 #f0ede8, inset -1px -1px 0 #606050; }
 .adv-val { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--red); transition: color .25s; }
 .adv-label { font-family: var(--mono); font-size: 7.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-top: 3px; transition: color .25s; }
-
 .tbl { width: 100%; border-collapse: collapse; }
-.tbl th {
-  font-family: var(--mono); font-size: 7.5px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--ink3); text-align: left; padding: 7px 12px;
-  border-bottom: 1px solid var(--border); font-weight: 400;
-  transition: color .25s, border-color .25s, background .25s;
-}
+.tbl th { font-family: var(--mono); font-size: 7.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); text-align: left; padding: 7px 12px; border-bottom: 1px solid var(--border); font-weight: 400; transition: color .25s, border-color .25s, background .25s; }
 [data-theme="retro"] .tbl th { background: var(--bg3); font-weight: bold; border-bottom: 2px solid var(--border2); padding: 5px 10px; }
-
-.tbl td {
-  padding: 9px 12px; border-bottom: 1px solid var(--border);
-  font-size: 11px; color: var(--ink2); vertical-align: middle;
-  transition: color .25s, border-color .25s;
-}
+.tbl td { padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--ink2); vertical-align: middle; transition: color .25s, border-color .25s; }
 [data-theme="retro"] .tbl td { font-family: var(--mono); font-size: 9px; padding: 5px 10px; }
 .tbl tr:hover td { background: var(--bg3); }
-.tbl .mono   { font-family: var(--mono); font-size: 9px; }
+.tbl .mono { font-family: var(--mono); font-size: 9px; }
 .tbl .accent { color: var(--accent2); }
-.tbl .warn   { color: var(--warn); }
-.tbl .green  { color: var(--green); }
-.tbl .red    { color: var(--red); }
-
-.tag {
-  display: inline-block; font-family: var(--mono); font-size: 7px;
-  letter-spacing: .1em; text-transform: uppercase;
-  padding: 2px 7px; border-radius: 20px; border: 1px solid; transition: all .25s;
-}
-.tag.stall     { border-color: rgba(239,68,68,.3);   color: var(--red);   background: var(--red-l); }
-.tag.smooth    { border-color: rgba(34,197,94,.25);  color: var(--green); background: var(--green-l); }
-.tag.throttled { border-color: rgba(245,158,11,.3);  color: var(--amber); background: var(--amber-l); }
-.tag.injected  { border-color: rgba(124,106,247,.3); color: var(--accent2); background: var(--accent-l); }
-
+.tbl .warn { color: var(--warn); }
+.tbl .green { color: var(--green); }
+.tbl .red { color: var(--red); }
+.tag { display: inline-block; font-family: var(--mono); font-size: 7px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; border: 1px solid; transition: all .25s; }
+.tag.stall { border-color: rgba(239,68,68,.3); color: var(--red); background: var(--red-l); }
+.tag.smooth { border-color: rgba(34,197,94,.25); color: var(--green); background: var(--green-l); }
+.tag.throttled { border-color: rgba(245,158,11,.3); color: var(--amber); background: var(--amber-l); }
+.tag.injected { border-color: rgba(124,106,247,.3); color: var(--accent2); background: var(--accent-l); }
 [data-theme="retro"] .tag { border-radius: 0; }
 [data-theme="retro"] .tag.throttled { background:#401800; color:#ffb060; border-color:#ffb060; }
-[data-theme="retro"] .tag.stall     { background:#380000; color:#ff7060; border-color:#ff7060; }
-
+[data-theme="retro"] .tag.stall { background:#380000; color:#ff7060; border-color:#ff7060; }
 @keyframes countup { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 .count-in { animation: countup .5s ease forwards; }
 
-/* ═══════════════════════════════════════════════
-   GHOST OVERLAY SYSTEM
-   Apply .ghost-wrap to any container.
-   .ghost-overlay inside will appear on hover.
-   .ghost-pinned keeps it visible.
-═══════════════════════════════════════════════ */
+/* ═══ GHOST OVERLAY ═══ */
 .ghost-wrap { position: relative; overflow: hidden; }
-
 .ghost-overlay {
   position: absolute; inset: 0; z-index: 30;
   background: var(--ghost-bg);
@@ -765,108 +584,77 @@ body::after {
   transition: opacity .16s ease;
   backdrop-filter: blur(2px);
 }
-.ghost-wrap:hover .ghost-overlay,
-.ghost-overlay.ghost-pinned {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-[data-theme="retro"] .ghost-overlay {
-  backdrop-filter: none;
-  border-radius: 0;
-  border-color: rgba(80,110,220,.4);
-  background-color: rgba(8,10,24,.95);
-  /* scanlines */
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 3px,
-    rgba(0,0,20,.12) 3px,
-    rgba(0,0,20,.12) 4px
-  );
-}
-
-.ghost-head {
-  display: flex; align-items: center; gap: 6px;
-  margin-bottom: 7px; padding-bottom: 6px;
-  border-bottom: 1px solid rgba(100,130,255,.15);
-  flex-shrink: 0;
-}
-.ghost-pulse {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--ghost-green); flex-shrink: 0;
-  animation: livepulse 2s ease-in-out infinite;
-}
+.ghost-wrap:hover .ghost-overlay, .ghost-overlay.ghost-pinned { opacity: 1; pointer-events: auto; }
+[data-theme="retro"] .ghost-overlay { backdrop-filter: none; border-radius: 0; border-color: rgba(80,110,220,.4); background-color: rgba(8,10,24,.95); background-image: repeating-linear-gradient(to bottom, transparent, transparent 3px, rgba(0,0,20,.12) 3px, rgba(0,0,20,.12) 4px); }
+.ghost-head { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; padding-bottom: 6px; border-bottom: 1px solid rgba(100,130,255,.15); flex-shrink: 0; }
+.ghost-pulse { width: 5px; height: 5px; border-radius: 50%; background: var(--ghost-green); flex-shrink: 0; animation: livepulse 2s ease-in-out infinite; }
 [data-theme="retro"] .ghost-pulse { border-radius: 0; }
-
-.ghost-ttl {
-  font-family: var(--mono); font-size: 7.5px;
-  letter-spacing: .18em; text-transform: uppercase;
-  color: var(--ghost-accent); flex: 1;
-}
-.ghost-pin-btn {
-  font-family: var(--mono); font-size: 7.5px;
-  color: var(--ghost-dim); cursor: pointer;
-  padding: 0 5px; border: 1px solid rgba(100,130,255,.2);
-  border-radius: 2px; transition: all .12s; user-select: none;
-  line-height: 16px;
-}
+.ghost-ttl { font-family: var(--mono); font-size: 7.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--ghost-accent); flex: 1; }
+.ghost-pin-btn { font-family: var(--mono); font-size: 7.5px; color: var(--ghost-dim); cursor: pointer; padding: 0 5px; border: 1px solid rgba(100,130,255,.2); border-radius: 2px; transition: all .12s; user-select: none; line-height: 16px; }
 .ghost-pin-btn:hover { color: var(--ghost-ink); background: rgba(100,130,255,.1); }
 .ghost-pin-btn.on { color: var(--ghost-green); border-color: var(--ghost-green); }
-
-.ghost-txt {
-  font-family: var(--mono); font-size: 8.5px;
-  color: var(--ghost-ink); line-height: 1.65;
-  flex: 1; overflow: hidden;
-}
-.ghost-txt em  { color: var(--ghost-amber); font-style: normal; }
-.ghost-txt b   { color: var(--ghost-green); font-weight: normal; }
+.ghost-txt { font-family: var(--mono); font-size: 8.5px; color: var(--ghost-ink); line-height: 1.65; flex: 1; overflow: hidden; }
+.ghost-txt em { color: var(--ghost-amber); font-style: normal; }
+.ghost-txt b { color: var(--ghost-green); font-weight: normal; }
 .ghost-txt .bad { color: var(--ghost-red); }
-
-.ghost-kpis {
-  display: flex; gap: 14px; flex-shrink: 0;
-  margin-top: 9px; padding-top: 7px;
-  border-top: 1px solid rgba(100,130,255,.12);
-}
+.ghost-kpis { display: flex; gap: 14px; flex-shrink: 0; margin-top: 9px; padding-top: 7px; border-top: 1px solid rgba(100,130,255,.12); }
 .ghost-kpi { display: flex; flex-direction: column; gap: 2px; }
-.ghost-kpi-val {
-  font-family: var(--mono); font-size: 14px; font-weight: bold; line-height: 1;
-  color: var(--ghost-accent);
-}
+.ghost-kpi-val { font-family: var(--mono); font-size: 14px; font-weight: bold; line-height: 1; color: var(--ghost-accent); }
 .ghost-kpi-val.r { color: var(--ghost-red); }
 .ghost-kpi-val.g { color: var(--ghost-green); }
 .ghost-kpi-val.a { color: var(--ghost-amber); }
-.ghost-kpi-lbl {
-  font-family: var(--mono); font-size: 6.5px;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ghost-dim);
-}
-.ghost-foot {
-  margin-top: 7px; padding-top: 5px;
-  border-top: 1px solid rgba(100,130,255,.1);
-  font-family: var(--mono); font-size: 7px;
-  color: var(--ghost-dim); font-style: italic; flex-shrink: 0;
-}
-
-/* hint text — hides when overlay shows */
-.ghost-hint {
-  position: absolute; bottom: 5px; right: 7px; z-index: 5;
-  font-family: var(--mono); font-size: 7px;
-  color: var(--ink3); letter-spacing: .06em;
-  pointer-events: none; opacity: .7;
-  transition: opacity .15s, color .25s;
-}
+.ghost-kpi-lbl { font-family: var(--mono); font-size: 6.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ghost-dim); }
+.ghost-foot { margin-top: 7px; padding-top: 5px; border-top: 1px solid rgba(100,130,255,.1); font-family: var(--mono); font-size: 7px; color: var(--ghost-dim); font-style: italic; flex-shrink: 0; }
+.ghost-hint { position: absolute; bottom: 5px; right: 7px; z-index: 5; font-family: var(--mono); font-size: 7px; color: var(--ink3); letter-spacing: .06em; pointer-events: none; opacity: .7; transition: opacity .15s, color .25s; }
 .ghost-wrap:hover .ghost-hint { opacity: 0; }
 [data-theme="retro"] .ghost-hint { font-size: 6.5px; }
-
-/* scrollbars retro */
 [data-theme="retro"] ::-webkit-scrollbar { width: 14px; }
 [data-theme="retro"] ::-webkit-scrollbar-track { background: var(--bg2); border-left: 1px solid var(--border2); }
-[data-theme="retro"] ::-webkit-scrollbar-thumb {
-  background: var(--bg3); border-radius: 0;
-  border-top: 1px solid #f0ede8; border-left: 1px solid #f0ede8;
-  border-bottom: 1px solid #404030; border-right: 1px solid #404030;
+[data-theme="retro"] ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 0; border-top: 1px solid #f0ede8; border-left: 1px solid #f0ede8; border-bottom: 1px solid #404030; border-right: 1px solid #404030; }
+
+/* ═══ DASHBOARD PANELS (per-category) ═══ */
+.dash-panel { display: none; }
+.dash-panel.active { display: flex; flex-direction: column; gap: 20px; }
+[data-theme="retro"] .dash-panel.active { gap: 12px; }
+.narr-panel { display: none; }
+.narr-panel.active { display: flex; flex-direction: column; }
+
+/* Empty state */
+.empty-dash {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; gap: 12px; padding: 60px 24px; text-align: center;
+  color: var(--ink3);
 }
+.empty-dash-icon { font-size: 32px; opacity: .4; }
+.empty-dash-title { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--ink2); }
+.empty-dash-sub { font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); }
+
+/* Narrative context chip in view toggle */
+.narr-context {
+  font-family: var(--mono); font-size: 7.5px;
+  color: var(--accent2); letter-spacing: .08em;
+  padding: 2px 8px;
+  background: var(--accent-ll);
+  border: 1px solid rgba(124,106,247,.2);
+  border-radius: 3px;
+  margin-right: auto;
+  margin-left: 12px;
+  display: none;
+}
+.narr-context.visible { display: block; }
+[data-theme="retro"] .narr-context { border-radius: 0; }
+
+/* Placeholder panels */
+.placeholder-card {
+  background: var(--bg2); border: 1px dashed var(--border2);
+  border-radius: var(--r-card); padding: 40px 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; text-align: center;
+}
+[data-theme="retro"] .placeholder-card { border-radius: 0; }
+.placeholder-card-icon { font-size: 24px; opacity: .3; }
+.placeholder-card-label { font-family: var(--mono); font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink3); }
+
 </style>
 </head>
 <body>
@@ -878,7 +666,7 @@ body::after {
     <div class="tb-logo">Cognitive<span>Traversal</span></div>
     <div class="tb-sep"></div>
     <div class="tb-breadcrumb">
-      <b>RSP Propulsion Manual</b> · Chapter 4 · Fourier Transform Logic
+      <b id="tb-section-label">RSP Propulsion Manual</b> · Chapter 4 · Fourier Transform Logic
     </div>
     <div class="tb-spacer"></div>
     <div class="tb-live"><div class="live-dot"></div> Live Session</div>
@@ -908,267 +696,489 @@ body::after {
   <nav class="leftnav">
     <div class="nav-section">
       <div class="nav-section-label">Overview</div>
-      <div class="nav-item active"><div class="nav-item-icon">◎</div> Cognitive Heatmap</div>
-      <div class="nav-item"><div class="nav-item-icon">⚡</div> Stall-Point Map <div class="nav-badge warn">7</div></div>
-      <div class="nav-item"><div class="nav-item-icon">⇢</div> Traversal Flow</div>
+      <div class="nav-item active" data-view="heatmap" onclick="switchView(this,'heatmap')"><div class="nav-item-icon">◎</div> Cognitive Heatmap</div>
+      <div class="nav-item" data-view="stalls" onclick="switchView(this,'stalls')"><div class="nav-item-icon">⚡</div> Stall-Point Map <div class="nav-badge warn">7</div></div>
+      <div class="nav-item" data-view="traversal" onclick="switchView(this,'traversal')"><div class="nav-item-icon">⇢</div> Traversal Flow</div>
     </div>
     <div class="nav-section">
       <div class="nav-section-label">Interventions</div>
-      <div class="nav-item"><div class="nav-item-icon">✦</div> Narrative Flags <div class="nav-badge warn">3</div></div>
-      <div class="nav-item"><div class="nav-item-icon">⊕</div> Deep-Dive Injections <div class="nav-badge accent">11</div></div>
-      <div class="nav-item"><div class="nav-item-icon">⊘</div> Throttle Queue <div class="nav-badge warn">29</div></div>
+      <div class="nav-item" data-view="flags" onclick="switchView(this,'flags')"><div class="nav-item-icon">✦</div> Narrative Flags <div class="nav-badge warn">3</div></div>
+      <div class="nav-item" data-view="deepdive" onclick="switchView(this,'deepdive')"><div class="nav-item-icon">⊕</div> Deep-Dive Injections <div class="nav-badge accent">11</div></div>
+      <div class="nav-item" data-view="throttle" onclick="switchView(this,'throttle')"><div class="nav-item-icon">⊘</div> Throttle Queue <div class="nav-badge warn">29</div></div>
     </div>
     <div class="nav-section">
       <div class="nav-section-label">Certification</div>
-      <div class="nav-item"><div class="nav-item-icon">▣</div> Proof-of-Literacy Ledger</div>
-      <div class="nav-item"><div class="nav-item-icon">◈</div> Compulsive Advancers</div>
+      <div class="nav-item" data-view="ledger" onclick="switchView(this,'ledger')"><div class="nav-item-icon">▣</div> Proof-of-Literacy Ledger</div>
+      <div class="nav-item" data-view="advancers" onclick="switchView(this,'advancers')"><div class="nav-item-icon">◈</div> Compulsive Advancers</div>
     </div>
     <div class="nav-section">
       <div class="nav-section-label">Authoring</div>
-      <div class="nav-item"><div class="nav-item-icon">⊞</div> Grit · Pulse Engine</div>
-      <div class="nav-item"><div class="nav-item-icon">↗</div> Adaptive Branching</div>
+      <div class="nav-item" data-view="grit" onclick="switchView(this,'grit')"><div class="nav-item-icon">⊞</div> Grit · Pulse Engine</div>
+      <div class="nav-item" data-view="branching" onclick="switchView(this,'branching')"><div class="nav-item-icon">↗</div> Adaptive Branching</div>
     </div>
   </nav>
 
   <!-- ── Main Content ── -->
-  <main class="main">
+  <main class="main" id="main-scroll">
 
-    <!-- Stat row -->
-    <div class="stat-grid">
-
-      <div class="stat-cell ghost-wrap">
-        <div class="stat-val accent" id="s1">83%</div>
-        <div class="stat-label">Stall Rate<br>Node #412</div>
-        <div class="stat-delta neg">↑ 12% vs. yesterday</div>
-        <div class="ghost-hint">hover · analysis</div>
-        <div class="ghost-overlay">
-          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Stall Rate · #412</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-          <div class="ghost-txt"><span class="bad">Critical threshold breached.</span> 83% of learners stalled beyond the 9.2s gate — Chapter 4's highest this session. Grit <em>8.4</em> overshoots the author-set target of 6.0 by +2.4 units. Variable density in the Fourier definition block is the primary friction driver. Pattern holds across all 8 cohorts.</div>
-          <div class="ghost-kpis">
-            <div class="ghost-kpi"><div class="ghost-kpi-val r">83%</div><div class="ghost-kpi-lbl">Stall rate</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val a">+12%</div><div class="ghost-kpi-lbl">24h delta</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val">9.2s</div><div class="ghost-kpi-lbl">Gate thresh.</div></div>
-          </div>
-          <div class="ghost-foot">Action: split into 3 sub-nodes · Grit target ≤ 3.0 each · add analogy bridge</div>
-        </div>
+    <!-- Sticky view toggle bar -->
+    <div class="view-toggle-bar">
+      <div class="view-toggle-title" id="view-toggle-title">Cognitive Heatmap</div>
+      <span class="narr-context" id="narr-context">← click sentence to navigate</span>
+      <div class="view-toggle-pills">
+        <button class="view-pill active" id="pill-dash" onclick="setViewMode('dashboard')">
+          <span class="view-pill-icon">⊟</span> Dashboard
+        </button>
+        <button class="view-pill" id="pill-narr" onclick="setViewMode('narrative')">
+          <span class="view-pill-icon">≡</span> Narrative Summary
+        </button>
       </div>
-
-      <div class="stat-cell ghost-wrap">
-        <div class="stat-val warn" id="s2">29</div>
-        <div class="stat-label">Compulsive<br>Advancers flagged</div>
-        <div class="stat-delta">↓ 8 throttled</div>
-        <div class="ghost-hint">hover · analysis</div>
-        <div class="ghost-overlay">
-          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Compulsive Advancers</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-          <div class="ghost-txt"><em>29 users</em> advanced without meeting dwell thresholds. 71% of skip attempts cluster after node #408 — pointing to late-session fatigue, not time pressure. Average skip dwell <span class="bad">0.9s</span> vs 7.1s minimum is clearly intentional avoidance. Throttle gates are working; analogy injection at #408 may reduce upstream pressure.</div>
-          <div class="ghost-kpis">
-            <div class="ghost-kpi"><div class="ghost-kpi-val a">29</div><div class="ghost-kpi-lbl">Flagged</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val r">8</div><div class="ghost-kpi-lbl">Throttled</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val g">21</div><div class="ghost-kpi-lbl">Gated</div></div>
-          </div>
-          <div class="ghost-foot">Diagnosis: anxiety-avoidance · avg skip 0.9s vs 7.1s min · gate min 4.1s</div>
-        </div>
-      </div>
-
-      <div class="stat-cell ghost-wrap">
-        <div class="stat-val green" id="s3">11</div>
-        <div class="stat-label">Deep-Dive nodes<br>injected today</div>
-        <div class="stat-delta">+3 new expansions</div>
-        <div class="ghost-hint">hover · analysis</div>
-        <div class="ghost-overlay">
-          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Deep-Dive Injections</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-          <div class="ghost-txt"><b>11 adaptive sub-nodes</b> injected this session. Nodes #408–#410 account for 6, driven by the convolution toggle loop. <b>87 users</b> have returned to the main path; re-stall rate after return is only <em>6.2%</em> — confirming the pipeline works. Priority: extend to node #412 immediately.</div>
-          <div class="ghost-kpis">
-            <div class="ghost-kpi"><div class="ghost-kpi-val">11</div><div class="ghost-kpi-lbl">Injected</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val g">87</div><div class="ghost-kpi-lbl">Returned</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val g">6.2%</div><div class="ghost-kpi-lbl">Re-stall</div></div>
-          </div>
-          <div class="ghost-foot">Avg deep-dive dwell: 12.3s · 11 clarification loops still open</div>
-        </div>
-      </div>
-
-      <div class="stat-cell ghost-wrap">
-        <div class="stat-val" id="s4">96.4%</div>
-        <div class="stat-label">Literacy correlation<br>(complexity · dwell)</div>
-        <div class="stat-delta">↑ 2.1% this week</div>
-        <div class="ghost-hint">hover · analysis</div>
-        <div class="ghost-overlay">
-          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Literacy Correlation</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-          <div class="ghost-txt">Dwell–complexity correlation of <b>96.4%</b> is the strongest Chapter 4 result on record, confirming Grit calibration produces real comprehension signals. The <em>+2.1% week-over-week gain</em> is directly attributable to the node #388 narrative split (71% → 18% stall). Apply this template to #412 next.</div>
-          <div class="ghost-kpis">
-            <div class="ghost-kpi"><div class="ghost-kpi-val g">96.4%</div><div class="ghost-kpi-lbl">Correlation</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val g">+2.1%</div><div class="ghost-kpi-lbl">7d trend</div></div>
-            <div class="ghost-kpi"><div class="ghost-kpi-val">1,247</div><div class="ghost-kpi-lbl">Sample</div></div>
-          </div>
-          <div class="ghost-foot">3 certified · 2 in-progress · 1 below threshold · benchmark: #388 split</div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- Cognitive Heatmap -->
-    <div class="card ghost-wrap">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Cognitive Friction Heatmap</div>
-          <div class="card-subtitle">Aggregate dwell × complexity score · 1,247 learners · Chapter 4</div>
+    <!-- ════ DASHBOARD PANELS ════ -->
+
+    <!-- HEATMAP DASHBOARD -->
+    <div class="dash-panel active main-content" id="dp-heatmap">
+      <div class="stat-grid">
+        <div class="stat-cell ghost-wrap">
+          <div class="stat-val accent" id="s1">83%</div>
+          <div class="stat-label">Stall Rate<br>Node #412</div>
+          <div class="stat-delta neg">↑ 12% vs. yesterday</div>
+          <div class="ghost-hint">hover · analysis</div>
+          <div class="ghost-overlay">
+            <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Stall Rate · #412</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+            <div class="ghost-txt"><span class="bad">Critical threshold breached.</span> 83% of learners stalled beyond the 9.2s gate — Chapter 4's highest this session. Grit <em>8.4</em> overshoots the author-set target of 6.0 by +2.4 units. Variable density in the Fourier definition block is the primary friction driver. Pattern holds across all 8 cohorts.</div>
+            <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val r">83%</div><div class="ghost-kpi-lbl">Stall rate</div></div><div class="ghost-kpi"><div class="ghost-kpi-val a">+12%</div><div class="ghost-kpi-lbl">24h delta</div></div><div class="ghost-kpi"><div class="ghost-kpi-val">9.2s</div><div class="ghost-kpi-lbl">Gate thresh.</div></div></div>
+            <div class="ghost-foot">Action: split into 3 sub-nodes · Grit target ≤ 3.0 each · add analogy bridge</div>
+          </div>
         </div>
-        <div class="card-badge warn">3 critical nodes</div>
+        <div class="stat-cell ghost-wrap">
+          <div class="stat-val warn" id="s2">29</div>
+          <div class="stat-label">Compulsive<br>Advancers flagged</div>
+          <div class="stat-delta">↓ 8 throttled</div>
+          <div class="ghost-hint">hover · analysis</div>
+          <div class="ghost-overlay">
+            <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Compulsive Advancers</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+            <div class="ghost-txt"><em>29 users</em> advanced without meeting dwell thresholds. 71% of skip attempts cluster after node #408. Average skip dwell <span class="bad">0.9s</span> vs 7.1s minimum — intentional avoidance. Throttle gates are working; analogy injection at #408 may reduce upstream pressure.</div>
+            <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val a">29</div><div class="ghost-kpi-lbl">Flagged</div></div><div class="ghost-kpi"><div class="ghost-kpi-val r">8</div><div class="ghost-kpi-lbl">Throttled</div></div><div class="ghost-kpi"><div class="ghost-kpi-val g">21</div><div class="ghost-kpi-lbl">Gated</div></div></div>
+            <div class="ghost-foot">Diagnosis: anxiety-avoidance · avg skip 0.9s vs 7.1s min · gate min 4.1s</div>
+          </div>
+        </div>
+        <div class="stat-cell ghost-wrap">
+          <div class="stat-val green" id="s3">11</div>
+          <div class="stat-label">Deep-Dive nodes<br>injected today</div>
+          <div class="stat-delta">+3 new expansions</div>
+          <div class="ghost-hint">hover · analysis</div>
+          <div class="ghost-overlay">
+            <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Deep-Dive Injections</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+            <div class="ghost-txt"><b>11 adaptive sub-nodes</b> injected this session. Nodes #408–#410 account for 6, driven by the convolution toggle loop. <b>87 users</b> returned to main path; re-stall rate after return is only <em>6.2%</em> — confirming the pipeline works. Priority: extend to node #412 immediately.</div>
+            <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val">11</div><div class="ghost-kpi-lbl">Injected</div></div><div class="ghost-kpi"><div class="ghost-kpi-val g">87</div><div class="ghost-kpi-lbl">Returned</div></div><div class="ghost-kpi"><div class="ghost-kpi-val g">6.2%</div><div class="ghost-kpi-lbl">Re-stall</div></div></div>
+            <div class="ghost-foot">Avg deep-dive dwell: 12.3s · 11 clarification loops still open</div>
+          </div>
+        </div>
+        <div class="stat-cell ghost-wrap">
+          <div class="stat-val" id="s4">96.4%</div>
+          <div class="stat-label">Literacy correlation<br>(complexity · dwell)</div>
+          <div class="stat-delta">↑ 2.1% this week</div>
+          <div class="ghost-hint">hover · analysis</div>
+          <div class="ghost-overlay">
+            <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Literacy Correlation</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+            <div class="ghost-txt">Dwell–complexity correlation of <b>96.4%</b> is the strongest Chapter 4 result on record. The <em>+2.1% week-over-week gain</em> is directly attributable to the node #388 narrative split (71% → 18% stall). Apply this template to #412 next.</div>
+            <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val g">96.4%</div><div class="ghost-kpi-lbl">Correlation</div></div><div class="ghost-kpi"><div class="ghost-kpi-val g">+2.1%</div><div class="ghost-kpi-lbl">7d trend</div></div><div class="ghost-kpi"><div class="ghost-kpi-val">1,247</div><div class="ghost-kpi-lbl">Sample</div></div></div>
+            <div class="ghost-foot">3 certified · 2 in-progress · 1 below threshold · benchmark: #388 split</div>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <div id="heatmap-wrap">
-          <div class="hm-yaxis" id="hm-y"></div>
-          <div>
-            <div class="hm-grid" id="hm-grid"></div>
-            <div class="hm-xaxis" id="hm-x"></div>
-            <div class="hm-legend">
-              <div class="hm-leg-label">Low friction</div>
-              <div class="hm-leg-grad"></div>
-              <div class="hm-leg-val">Critical stall</div>
+      <div class="card ghost-wrap" id="card-heatmap">
+        <div class="card-header">
+          <div><div class="card-title">Cognitive Friction Heatmap</div><div class="card-subtitle">Aggregate dwell × complexity score · 1,247 learners · Chapter 4</div></div>
+          <div class="card-badge warn">3 critical nodes</div>
+        </div>
+        <div class="card-body">
+          <div id="heatmap-wrap">
+            <div class="hm-yaxis" id="hm-y"></div>
+            <div><div class="hm-grid" id="hm-grid"></div><div class="hm-xaxis" id="hm-x"></div>
+              <div class="hm-legend"><div class="hm-leg-label">Low friction</div><div class="hm-leg-grad"></div><div class="hm-leg-val">Critical stall</div></div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="ghost-hint">hover · narrative</div>
-      <div class="ghost-overlay">
-        <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Cognitive Friction Heatmap</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">Friction accumulates progressively from N404, forming a <em>complexity gradient</em> that peaks sharply at N412. Pattern is uniform across all 8 cohorts — no cohort bypasses the spike. Cohorts R-01 and R-02 show the steepest escalation: intermediate learners hitting the Euler–Fourier bridge without analogy scaffolding. The <b>N408–N410 toggle band</b> is visible as a secondary heat cluster — learners stall there, exhaust time, then arrive at N412 already fatigued.</div>
-        <div class="ghost-kpis">
-          <div class="ghost-kpi"><div class="ghost-kpi-val r">N412</div><div class="ghost-kpi-lbl">Peak column</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val a">8/8</div><div class="ghost-kpi-lbl">Cohorts hit</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val">N408</div><div class="ghost-kpi-lbl">2nd heat band</div></div>
+        <div class="ghost-hint">hover · narrative</div>
+        <div class="ghost-overlay">
+          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Cognitive Friction Heatmap</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+          <div class="ghost-txt">Friction accumulates progressively from N404, forming a <em>complexity gradient</em> that peaks sharply at N412. Pattern is uniform across all 8 cohorts — no cohort bypasses the spike. Cohorts R-01 and R-02 show the steepest escalation. The <b>N408–N410 toggle band</b> is visible as a secondary heat cluster — learners stall there, exhaust time, then arrive at N412 already fatigued.</div>
+          <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val r">N412</div><div class="ghost-kpi-lbl">Peak column</div></div><div class="ghost-kpi"><div class="ghost-kpi-val a">8/8</div><div class="ghost-kpi-lbl">Cohorts hit</div></div><div class="ghost-kpi"><div class="ghost-kpi-val">N408</div><div class="ghost-kpi-lbl">2nd heat band</div></div></div>
+          <div class="ghost-foot">Hover individual cells for per-cohort friction scores</div>
         </div>
-        <div class="ghost-foot">Hover individual cells for per-cohort friction scores</div>
       </div>
     </div>
 
-    <!-- Stall-Point Map -->
-    <div class="card ghost-wrap">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Stall-Point Forensics</div>
-          <div class="card-subtitle">Nodes where &gt;60% of learners pause beyond complexity threshold</div>
+    <!-- STALLS DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-stalls">
+      <div class="card ghost-wrap" id="card-stalls">
+        <div class="card-header"><div><div class="card-title">Stall-Point Forensics</div><div class="card-subtitle">Nodes where >60% of learners pause beyond complexity threshold</div></div><div class="card-badge red">7 active stalls</div></div>
+        <div class="card-body"><div class="stall-list" id="stall-list"></div></div>
+        <div class="ghost-hint">hover · narrative</div>
+        <div class="ghost-overlay">
+          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Stall-Point Forensics</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+          <div class="ghost-txt">All 7 active stalls share one root cause: <em>variable density exceeds analogy coverage</em>. Authors introduced notation without grounding metaphors at nodes #404–#412. The toggle pattern on <b>#408–#410</b> compounds the problem — resolving toggle zone first historically reduces downstream stall rates by ~34%.</div>
+          <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val r">7</div><div class="ghost-kpi-lbl">Active stalls</div></div><div class="ghost-kpi"><div class="ghost-kpi-val a">3</div><div class="ghost-kpi-lbl">Rewrite req.</div></div><div class="ghost-kpi"><div class="ghost-kpi-val">4</div><div class="ghost-kpi-lbl">Expand req.</div></div></div>
+          <div class="ghost-foot">Avg stall duration: 18.4s above threshold · Priority: #408–410 → #412</div>
         </div>
-        <div class="card-badge red">7 active stalls</div>
-      </div>
-      <div class="card-body">
-        <div class="stall-list" id="stall-list"></div>
-      </div>
-      <div class="ghost-hint">hover · narrative</div>
-      <div class="ghost-overlay">
-        <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Stall-Point Forensics</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">All 7 active stalls share one root cause: <em>variable density exceeds analogy coverage</em>. Authors introduced notation without grounding metaphors at nodes #404–#412. The toggle pattern on <b>#408–#410</b> compounds the problem — learners oscillating there lose 2–4 minutes before reaching #412. Resolving the toggle zone first historically reduces downstream stall rates by ~34%.</div>
-        <div class="ghost-kpis">
-          <div class="ghost-kpi"><div class="ghost-kpi-val r">7</div><div class="ghost-kpi-lbl">Active stalls</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val a">3</div><div class="ghost-kpi-lbl">Rewrite req.</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val">4</div><div class="ghost-kpi-lbl">Expand req.</div></div>
-        </div>
-        <div class="ghost-foot">Avg stall duration: 18.4s above threshold · Priority order: #408–410 → #412</div>
       </div>
     </div>
 
-    <!-- Traversal Flow -->
-    <div class="card ghost-wrap">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Live Traversal Flow</div>
-          <div class="card-subtitle">Node-by-node throughput · normalized to population · last 60 min</div>
+    <!-- TRAVERSAL DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-traversal">
+      <div class="card ghost-wrap" id="card-traversal">
+        <div class="card-header"><div><div class="card-title">Live Traversal Flow</div><div class="card-subtitle">Node-by-node throughput · normalized to population · last 60 min</div></div><div class="card-badge green">Streaming</div></div>
+        <div class="card-body">
+          <div class="section-eyebrow" style="margin-bottom:12px">Node progression</div>
+          <div class="flow-wrap" id="flow-wrap"></div>
         </div>
-        <div class="card-badge green">Streaming</div>
-      </div>
-      <div class="card-body">
-        <div class="section-eyebrow" style="margin-bottom:12px">Node progression</div>
-        <div class="flow-wrap" id="flow-wrap"></div>
-      </div>
-      <div class="ghost-hint">hover · narrative</div>
-      <div class="ghost-overlay">
-        <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Live Traversal Flow</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">Throughput collapses after #406. Complex exponentials acts as a filter — learners who stall there rarely recover without intervention. <span class="bad">17% active at #412</span> is a 5-session low (was 31% Monday). Momentum lost in the <em>#408–#410 toggle zone</em> is the primary driver. Largest single-step drop: <b>#411 → #412 at −27pp</b>.</div>
-        <div class="ghost-kpis">
-          <div class="ghost-kpi"><div class="ghost-kpi-val">91%</div><div class="ghost-kpi-lbl">Entry #400</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val r">17%</div><div class="ghost-kpi-lbl">At #412</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val a">−74pp</div><div class="ghost-kpi-lbl">Total drop</div></div>
+        <div class="ghost-hint">hover · narrative</div>
+        <div class="ghost-overlay">
+          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Live Traversal Flow</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+          <div class="ghost-txt">Throughput collapses after #406. Complex exponentials acts as a filter — learners who stall there rarely recover without intervention. <span class="bad">17% active at #412</span> is a 5-session low (was 31% Monday). Largest single-step drop: <b>#411 → #412 at −27pp</b>.</div>
+          <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val">91%</div><div class="ghost-kpi-lbl">Entry #400</div></div><div class="ghost-kpi"><div class="ghost-kpi-val r">17%</div><div class="ghost-kpi-lbl">At #412</div></div><div class="ghost-kpi"><div class="ghost-kpi-val a">−74pp</div><div class="ghost-kpi-lbl">Total drop</div></div></div>
+          <div class="ghost-foot">Worst step: #411→#412 −27pp · 5-session low · toggle zone bleeding momentum</div>
         </div>
-        <div class="ghost-foot">Worst step: #411→#412 −27pp · 5-session low · toggle zone bleeding momentum</div>
       </div>
     </div>
 
-    <!-- Proof of Literacy Ledger -->
-    <div class="card ghost-wrap">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Proof-of-Literacy Ledger</div>
-          <div class="card-subtitle">Immutable traversal record · dwell–complexity correlation score</div>
-        </div>
-        <div class="card-badge accent">Certified</div>
+    <!-- NARRATIVE FLAGS DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-flags">
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-cell"><div class="stat-val red">2</div><div class="stat-label">Active flags<br>pending</div></div>
+        <div class="stat-cell"><div class="stat-val green">1</div><div class="stat-label">Resolved<br>this session</div></div>
+        <div class="stat-cell"><div class="stat-val warn">53pp</div><div class="stat-label">Avg stall drop<br>post-fix</div></div>
       </div>
-      <div id="ledger-list"></div>
-      <div class="ghost-hint">hover · narrative</div>
-      <div class="ghost-overlay">
-        <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Literacy Ledger</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">3 of 6 learners fully certified (&gt;90% correlation). The cohort splits at node <em>#406</em> — those who cleared complex exponentials progress at <b>2.3× the rate</b> of those who stalled. <span class="bad">K. Li (44%)</span> shows a skip-behavior signature: dwell present but below complexity-signal threshold. S. Nkrumah (89%) is one session from certification.</div>
-        <div class="ghost-kpis">
-          <div class="ghost-kpi"><div class="ghost-kpi-val g">3</div><div class="ghost-kpi-lbl">Certified</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val a">2</div><div class="ghost-kpi-lbl">In progress</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val r">1</div><div class="ghost-kpi-lbl">Below thresh.</div></div>
-        </div>
-        <div class="ghost-foot">Split point: #406 · K. Li flagged for skip review · all records immutable</div>
+      <div class="placeholder-card" id="card-flags">
+        <div class="placeholder-card-icon">✦</div>
+        <div class="placeholder-card-label">Narrative Flags — full detail view</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ink3);margin-top:4px">See right panel → Narrative Interventions for active flags</div>
       </div>
     </div>
 
-    <!-- Compulsive Advancer Table -->
-    <div class="card ghost-wrap">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Compulsive Advancer Detection</div>
-          <div class="card-subtitle">Users advancing faster than minimum dwell threshold</div>
-        </div>
-        <div class="card-badge warn">29 flagged</div>
+    <!-- DEEP DIVE DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-deepdive">
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-cell"><div class="stat-val green">11</div><div class="stat-label">Sub-nodes<br>injected today</div></div>
+        <div class="stat-cell"><div class="stat-val green">87</div><div class="stat-label">Users returned<br>to main path</div></div>
+        <div class="stat-cell"><div class="stat-val green">6.2%</div><div class="stat-label">Re-stall rate<br>after return</div></div>
       </div>
-      <div class="card-body">
-        <div class="adv-grid">
-          <div class="adv-cell">
-            <div class="adv-val">29</div>
-            <div class="adv-label">Skip attempts today</div>
+      <div class="placeholder-card" id="card-deepdive">
+        <div class="placeholder-card-icon">⊕</div>
+        <div class="placeholder-card-label">Deep-Dive Injection Map</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ink3);margin-top:4px">Cluster: nodes #408–#412 · 12.3s avg dwell · 11 open loops</div>
+      </div>
+    </div>
+
+    <!-- THROTTLE DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-throttle">
+      <div class="card ghost-wrap" id="card-throttle">
+        <div class="card-header"><div><div class="card-title">Compulsive Advancer Detection</div><div class="card-subtitle">Users advancing faster than minimum dwell threshold</div></div><div class="card-badge warn">29 flagged</div></div>
+        <div class="card-body">
+          <div class="adv-grid">
+            <div class="adv-cell"><div class="adv-val">29</div><div class="adv-label">Skip attempts today</div></div>
+            <div class="adv-cell"><div class="adv-val" style="color:var(--amber)">8</div><div class="adv-label">Throttled · re-routed</div></div>
+            <div class="adv-cell"><div class="adv-val" style="color:var(--green)">21</div><div class="adv-label">Gates enforced</div></div>
+            <div class="adv-cell"><div class="adv-val" style="color:var(--ink3)">4.1s</div><div class="adv-label">Min gate threshold</div></div>
           </div>
-          <div class="adv-cell">
-            <div class="adv-val" style="color:var(--amber)">8</div>
-            <div class="adv-label">Throttled · re-routed</div>
-          </div>
-          <div class="adv-cell">
-            <div class="adv-val" style="color:var(--green)">21</div>
-            <div class="adv-label">Gates enforced</div>
-          </div>
-          <div class="adv-cell">
-            <div class="adv-val" style="color:var(--ink3)">4.1s</div>
-            <div class="adv-label">Min gate threshold</div>
+          <div style="margin-top:14px">
+            <table class="tbl">
+              <thead><tr><th>Learner</th><th>Node skipped</th><th>Dwell time</th><th>Threshold</th><th>Action</th></tr></thead>
+              <tbody id="adv-tbody"></tbody>
+            </table>
           </div>
         </div>
-        <div style="margin-top:14px">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th>Learner</th>
-                <th>Node skipped</th>
-                <th>Dwell time</th>
-                <th>Threshold</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="adv-tbody"></tbody>
-          </table>
+        <div class="ghost-hint">hover · narrative</div>
+        <div class="ghost-overlay">
+          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Compulsive Advancer Detection</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+          <div class="ghost-txt">Skips cluster at <em>highest-friction nodes</em> (#412, #407, #410) — classic <b>anxiety-avoidance</b>, not time pressure. All 5 flagged users show dwell under 2s against gates of 6–9s. Throttle enforcement is working but underlying friction must be addressed.</div>
+          <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val r">0.9s</div><div class="ghost-kpi-lbl">Avg skip dwell</div></div><div class="ghost-kpi"><div class="ghost-kpi-val a">4.1s</div><div class="ghost-kpi-lbl">Gate min.</div></div><div class="ghost-kpi"><div class="ghost-kpi-val">5×</div><div class="ghost-kpi-lbl">Repeat offenders</div></div></div>
+          <div class="ghost-foot">Diagnosis: anxiety-avoidance · fix: analogy injection before gate enforcement</div>
         </div>
       </div>
-      <div class="ghost-hint">hover · narrative</div>
-      <div class="ghost-overlay">
-        <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Compulsive Advancer Detection</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">Skips cluster at <em>highest-friction nodes</em> (#412, #407, #410) — a classic <b>anxiety-avoidance pattern</b>, not time pressure. All 5 flagged users show dwell under 2s against gates of 6–9s. Throttle enforcement is working but the underlying friction must be addressed or these users will continue tripping gates on every revisit.</div>
-        <div class="ghost-kpis">
-          <div class="ghost-kpi"><div class="ghost-kpi-val r">0.9s</div><div class="ghost-kpi-lbl">Avg skip dwell</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val a">4.1s</div><div class="ghost-kpi-lbl">Gate min.</div></div>
-          <div class="ghost-kpi"><div class="ghost-kpi-val">5×</div><div class="ghost-kpi-lbl">Repeat offenders</div></div>
+    </div>
+
+    <!-- LEDGER DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-ledger">
+      <div class="card ghost-wrap" id="card-ledger">
+        <div class="card-header"><div><div class="card-title">Proof-of-Literacy Ledger</div><div class="card-subtitle">Immutable traversal record · dwell–complexity correlation score</div></div><div class="card-badge accent">Certified</div></div>
+        <div id="ledger-list"></div>
+        <div class="ghost-hint">hover · narrative</div>
+        <div class="ghost-overlay">
+          <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Literacy Ledger</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
+          <div class="ghost-txt">3 of 6 learners fully certified (>90% correlation). The cohort splits at node <em>#406</em> — those who cleared complex exponentials progress at <b>2.3× the rate</b>. <span class="bad">K. Li (44%)</span> shows a skip-behavior signature. S. Nkrumah (89%) is one session from certification.</div>
+          <div class="ghost-kpis"><div class="ghost-kpi"><div class="ghost-kpi-val g">3</div><div class="ghost-kpi-lbl">Certified</div></div><div class="ghost-kpi"><div class="ghost-kpi-val a">2</div><div class="ghost-kpi-lbl">In progress</div></div><div class="ghost-kpi"><div class="ghost-kpi-val r">1</div><div class="ghost-kpi-lbl">Below thresh.</div></div></div>
+          <div class="ghost-foot">Split point: #406 · K. Li flagged for skip review · all records immutable</div>
         </div>
-        <div class="ghost-foot">Diagnosis: anxiety-avoidance · fix: analogy injection before gate enforcement</div>
+      </div>
+    </div>
+
+    <!-- ADVANCERS DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-advancers">
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-cell"><div class="stat-val red">29</div><div class="stat-label">Skip attempts<br>today</div></div>
+        <div class="stat-cell"><div class="stat-val warn">0.9s</div><div class="stat-label">Avg dwell<br>on skip</div></div>
+        <div class="stat-cell"><div class="stat-val green">8</div><div class="stat-label">Throttled<br>and rerouted</div></div>
+      </div>
+      <div class="placeholder-card" id="card-advancers">
+        <div class="placeholder-card-icon">◈</div>
+        <div class="placeholder-card-label">Compulsive Advancer Detail View</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ink3);margin-top:4px">Navigate to Throttle Queue for full table</div>
+      </div>
+    </div>
+
+    <!-- GRIT DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-grit">
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-cell"><div class="stat-val red">8.4</div><div class="stat-label">Grit score<br>Node #412</div></div>
+        <div class="stat-cell"><div class="stat-val warn">3.8</div><div class="stat-label">Pulse score<br>Node #412</div></div>
+        <div class="stat-cell"><div class="stat-val red">−4.6</div><div class="stat-label">Delta<br>(Grit − Pulse)</div></div>
+      </div>
+      <div class="card" id="card-grit" style="padding:16px">
+        <div class="card-header" style="margin:-16px -16px 14px"><div><div class="card-title">Grit × Pulse Engine — Node #412</div><div class="card-subtitle">Complexity demand vs. learner engagement signal</div></div></div>
+        <div style="padding:0 0 4px">
+          <div class="grit-meter" id="grit-meter-main">
+            <div class="grit-row"><div class="grit-label">Grit</div><div class="grit-track"><div class="grit-fill" style="width:84%;background:var(--red)"></div></div><div class="grit-val" style="color:var(--red)">8.4</div></div>
+            <div class="grit-row"><div class="grit-label">Pulse</div><div class="grit-track"><div class="grit-fill" style="width:38%;background:var(--amber)"></div></div><div class="grit-val" style="color:var(--amber)">3.8</div></div>
+            <div class="grit-row"><div class="grit-label">Target</div><div class="grit-track"><div class="grit-fill" style="width:60%;background:var(--accent)"></div></div><div class="grit-val" style="color:var(--accent2)">6.0</div></div>
+            <div class="grit-row"><div class="grit-label">Δ Delta</div><div class="grit-track"><div class="grit-fill" style="width:46%;background:var(--red);opacity:0.5"></div></div><div class="grit-val" style="color:var(--red)">−4.6</div></div>
+          </div>
+          <div style="margin-top:14px;font-family:var(--mono);font-size:8px;color:var(--ink3);line-height:1.6;border-top:1px solid var(--border);padding-top:12px;transition:color .25s,border-color .25s">
+            Engine recommendation: split into <span style="color:var(--accent2)">3 progressive sub-nodes</span> targeting Grit 3.0 / 2.8 / 2.6 with connecting analogy bridge. Delta −4.6 exceeds −3.0 trigger threshold — <span style="color:var(--green)">94% historical success rate</span> for 3-split interventions.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BRANCHING DASHBOARD -->
+    <div class="dash-panel main-content" id="dp-branching">
+      <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-cell"><div class="stat-val accent">11</div><div class="stat-label">Open clarification<br>loops</div></div>
+        <div class="stat-cell"><div class="stat-val green">87</div><div class="stat-label">Deep-dives<br>returned</div></div>
+        <div class="stat-cell"><div class="stat-val">12.3s</div><div class="stat-label">Avg deep-dive<br>dwell</div></div>
+        <div class="stat-cell"><div class="stat-val green">6.2%</div><div class="stat-label">Re-stall after<br>return</div></div>
+      </div>
+      <div class="placeholder-card" id="card-branching">
+        <div class="placeholder-card-icon">↗</div>
+        <div class="placeholder-card-label">Adaptive Branch Tree</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--ink3);margin-top:4px">Re-stall 6.2% vs 28% industry baseline · 87 successful returns · 11 loops active</div>
+      </div>
+    </div>
+
+    <!-- ════ NARRATIVE PANELS ════ -->
+
+    <!-- HEATMAP NARRATIVE -->
+    <div class="narr-panel" id="np-heatmap">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Cognitive Heatmap</div>
+          <div class="narrative-title">Friction accumulates into a single systemic crisis at node #412.</div>
+          <div class="narrative-meta">1,247 learners · Chapter 4 · Last 60 min · click any sentence to scroll to the relevant chart</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">Overview</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','card-heatmap')">The heatmap reveals a <em>clear complexity gradient</em> — friction begins accumulating at N404 and escalates steadily toward a sharp peak at <span class="n-crit">N412</span>, the session's critical node.</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','card-heatmap')">Critically, this pattern is <b>uniform across all 8 cohorts</b> — no learning group bypasses the friction spike, confirming this is a content design issue, not a learner skill gap.</div>
+          <div class="n-section-break">Key Finding</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','card-heatmap')">The <span class="n-warn">N408–N410 toggle band</span> forms a secondary heat cluster: learners stall and oscillate here, exhausting time and cognitive resources before arriving at N412 already fatigued.</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','card-heatmap')">Cohorts <em>R-01 and R-02</em> show the steepest escalation — intermediate learners hitting the Euler–Fourier bridge without analogy scaffolding.</div>
+          <div class="n-section-break">Key Metrics</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','s1')">Node #412 stall rate is <span class="n-crit">83%</span> <span class="n-chip r">↑12% 24h</span> — Chapter 4's highest this session, with a Grit score of 8.4 against a 6.0 author target.</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','s4')">Despite this, literacy correlation sits at <span class="n-ok">96.4%</span> <span class="n-chip g">+2.1% week</span> — the strongest Chapter 4 result on record, driven by the successful node #388 split.</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','s3')"><span class="n-ok">11 adaptive sub-nodes</span> were injected today; 87 users have returned to the main path with a re-stall rate of only 6.2%, confirming the adaptive pipeline works.</div>
+          <div class="n-section-break">Recommended Action</div>
+          <div class="n-sentence" onclick="jumpTo('heatmap','card-heatmap')">The <b>node #388 template</b> — splitting a high-friction node into sub-nodes with analogy bridges — reduced stall rate from 71% to 18%. Apply this immediately to #412, targeting three sub-nodes with Grit ≤ 3.0 each.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STALLS NARRATIVE -->
+    <div class="narr-panel" id="np-stalls">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Stall-Point Map</div>
+          <div class="narrative-title">Seven active stalls share a single root cause: notation without analogy.</div>
+          <div class="narrative-meta">7 stall nodes · Chapter 4 · Priority queue active</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">Root Cause</div>
+          <div class="n-sentence" onclick="jumpTo('stalls','card-stalls')">All 7 active stalls share one root cause: <em>variable density exceeds analogy coverage</em>. Authors introduced mathematical notation without grounding metaphors at nodes #404–#412.</div>
+          <div class="n-sentence" onclick="jumpTo('stalls','card-stalls')">The toggle pattern on <span class="n-warn">#408–#410</span> compounds the problem — learners oscillating between these nodes lose 2–4 minutes before reaching #412 already cognitively depleted.</div>
+          <div class="n-section-break">Priority Order</div>
+          <div class="n-sentence" onclick="jumpTo('stalls','card-stalls')"><span class="n-crit">Node #412</span> (83% stall rate) is the critical priority — a rewrite is required, not an expansion. Grit 8.4 vs target 6.0 means the node needs to be split into three parts.</div>
+          <div class="n-sentence" onclick="jumpTo('stalls','card-stalls')"><span class="n-warn">Node #410</span> (66% stall rate) is the toggle-zone anchor — resolving this first historically cuts downstream stall rates by approximately 34%, making it the highest-leverage intervention.</div>
+          <div class="n-sentence" onclick="jumpTo('stalls','card-stalls')">Nodes #405 and #404 are in the expanding zone — they need <span class="n-chip p">expand</span> treatment, adding supportive analogy rather than rewriting the core content.</div>
+          <div class="n-section-break">Expected Outcome</div>
+          <div class="n-sentence" onclick="jumpTo('stalls','card-stalls')">Based on the #388 precedent, fixing the toggle zone first should reduce all downstream stall rates by <em>~34%</em>, making the #412 rewrite subsequently easier as learners arrive less fatigued.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRAVERSAL NARRATIVE -->
+    <div class="narr-panel" id="np-traversal">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Traversal Flow</div>
+          <div class="narrative-title">Throughput collapses at #406 — and never fully recovers.</div>
+          <div class="narrative-meta">Node-by-node · last 60 min · 1,247 learners</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">The Collapse</div>
+          <div class="n-sentence" onclick="jumpTo('traversal','card-traversal')">Entry at node #400 is strong at <span class="n-ok">91%</span> — but throughput begins a sustained decline from #404 onward as complexity escalates beyond learner momentum.</div>
+          <div class="n-sentence" onclick="jumpTo('traversal','card-traversal')"><span class="n-crit">Node #406</span> (Complex Exponentials) acts as a hard filter: learners who stall here rarely recover without intervention, and those who clear it progress at 2.3× the rate of those who don't.</div>
+          <div class="n-section-break">The Toggle Drain</div>
+          <div class="n-sentence" onclick="jumpTo('traversal','card-traversal')">The <span class="n-warn">#408–#410 toggle zone</span> is bleeding momentum — learners who oscillate here arrive at #411 and #412 already time-depleted, explaining the disproportionate drop at the chapter's end.</div>
+          <div class="n-sentence" onclick="jumpTo('traversal','card-traversal')">Only <span class="n-crit">17%</span> of learners are currently active at #412 — a 5-session low (down from 31% Monday). The largest single-step drop is <b>#411 → #412 at −27 percentage points</b>.</div>
+          <div class="n-section-break">Implication</div>
+          <div class="n-sentence" onclick="jumpTo('traversal','card-traversal')">The −74pp total drop from entry to #412 means <em>only 1 in 6 learners</em> who start Chapter 4 reach its most critical conceptual node — a structural failure that deep-dive injections are partially compensating for.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLAGS NARRATIVE -->
+    <div class="narr-panel" id="np-flags">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Narrative Flags</div>
+          <div class="narrative-title">Two active flags form a cascade — fix the toggle zone before the Fourier definition.</div>
+          <div class="narrative-meta">2 active · 1 resolved · cascade risk: high</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">Active Flags</div>
+          <div class="n-sentence" onclick="jumpTo('flags','card-flags')">The two active flags are causally linked: the <span class="n-crit">Fourier Transform definition (#412)</span> at 83% stall rate is the terminal crisis, but its severity is amplified by the upstream toggle loop at <span class="n-warn">#408–#410</span>.</div>
+          <div class="n-sentence" onclick="jumpTo('flags','card-flags')">Resolving the toggle-back issue first (<b>#410</b>) historically reduces downstream stall rates by ~34% — meaning the #412 rewrite becomes easier if learners arrive less cognitively depleted.</div>
+          <div class="n-section-break">Resolved</div>
+          <div class="n-sentence" onclick="jumpTo('flags','card-flags')">Node <span class="n-ok">#388 (Nyquist–Shannon)</span> was successfully resolved this session: stall rate dropped from 71% to 18% following a narrative split. This is the template for all pending interventions.</div>
+          <div class="n-section-break">Recommended Sequence</div>
+          <div class="n-sentence" onclick="jumpTo('flags','card-flags')">Intervention sequence: <em>1)</em> Expand #408–#410 toggle zone with context-aware sub-node → <em>2)</em> Rewrite #412 Fourier definition as 3 sub-nodes (Grit target ≤ 3.0 each) → <em>3)</em> Re-evaluate cascade.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEEPDIVE NARRATIVE -->
+    <div class="narr-panel" id="np-deepdive">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Deep-Dive Injections</div>
+          <div class="narrative-title">The injection pipeline is working — re-stall rates are 4× better than baseline.</div>
+          <div class="narrative-meta">11 injected · 87 returns · 6.2% re-stall</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">Performance</div>
+          <div class="n-sentence" onclick="jumpTo('deepdive','card-deepdive')"><span class="n-ok">11 adaptive sub-nodes</span> were injected this session. Nodes #408–#410 account for 6 of them, driven by the convolution toggle loop that was triggering repeat back-navigation events.</div>
+          <div class="n-sentence" onclick="jumpTo('deepdive','card-deepdive')">Re-stall rate after deep-dive return is <span class="n-ok">6.2%</span> — far below the ~28% industry baseline. Average deep-dive dwell of 12.3s is <b>3× the main-path dwell</b> for the same content, confirming genuine engagement, not passive scrolling.</div>
+          <div class="n-section-break">Priority Gap</div>
+          <div class="n-sentence" onclick="jumpTo('deepdive','card-deepdive')">Despite strong performance, <span class="n-crit">node #412 has not yet received an injection</span>. With 83% stall rate and 11 open clarification loops still active at that cluster, this is the immediate priority.</div>
+          <div class="n-sentence" onclick="jumpTo('deepdive','card-deepdive')">87 learners have successfully returned from deep-dives to the main path — <em>each of these represents a learner who would otherwise have stalled or dropped</em> entirely from Chapter 4 progression.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THROTTLE NARRATIVE -->
+    <div class="narr-panel" id="np-throttle">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Throttle Queue</div>
+          <div class="narrative-title">29 compulsive advancers — anxiety-avoidance, not time pressure.</div>
+          <div class="narrative-meta">29 flagged · 8 throttled · 4.1s gate minimum</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">Diagnosis</div>
+          <div class="n-sentence" onclick="jumpTo('throttle','card-throttle')">Skip attempts cluster at <span class="n-crit">#412, #407, and #410</span> — the three highest-friction nodes in Chapter 4. This is a diagnostic signal: learners aren't skipping due to time pressure, they're avoiding content they find aversive.</div>
+          <div class="n-sentence" onclick="jumpTo('throttle','card-throttle')">Average skip dwell of <span class="n-crit">0.9s</span> against a 7.1s minimum gate is intentional avoidance — not accidental or habitual fast-clicking. These learners know they're bypassing content.</div>
+          <div class="n-section-break">Current Response</div>
+          <div class="n-sentence" onclick="jumpTo('throttle','card-throttle')">Throttle enforcement is working: <span class="n-ok">8 users throttled and rerouted</span>, 21 gates enforced. The system is blocking avoidance — but without addressing the underlying friction, these users will continue tripping gates on every revisit.</div>
+          <div class="n-section-break">Long-term Fix</div>
+          <div class="n-sentence" onclick="jumpTo('throttle','card-throttle')">The correct intervention is <em>analogy injection before gate enforcement</em> — reducing the friction that drives the avoidance behavior, rather than purely blocking the avoidance. The #388 split reduced similar skip patterns by ~60%.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEDGER NARRATIVE -->
+    <div class="narr-panel" id="np-ledger">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Proof-of-Literacy Ledger</div>
+          <div class="narrative-title">Node #406 is the dividing line — clear it and certification becomes likely.</div>
+          <div class="narrative-meta">3 certified · 2 in progress · 1 below threshold</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">Cohort Split</div>
+          <div class="n-sentence" onclick="jumpTo('ledger','card-ledger')">The cohort splits precisely at <span class="n-crit">node #406 (Complex Exponentials)</span>: learners who clear this node progress at <b>2.3× the rate</b> of those who stall, and all three certified learners cleared it smoothly.</div>
+          <div class="n-sentence" onclick="jumpTo('ledger','card-ledger')"><span class="n-ok">M. Renaud (98%)</span>, <span class="n-ok">A. Čechová (96%)</span>, and <span class="n-ok">T. Yamamoto (93%)</span> are fully certified — strong dwell correlation across all 415 nodes, confirming genuine comprehension signals, not passive traversal.</div>
+          <div class="n-section-break">At Risk</div>
+          <div class="n-sentence" onclick="jumpTo('ledger','card-ledger')"><span class="n-warn">S. Nkrumah (89%)</span> is one session from certification — a single focused session on the remaining nodes should push them over the 90% threshold.</div>
+          <div class="n-sentence" onclick="jumpTo('ledger','card-ledger')"><span class="n-crit">K. Li (44%)</span> shows a skip-behavior signature: dwell is present but consistently below the complexity-signal threshold, suggesting the learner is scrolling through content rather than genuinely engaging. A throttle intervention is warranted.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVANCERS NARRATIVE -->
+    <div class="narr-panel" id="np-advancers">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Compulsive Advancers</div>
+          <div class="narrative-title">Skip patterns reveal where Chapter 4 loses learner confidence.</div>
+          <div class="narrative-meta">29 flagged · behavioral analysis</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">Pattern</div>
+          <div class="n-sentence" onclick="jumpTo('advancers','card-advancers')">71% of skip attempts cluster after node #408 — pointing to <em>late-session cognitive fatigue</em> rather than early disengagement. Learners start engaged but lose confidence in the convolution theorem section.</div>
+          <div class="n-sentence" onclick="jumpTo('advancers','card-advancers')">The 0.9s average skip dwell (vs 7.1s minimum) is a diagnostic signal: this is <b>intentional avoidance</b>, not distraction. Learners are making a decision to bypass content they find aversive.</div>
+          <div class="n-section-break">Response</div>
+          <div class="n-sentence" onclick="jumpTo('advancers','card-advancers')">Gates are enforced and working. The deeper fix — analogy injection before the #408 toggle zone entry — should reduce avoidance motivation and consequently reduce throttle triggers in subsequent sessions.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRIT NARRATIVE -->
+    <div class="narr-panel" id="np-grit">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Grit · Pulse Engine</div>
+          <div class="narrative-title">A −4.6 delta at node #412 demands an immediate three-way split.</div>
+          <div class="narrative-meta">Node #412 · Grit 8.4 · Pulse 3.8 · Target 6.0</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">The Gap</div>
+          <div class="n-sentence" onclick="jumpTo('grit','card-grit')">Node #412 has a Grit score of <span class="n-crit">8.4</span> (complexity demand) against a Pulse score of <span class="n-warn">3.8</span> (learner engagement signal) — a delta of <span class="n-crit">−4.6</span>, the widest gap in Chapter 4.</div>
+          <div class="n-sentence" onclick="jumpTo('grit','card-grit')">The engine's target is a Grit of 6.0 for this node type. At 8.4, the node demands <em>far more sustained effort</em> than learners are maintaining — confirming what the stall rate and traversal data both show.</div>
+          <div class="n-section-break">Decision Rule</div>
+          <div class="n-sentence" onclick="jumpTo('grit','card-grit')">When Grit–Pulse delta exceeds <b>−3.0</b>, the engine recommends a 3-node split. This threshold has a <span class="n-ok">94% historical success rate</span> at restoring Pulse to within 1.0 of Target after restructuring.</div>
+          <div class="n-sentence" onclick="jumpTo('grit','card-grit')">Recommended structure: three progressive sub-nodes targeting Grit <em>3.0 / 2.8 / 2.6</em> with connecting analogy bridges — stepping learners through the Fourier variable definition rather than presenting it as a single dense block.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BRANCHING NARRATIVE -->
+    <div class="narr-panel" id="np-branching">
+      <div class="narrative-view">
+        <div class="narrative-header">
+          <div class="narrative-label">Narrative Analytics Summary · Adaptive Branching</div>
+          <div class="narrative-title">Deep-dives are working at 4× better than baseline — but #412 still lacks coverage.</div>
+          <div class="narrative-meta">11 open loops · 87 returns · 6.2% re-stall</div>
+        </div>
+        <div class="n-click-hint"><span class="n-click-hint-icon">↕</span> Click any sentence to jump to its location in the dashboard view</div>
+        <div class="narrative-body">
+          <div class="n-section-break">System Performance</div>
+          <div class="n-sentence" onclick="jumpTo('branching','card-branching')">Re-stall rate of <span class="n-ok">6.2%</span> after deep-dive return is far below the ~28% industry baseline — confirming that the adaptive branching system is genuinely improving comprehension, not just delaying confusion.</div>
+          <div class="n-sentence" onclick="jumpTo('branching','card-branching')">The 12.3s average deep-dive dwell is <b>3× the main-path dwell</b> for equivalent content — learners engage meaningfully with the supplementary material rather than skimming through it.</div>
+          <div class="n-section-break">Coverage Gap</div>
+          <div class="n-sentence" onclick="jumpTo('branching','card-branching')">11 open clarification loops are all concentrated at <span class="n-warn">#408–#412</span> — mirroring the stall cluster. Despite strong system performance, <span class="n-crit">node #412 has not yet received an adaptive branch injection</span>.</div>
+          <div class="n-sentence" onclick="jumpTo('branching','card-branching')">Each of the 87 successful returns represents a learner who would otherwise have abandoned Chapter 4 progression. Extending this coverage to #412 — where stall rate is 83% — is the single highest-impact action available.</div>
+        </div>
       </div>
     </div>
 
@@ -1176,36 +1186,25 @@ body::after {
 
   <!-- ── Right panel ── -->
   <aside class="rightpanel">
-
-    <!-- Narrative Interventions -->
     <div class="rp-section ghost-wrap">
       <div class="rp-title">Narrative Interventions</div>
       <div class="intervention-card flagged">
         <div class="interv-type" style="color:var(--red)">⚑ Critical · Rewrite Requested</div>
         <div class="interv-title">Fourier Transform — Variable Definition</div>
         <div class="interv-body">83% stall rate. Node complexity (8.4) far exceeds author-set Grit (6.0). Author must split into 3 sub-nodes or add supportive analogy.</div>
-        <div class="interv-footer">
-          <div class="interv-node">Node #412</div>
-          <div class="interv-action">Review →</div>
-        </div>
+        <div class="interv-footer"><div class="interv-node">Node #412</div><div class="interv-action">Review →</div></div>
       </div>
       <div class="intervention-card flagged">
         <div class="interv-type" style="color:var(--warn)">⚐ Moderate · Expand Suggested</div>
         <div class="interv-title">Convolution Theorem — Step 3</div>
         <div class="interv-body">Toggle-back rate 44%. Learners oscillating between nodes #408–#410. Context-aware sub-node recommended.</div>
-        <div class="interv-footer">
-          <div class="interv-node">Nodes #408–410</div>
-          <div class="interv-action">Draft expansion</div>
-        </div>
+        <div class="interv-footer"><div class="interv-node">Nodes #408–410</div><div class="interv-action">Draft expansion</div></div>
       </div>
       <div class="intervention-card">
         <div class="interv-type" style="color:var(--green)">✓ Resolved · Published</div>
         <div class="interv-title">Nyquist–Shannon — Introduction</div>
         <div class="interv-body">Stall rate dropped from 71% to 18% after node split. Narrative restructure confirmed effective.</div>
-        <div class="interv-footer">
-          <div class="interv-node">Node #388</div>
-          <div class="interv-action" style="border-color:rgba(34,197,94,0.3);color:var(--green)">View diff</div>
-        </div>
+        <div class="interv-footer"><div class="interv-node">Node #388</div><div class="interv-action" style="border-color:rgba(34,197,94,0.3);color:var(--green)">View diff</div></div>
       </div>
       <div class="ghost-hint">hover · narrative</div>
       <div class="ghost-overlay">
@@ -1214,73 +1213,37 @@ body::after {
         <div class="ghost-foot">Resolved: #388 (−53pp) · Active: 2 flags · Cascade risk: high</div>
       </div>
     </div>
-
-    <!-- Grit × Pulse Engine -->
     <div class="rp-section ghost-wrap">
       <div class="rp-title">Grit × Pulse Engine — Node #412</div>
       <div class="grit-meter">
-        <div class="grit-row">
-          <div class="grit-label">Grit</div>
-          <div class="grit-track"><div class="grit-fill" style="width:84%;background:var(--red)"></div></div>
-          <div class="grit-val" style="color:var(--red)">8.4</div>
-        </div>
-        <div class="grit-row">
-          <div class="grit-label">Pulse</div>
-          <div class="grit-track"><div class="grit-fill" style="width:38%;background:var(--amber)"></div></div>
-          <div class="grit-val" style="color:var(--amber)">3.8</div>
-        </div>
-        <div class="grit-row">
-          <div class="grit-label">Target</div>
-          <div class="grit-track"><div class="grit-fill" style="width:60%;background:var(--accent)"></div></div>
-          <div class="grit-val" style="color:var(--accent2)">6.0</div>
-        </div>
-        <div class="grit-row">
-          <div class="grit-label">Δ Delta</div>
-          <div class="grit-track"><div class="grit-fill" style="width:46%;background:var(--red);opacity:0.5"></div></div>
-          <div class="grit-val" style="color:var(--red)">−4.6</div>
-        </div>
+        <div class="grit-row"><div class="grit-label">Grit</div><div class="grit-track"><div class="grit-fill" style="width:84%;background:var(--red)"></div></div><div class="grit-val" style="color:var(--red)">8.4</div></div>
+        <div class="grit-row"><div class="grit-label">Pulse</div><div class="grit-track"><div class="grit-fill" style="width:38%;background:var(--amber)"></div></div><div class="grit-val" style="color:var(--amber)">3.8</div></div>
+        <div class="grit-row"><div class="grit-label">Target</div><div class="grit-track"><div class="grit-fill" style="width:60%;background:var(--accent)"></div></div><div class="grit-val" style="color:var(--accent2)">6.0</div></div>
+        <div class="grit-row"><div class="grit-label">Δ Delta</div><div class="grit-track"><div class="grit-fill" style="width:46%;background:var(--red);opacity:0.5"></div></div><div class="grit-val" style="color:var(--red)">−4.6</div></div>
       </div>
-      <div style="margin-top:10px;font-family:var(--mono);font-size:8px;color:var(--ink3);line-height:1.6;border-top:1px solid var(--border);padding-top:10px;transition:color .25s,border-color .25s">
-        Engine recommendation: split into <span style="color:var(--accent2)">3 progressive sub-nodes</span> targeting Grit 3.0 / 2.8 / 2.6 with connecting analogy bridge.
-      </div>
+      <div style="margin-top:10px;font-family:var(--mono);font-size:8px;color:var(--ink3);line-height:1.6;border-top:1px solid var(--border);padding-top:10px;transition:color .25s,border-color .25s">Engine recommendation: split into <span style="color:var(--accent2)">3 progressive sub-nodes</span> targeting Grit 3.0 / 2.8 / 2.6 with connecting analogy bridge.</div>
       <div class="ghost-hint">hover · narrative</div>
       <div class="ghost-overlay">
         <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Grit × Pulse Analysis</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">Grit <em>8.4</em> vs Pulse <em>3.8</em> — delta <span class="bad">−4.6</span> — the widest gap in Chapter 4. Node demands far more effort than learners are sustaining. When delta exceeds −3.0, the engine's 3-split recommendation carries a <b>94% success rate</b> at restoring Pulse to within 1.0 of Target.</div>
+        <div class="ghost-txt">Grit <em>8.4</em> vs Pulse <em>3.8</em> — delta <span class="bad">−4.6</span> — the widest gap in Chapter 4. When delta exceeds −3.0, the 3-split recommendation carries a <b>94% success rate</b> at restoring Pulse to within 1.0 of Target.</div>
         <div class="ghost-foot">Delta −4.6 · threshold for 3-split: −3.0 · historical success rate: 94%</div>
       </div>
     </div>
-
-    <!-- Adaptive Branching -->
     <div class="rp-section ghost-wrap">
       <div class="rp-title">Adaptive Branching · Active</div>
       <div style="display:flex;flex-direction:column;gap:6px">
-        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px">
-          <span style="color:var(--ink2)">Clarification loops open</span>
-          <span style="color:var(--accent2);font-weight:700">11</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px">
-          <span style="color:var(--ink2)">Deep-dives returned to main</span>
-          <span style="color:var(--green);font-weight:700">87</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px">
-          <span style="color:var(--ink2)">Avg deep-dive dwell</span>
-          <span style="color:var(--ink);font-weight:700">12.3s</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px">
-          <span style="color:var(--ink2)">Re-stall after return</span>
-          <span style="color:var(--green);font-weight:700">6.2%</span>
-        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px"><span style="color:var(--ink2)">Clarification loops open</span><span style="color:var(--accent2);font-weight:700">11</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px"><span style="color:var(--ink2)">Deep-dives returned to main</span><span style="color:var(--green);font-weight:700">87</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px"><span style="color:var(--ink2)">Avg deep-dive dwell</span><span style="color:var(--ink);font-weight:700">12.3s</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9px"><span style="color:var(--ink2)">Re-stall after return</span><span style="color:var(--green);font-weight:700">6.2%</span></div>
       </div>
       <div class="ghost-hint">hover · narrative</div>
       <div class="ghost-overlay">
         <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Adaptive Branching</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">Re-stall rate of <b>6.2%</b> after deep-dive return is far below the ~28% industry baseline — deep-dives are working. 11 open clarification loops are all concentrated at #408–#412, mirroring the stall cluster. <em>12.3s avg deep-dive dwell</em> is 3× the main-path dwell for the same content, confirming genuine engagement.</div>
+        <div class="ghost-txt">Re-stall rate of <b>6.2%</b> after deep-dive return is far below the ~28% industry baseline. 11 open clarification loops are all concentrated at #408–#412, mirroring the stall cluster. <em>12.3s avg deep-dive dwell</em> is 3× the main-path dwell for the same content.</div>
         <div class="ghost-foot">Re-stall 6.2% vs 28% baseline · 87 successful returns · 11 loops active</div>
       </div>
     </div>
-
-    <!-- Live feed -->
     <div class="rp-section ghost-wrap" style="border-bottom:none;padding:0">
       <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;transition:border-color .25s">
         <div class="tb-live" style="font-size:8px"><div class="live-dot"></div> Event stream</div>
@@ -1289,11 +1252,10 @@ body::after {
       <div class="ghost-hint" style="bottom:10px">hover · narrative</div>
       <div class="ghost-overlay" style="top:37px">
         <div class="ghost-head"><div class="ghost-pulse"></div><div class="ghost-ttl">Event Stream Digest</div><div class="ghost-pin-btn" onclick="pin(this)">pin</div></div>
-        <div class="ghost-txt">Feed shows a <em>synchronized spike</em> — multiple throttle events and deep-dive injections within 90 seconds, indicating a cohort moving through the toggle zone simultaneously. <b>Node #388's resolution</b> (71% → 18%) in the log is the intervention template for the pending #412 fix. Event velocity is elevated: stress period active.</div>
+        <div class="ghost-txt">Feed shows a <em>synchronized spike</em> — multiple throttle events and deep-dive injections within 90 seconds, indicating a cohort moving through the toggle zone simultaneously. <b>Node #388's resolution</b> (71% → 18%) in the log is the intervention template for the pending #412 fix.</div>
         <div class="ghost-foot">8 significant events in &lt;2 min · 1,247 active · 4.2s avg dwell</div>
       </div>
     </div>
-
   </aside>
 
 </div>
@@ -1356,8 +1318,83 @@ const FEED_EVENTS = [
   { color:'#ef4444', text:'<b>29 compulsive advancers</b> detected this session — 8 throttled.', t:'1m ago' },
 ];
 
-// ── Theme toggle ──────────────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────────────────────
 let theme = 'dark';
+let currentView = 'heatmap';
+let currentMode = 'dashboard'; // 'dashboard' | 'narrative'
+
+// ── NAV VIEW LABELS ──────────────────────────────────────────────────────────
+const VIEW_LABELS = {
+  heatmap:   'Cognitive Heatmap',
+  stalls:    'Stall-Point Map',
+  traversal: 'Traversal Flow',
+  flags:     'Narrative Flags',
+  deepdive:  'Deep-Dive Injections',
+  throttle:  'Throttle Queue',
+  ledger:    'Proof-of-Literacy Ledger',
+  advancers: 'Compulsive Advancers',
+  grit:      'Grit · Pulse Engine',
+  branching: 'Adaptive Branching',
+};
+
+// ── SWITCH VIEW (nav item) ─────────────────────────────────────────────────────
+function switchView(el, view) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  currentView = view;
+  document.getElementById('view-toggle-title').textContent = VIEW_LABELS[view] || view;
+  // update tb breadcrumb section
+  document.getElementById('tb-section-label').textContent = VIEW_LABELS[view] || view;
+  setViewMode(currentMode, true);
+}
+
+// ── SET MODE (dashboard / narrative) ─────────────────────────────────────────
+function setViewMode(mode, forceRerender) {
+  currentMode = mode;
+  document.getElementById('pill-dash').classList.toggle('active', mode === 'dashboard');
+  document.getElementById('pill-narr').classList.toggle('active', mode === 'narrative');
+  document.getElementById('narr-context').classList.toggle('visible', mode === 'narrative');
+
+  // Show correct panel
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.narr-panel').forEach(p => p.classList.remove('active'));
+
+  const scroll = document.getElementById('main-scroll');
+
+  if (mode === 'dashboard') {
+    const dp = document.getElementById('dp-' + currentView);
+    if (dp) dp.classList.add('active');
+  } else {
+    const np = document.getElementById('np-' + currentView);
+    if (np) np.classList.add('active');
+  }
+
+  if (!forceRerender) scroll.scrollTop = 0;
+}
+
+// ── JUMP TO (narrative sentence click) ───────────────────────────────────────
+function jumpTo(view, cardId) {
+  // Switch to dashboard mode
+  setViewMode('dashboard');
+  // Small delay to let panel render
+  setTimeout(() => {
+    const el = document.getElementById(cardId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.remove('highlight-target');
+      void el.offsetWidth; // reflow to restart animation
+      el.classList.add('highlight-target');
+      setTimeout(() => el.classList.remove('highlight-target'), 2200);
+    }
+    // Switch back pill UI
+    document.getElementById('pill-dash').classList.add('active');
+    document.getElementById('pill-narr').classList.remove('active');
+    document.getElementById('narr-context').classList.add('visible');
+    currentMode = 'dashboard';
+  }, 50);
+}
+
+// ── Theme toggle ──────────────────────────────────────────────────────────────
 function toggleTheme() {
   theme = theme === 'dark' ? 'retro' : 'dark';
   document.documentElement.setAttribute('data-theme', theme === 'retro' ? 'retro' : '');
@@ -1413,7 +1450,6 @@ function frColor(v) {
   return `rgba(239,68,68,${.8+v*.2})`;
 }
 
-// ── Stall list ────────────────────────────────────────────────────────────────
 function buildStalls() {
   const w=document.getElementById('stall-list');
   STALLS.forEach(s=>{
@@ -1425,7 +1461,6 @@ function buildStalls() {
   });
 }
 
-// ── Traversal flow ────────────────────────────────────────────────────────────
 function buildFlow() {
   const w=document.getElementById('flow-wrap');
   NODES.forEach(n=>{
@@ -1439,7 +1474,6 @@ function buildFlow() {
   });
 }
 
-// ── Ledger ────────────────────────────────────────────────────────────────────
 function buildLedger() {
   const w=document.getElementById('ledger-list');
   LEDGER.forEach(l=>{
@@ -1455,7 +1489,6 @@ function buildLedger() {
   });
 }
 
-// ── Advancers ─────────────────────────────────────────────────────────────────
 function buildAdvancers() {
   const tb=document.getElementById('adv-tbody');
   ADV_DATA.forEach(a=>{
@@ -1465,7 +1498,6 @@ function buildAdvancers() {
   });
 }
 
-// ── Feed ──────────────────────────────────────────────────────────────────────
 function buildFeed() {
   const w=document.getElementById('feed-list');
   FEED_EVENTS.forEach(e=>{
@@ -1475,7 +1507,6 @@ function buildFeed() {
   });
 }
 
-// ── Live sim ──────────────────────────────────────────────────────────────────
 let sc=1247, ad=4.2;
 function tick(){
   sc+=Math.floor(Math.random()*5)-1;
