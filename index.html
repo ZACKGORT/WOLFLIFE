@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>cortex · wolfie.love</title>
+<title>cortex · wolfie.life</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -390,6 +390,44 @@ body.cluster-media #stream-hud { border-bottom-color: rgba(74,126,175,0.22); }
 .media-info { padding:12px 16px; display:flex; align-items:center; justify-content:space-between; }
 .media-title { font-size:12px; color:var(--ink); letter-spacing:0.02em; }
 .media-type { font-size:7px; letter-spacing:0.14em; text-transform:uppercase; color:var(--c-media); border:1px solid var(--c-media); padding:2px 6px; border-radius:2px; opacity:0.7; }
+
+/* ── IMAGE node (media cluster — photo as content) ── */
+.node.image-node { padding: 10px 0; }
+.polaroid { background: var(--bg-2); border: 1px solid var(--border-2); border-radius: 4px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
+.polaroid:hover { border-color: var(--border-3); transform: translateY(-1px); }
+.polaroid-img { width: 100%; aspect-ratio: 4/3; overflow: hidden; display: block; }
+.polaroid-img img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.88; transition: opacity 0.2s; }
+.polaroid:hover .polaroid-img img { opacity: 1; }
+.polaroid-caption { padding: 12px 16px 14px; }
+.polaroid-label { font-size: 11px; color: var(--ink); letter-spacing: 0.01em; line-height: 1.5; }
+.polaroid-tag { display: inline-block; margin-top: 6px; font-size: 7px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-media); border: 1px solid var(--c-media); padding: 2px 6px; border-radius: 2px; opacity: 0.7; }
+
+/* ── NOTE with image attachment — thumbnail inline ── */
+.node-with-image { display: flex; align-items: flex-start; gap: 10px; }
+.note-thumb { flex-shrink: 0; width: 36px; height: 36px; border-radius: 3px; overflow: hidden; border: 1px solid var(--border-2); opacity: 0.7; transition: opacity 0.2s; }
+.node-with-image:hover .note-thumb { opacity: 1; }
+.note-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.note-thumb-text { flex: 1; min-width: 0; }
+
+/* ── Gallery overlay ── */
+#gallery-overlay { position:fixed; inset:0; background:var(--bg); z-index:400; display:none; flex-direction:column; }
+#gallery-overlay.open { display:flex; }
+#gallery-canvas { flex:1; display:block; cursor:grab; }
+#gallery-canvas:active { cursor:grabbing; }
+#gallery-hud { position:absolute; top:0; left:0; right:0; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(to bottom, var(--bg) 60%, transparent); pointer-events:none; }
+#gallery-hud > * { pointer-events:auto; }
+.gallery-title { font-family:var(--mono); font-size:9px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-3); }
+.gallery-count { font-family:var(--mono); font-size:8px; color:var(--ink-3); opacity:0.6; }
+.gallery-close { font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; background:none; border:1px solid var(--border-2); color:var(--ink-3); padding:5px 10px; border-radius:3px; cursor:pointer; transition:all 0.15s; }
+.gallery-close:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ── NC attach image button ── */
+.nc-attach-row { display:flex; align-items:center; gap:8px; padding:6px 0 2px; }
+.nc-attach-btn { font-family:var(--mono); font-size:8px; letter-spacing:0.1em; text-transform:uppercase; background:none; border:1px solid var(--border-2); color:var(--ink-3); padding:4px 10px; border-radius:3px; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; gap:5px; }
+.nc-attach-btn:hover { border-color:var(--c-notes); color:var(--c-notes); }
+.nc-attach-btn.has-image { border-color:var(--c-media); color:var(--c-media); }
+.nc-attach-preview { width:28px; height:28px; border-radius:3px; object-fit:cover; border:1px solid var(--border-2); display:none; }
+.nc-attach-preview.visible { display:block; }
 .ac { color: var(--accent); }
 .em { font-style: italic; }
 .dim { opacity: 0.45; }
@@ -2096,22 +2134,26 @@ body.compose-open.compose-longform #compose-panel { max-height: 90vh; }
 
     <!-- MEDIA -->
     <div class="compose-mode-body" id="mode-media">
+      <div style="display:flex;gap:6px;padding:10px 20px 0;flex-shrink:0;">
+        <button class="nc-type-btn active" id="media-sub-image" onclick="setMediaSub('image')">image</button>
+        <button class="nc-type-btn" id="media-sub-video" onclick="setMediaSub('video')">video / audio</button>
+      </div>
       <div class="media-drop-zone" id="media-drop-zone">
         <input type="file" id="media-file-input" accept="image/*,video/*,audio/*" onchange="handleMediaFile(this)">
         <div class="media-drop-icon">⊕</div>
-        <div class="media-drop-hint">Upload image, video, or audio</div>
+        <div class="media-drop-hint" id="media-drop-hint">Upload image</div>
         <div class="media-drop-sub">click to browse · or drag &amp; drop</div>
       </div>
       <div class="media-preview-wrap" id="media-preview-wrap">
         <img class="media-preview-img" id="media-preview-img" src="" alt="">
         <div class="media-preview-clear" onclick="clearMediaFile()">✕</div>
       </div>
-      <input class="media-title-input" id="media-title-input" type="text" placeholder="Title" autocomplete="off">
+      <input class="media-title-input" id="media-title-input" type="text" placeholder="Caption" autocomplete="off">
       <textarea class="media-desc-input" id="media-desc-input" placeholder="Description — what is this, why does it matter?" rows="3"></textarea>
       <input class="media-url-input" id="media-url-input" type="url" placeholder="URL or source (optional)">
       <div class="compose-commit-bar">
-        <span class="compose-commit-hint">title required</span>
-        <button class="compose-commit-btn" style="background:var(--c-media)" onclick="commitMedia()">Save Media ▶</button>
+        <span class="compose-commit-hint">caption required</span>
+        <button class="compose-commit-btn" id="media-commit-btn" style="background:var(--c-media)" onclick="commitMedia()">Save Image ▶</button>
       </div>
     </div>
 
@@ -2182,7 +2224,7 @@ body.compose-open.compose-longform #compose-panel { max-height: 90vh; }
   <!-- ── LEFT SIDEBAR (desktop) ── -->
   <div id="sidebar">
     <div class="sidebar-brand" onclick="toggleTheme()" title="Toggle light / dark">
-      <span class="sidebar-brand-word">cortex</span>
+      <span class="sidebar-brand-word">wolfie</span>
       <span class="sidebar-brand-dot">·</span>
       <span class="sidebar-brand-sub">wolfie.life</span>
       <span class="sidebar-brand-theme" id="theme-badge">dark</span>
@@ -2262,7 +2304,7 @@ body.compose-open.compose-longform #compose-panel { max-height: 90vh; }
     <div id="stream-hud">
       <!-- Mobile brand (shown via CSS on mobile) -->
       <div id="hud-brand" onclick="toggleTheme()" title="Toggle theme">
-        <span class="hud-brand-word">cortex</span><span class="hud-brand-dot">·</span>
+        <span class="hud-brand-word">wolfie</span><span class="hud-brand-dot">·</span>
       </div>
       <!-- Desktop filter label -->
       <span class="hud-filter" id="hud-filter-label">All clusters · <span id="hud-count">16</span> nodes</span>
@@ -2273,6 +2315,7 @@ body.compose-open.compose-longform #compose-panel { max-height: 90vh; }
       <div class="hud-right-controls">
         <button class="hud-ctrl-btn" id="hud-rails-btn" onclick="toggleRails()" title="Toggle rails">⊢⊣</button>
         <button class="hud-ctrl-btn" onclick="openField()">◈ Field</button>
+        <button class="hud-ctrl-btn" id="hud-gallery-btn" onclick="openGallery()">⊞ Gallery</button>
         <button class="hud-ctrl-btn" id="hud-new-btn" onclick="hudNewAction()">+ New</button>
       </div>
     </div>
@@ -2315,6 +2358,12 @@ body.compose-open.compose-longform #compose-panel { max-height: 90vh; }
           <button class="nc-type-btn active"   data-ntype="body"   onclick="ncSetType(this)">body</button>
           <button class="nc-type-btn"         data-ntype="pull"   onclick="ncSetType(this)">pull</button>
           <button class="nc-type-btn"         data-ntype="label"  onclick="ncSetType(this)">label</button>
+        </div>
+        <div class="nc-attach-row">
+          <input type="file" id="nc-attach-file" accept="image/*" style="display:none" onchange="ncAttachFile(this)">
+          <button class="nc-attach-btn" id="nc-attach-btn" onclick="document.getElementById('nc-attach-file').click()">⊕ attach image</button>
+          <img id="nc-attach-preview" class="nc-attach-preview" alt="">
+          <button id="nc-attach-clear" style="display:none;background:none;border:none;color:var(--ink-3);cursor:pointer;font-size:10px;padding:2px 4px;" onclick="ncClearAttach()">✕</button>
         </div>
         <div id="nc-fmt-bar">
           <button class="nc-fmt-btn" title="Bold (⌘B)" onclick="ncFmt('bold')"><b>B</b></button>
@@ -2585,134 +2634,54 @@ const CLUSTERS = {
 };
 
 let nodes = [
-
-  // ── NOTES ──────────────────────────────────────────────────────
-  { id:1, type:'ch', cluster:'notes', ch:1, title:'Thinking Out Loud', sub:'Notes · 9 nodes' },
-
-  { id:2, type:'poster', cluster:'notes',
-    text:'The sentence is the **primitive**.\nEverything else is *composition.*' },
-
-  { id:3, type:'body', cluster:'notes',
-    text:'Most note software optimizes for capture. Get it in fast, sort it out later. The problem is that later never comes — the pile grows and the thinking doesn\'t happen. Cortex inverts this. The classification step is the point, not the friction.' },
-
-  { id:4, type:'pull', cluster:'notes',
-    text:'When you decide a sentence is a poster, you\'ve understood something about it.' },
-
-  { id:5, type:'body', cluster:'notes',
-    text:'The rendering contract separates content from context. Eight CSS variables. A node declared as [poster] looks different in a stream, in a document, in a field view — but the content is the same primitive. The display is a parameter, not a property.' },
-
-  { id:6, type:'body', cluster:'notes',
-    text:'Presence Design is not UX. UX optimizes friction. Presence Design asks what the system *believes* about its users — and then makes that belief legible in every interaction.' },
-
-  { id:7, type:'pull', cluster:'notes',
-    text:'A system that feels inhabited is one where the designer\'s attention is still present in the room.' },
-
-  { id:8, type:'body', cluster:'notes',
-    text:'The wolfie engine is a grammar. Content nodes declare their type — [body], [poster], [pull], [label] — and the rendering contract handles the rest. The gap between the current state and a packaged skill is one SKILL.md file.' },
-
-  { id:9, type:'label', cluster:'notes', text:'On Tools · Philosophy' },
-
-  { id:10, type:'body', cluster:'notes',
-    text:'The closest analogy to what this app does is a compositor\'s table. Not a notebook. Not a filing cabinet. A surface where things are laid out and their relationships become visible through proximity and weight.' },
-
-  { id:11, type:'pull', cluster:'notes',
-    text:'Keep captures. Cortex clarifies.' },
-
-  // ── TASKS ──────────────────────────────────────────────────────
-  { id:12, type:'ch', cluster:'tasks', ch:2, title:'The Queue', sub:'Tasks · 8 nodes' },
-
-  { id:13, type:'label', cluster:'tasks', text:'Active' },
-
-  { id:14, type:'spec', cluster:'tasks', key:'Send', val:'cortex URL to Dario Amodei', done:false },
-  { id:15, type:'spec', cluster:'tasks', key:'Write', val:'wolfie.life about page', done:false },
-  { id:16, type:'spec', cluster:'tasks', key:'Build', val:'SKILL.md for wolfie engine', done:false },
-  { id:17, type:'spec', cluster:'tasks', key:'Record', val:'90-second screen demo of cortex', done:false },
-  { id:18, type:'spec', cluster:'tasks', key:'Publish', val:'reasonandresolution.com v2', done:false },
-
-  { id:19, type:'label', cluster:'tasks', text:'Done' },
-
-  { id:20, type:'spec', cluster:'tasks', key:'Build', val:'field view with magnetic lerp', done:true },
-  { id:21, type:'spec', cluster:'tasks', key:'Ship', val:'parse protocol in longform compose', done:true },
-  { id:22, type:'spec', cluster:'tasks', key:'Implement', val:'holistic spine log across all clusters', done:true },
-
-  // ── LONG-FORM ──────────────────────────────────────────────────
-  { id:23, type:'ch', cluster:'long', ch:3, title:'Extended Field', sub:'Long-form · 3 nodes' },
-
-  { id:24, type:'label', cluster:'long', text:'Architecture' },
-
-  { id:25, type:'longform', cluster:'long',
-    title:'What Cortex Is',
-    excerpt:'A working definition of the app — four modes of attention, one rendering contract, zero hierarchy. The philosophical case for intentionality as a core feature rather than a side effect.',
-    nodes:[
-      { type:'poster', text:'Four modes of attention.\nOne rendering contract.\nZero hierarchy.' },
-      { type:'body',   text:'Cortex is not a document editor. It is not a note-taking app. It sits in a space between those things that does not have a name yet — closer to how a composer works than how a writer works. You hum something into the recorder. Then you figure out what the parts are.' },
-      { type:'pull',   text:'The writing phase and the structuring phase are genuinely separate cognitive acts. Most tools collapse them into one.' },
-      { type:'label',  text:'Notes · The immediate' },
-      { type:'body',   text:'Notes is a blank line. You write one sentence and decide what kind it is. The classification is a display decision — poster means this goes large, pull means this gets isolated, body means this is the thought plainly stated. The stream assembles above you as you work.' },
-      { type:'label',  text:'Tasks · The committed' },
-      { type:'body',   text:'A task is a key-value pair with a priority and a done state. That minimalism is intentional. Tasks are not notes — they are commitments. Completed tasks move to the archive, not the void. Done work is a record of movement.' },
-      { type:'label',  text:'Long-form · The deliberate' },
-      { type:'body',   text:'Write freely. Parse. Shape. The compose panel has two phases — a blank textarea with no structure imposed, then a card canvas where sentences become typed nodes you reorder and reclassify before anything commits to the stream. The document arrives shaped rather than assembled.' },
-      { type:'label',  text:'Field · The spatial' },
-      { type:'body',   text:'The field view is not a mode of input. It is a mode of orientation. Nodes appear as dots in a canvas, grouped by cluster, with ghost previews that drift toward your cursor. Unhurried. Almost meditative. No other consumer note app has anything like it.' },
-      { type:'pull',   text:'The field is what the system looks like when it\'s thinking rather than working.' },
-    ]
-  },
-
-  { id:26, type:'longform', cluster:'long',
-    title:'The Wolfie Engine',
-    excerpt:'On the grammar underlying cortex, wolfie.love, reasonandresolution.com, and ifimaybefrank.com. One sentence primitive, eight CSS variables, infinite rendering contexts.',
-    nodes:[
-      { type:'poster', text:'The sentence is the interface.\nThe rendering context is a *parameter.*' },
-      { type:'body',   text:'Every property in the wolfie ecosystem — cortex, wolfie.love, reasonandresolution.com, ifimaybefrank.com — runs the same grammar. Content nodes declare their type. A rendering contract of eight CSS variables separates content from presentation. The same node renders differently in a stream, a document, a field, a HUD.' },
-      { type:'pull',   text:'Structure naked before aesthetic is applied. Utility first, emotional vessel second.' },
-      { type:'body',   text:'The engine was built in the immediate aftermath of losing Wolfgang. The platform took his name. The architecture proves the thesis by existing: a system with enough internal logic to hold grief, work, and argument in the same container without collapsing.' },
-      { type:'body',   text:'The gap between the current state and a packaged wolfie-engine skill — something Anthropic could use as a domain-specific primitive — is one SKILL.md file. The grammar is already documented in the structure of every property it powers.' },
-    ]
-  },
-
-  { id:27, type:'longform', cluster:'long',
-    title:'Reason & Resolution',
-    excerpt:'A narrative redesign of the Anthropic RSP v3. The argument that governance documents are interfaces, and that interfaces carry epistemic weight. Built as a direct pitch.',
+  { id:1,  type:'ch',      cluster:'media', ch:1, title:'Moving Image', sub:'Media · 4 nodes' },
+  { id:2,  type:'label',   cluster:'media', text:'Media · Saved' },
+  { id:3,  type:'media',   cluster:'media', title:'The Sentence Is The Interface', src:null, thumbBg:'#1a1e2a',
+    caption:'A talk on narrative primitives and how the sentence became the unit of meaning in modern publishing platforms.' },
+  { id:4,  type:'body',    cluster:'media', text:'The architecture of attention is a design problem. Every medium that has survived long enough leaves a residue — a shape that tells you what its makers believed about how people think.' },
+  { id:5,  type:'pull',    cluster:'media', text:'The frame is never neutral. It is always an argument.' },
+  { id:6,  type:'media',   cluster:'media', title:'Mondrian and the Grid', src:null, thumbBg:'#1a1412',
+    caption:'Proportionality as a design philosophy. How Mondrian\'s primary logic maps to content systems.' },
+  { id:7,  type:'ch',      cluster:'notes', ch:2, title:'Thinking Out Loud', sub:'Notes · 7 nodes' },
+  { id:8,  type:'label',   cluster:'notes', text:'Notes · Wolfie Platform' },
+  { id:9,  type:'poster',  cluster:'notes', text:'The sentence is the **primitive**.\nEverything else is *composition.*' },
+  { id:10, type:'body',    cluster:'notes', text:'Utility first, emotional vessel second. The platform proves the thesis by existing. You are reading the argument.' },
+  { id:11, type:'body',    cluster:'notes', text:'The ghost iframe is not a preview. It is a portal. The spatial cortex makes this literal — every node is a window into a depth layer, not just a card on a screen.' },
+  { id:12, type:'pull',    cluster:'notes', text:'What would it mean for the reading surface to know what you are feeling while you read?' },
+  { id:13, type:'body',    cluster:'notes', text:'Presence Design: the discipline of making systems that feel inhabited. Not populated — *inhabited.* The difference is agency.' },
+  { id:14, type:'ch',      cluster:'tasks', ch:3, title:'The Queue', sub:'Tasks · 3 nodes' },
+  { id:15, type:'label',   cluster:'tasks', text:'Tasks · Active' },
+  { id:16, type:'spec',    cluster:'tasks', key:'Ship', val:'cortex desktop experience', done:false },
+  { id:17, type:'spec',    cluster:'tasks', key:'Write', val:'spatial cortex architecture doc', done:false },
+  { id:18, type:'spec',    cluster:'tasks', key:'Send', val:'/institute when Anthropic posts', done:true },
+  { id:19, type:'ch',      cluster:'long', ch:4, title:'Extended Field', sub:'Long-form · 2 nodes' },
+  { id:20, type:'label',   cluster:'long', text:'Long-form · RSP Analysis' },
+  { id:21, type:'longform',cluster:'long', title:'Reason & Resolution',
+    excerpt:'A narrative redesign of the Anthropic RSP v3. Six chapters. The argument that governance documents are interfaces, and that interfaces carry epistemic weight.',
     nodes:[
       { type:'poster', text:'Policy documents are **interfaces**.\nHow they *feel* shapes how they are obeyed.' },
-      { type:'body',   text:'The RSP v3 describes what Anthropic will do when AI reaches certain capability thresholds. It was written in the language of legal caution. That language creates a particular kind of reader — one who hedges, qualifies, defers. The redesign asks what happens when the same commitments are written to be inhabited rather than filed.' },
+      { type:'body',   text:'The RSP v3 is a governance artifact. It describes what Anthropic will do when AI reaches certain capability thresholds. But it was written in the language of legal caution, not the language of commitment.' },
       { type:'pull',   text:'The medium is the argument. A document that reads like a hedge creates a reader who treats it like one.' },
-      { type:'body',   text:'Six chapters. Dispatch analytics. Chapter progress. Ghost overlays. A HUD structured as a complete argument in one eyeline. The interface is not decoration — it is the claim that governance can have presence.' },
+      { type:'body',   text:'The redesign asks: what if the document was built to be read? Not filed, not published — read. Sentence by sentence. Chapter by chapter.' },
     ]
   },
-
-  // ── MEDIA ──────────────────────────────────────────────────────
-  { id:28, type:'ch', cluster:'media', ch:4, title:'Reference', sub:'Media · 4 nodes' },
-
-  { id:29, type:'label', cluster:'media', text:'The Ecosystem' },
-
-  { id:30, type:'media', cluster:'media',
-    title:'wolfie.love', url:'https://wolfie.love', thumbBg:'#0e0c0a',
-    caption:'The platform engine and personal portfolio hub. The origin. Named for Wolfgang.' },
-
-  { id:31, type:'media', cluster:'media',
-    title:'reasonandresolution.com', url:'https://reasonandresolution.com', thumbBg:'#0a0e14',
-    caption:'A narrative redesign of the Anthropic RSP v3. Built as a direct pitch. Six chapters, dispatch analytics, ghost overlays.' },
-
-  { id:32, type:'media', cluster:'media',
-    title:'ifimaybefrank.com', url:'https://ifimaybefrank.com', thumbBg:'#0e0a0c',
-    caption:'Personal manifesto and portfolio. Warm typographic environment. Hover image panels. The first surface to prove the wolfie engine thesis.' },
-
-  { id:33, type:'media', cluster:'media',
-    title:'reasonably.cc', url:'https://reasonably.cc', thumbBg:'#0a0a0e',
-    caption:'High-contrast sports broadcast aesthetic. A thinking notebook and structured AI prompting interface. Oriented inward.' },
-
+  { id:22, type:'longform',cluster:'long', title:'The Presence Designer',
+    excerpt:'On the discipline of making systems feel inhabited. A working definition of Presence Design as distinct from UX, product, and systems thinking.',
+    nodes:[
+      { type:'poster', text:'Presence Design is not UX.\nIt is the discipline of *inhabited* systems.' },
+      { type:'body',   text:'UX optimizes friction. Presence Design asks what the system believes. Every design decision encodes a position on what users are — and what they deserve.' },
+    ]
+  },
 ];
 
 let activeFilter = 'all';
 let currentDetailNode = null;
 let _lastDetailNodeId = null;
-let nextId = 34;
+let nextId = 23;
 let composeNoteType = 'body';
 let composeNoteCluster = 'notes';
 let composeTaskPri = 'med';
-let fieldCluster = 'notes'; // active cluster shown in field view
+let fieldCluster = 'media'; // active cluster shown in field view
 
 // ═══ THEME ═══
 function toggleRails() {
@@ -2816,11 +2785,23 @@ function renderStream() {
       html += `<div class="node label" data-id="${node.id}" ${click}>${node.text}${dot}</div>`;
     } else if (node.type === 'poster') {
       const lines = node.text.split('\n').map(l => applyInline(l)).join('<br>');
-      html += `<div class="node poster" data-id="${node.id}" ${click}>${lines}${dot}</div>`;
+      if (node.image) {
+        html += `<div class="node poster node-with-image" data-id="${node.id}" ${click}><div class="note-thumb"><img src="${node.image}" alt=""></div><div class="note-thumb-text">${lines}${dot}</div></div>`;
+      } else {
+        html += `<div class="node poster" data-id="${node.id}" ${click}>${lines}${dot}</div>`;
+      }
     } else if (node.type === 'body') {
-      html += `<div class="node body" data-id="${node.id}" ${click}>${applyInline(node.text)}${dot}</div>`;
+      if (node.image) {
+        html += `<div class="node body node-with-image" data-id="${node.id}" ${click}><div class="note-thumb"><img src="${node.image}" alt=""></div><div class="note-thumb-text">${applyInline(node.text)}${dot}</div></div>`;
+      } else {
+        html += `<div class="node body" data-id="${node.id}" ${click}>${applyInline(node.text)}${dot}</div>`;
+      }
     } else if (node.type === 'pull') {
-      html += `<div class="node pull" data-id="${node.id}" ${click}>${applyInline(node.text)}</div>`;
+      if (node.image) {
+        html += `<div class="node pull node-with-image" data-id="${node.id}" ${click}><div class="note-thumb"><img src="${node.image}" alt=""></div><div class="note-thumb-text">${applyInline(node.text)}</div></div>`;
+      } else {
+        html += `<div class="node pull" data-id="${node.id}" ${click}>${applyInline(node.text)}</div>`;
+      }
     } else if (node.type === 'spec') {
       const ds = node.done ? ' style="text-decoration:line-through;opacity:0.4"' : '';
       const checkDone = node.done ? 'done' : '';
@@ -2841,6 +2822,17 @@ function renderStream() {
           <div class="media-info">
             <span class="media-title">${node.title}</span>
             <span class="media-type">video</span>
+          </div>
+        </div>
+      </div>`;
+    } else if (node.type === 'image') {
+      const imgTag = node.src ? `<img src="${node.src}" alt="${node.title||''}">` : `<div style="width:100%;aspect-ratio:4/3;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:24px;opacity:0.2">⊞</div>`;
+      html += `<div class="node image-node" data-id="${node.id}" ${click}>
+        <div class="polaroid">
+          <div class="polaroid-img">${imgTag}</div>
+          <div class="polaroid-caption">
+            <div class="polaroid-label">${node.title||''}</div>
+            <span class="polaroid-tag">image</span>
           </div>
         </div>
       </div>`;
@@ -3003,6 +2995,11 @@ function renderSpine() {
         html += `<div class="spine-node" onclick="spineScrollTo(${node.id})">
           <span class="spine-node-type">media</span>
           <span class="spine-node-text">${(node.title||node.url||'').substring(0,36)}</span>
+        </div>`;
+      } else if (node.type === 'image') {
+        html += `<div class="spine-node" onclick="spineScrollTo(${node.id})">
+          <span class="spine-node-type" style="color:var(--c-media);border-color:var(--c-media)">image</span>
+          <span class="spine-node-text">${(node.title||'').substring(0,36)}</span>
         </div>`;
       }
     });
@@ -3189,6 +3186,36 @@ function ncKeydown(e) {
   if (e.metaKey && e.key === 'u') { e.preventDefault(); ncFmt('underline'); }
 }
 
+let _ncAttachSrc = null;
+
+function ncAttachFile(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    _ncAttachSrc = e.target.result;
+    const preview = document.getElementById('nc-attach-preview');
+    const clearBtn = document.getElementById('nc-attach-clear');
+    const attachBtn = document.getElementById('nc-attach-btn');
+    preview.src = _ncAttachSrc;
+    preview.classList.add('visible');
+    if (clearBtn) clearBtn.style.display = '';
+    if (attachBtn) { attachBtn.classList.add('has-image'); attachBtn.textContent = '⊕ image attached'; }
+  };
+  reader.readAsDataURL(file);
+}
+
+function ncClearAttach() {
+  _ncAttachSrc = null;
+  const preview = document.getElementById('nc-attach-preview');
+  const clearBtn = document.getElementById('nc-attach-clear');
+  const attachBtn = document.getElementById('nc-attach-btn');
+  const fileInput = document.getElementById('nc-attach-file');
+  if (preview) { preview.src = ''; preview.classList.remove('visible'); }
+  if (clearBtn) clearBtn.style.display = 'none';
+  if (attachBtn) { attachBtn.classList.remove('has-image'); attachBtn.textContent = '⊕ attach image'; }
+  if (fileInput) fileInput.value = '';
+}
+
 function ncCommit() {
   const inp = document.getElementById('nc-input');
   if (!inp) return;
@@ -3197,8 +3224,11 @@ function ncCommit() {
   if (!rawText) return;
   const hasFormatting = /<(b|i|u|s|strong|em)[^>]*>/i.test(html);
   const text = hasFormatting ? html : rawText;
-  nodes.push({ id:nextId++, type:ncType, cluster:'notes', text, _user:true });
+  const newNode = { id:nextId++, type:ncType, cluster:'notes', text, _user:true };
+  if (_ncAttachSrc) { newNode.image = _ncAttachSrc; newNode.imageCaption = ''; }
+  nodes.push(newNode);
   inp.innerHTML = '';
+  ncClearAttach();
   renderNcStream(); renderStream(); renderSpine(); updateNavCounts(); saveState();
   const s = document.getElementById('nc-stream');
   if (s) setTimeout(() => s.scrollTo({ top:s.scrollHeight, behavior:'smooth' }), 40);
@@ -3220,11 +3250,23 @@ function renderNcStream() {
       html += `<div class="node label nc-deletable" data-id="${id}" ${click}>${node.text}${dot}${delBtn}</div>`;
     } else if (node.type === 'poster') {
       const lines = node.text.split('\n').map(l => applyInline(l)).join('<br>');
-      html += `<div class="node poster nc-deletable" data-id="${id}" ${click}>${lines}${dot}${delBtn}</div>`;
+      if (node.image) {
+        html += `<div class="node poster nc-deletable node-with-image" data-id="${id}" ${click}><div class="note-thumb"><img src="${node.image}" alt=""></div><div class="note-thumb-text">${lines}${dot}</div>${delBtn}</div>`;
+      } else {
+        html += `<div class="node poster nc-deletable" data-id="${id}" ${click}>${lines}${dot}${delBtn}</div>`;
+      }
     } else if (node.type === 'body') {
-      html += `<div class="node body nc-deletable" data-id="${id}" ${click}>${applyInline(node.text)}${dot}${delBtn}</div>`;
+      if (node.image) {
+        html += `<div class="node body nc-deletable node-with-image" data-id="${id}" ${click}><div class="note-thumb"><img src="${node.image}" alt=""></div><div class="note-thumb-text">${applyInline(node.text)}${dot}</div>${delBtn}</div>`;
+      } else {
+        html += `<div class="node body nc-deletable" data-id="${id}" ${click}>${applyInline(node.text)}${dot}${delBtn}</div>`;
+      }
     } else if (node.type === 'pull') {
-      html += `<div class="node pull nc-deletable" data-id="${id}" ${click}>${applyInline(node.text)}${delBtn}</div>`;
+      if (node.image) {
+        html += `<div class="node pull nc-deletable node-with-image" data-id="${id}" ${click}><div class="note-thumb"><img src="${node.image}" alt=""></div><div class="note-thumb-text">${applyInline(node.text)}</div>${delBtn}</div>`;
+      } else {
+        html += `<div class="node pull nc-deletable" data-id="${id}" ${click}>${applyInline(node.text)}${delBtn}</div>`;
+      }
     }
   });
   inner.innerHTML = html || '<div class="stream-empty" style="padding:40px 0">Notes canvas is empty.<br><span style="opacity:0.5">Begin writing below.</span></div>';
@@ -3646,6 +3688,14 @@ function openDive(nodeId) {
         <div class="dive-media-title">${node.title}</div>
         <div class="dive-media-sub">${node.caption||node.description||''}</div>
         ${node.url?`<a href="${node.url}" target="_blank" style="display:inline-block;margin-top:10px;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3);text-decoration:none;border-bottom:1px solid var(--border-2)">Source ↗</a>`:''}
+      </div>`;
+  } else if (node.type === 'image') {
+    const imgEl = node.src ? `<img src="${node.src}" style="width:100%;display:block;border-radius:4px;" alt="${node.title||''}">` : `<div style="aspect-ratio:4/3;background:var(--bg-3);display:flex;align-items:center;justify-content:center;opacity:0.3;font-size:32px">⊞</div>`;
+    content = `
+      <div style="padding:0 0 0">${imgEl}</div>
+      <div class="dive-media-meta">
+        <div class="dive-media-title">${node.title||''}</div>
+        <div class="dive-media-sub">${node.caption||''}</div>
       </div>`;
   } else if (node.type === 'longform') {
     const innerNodes = (node.nodes||[]).map(n => {
@@ -4187,13 +4237,19 @@ function commitMedia() {
   const fileInput = document.getElementById('media-file-input');
   const mediaType = fileInput.files[0]?.type || '';
   const url = document.getElementById('media-url-input').value.trim();
-  nodes.push({ id:nextId++, type:'media', cluster:'media', title, thumbBg:'#1a1a1a',
-    src: (mediaImg.src && mediaImg.src !== window.location.href) ? mediaImg.src : null,
-    mediaType,
-    url: url || null,
-    caption: document.getElementById('media-desc-input').value.trim(),
-    description: document.getElementById('media-desc-input').value.trim(),
-    _user:true });
+  const isImageSub = document.getElementById('media-sub-image')?.classList.contains('active');
+  const src = (mediaImg.src && mediaImg.src !== window.location.href) ? mediaImg.src : null;
+  
+  if (isImageSub) {
+    nodes.push({ id:nextId++, type:'image', cluster:'media', title, src, _user:true,
+      caption: document.getElementById('media-desc-input').value.trim() });
+  } else {
+    nodes.push({ id:nextId++, type:'media', cluster:'media', title, thumbBg:'#1a1a1a',
+      src, mediaType, url: url || null,
+      caption: document.getElementById('media-desc-input').value.trim(),
+      description: document.getElementById('media-desc-input').value.trim(),
+      _user:true });
+  }
   document.getElementById('media-title-input').value = '';
   document.getElementById('media-desc-input').value = '';
   document.getElementById('media-url-input').value = '';
@@ -4519,6 +4575,246 @@ function clearMediaFile() {
   document.getElementById('media-preview-img').src = '';
   document.getElementById('media-file-input').value = '';
 }
+
+// ── Media sub-type toggle ──
+let _mediaSub = 'image';
+function setMediaSub(sub) {
+  _mediaSub = sub;
+  document.getElementById('media-sub-image')?.classList.toggle('active', sub === 'image');
+  document.getElementById('media-sub-video')?.classList.toggle('active', sub === 'video');
+  const hint = document.getElementById('media-drop-hint');
+  const accept = sub === 'image' ? 'image/*' : 'image/*,video/*,audio/*';
+  document.getElementById('media-file-input').accept = accept;
+  if (hint) hint.textContent = sub === 'image' ? 'Upload image' : 'Upload video or audio';
+  const btn = document.getElementById('media-commit-btn');
+  if (btn) btn.textContent = sub === 'image' ? 'Save Image ▶' : 'Save Media ▶';
+  const titleInput = document.getElementById('media-title-input');
+  if (titleInput) titleInput.placeholder = sub === 'image' ? 'Caption' : 'Title';
+}
+
+// ═══ GALLERY — canvas grid across all image sources ═══
+const _GALLERY = (function() {
+  let canvas, ctx, items = [], scale = 1, ox = 0, oy = 0;
+  let dragging = false, lastX = 0, lastY = 0, velX = 0, velY = 0, rafId = 0;
+  let listening = false;
+  const TILE = 220, GAP = 12, COLS = 5, RADIUS = 6;
+  const LABEL_H = 38;
+
+  function gridW() { return COLS * (TILE + GAP) - GAP; }
+  function totalRows() { return Math.ceil(items.length / COLS); }
+  function totalH() { return totalRows() * (TILE + GAP + LABEL_H) - GAP; }
+
+  function clamp() {
+    if (!canvas) return;
+    const scaledW = gridW() * scale, scaledH = totalH() * scale;
+    const maxOx = 48, minOx = Math.min(48, canvas.width - scaledW - 48);
+    const maxOy = 64, minOy = Math.min(64, canvas.height - scaledH - 48);
+    ox = Math.max(minOx, Math.min(maxOx, ox));
+    oy = Math.max(minOy, Math.min(maxOy, oy));
+  }
+
+  const imgCache = {};
+  function loadImg(src, cb) {
+    if (imgCache[src]) { cb(imgCache[src]); return; }
+    const im = new Image(); im.crossOrigin = 'anonymous';
+    im.onload = () => { imgCache[src] = im; cb(im); };
+    im.onerror = () => { imgCache[src] = null; cb(null); };
+    im.src = src;
+  }
+
+  function draw() {
+    if (!canvas || !ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0a0a0a';
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const ink3 = getComputedStyle(document.documentElement).getPropertyValue('--ink-3').trim() || '#808080';
+    const inkColor = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#fff';
+    const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-2').trim() || 'rgba(255,255,255,0.1)';
+
+    items.forEach((item, i) => {
+      const col = i % COLS, row = Math.floor(i / COLS);
+      const x = ox + (col * (TILE + GAP)) * scale;
+      const y = oy + (row * (TILE + GAP + LABEL_H)) * scale;
+      const tw = TILE * scale, th = TILE * scale;
+
+      // card bg
+      ctx.save();
+      const bg2 = getComputedStyle(document.documentElement).getPropertyValue('--bg-2').trim() || '#111';
+      ctx.fillStyle = bg2;
+      roundRect(ctx, x, y, tw, th + LABEL_H * scale, RADIUS * scale);
+      ctx.fill();
+
+      // border
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 1;
+      roundRect(ctx, x, y, tw, th + LABEL_H * scale, RADIUS * scale);
+      ctx.stroke();
+
+      // image
+      if (item._img) {
+        ctx.save();
+        roundRect(ctx, x, y, tw, th, RADIUS * scale);
+        ctx.clip();
+        const iw = item._img.naturalWidth, ih = item._img.naturalHeight;
+        const iAR = iw / ih, tAR = TILE / TILE;
+        let sw, sh, sx, sy;
+        if (iAR > tAR) { sh = ih; sw = sh * tAR; sx = (iw - sw) / 2; sy = 0; }
+        else { sw = iw; sh = sw / tAR; sx = 0; sy = (ih - sh) / 2; }
+        ctx.globalAlpha = 0.88;
+        ctx.drawImage(item._img, sx, sy, sw, sh, x, y, tw, th);
+        ctx.restore();
+      } else {
+        // placeholder
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-3').trim() || '#1a1a1a';
+        roundRect(ctx, x, y, tw, th, RADIUS * scale);
+        ctx.fill();
+        ctx.fillStyle = ink3;
+        ctx.font = `${20 * scale}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText('⊞', x + tw/2, y + th/2 + 7 * scale);
+        ctx.globalAlpha = 1;
+      }
+
+      // label
+      ctx.fillStyle = inkColor;
+      ctx.font = `${10 * scale}px 'Space Mono', monospace`;
+      ctx.textAlign = 'left';
+      ctx.globalAlpha = 0.8;
+      const lx = x + 10 * scale, ly = y + th + 16 * scale;
+      const maxW = tw - 20 * scale;
+      let label = item.label || '';
+      if (ctx.measureText(label).width > maxW) {
+        while (label.length > 0 && ctx.measureText(label + '…').width > maxW) label = label.slice(0, -1);
+        label += '…';
+      }
+      ctx.fillText(label, lx, ly);
+      ctx.globalAlpha = 1;
+
+      ctx.restore();
+
+      // async load image
+      if (item.src && !item._loadStarted) {
+        item._loadStarted = true;
+        loadImg(item.src, img => { item._img = img; });
+      }
+    });
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function tick() {
+    if (!document.getElementById('gallery-overlay')?.classList.contains('open')) return;
+    if (!dragging && (Math.abs(velX) > 0.3 || Math.abs(velY) > 0.3)) {
+      ox += velX; oy += velY;
+      velX *= 0.92; velY *= 0.92;
+      clamp();
+    }
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function onDown(e) {
+    e.preventDefault(); dragging = true; velX = 0; velY = 0;
+    lastX = e.clientX; lastY = e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    velX = e.clientX - lastX; velY = e.clientY - lastY;
+    ox += velX; oy += velY;
+    lastX = e.clientX; lastY = e.clientY;
+    clamp();
+  }
+  function onUp(e) {
+    dragging = false;
+    // tap to navigate?
+    const mx = e.clientX, my = e.clientY;
+    if (Math.abs(velX) < 2 && Math.abs(velY) < 2) {
+      items.forEach((item, i) => {
+        const col = i % COLS, row = Math.floor(i / COLS);
+        const x = ox + (col * (TILE + GAP)) * scale;
+        const y = oy + (row * (TILE + GAP + LABEL_H)) * scale;
+        const tw = TILE * scale, th = (TILE + LABEL_H) * scale;
+        if (mx >= x && mx <= x + tw && my >= y && my <= y + th) {
+          if (item.nodeId) { closeGallery(); setTimeout(() => spineScrollTo(item.nodeId), 200); }
+        }
+      });
+    }
+  }
+  function onWheel(e) {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    scale = Math.max(0.4, Math.min(2.5, scale * delta));
+    clamp();
+  }
+
+  function collectItems() {
+    const seen = new Set(); const result = [];
+    // image nodes (media cluster)
+    nodes.filter(n => n.type === 'image' && n.src).forEach(n => {
+      if (seen.has(n.src)) return; seen.add(n.src);
+      result.push({ src: n.src, label: n.title || '', nodeId: n.id });
+    });
+    // note image attachments
+    nodes.filter(n => n.image).forEach(n => {
+      if (seen.has(n.image)) return; seen.add(n.image);
+      result.push({ src: n.image, label: n.imageCaption || (n.text||'').slice(0,30) || '', nodeId: n.id });
+    });
+    return result;
+  }
+
+  function open_(show) {
+    const overlay = document.getElementById('gallery-overlay');
+    if (!show) { overlay.classList.remove('open'); if (rafId) cancelAnimationFrame(rafId); rafId = 0; return; }
+    overlay.classList.add('open');
+    canvas = document.getElementById('gallery-canvas');
+    ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    items = collectItems();
+    const countEl = document.getElementById('gallery-count');
+    if (countEl) countEl.textContent = items.length + ' image' + (items.length !== 1 ? 's' : '');
+    scale = 1;
+    ox = (canvas.width - gridW()) / 2;
+    oy = 64;
+    clamp();
+
+    if (!listening) {
+      listening = true;
+      canvas.addEventListener('pointerdown', onDown, { passive: false });
+      canvas.addEventListener('pointermove', onMove, { passive: false });
+      canvas.addEventListener('pointerup',   onUp,   { passive: false });
+      canvas.addEventListener('wheel',       onWheel,{ passive: false });
+      window.addEventListener('resize', () => {
+        if (!canvas) return;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight; clamp();
+      });
+    }
+    if (rafId) cancelAnimationFrame(rafId);
+    tick();
+  }
+
+  return { open: open_ };
+})();
+
+function openGallery()  { _GALLERY.open(true); }
+function closeGallery() { _GALLERY.open(false); }
+
 document.addEventListener('DOMContentLoaded', () => {
   const zone = document.getElementById('media-drop-zone');
   if (zone) {
@@ -4564,8 +4860,11 @@ function initScrollNudge() {
 // ═══ KEYBOARD ═══
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    closeDetail(); closeDive(); closeField(); closeCompose(); closeParse();
+    closeDetail(); closeDive(); closeField(); closeGallery(); closeCompose(); closeParse();
     closeTasksPanel(); closeLongPanel(); closeSpineEditor(); closeNcGhost();
+  }
+  if (e.key.toLowerCase() === 'g' && !e.metaKey && !e.ctrlKey && !document.activeElement.matches('input,textarea,[contenteditable]')) {
+    e.preventDefault(); openGallery();
   }
   if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !document.activeElement.matches('input,textarea,[contenteditable]')) {
     if (activeFilter === 'notes') document.getElementById('nc-input')?.focus();
@@ -5246,6 +5545,16 @@ body.lfe-open #lfe-type-widget { display: block; }
   width: 100%; height: 1px;
   background: linear-gradient(to right, var(--border-2), transparent);
 }
+#lfe-ghost-type-bar {
+  display: flex; gap: 6px; padding: 10px 0 4px; flex-wrap: wrap;
+}
+.lfe-ghost-type-btn {
+  font-family: var(--mono); font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase;
+  background: none; border: 1px solid var(--border-2); color: var(--ink-3);
+  padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all 0.15s;
+}
+.lfe-ghost-type-btn:hover { border-color: var(--c-long); color: var(--c-long); }
+.lfe-ghost-type-btn.active { color: var(--c-long); border-color: var(--c-long); background: rgba(128,96,168,0.08); }
 #lfe-ghost-footer {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
@@ -5326,6 +5635,13 @@ body.lfe-open #lfe-type-widget { display: block; }
       <div id="lfe-ghost-inner">
         <div id="lfe-ghost-pill">body</div>
         <textarea id="lfe-ghost-ta" rows="3" spellcheck="true" placeholder="The thought, plainly stated."></textarea>
+        <div id="lfe-ghost-type-bar">
+          <button class="lfe-ghost-type-btn" data-lfetype="poster" onclick="lfeGhostSetType('poster')">poster</button>
+          <button class="lfe-ghost-type-btn active" data-lfetype="body" onclick="lfeGhostSetType('body')">body</button>
+          <button class="lfe-ghost-type-btn" data-lfetype="pull" onclick="lfeGhostSetType('pull')">pull</button>
+          <button class="lfe-ghost-type-btn" data-lfetype="label" onclick="lfeGhostSetType('label')">label</button>
+          <button class="lfe-ghost-type-btn" data-lfetype="spec" onclick="lfeGhostSetType('spec')">spec</button>
+        </div>
         <div id="lfe-ghost-rule"></div>
         <div id="lfe-ghost-footer">
           <div id="lfe-ghost-hints">
@@ -5490,6 +5806,7 @@ function lfeRenderCanvas() {
     card.className = 'lfe-card';
     card.dataset.idx = i;
     card.draggable = false;
+    card._lfeNode = n;  // direct reference so ghost can mutate type
 
     // Grip
     const grip = document.createElement('span');
@@ -5823,6 +6140,10 @@ function lfeScheduleCommit() {
     pill.textContent  = TYPE_LABELS[_ghostType] || _ghostType;
     ta.placeholder    = TYPE_PLACEHOLDERS[_ghostType] || 'Write…';
 
+    // Sync type bar
+    document.querySelectorAll('.lfe-ghost-type-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.lfetype === _ghostType));
+
     // Copy current value from source
     ta.value = inp.value || '';
 
@@ -5838,6 +6159,42 @@ function lfeScheduleCommit() {
       ta.setSelectionRange(ta.value.length, ta.value.length);
     });
   }
+
+  window.lfeGhostSetType = function(type) {
+    _ghostType = type;
+    const overlay = document.getElementById('lfe-ghost');
+    const pill    = document.getElementById('lfe-ghost-pill');
+    const ta      = document.getElementById('lfe-ghost-ta');
+    const submit  = document.getElementById('lfe-ghost-submit');
+    overlay.className = 'open ngo-' + type;
+    pill.textContent  = TYPE_LABELS[type] || type;
+    ta.placeholder    = TYPE_PLACEHOLDERS[type] || 'Write…';
+    if (submit) submit.textContent = type === 'break' ? 'Insert Break →' : 'Commit →';
+    document.querySelectorAll('.lfe-ghost-type-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.lfetype === type));
+    // Mutate the actual node object and re-render canvas + preview
+    if (_ghostSource) {
+      const card = _ghostSource.closest('.lfe-card');
+      if (card?._lfeNode) {
+        const idx = parseInt(card.dataset.idx);
+        const currentText = ta.value;
+        card._lfeNode.type = type;
+        lfeRenderCanvas();
+        lfeRenderPreview();
+        lfeScheduleCommit();
+        // Re-open ghost on the fresh card so editing continues uninterrupted
+        requestAnimationFrame(() => {
+          const newCard = document.querySelector(`.lfe-card[data-idx="${idx}"]`);
+          const newInp = newCard?.querySelector('.lfe-input');
+          if (newInp) {
+            newInp.value = currentText;
+            newInp.dispatchEvent(new Event('input', { bubbles: true }));
+            openGhost(newInp, type);
+          }
+        });
+      }
+    }
+  };
 
   function closeGhost(refocus) {
     if (!_ghostOpen) return;
@@ -6058,5 +6415,15 @@ document.addEventListener('keydown', e => {
   }
 }, true);
 </script>
+  <!-- ── Gallery overlay — canvas grid across all image sources ── -->
+  <div id="gallery-overlay" role="dialog" aria-label="Gallery">
+    <canvas id="gallery-canvas"></canvas>
+    <div id="gallery-hud">
+      <span class="gallery-title">⊞ Gallery</span>
+      <span class="gallery-count" id="gallery-count"></span>
+      <button class="gallery-close" onclick="closeGallery()">✕ close</button>
+    </div>
+  </div>
+
 </body>
 </html>
