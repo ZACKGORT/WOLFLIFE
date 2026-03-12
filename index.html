@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>cortex · wolfie.life</title>
+<title>cortex · wolfie.love</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -2182,7 +2182,7 @@ body.compose-open.compose-longform #compose-panel { max-height: 90vh; }
   <!-- ── LEFT SIDEBAR (desktop) ── -->
   <div id="sidebar">
     <div class="sidebar-brand" onclick="toggleTheme()" title="Toggle light / dark">
-      <span class="sidebar-brand-word">wolfie</span>
+      <span class="sidebar-brand-word">cortex</span>
       <span class="sidebar-brand-dot">·</span>
       <span class="sidebar-brand-sub">wolfie.life</span>
       <span class="sidebar-brand-theme" id="theme-badge">dark</span>
@@ -2262,7 +2262,7 @@ body.compose-open.compose-longform #compose-panel { max-height: 90vh; }
     <div id="stream-hud">
       <!-- Mobile brand (shown via CSS on mobile) -->
       <div id="hud-brand" onclick="toggleTheme()" title="Toggle theme">
-        <span class="hud-brand-word">wolfie</span><span class="hud-brand-dot">·</span>
+        <span class="hud-brand-word">cortex</span><span class="hud-brand-dot">·</span>
       </div>
       <!-- Desktop filter label -->
       <span class="hud-filter" id="hud-filter-label">All clusters · <span id="hud-count">16</span> nodes</span>
@@ -2585,54 +2585,134 @@ const CLUSTERS = {
 };
 
 let nodes = [
-  { id:1,  type:'ch',      cluster:'media', ch:1, title:'Moving Image', sub:'Media · 4 nodes' },
-  { id:2,  type:'label',   cluster:'media', text:'Media · Saved' },
-  { id:3,  type:'media',   cluster:'media', title:'The Sentence Is The Interface', src:null, thumbBg:'#1a1e2a',
-    caption:'A talk on narrative primitives and how the sentence became the unit of meaning in modern publishing platforms.' },
-  { id:4,  type:'body',    cluster:'media', text:'The architecture of attention is a design problem. Every medium that has survived long enough leaves a residue — a shape that tells you what its makers believed about how people think.' },
-  { id:5,  type:'pull',    cluster:'media', text:'The frame is never neutral. It is always an argument.' },
-  { id:6,  type:'media',   cluster:'media', title:'Mondrian and the Grid', src:null, thumbBg:'#1a1412',
-    caption:'Proportionality as a design philosophy. How Mondrian\'s primary logic maps to content systems.' },
-  { id:7,  type:'ch',      cluster:'notes', ch:2, title:'Thinking Out Loud', sub:'Notes · 7 nodes' },
-  { id:8,  type:'label',   cluster:'notes', text:'Notes · Wolfie Platform' },
-  { id:9,  type:'poster',  cluster:'notes', text:'The sentence is the **primitive**.\nEverything else is *composition.*' },
-  { id:10, type:'body',    cluster:'notes', text:'Utility first, emotional vessel second. The platform proves the thesis by existing. You are reading the argument.' },
-  { id:11, type:'body',    cluster:'notes', text:'The ghost iframe is not a preview. It is a portal. The spatial cortex makes this literal — every node is a window into a depth layer, not just a card on a screen.' },
-  { id:12, type:'pull',    cluster:'notes', text:'What would it mean for the reading surface to know what you are feeling while you read?' },
-  { id:13, type:'body',    cluster:'notes', text:'Presence Design: the discipline of making systems that feel inhabited. Not populated — *inhabited.* The difference is agency.' },
-  { id:14, type:'ch',      cluster:'tasks', ch:3, title:'The Queue', sub:'Tasks · 3 nodes' },
-  { id:15, type:'label',   cluster:'tasks', text:'Tasks · Active' },
-  { id:16, type:'spec',    cluster:'tasks', key:'Ship', val:'cortex desktop experience', done:false },
-  { id:17, type:'spec',    cluster:'tasks', key:'Write', val:'spatial cortex architecture doc', done:false },
-  { id:18, type:'spec',    cluster:'tasks', key:'Send', val:'/institute when Anthropic posts', done:true },
-  { id:19, type:'ch',      cluster:'long', ch:4, title:'Extended Field', sub:'Long-form · 2 nodes' },
-  { id:20, type:'label',   cluster:'long', text:'Long-form · RSP Analysis' },
-  { id:21, type:'longform',cluster:'long', title:'Reason & Resolution',
-    excerpt:'A narrative redesign of the Anthropic RSP v3. Six chapters. The argument that governance documents are interfaces, and that interfaces carry epistemic weight.',
+
+  // ── NOTES ──────────────────────────────────────────────────────
+  { id:1, type:'ch', cluster:'notes', ch:1, title:'Thinking Out Loud', sub:'Notes · 9 nodes' },
+
+  { id:2, type:'poster', cluster:'notes',
+    text:'The sentence is the **primitive**.\nEverything else is *composition.*' },
+
+  { id:3, type:'body', cluster:'notes',
+    text:'Most note software optimizes for capture. Get it in fast, sort it out later. The problem is that later never comes — the pile grows and the thinking doesn\'t happen. Cortex inverts this. The classification step is the point, not the friction.' },
+
+  { id:4, type:'pull', cluster:'notes',
+    text:'When you decide a sentence is a poster, you\'ve understood something about it.' },
+
+  { id:5, type:'body', cluster:'notes',
+    text:'The rendering contract separates content from context. Eight CSS variables. A node declared as [poster] looks different in a stream, in a document, in a field view — but the content is the same primitive. The display is a parameter, not a property.' },
+
+  { id:6, type:'body', cluster:'notes',
+    text:'Presence Design is not UX. UX optimizes friction. Presence Design asks what the system *believes* about its users — and then makes that belief legible in every interaction.' },
+
+  { id:7, type:'pull', cluster:'notes',
+    text:'A system that feels inhabited is one where the designer\'s attention is still present in the room.' },
+
+  { id:8, type:'body', cluster:'notes',
+    text:'The wolfie engine is a grammar. Content nodes declare their type — [body], [poster], [pull], [label] — and the rendering contract handles the rest. The gap between the current state and a packaged skill is one SKILL.md file.' },
+
+  { id:9, type:'label', cluster:'notes', text:'On Tools · Philosophy' },
+
+  { id:10, type:'body', cluster:'notes',
+    text:'The closest analogy to what this app does is a compositor\'s table. Not a notebook. Not a filing cabinet. A surface where things are laid out and their relationships become visible through proximity and weight.' },
+
+  { id:11, type:'pull', cluster:'notes',
+    text:'Keep captures. Cortex clarifies.' },
+
+  // ── TASKS ──────────────────────────────────────────────────────
+  { id:12, type:'ch', cluster:'tasks', ch:2, title:'The Queue', sub:'Tasks · 8 nodes' },
+
+  { id:13, type:'label', cluster:'tasks', text:'Active' },
+
+  { id:14, type:'spec', cluster:'tasks', key:'Send', val:'cortex URL to Dario Amodei', done:false },
+  { id:15, type:'spec', cluster:'tasks', key:'Write', val:'wolfie.life about page', done:false },
+  { id:16, type:'spec', cluster:'tasks', key:'Build', val:'SKILL.md for wolfie engine', done:false },
+  { id:17, type:'spec', cluster:'tasks', key:'Record', val:'90-second screen demo of cortex', done:false },
+  { id:18, type:'spec', cluster:'tasks', key:'Publish', val:'reasonandresolution.com v2', done:false },
+
+  { id:19, type:'label', cluster:'tasks', text:'Done' },
+
+  { id:20, type:'spec', cluster:'tasks', key:'Build', val:'field view with magnetic lerp', done:true },
+  { id:21, type:'spec', cluster:'tasks', key:'Ship', val:'parse protocol in longform compose', done:true },
+  { id:22, type:'spec', cluster:'tasks', key:'Implement', val:'holistic spine log across all clusters', done:true },
+
+  // ── LONG-FORM ──────────────────────────────────────────────────
+  { id:23, type:'ch', cluster:'long', ch:3, title:'Extended Field', sub:'Long-form · 3 nodes' },
+
+  { id:24, type:'label', cluster:'long', text:'Architecture' },
+
+  { id:25, type:'longform', cluster:'long',
+    title:'What Cortex Is',
+    excerpt:'A working definition of the app — four modes of attention, one rendering contract, zero hierarchy. The philosophical case for intentionality as a core feature rather than a side effect.',
+    nodes:[
+      { type:'poster', text:'Four modes of attention.\nOne rendering contract.\nZero hierarchy.' },
+      { type:'body',   text:'Cortex is not a document editor. It is not a note-taking app. It sits in a space between those things that does not have a name yet — closer to how a composer works than how a writer works. You hum something into the recorder. Then you figure out what the parts are.' },
+      { type:'pull',   text:'The writing phase and the structuring phase are genuinely separate cognitive acts. Most tools collapse them into one.' },
+      { type:'label',  text:'Notes · The immediate' },
+      { type:'body',   text:'Notes is a blank line. You write one sentence and decide what kind it is. The classification is a display decision — poster means this goes large, pull means this gets isolated, body means this is the thought plainly stated. The stream assembles above you as you work.' },
+      { type:'label',  text:'Tasks · The committed' },
+      { type:'body',   text:'A task is a key-value pair with a priority and a done state. That minimalism is intentional. Tasks are not notes — they are commitments. Completed tasks move to the archive, not the void. Done work is a record of movement.' },
+      { type:'label',  text:'Long-form · The deliberate' },
+      { type:'body',   text:'Write freely. Parse. Shape. The compose panel has two phases — a blank textarea with no structure imposed, then a card canvas where sentences become typed nodes you reorder and reclassify before anything commits to the stream. The document arrives shaped rather than assembled.' },
+      { type:'label',  text:'Field · The spatial' },
+      { type:'body',   text:'The field view is not a mode of input. It is a mode of orientation. Nodes appear as dots in a canvas, grouped by cluster, with ghost previews that drift toward your cursor. Unhurried. Almost meditative. No other consumer note app has anything like it.' },
+      { type:'pull',   text:'The field is what the system looks like when it\'s thinking rather than working.' },
+    ]
+  },
+
+  { id:26, type:'longform', cluster:'long',
+    title:'The Wolfie Engine',
+    excerpt:'On the grammar underlying cortex, wolfie.love, reasonandresolution.com, and ifimaybefrank.com. One sentence primitive, eight CSS variables, infinite rendering contexts.',
+    nodes:[
+      { type:'poster', text:'The sentence is the interface.\nThe rendering context is a *parameter.*' },
+      { type:'body',   text:'Every property in the wolfie ecosystem — cortex, wolfie.love, reasonandresolution.com, ifimaybefrank.com — runs the same grammar. Content nodes declare their type. A rendering contract of eight CSS variables separates content from presentation. The same node renders differently in a stream, a document, a field, a HUD.' },
+      { type:'pull',   text:'Structure naked before aesthetic is applied. Utility first, emotional vessel second.' },
+      { type:'body',   text:'The engine was built in the immediate aftermath of losing Wolfgang. The platform took his name. The architecture proves the thesis by existing: a system with enough internal logic to hold grief, work, and argument in the same container without collapsing.' },
+      { type:'body',   text:'The gap between the current state and a packaged wolfie-engine skill — something Anthropic could use as a domain-specific primitive — is one SKILL.md file. The grammar is already documented in the structure of every property it powers.' },
+    ]
+  },
+
+  { id:27, type:'longform', cluster:'long',
+    title:'Reason & Resolution',
+    excerpt:'A narrative redesign of the Anthropic RSP v3. The argument that governance documents are interfaces, and that interfaces carry epistemic weight. Built as a direct pitch.',
     nodes:[
       { type:'poster', text:'Policy documents are **interfaces**.\nHow they *feel* shapes how they are obeyed.' },
-      { type:'body',   text:'The RSP v3 is a governance artifact. It describes what Anthropic will do when AI reaches certain capability thresholds. But it was written in the language of legal caution, not the language of commitment.' },
+      { type:'body',   text:'The RSP v3 describes what Anthropic will do when AI reaches certain capability thresholds. It was written in the language of legal caution. That language creates a particular kind of reader — one who hedges, qualifies, defers. The redesign asks what happens when the same commitments are written to be inhabited rather than filed.' },
       { type:'pull',   text:'The medium is the argument. A document that reads like a hedge creates a reader who treats it like one.' },
-      { type:'body',   text:'The redesign asks: what if the document was built to be read? Not filed, not published — read. Sentence by sentence. Chapter by chapter.' },
+      { type:'body',   text:'Six chapters. Dispatch analytics. Chapter progress. Ghost overlays. A HUD structured as a complete argument in one eyeline. The interface is not decoration — it is the claim that governance can have presence.' },
     ]
   },
-  { id:22, type:'longform',cluster:'long', title:'The Presence Designer',
-    excerpt:'On the discipline of making systems feel inhabited. A working definition of Presence Design as distinct from UX, product, and systems thinking.',
-    nodes:[
-      { type:'poster', text:'Presence Design is not UX.\nIt is the discipline of *inhabited* systems.' },
-      { type:'body',   text:'UX optimizes friction. Presence Design asks what the system believes. Every design decision encodes a position on what users are — and what they deserve.' },
-    ]
-  },
+
+  // ── MEDIA ──────────────────────────────────────────────────────
+  { id:28, type:'ch', cluster:'media', ch:4, title:'Reference', sub:'Media · 4 nodes' },
+
+  { id:29, type:'label', cluster:'media', text:'The Ecosystem' },
+
+  { id:30, type:'media', cluster:'media',
+    title:'wolfie.love', url:'https://wolfie.love', thumbBg:'#0e0c0a',
+    caption:'The platform engine and personal portfolio hub. The origin. Named for Wolfgang.' },
+
+  { id:31, type:'media', cluster:'media',
+    title:'reasonandresolution.com', url:'https://reasonandresolution.com', thumbBg:'#0a0e14',
+    caption:'A narrative redesign of the Anthropic RSP v3. Built as a direct pitch. Six chapters, dispatch analytics, ghost overlays.' },
+
+  { id:32, type:'media', cluster:'media',
+    title:'ifimaybefrank.com', url:'https://ifimaybefrank.com', thumbBg:'#0e0a0c',
+    caption:'Personal manifesto and portfolio. Warm typographic environment. Hover image panels. The first surface to prove the wolfie engine thesis.' },
+
+  { id:33, type:'media', cluster:'media',
+    title:'reasonably.cc', url:'https://reasonably.cc', thumbBg:'#0a0a0e',
+    caption:'High-contrast sports broadcast aesthetic. A thinking notebook and structured AI prompting interface. Oriented inward.' },
+
 ];
 
 let activeFilter = 'all';
 let currentDetailNode = null;
 let _lastDetailNodeId = null;
-let nextId = 23;
+let nextId = 34;
 let composeNoteType = 'body';
 let composeNoteCluster = 'notes';
 let composeTaskPri = 'med';
-let fieldCluster = 'media'; // active cluster shown in field view
+let fieldCluster = 'notes'; // active cluster shown in field view
 
 // ═══ THEME ═══
 function toggleRails() {
