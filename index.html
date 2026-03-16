@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>wolfiegram · wolfie.life</title>
+<title>gram · wolfie.love</title>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -416,12 +416,15 @@ body.nodes-mode #nthumb{display:none!important;}
 #pageLoader.fade-out{opacity:0;pointer-events:none;}
 #pageLoader video{
   position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;opacity:.32;
+  object-fit:cover;opacity:1;
+  z-index:0;
 }
 .loader-overlay{
   position:relative;z-index:2;
   display:flex;flex-direction:column;align-items:center;gap:16px;
   pointer-events:none;user-select:none;
+  /* subtle shadow so text reads over any video frame */
+  filter:drop-shadow(0 0 20px rgba(0,0,0,.8));
 }
 .loader-paw{font-size:36px;animation:loaderPawPulse 1.4s ease-in-out infinite;}
 @keyframes loaderPawPulse{
@@ -449,7 +452,7 @@ body.nodes-mode #nthumb{display:none!important;}
 
 <div id="top">
   <div style="display:flex;align-items:center;gap:10px;">
-    <span class="brand">wolfiegram <em>·</em> zack.gort</span>
+    <span class="brand">gram <em>·</em> wolfie</span>
     <span id="chpill">all</span>
   </div>
   <div class="topright">
