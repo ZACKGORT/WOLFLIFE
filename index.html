@@ -24,13 +24,15 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
   --mood-defiant:#b84040;
   --mood-color:var(--mood-quiet);
   --mood-wash:rgba(154,168,184,0.03);
+  /* safe area — readable by JS via getComputedStyle */
+  --sab:env(safe-area-inset-bottom,0px);
 }
 body{background:#000;color:#fff;font-family:var(--mono);}
 body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E") 0/160px;opacity:.05;}
 
 /* TOPBAR */
-#top{position:fixed;top:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(0,0,0,.92);border-bottom:1px solid var(--b);z-index:1000;backdrop-filter:blur(12px);}
+#top{position:fixed;top:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(0,0,0,.92);border-bottom:1px solid var(--b);z-index:1000;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);will-change:transform;}
 .brand{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);}
 .brand em{font-style:normal;color:var(--accent);}
 .topright{display:flex;align-items:center;gap:7px;}
@@ -50,7 +52,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 #scat{width:100%;height:100%;display:block;}
 
 /* CANVAS AREA */
-#area{position:fixed;top:70px;left:0;right:0;bottom:40px;}
+#area{position:fixed;top:70px;left:0;right:0;bottom:calc(40px + env(safe-area-inset-bottom,0px));}
 /* canvas fills area */
 #cv{position:absolute;inset:0;display:block;touch-action:none;}
 
@@ -109,7 +111,7 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 #xy-left-pip,#xy-right-pip{position:absolute;}
 
 /* SPINE */
-#spine{position:fixed;bottom:0;left:0;right:0;height:40px;background:rgba(0,0,0,.92);border-top:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:700;backdrop-filter:blur(12px);}
+#spine{position:fixed;bottom:0;left:0;right:0;height:40px;background:rgba(0,0,0,.92);border-top:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 16px;padding-bottom:env(safe-area-inset-bottom,0px);z-index:700;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);will-change:transform;}
 .spills{display:flex;align-items:center;gap:5px;overflow-x:auto;scrollbar-width:none;flex:1;}
 .spills::-webkit-scrollbar{display:none;}
 .sp{font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);cursor:pointer;padding:3px 8px;border-radius:20px;border:1px solid transparent;transition:all .15s;white-space:nowrap;}
@@ -185,11 +187,11 @@ body.nodes-mode #nthumb{display:none!important;}
 #nthumb.show{opacity:1;}
 
 /* TOAST */
-#toast{position:fixed;bottom:52px;left:50%;transform:translateX(-50%) translateY(4px) scale(.97);background:rgba(8,8,8,.97);border:1px solid var(--b2);border-radius:4px;padding:6px 13px;font-size:8.5px;letter-spacing:.07em;color:var(--ink2);z-index:2000;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;box-shadow:0 4px 18px rgba(0,0,0,.5);}
+#toast{position:fixed;bottom:calc(52px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(4px) scale(.97);background:rgba(8,8,8,.97);border:1px solid var(--b2);border-radius:4px;padding:6px 13px;font-size:8.5px;letter-spacing:.07em;color:var(--ink2);z-index:2000;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;box-shadow:0 4px 18px rgba(0,0,0,.5);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
 
 /* COMPOSE */
-#compose{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(calc(100% + 44px));width:min(620px,calc(100vw - 24px));max-height:calc(100vh - 100px);background:rgba(5,5,5,.98);border:1px solid var(--b2);border-bottom:none;border-radius:10px 10px 0 0;z-index:1100;transition:transform var(--T);box-shadow:0 -12px 50px rgba(0,0,0,.7);overflow:hidden;display:flex;flex-direction:column;}
+#compose{position:fixed;bottom:calc(40px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(calc(100% + 44px));width:min(620px,calc(100vw - 24px));max-height:calc(100dvh - 100px);background:rgba(5,5,5,.98);border:1px solid var(--b2);border-bottom:none;border-radius:10px 10px 0 0;z-index:1100;transition:transform var(--T);box-shadow:0 -12px 50px rgba(0,0,0,.7);overflow:hidden;display:flex;flex-direction:column;}
 #compose.open{transform:translateX(-50%) translateY(0);}
 .chandle{width:32px;height:3px;background:var(--b2);border-radius:2px;margin:10px auto 0;flex-shrink:0;cursor:grab;}
 /* header row */
@@ -414,7 +416,7 @@ body.nodes-mode #nthumb{display:none!important;}
 
 /* ── ZOOM WIDGET ── */
 #zoom-widget{
-  position:fixed;bottom:52px;left:50%;transform:translateX(-50%);
+  position:fixed;bottom:calc(52px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
   display:flex;align-items:center;gap:1px;
   background:rgba(4,4,4,.9);border:1px solid var(--b2);
   border-radius:24px;padding:3px;z-index:600;
@@ -1109,11 +1111,19 @@ function drawScatter() {
   if (!el || !G.el) return;
   const W = el.offsetWidth, H = el.offsetHeight;
   if (!W || !H) return;
-  if (el.width !== W) { el.width = W; el.height = H; }
+  const _dprSc = window.devicePixelRatio || 1;
+  if (el.width !== W * _dprSc) {
+    el.width  = W * _dprSc;
+    el.height = H * _dprSc;
+    el.style.width  = W + 'px';
+    el.style.height = H + 'px';
+  }
   const sc = el.getContext('2d');
+  sc.setTransform(_dprSc, 0, 0, _dprSc, 0, 0);
   sc.clearRect(0, 0, W, H);
 
-  const v = vis(), c = makeCols(G), CW = G.el.width, CH = G.el.height;
+  const _dprG = window.devicePixelRatio || 1;
+  const v = vis(), c = makeCols(G), CW = G.el.width / _dprG, CH = G.el.height / _dprG;
   v.forEach((item, idx) => {
     const col = idx % c, row = Math.floor(idx / c);
     const gx = (G.ox + col * STEP * G.scale + TILE * G.scale / 2) / CW;
@@ -1137,7 +1147,8 @@ const NC  = makeNCState();
 
 function buildNodes(nc) {
   if (!nc.el) return;
-  const W = nc.el.width, H = nc.el.height;
+  const dpr = nc.dpr || 1;
+  const W = nc.el.width / dpr, H = nc.el.height / dpr;
   nc.W = W; nc.H = H;
   const CENTERS = { wolfie:{x:.28,y:.42}, street:{x:.62,y:.28}, nyc:{x:.72,y:.62}, vermont:{x:.5,y:.72}, work:{x:.78,y:.82} };
   const v = vis();
@@ -1165,7 +1176,11 @@ function isConn(a, b) { return CONNS.some(([x,y]) => (x===a&&y===b)||(x===b&&y==
 
 function drawNC(nc) {
   if (!nc.el) return;
-  const ctx = nc.ctx, W = nc.el.width, H = nc.el.height, now = Date.now();
+  const dpr = nc.dpr || 1;
+  const ctx = nc.ctx;
+  const W = nc.el.width / dpr, H = nc.el.height / dpr;
+  const now = Date.now();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
 
   ctx.save();
@@ -1408,8 +1423,12 @@ function setMode(m) {
   } else if (m === 'nodes') {
     const area = document.getElementById('area');
     const r = area.getBoundingClientRect();
-    NC.el.width = r.width; NC.el.height = r.height;
-    NC.el.style.width = r.width+'px'; NC.el.style.height = r.height+'px';
+    const _dprN = window.devicePixelRatio || 1;
+    NC.el.width  = r.width  * _dprN;
+    NC.el.height = r.height * _dprN;
+    NC.el.style.width  = r.width  + 'px';
+    NC.el.style.height = r.height + 'px';
+    NC.dpr = _dprN;
     buildNodes(NC);
     ncFit(NC);
     NC.raf = requestAnimationFrame(() => drawNC(NC));
@@ -1418,9 +1437,9 @@ function setMode(m) {
 }
 
 function ncFit(nc) {
-
   if (!nc.el || !Object.keys(nc.nodes).length) return;
-  const W=nc.el.width, H=nc.el.height;
+  const dpr = nc.dpr || 1;
+  const W = nc.el.width / dpr, H = nc.el.height / dpr;
   let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
   Object.values(nc.nodes).forEach(nd=>{
     minX=Math.min(minX,nd.ox-nd.rx*1.5); minY=Math.min(minY,nd.oy-nd.ry*1.5);
@@ -1489,8 +1508,10 @@ function nodeShowBg(img, screenX, screenY) {
 
   // position next layer at node's screen position before fading in
   // size scales with zoom — base 44vmin * nc.scale, capped at viewport
-  const baseVmin = Math.min(window.innerWidth, window.innerHeight) * 0.44;
-  const vigSize  = Math.min(baseVmin * NC.scale, window.innerWidth * 0.92);
+  const vvw = window.visualViewport ? window.visualViewport.width  : window.innerWidth;
+  const vvh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const baseVmin = Math.min(vvw, vvh) * 0.44;
+  const vigSize  = Math.min(baseVmin * NC.scale, vvw * 0.92);
   elNext.style.width  = vigSize + 'px';
   elNext.style.height = vigSize + 'px';
   elNext.style.left = screenX + 'px';
@@ -1542,9 +1563,12 @@ let _wExpanded = false;
 function drawerDefaultPos() {
   const w = document.getElementById('drawer');
   const dw = w ? w.offsetWidth : 300;
+  // visualViewport accounts for Safari's dynamic toolbar shrink; fall back to innerHeight
+  const vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+  const safeBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sab') || '0') || 0;
   return {
     x: Math.max(0, window.innerWidth  - dw - 20),
-    y: Math.max(0, window.innerHeight - 480 - 60)
+    y: Math.max(0, vh - 480 - 60 - safeBottom)
   };
 }
 
@@ -1740,7 +1764,8 @@ function zoomStep(dir) {
     G.scale=Math.min(4,Math.max(0.25,G.scale*f));
     G.ox=cx-wx*G.scale; G.oy=cy-wy*G.scale; gClamp(G);
   } else if (mode==='nodes') {
-    const cx=NC.el.width/2, cy=NC.el.height/2;
+    const _dprZ = NC.dpr || 1;
+    const cx=NC.el.width/_dprZ/2, cy=NC.el.height/_dprZ/2;
     const wx=(cx-NC.ox)/NC.scale, wy=(cy-NC.oy)/NC.scale;
     NC.scale=Math.min(4,Math.max(0.2,NC.scale*f));
     NC.ox=cx-wx*NC.scale; NC.oy=cy-wy*NC.scale;
@@ -1950,11 +1975,33 @@ window.addEventListener('resize', () => {
     gFit(G,1.51);
   } else if (mode==='nodes') {
     const r=document.getElementById('area').getBoundingClientRect();
-    NC.el.width=r.width; NC.el.height=r.height;
+    const _dprR=window.devicePixelRatio||1;
+    NC.el.width=r.width*_dprR; NC.el.height=r.height*_dprR;
     NC.el.style.width=r.width+'px'; NC.el.style.height=r.height+'px';
+    NC.dpr=_dprR;
     buildNodes(NC); ncFit(NC);
   }
+  // reposition floating drawer when viewport changes (e.g. Safari toolbar collapse)
+  if (_wPos) { _wPos = null; }
 });
+
+// Safari: visualViewport fires when the dynamic toolbar shrinks/grows
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    // nudge drawer back into safe zone if it was placed by default
+    if (_wPos) {
+      const el = document.getElementById('drawer');
+      if (!el || !el.classList.contains('open')) return;
+      const dw = el.offsetWidth || 300;
+      const vh = window.visualViewport.height;
+      const maxY = vh - (el.offsetHeight || 480) - 10;
+      if (_wPos.y > maxY) {
+        _wPos = { x: _wPos.x, y: Math.max(0, maxY) };
+        applyDrawerPos(_wPos);
+      }
+    }
+  });
+}
 
 
 
@@ -2076,10 +2123,14 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   let raf = null;
   let cx = 0, cy = 0;
 
-  document.addEventListener('mousemove', e => {
+  function onMove(e) {
+    // pointermove gives clientX/Y for both mouse and touch
     cx = e.clientX; cy = e.clientY;
     if (!raf) raf = requestAnimationFrame(update);
-  });
+  }
+
+  document.addEventListener('mousemove',   onMove);
+  document.addEventListener('pointermove', onMove, {passive:true});
 
   function update() {
     raf = null;
