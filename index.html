@@ -1064,6 +1064,8 @@ function attachGrid(g, el, ghostId, defaultScale) {
   el.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     e.preventDefault();
+    // if a second finger is already tracked, this is a pinch — don't start drag
+    if (_gPtrs.size >= 1) return;
     el.setPointerCapture(e.pointerId);
     g.drag = true; g.moved = false;
     g.dragX = e.clientX; g.dragY = e.clientY;
@@ -1099,7 +1101,69 @@ function attachGrid(g, el, ghostId, defaultScale) {
     gClamp(g);
   }, { passive: false });
 
-  // pinch zoom disabled — use zoom widget
+  // ── PINCH-TO-ZOOM (grid) ──────────────────────────────────────────────────
+  // Track all active pointers; when two are down, treat as pinch.
+  const _gPtrs = new Map(); // pointerId → {x, y}
+  let _gPinchDist0 = null;  // initial finger separation
+  let _gPinchScale0 = 1;    // g.scale at pinch start
+  let _gPinchMid = null;    // midpoint in canvas-local CSS px at pinch start
+  let _gPinchOx0 = 0, _gPinchOy0 = 0;
+  let _gWasPinching = false;
+
+  function _gPinchDist() {
+    const pts = [..._gPtrs.values()];
+    const dx = pts[1].x - pts[0].x, dy = pts[1].y - pts[0].y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+  function _gPinchMidpoint(r) {
+    const pts = [..._gPtrs.values()];
+    return { x:(pts[0].x+pts[1].x)/2 - r.left, y:(pts[0].y+pts[1].y)/2 - r.top };
+  }
+
+  el.addEventListener('pointerdown', e => {
+    _gPtrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if (_gPtrs.size === 2) {
+      // second finger down — start pinch, freeze single-finger drag
+      g.drag = false; g.vx = g.vy = 0;
+      _gPinchDist0  = _gPinchDist();
+      _gPinchScale0 = g.scale;
+      const r = el.getBoundingClientRect();
+      _gPinchMid = _gPinchMidpoint(r);
+      _gPinchOx0 = g.ox; _gPinchOy0 = g.oy;
+      _gWasPinching = true;
+    }
+  }, { capture: true, passive: true });
+
+  el.addEventListener('pointermove', e => {
+    if (!_gPtrs.has(e.pointerId)) return;
+    _gPtrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if (_gPtrs.size === 2 && _gPinchDist0 !== null) {
+      const r   = el.getBoundingClientRect();
+      const d   = _gPinchDist();
+      const ratio = d / _gPinchDist0;
+      const newScale = Math.min(4, Math.max(0.25, _gPinchScale0 * ratio));
+      // anchor zoom to the midpoint that was established at pinch start
+      g.scale = newScale;
+      g.ox = _gPinchMid.x - (_gPinchMid.x - _gPinchOx0) * (newScale / _gPinchScale0);
+      g.oy = _gPinchMid.y - (_gPinchMid.y - _gPinchOy0) * (newScale / _gPinchScale0);
+      gClamp(g);
+    }
+  }, { capture: true, passive: true });
+
+  el.addEventListener('pointerup', e => {
+    _gPtrs.delete(e.pointerId);
+    if (_gPtrs.size < 2) { _gPinchDist0 = null; }
+    if (_gPtrs.size === 0 && _gWasPinching) {
+      // suppress the tap-select that would fire after a pinch lifts
+      g.moved = true;
+      _gWasPinching = false;
+    }
+  }, { capture: true, passive: true });
+
+  el.addEventListener('pointercancel', e => {
+    _gPtrs.delete(e.pointerId);
+    if (_gPtrs.size < 2) { _gPinchDist0 = null; }
+  }, { capture: true, passive: true });
 }
 
 // Grid instances
@@ -1318,9 +1382,11 @@ function attachNC(nc, el) {
 
   el.addEventListener('pointerdown', e => {
     // right button: context menu immediately
-    if (e.button === 2) return; // handled by contextmenu event
+    if (e.button === 2) return;
     if (e.button !== 0) return;
     e.preventDefault();
+    // if a second finger is already tracked, this becomes a pinch — handled above
+    if (_nPtrs.size >= 1) return;
     el.setPointerCapture(e.pointerId);
     nc.drag=true; nc.dragX=e.clientX; nc.dragY=e.clientY; nc.dragOx=nc.ox; nc.dragOy=nc.oy; nc.vx=nc.vy=0;
     el.style.cursor='grabbing';
@@ -1329,7 +1395,7 @@ function attachNC(nc, el) {
     // start long-press timer (mobile: hold for detail/ctx)
     _lpTimer = setTimeout(() => {
       _lpTimer = null;
-      nc.drag = false; // cancel drag intent
+      nc.drag = false;
       const r=el.getBoundingClientRect();
       const hit=ncHit(nc,e.clientX-r.left,e.clientY-r.top);
       if (hit) {
@@ -1387,7 +1453,73 @@ function attachNC(nc, el) {
     nc.ox=mx-wx*nc.scale; nc.oy=my-wy*nc.scale;
   }, {passive:false});
 
-  // pinch zoom disabled — use zoom widget
+  // ── PINCH-TO-ZOOM (nodes) ─────────────────────────────────────────────────
+  const _nPtrs = new Map();
+  let _nPinchDist0  = null;
+  let _nPinchScale0 = 1;
+  let _nPinchMid    = null;
+  let _nPinchOx0    = 0, _nPinchOy0 = 0;
+  let _nWasPinching = false;
+
+  function _nPinchDist() {
+    const pts = [..._nPtrs.values()];
+    const dx = pts[1].x - pts[0].x, dy = pts[1].y - pts[0].y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  el.addEventListener('pointerdown', e => {
+    _nPtrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if (_nPtrs.size === 2) {
+      // second finger — cancel any pending long-press and freeze pan
+      if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+      nc.drag = false; nc.vx = nc.vy = 0;
+      _nPinchDist0  = _nPinchDist();
+      _nPinchScale0 = nc.scale;
+      const pts = [..._nPtrs.values()];
+      const r   = el.getBoundingClientRect();
+      _nPinchMid = {
+        x: (pts[0].x + pts[1].x) / 2 - r.left,
+        y: (pts[0].y + pts[1].y) / 2 - r.top
+      };
+      _nPinchOx0 = nc.ox; _nPinchOy0 = nc.oy;
+      _nWasPinching = true;
+      // hide zoom widget while pinching — it's redundant
+      document.getElementById('zoom-widget').classList.remove('show');
+    }
+  }, { capture: true, passive: true });
+
+  el.addEventListener('pointermove', e => {
+    if (!_nPtrs.has(e.pointerId)) return;
+    _nPtrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if (_nPtrs.size === 2 && _nPinchDist0 !== null) {
+      const d     = _nPinchDist();
+      const ratio = d / _nPinchDist0;
+      const newScale = Math.min(4, Math.max(0.2, _nPinchScale0 * ratio));
+      nc.scale = newScale;
+      nc.ox = _nPinchMid.x - (_nPinchMid.x - _nPinchOx0) * (newScale / _nPinchScale0);
+      nc.oy = _nPinchMid.y - (_nPinchMid.y - _nPinchOy0) * (newScale / _nPinchScale0);
+    }
+  }, { capture: true, passive: true });
+
+  el.addEventListener('pointerup', e => {
+    _nPtrs.delete(e.pointerId);
+    if (_nPtrs.size < 2) { _nPinchDist0 = null; }
+    if (_nPtrs.size === 0 && _nWasPinching) {
+      _nWasPinching = false;
+      nc.drag = false;
+      // restore zoom widget
+      document.getElementById('zoom-widget').classList.add('show');
+    }
+  }, { capture: true, passive: true });
+
+  el.addEventListener('pointercancel', e => {
+    _nPtrs.delete(e.pointerId);
+    if (_nPtrs.size < 2) { _nPinchDist0 = null; }
+    if (_nPtrs.size === 0) {
+      _nWasPinching = false;
+      document.getElementById('zoom-widget').classList.add('show');
+    }
+  }, { capture: true, passive: true });
 }
 
 // ── MODE ──────────────────────────────────────────────────────────────────────
