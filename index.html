@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>gram · wolfie.love</title>
+<title>wolfiegram · wolfie.life</title>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -71,32 +71,12 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
   background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
   background-size:20px 20px;}
 
-/* Kanban surface — three columns */
-#ksurf{position:absolute;inset:0;display:none;flex-direction:row;}
-.kcol{flex:1;position:relative;overflow:hidden;border-right:1px solid var(--b);}
 .kcol:last-child{border-right:none;}
-.kclbl{position:absolute;top:8px;left:10px;font-size:6px;letter-spacing:.18em;
-  text-transform:uppercase;color:rgba(255,255,255,.16);pointer-events:none;z-index:5;}
-/* kanban canvases fill their column */
-#kcv{position:absolute;inset:0;display:block;touch-action:none;}
-#kncv{position:absolute;inset:0;display:block;touch-action:none;}
-#ksurf .kcol:nth-child(2)::before{content:'';position:absolute;inset:0;pointer-events:none;
-  background-image:radial-gradient(rgba(255,255,255,.02) 1px,transparent 1px);
-  background-size:18px 18px;}
-/* kanban detail col */
-#kdet{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;}
-.kdet-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;}
-.kdet-ei{font-size:20px;opacity:.12;}
-.kdet-et{font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);text-align:center;line-height:1.9;}
-.kdet-photo{width:100%;max-height:42%;background:#111;flex-shrink:0;overflow:hidden;}
+
 .kdet-photo img{width:100%;height:100%;min-height:100%;object-fit:cover;display:block;}
-.kdet-body{flex:1;overflow-y:auto;padding:14px 14px 0;}
+
 .kdet-body::-webkit-scrollbar{width:2px;}
 .kdet-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);}
-.kdet-ch{font-size:7px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:5px;}
-.kdet-title{font-family:var(--body);font-size:18px;font-weight:600;line-height:1.2;margin-bottom:9px;}
-.kdet-cap{font-family:var(--body);font-size:14px;line-height:1.78;color:rgba(255,255,255,.55);}
-.kdet-nav{flex-shrink:0;padding:9px 12px 12px;border-top:1px solid var(--b);display:flex;gap:5px;}
 
 /* SPINE */
 #spine{position:fixed;bottom:0;left:0;right:0;height:40px;background:rgba(0,0,0,.92);border-top:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:700;backdrop-filter:blur(12px);}
@@ -106,7 +86,6 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 .sp.on{border-color:var(--accent);color:var(--accent);}
 .sp:hover:not(.on){color:var(--ink2);}
 #sct{font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);flex-shrink:0;}
-
 
 /* ── NODES IMAGE VIGNETTES ── two layers for crossfade, positioned at node */
 .node-vignette{
@@ -241,11 +220,6 @@ body.nodes-mode #nthumb{display:none!important;}
 .ccancel{background:none;color:var(--ink3);border:1px solid var(--b);border-radius:3px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;cursor:pointer;transition:all .15s;}
 .ccancel:hover{border-color:var(--b3);color:#fff;}
 
-/* ── MOBILE: hide kanban, fix canvas ── */
-@media (max-width: 768px) {
-  .mbtn-kanban { display:none !important; }
-}
-
 /* ── FLOATING DETAIL WIDGET ── */
 #drawer{
   position:fixed;
@@ -290,8 +264,9 @@ body.nodes-mode #nthumb{display:none!important;}
 #drawer-photo{
   width:100%;overflow:hidden;background:#111;flex-shrink:0;
   aspect-ratio:4/3; /* default, overridden by JS */
+  max-height:45vh;
 }
-#drawer.expanded #drawer-photo{aspect-ratio:unset;max-height:55vh;}
+#drawer.expanded #drawer-photo{aspect-ratio:unset;max-height:52vh;}
 #drawer-photo img{
   width:100%;height:100%;object-fit:cover;display:block;
   transition:opacity .2s;
@@ -425,8 +400,48 @@ body.nodes-mode #nthumb{display:none!important;}
 .zbtn:hover{background:rgba(255,255,255,.08);color:#fff;}
 .zbtn-reset{font-size:12px;}
 /* show zoom on mobile always, on desktop only in nodes mode */
-@media (max-width: 768px) {
-  #zoom-widget{opacity:1;pointer-events:all;}
+
+}
+
+/* hide detail option when no node targeted */
+
+
+/* ── PAGE LOADER ── */
+#pageLoader{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:#000;pointer-events:all;
+  transition:opacity .65s ease;
+}
+#pageLoader.fade-out{opacity:0;pointer-events:none;}
+#pageLoader video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;opacity:.32;
+}
+.loader-overlay{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  pointer-events:none;user-select:none;
+}
+.loader-paw{font-size:36px;animation:loaderPawPulse 1.4s ease-in-out infinite;}
+@keyframes loaderPawPulse{
+  0%,100%{transform:scale(1);opacity:.85;}
+  50%{transform:scale(1.15);opacity:1;}
+}
+.loader-wordmark{
+  font-family:var(--mono);font-size:10px;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--accent);opacity:.9;
+}
+.loader-bar-track{
+  width:120px;height:1px;background:rgba(255,255,255,.1);
+  border-radius:1px;overflow:hidden;
+}
+.loader-bar-fill{
+  height:100%;background:var(--accent);border-radius:1px;
+  width:0%;animation:loaderBarSweep 2s ease-in-out forwards;
+}
+@keyframes loaderBarSweep{
+  0%{width:0%;}60%{width:72%;}85%{width:88%;}100%{width:100%;}
 }
 </style>
 </head>
@@ -434,7 +449,7 @@ body.nodes-mode #nthumb{display:none!important;}
 
 <div id="top">
   <div style="display:flex;align-items:center;gap:10px;">
-    <span class="brand">gram <em>·</em> wolfie</span>
+    <span class="brand">wolfiegram <em>·</em> zack.gort</span>
     <span id="chpill">all</span>
   </div>
   <div class="topright">
@@ -444,9 +459,6 @@ body.nodes-mode #nthumb{display:none!important;}
       </button>
       <button class="mbtn" data-m="nodes" onclick="setMode('nodes')" title="Nodes">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.2"><ellipse cx="6.5" cy="6.5" rx="2.8" ry="1.8"/><ellipse cx="6.5" cy="6.5" rx="5.5" ry="3.5"/><circle cx="6.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-      </button>
-      <button class="mbtn mbtn-kanban" data-m="kanban" onclick="setMode('kanban')" title="Kanban">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.2"><rect x=".5" y=".5" width="12" height="12" rx="1"/><line x1="4.5" y1=".5" x2="4.5" y2="12.5"/><line x1="8.5" y1=".5" x2="8.5" y2="12.5"/></svg>
       </button>
     </div>
     <div class="tdiv"></div>
@@ -462,43 +474,9 @@ body.nodes-mode #nthumb{display:none!important;}
   <canvas id="cv"></canvas>
   <div id="ghost"></div>
 
-
   <!-- NODES MODE -->
   <div id="nsurf">
     <canvas id="ncv"></canvas>
-  </div>
-
-  <!-- KANBAN MODE -->
-  <div id="ksurf">
-    <div class="kcol" id="kcol-grid">
-      <div class="kclbl">grid</div>
-      <canvas id="kcv"></canvas>
-    </div>
-    <div class="kcol" id="kcol-nodes">
-      <div class="kclbl">connections</div>
-      <canvas id="kncv"></canvas>
-    </div>
-    <div class="kcol" id="kcol-det">
-      <div class="kclbl" id="kdet-lbl">detail</div>
-      <div id="kdet">
-        <div class="kdet-empty" id="kdet-empty">
-          <div class="kdet-ei">◈</div>
-          <div class="kdet-et">click any<br>photo</div>
-        </div>
-        <div id="kdet-filled" style="display:none;flex-direction:column;height:100%;">
-          <div class="kdet-photo"><img id="kdet-img" src="" alt=""></div>
-          <div class="kdet-body" id="kdet-body">
-            <div class="kdet-ch" id="kdet-ch"></div>
-            <div class="kdet-title" id="kdet-title"></div>
-            <div class="kdet-cap" id="kdet-cap"></div>
-          </div>
-          <div class="kdet-nav">
-            <button class="dbtn" onclick="adj(-1)">← prev</button>
-            <button class="dbtn a" onclick="adj(1)">next →</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -592,6 +570,21 @@ body.nodes-mode #nthumb{display:none!important;}
 </div>
 
 <div id="toast"></div>
+    <div id="loader-bar"><div id="loader-fill"></div></div>
+    <div id="loader-count"></div>
+  </div>
+</div>
+
+<!-- ── PAGE LOADER ── -->
+<div id="pageLoader">
+  <video src="https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/soferocious.mp4"
+         muted autoplay loop playsinline preload="auto" aria-hidden="true"></video>
+  <div class="loader-overlay">
+    <span class="loader-paw">🐾</span>
+    <span class="loader-wordmark">Wolfgang</span>
+    <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -734,6 +727,8 @@ const CONNS = [
   ['k01','k02'],['k02','k03'],['k04','k05'],['k04','w49'],
   ['w10','s01'],['w53','v07'],['k01','s01'],['w69','s10'],
 ];
+
+
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let activeCh = 'all';
@@ -956,7 +951,6 @@ function attachGrid(g, el, ghostId, defaultScale) {
 
 // Grid instances
 const G  = makeGridState();
-const KB = makeGridState();
 
 // ── SCATTER ───────────────────────────────────────────────────────────────────
 function drawScatter() {
@@ -989,7 +983,6 @@ function makeNCState() {
            ox:0, oy:0, scale:1, drag:false, dragX:0, dragY:0, dragOx:0, dragOy:0, vx:0, vy:0 };
 }
 const NC  = makeNCState();
-const NKB = makeNCState();
 
 function buildNodes(nc) {
   if (!nc.el) return;
@@ -1043,7 +1036,7 @@ function drawNC(nc) {
     if (drawn.has(key)) return; drawn.add(key);
     const mx = (na.x+nb.x)/2+(na.y-nb.y)*.08, my = (na.y+nb.y)/2-(na.x-nb.x)*.04;
     ctx.beginPath(); ctx.moveTo(na.x,na.y); ctx.quadraticCurveTo(mx,my,nb.x,nb.y);
-    const fId = activeId || NC.hov || NKB.hov;
+    const fId = activeId || NC.hov;
     const isAct = fId && (a===fId||b===fId);
     // 2nd degree: both endpoints are direct connections of focal
     const is2nd = !isAct && fId && (isConn(a,fId)||isConn(b,fId));
@@ -1153,16 +1146,36 @@ function attachNC(nc, el) {
     }
   });
 
+  // long-press timer
+  let _lpTimer = null;
+  const LP_MS = 480;
+
   el.addEventListener('pointerdown', e => {
-    if (e.button!==0) return; e.preventDefault();
+    // right button: context menu immediately
+    if (e.button === 2) return; // handled by contextmenu event
+    if (e.button !== 0) return;
+    e.preventDefault();
     el.setPointerCapture(e.pointerId);
     nc.drag=true; nc.dragX=e.clientX; nc.dragY=e.clientY; nc.dragOx=nc.ox; nc.dragOy=nc.oy; nc.vx=nc.vy=0;
     el.style.cursor='grabbing';
     document.getElementById('nthumb').classList.remove('show');
+
+    // start long-press timer (mobile: hold for detail/ctx)
+    _lpTimer = setTimeout(() => {
+      _lpTimer = null;
+      nc.drag = false; // cancel drag intent
+      const r=el.getBoundingClientRect();
+      const hit=ncHit(nc,e.clientX-r.left,e.clientY-r.top);
+      if (hit) {
+        const img=IMGS.find(i=>i.id===hit.id);
+        if (img) { activeId=hit.id; openDrawer(img); }
+      }
+    }, LP_MS);
   });
 
   el.addEventListener('pointerup', e => {
     el.style.cursor='grab';
+    if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer=null; }
     if (nc.drag) {
       const moved=Math.abs(e.clientX-nc.dragX)+Math.abs(e.clientY-nc.dragY)>6;
       nc.drag=false;
@@ -1170,18 +1183,30 @@ function attachNC(nc, el) {
         const r=el.getBoundingClientRect();
         const hit=ncHit(nc,e.clientX-r.left,e.clientY-r.top);
         if (hit) {
-          // clicking active node again → deselect
+          // tap: toggle focus (hover state / vignette) without opening drawer
           if (hit.id === activeId) { activeId=null; nodeHideBg(); }
-          else { select(hit.id); }
+          else {
+            activeId = hit.id;
+            const img=IMGS.find(i=>i.id===hit.id);
+            if (img) {
+              const nd=nc.nodes[hit.id];
+              const r2=el.getBoundingClientRect();
+              const sx=nd?nd.x*nc.scale+nc.ox+r2.left:e.clientX;
+              const sy=nd?nd.y*nc.scale+nc.oy+r2.top:e.clientY;
+              nodeShowBg(img, sx, sy);
+            }
+          }
         } else {
-          // clicking empty space → clear selection
           activeId=null; nodeHideBg();
         }
       }
     }
   });
 
+  el.addEventListener('pointercancel', () => { if(_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;} });
+
   el.addEventListener('pointerleave', () => {
+    if(_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}
     nc.drag=false; nc.hov=null; nc.mouse={x:-999,y:-999};
     document.getElementById('nthumb').classList.remove('show');
     if (mode==='nodes') nodeHideBg();
@@ -1204,8 +1229,8 @@ function setMode(m) {
   mode = m;
   document.querySelectorAll('.mbtn').forEach(b => b.classList.toggle('on', b.dataset.m===m));
 
-  [G, KB].forEach(g => { if (g.raf) { cancelAnimationFrame(g.raf); g.raf=null; } });
-  [NC, NKB].forEach(nc => { if (nc.raf) { cancelAnimationFrame(nc.raf); nc.raf=null; } });
+  [G].forEach(g => { if (g.raf) { cancelAnimationFrame(g.raf); g.raf=null; } });
+  [NC].forEach(nc => { if (nc.raf) { cancelAnimationFrame(nc.raf); nc.raf=null; } });
 
   // body class for mood-aware chrome
   document.body.classList.toggle('nodes-mode', m==='nodes');
@@ -1218,7 +1243,6 @@ function setMode(m) {
 
   document.getElementById('cv').style.display    = m==='grid'   ? 'block' : 'none';
   document.getElementById('nsurf').style.display = m==='nodes'  ? 'block' : 'none';
-  document.getElementById('ksurf').style.display = m==='kanban' ? 'flex'  : 'none';
 
   if (m === 'grid') {
     const area = document.getElementById('area');
@@ -1239,22 +1263,6 @@ function setMode(m) {
     ncFit(NC);
     NC.raf = requestAnimationFrame(() => drawNC(NC));
 
-  } else if (m === 'kanban') {
-    const area = document.getElementById('area');
-    const ar = area.getBoundingClientRect();
-    const colW = Math.floor(ar.width / 3);
-    const colH = ar.height;
-
-    KB.el.width = colW; KB.el.height = colH;
-    KB.el.style.width = colW+'px'; KB.el.style.height = colH+'px';
-    gFit(KB, 0.8);
-    KB.raf = requestAnimationFrame(() => gTick(KB, null, 0.8));
-
-    NKB.el.width = colW; NKB.el.height = colH;
-    NKB.el.style.width = colW+'px'; NKB.el.style.height = colH+'px';
-    buildNodes(NKB);
-    ncFit(NKB);
-    NKB.raf = requestAnimationFrame(() => drawNC(NKB));
   }
 }
 
@@ -1277,7 +1285,7 @@ function ncFit(nc) {
 
 function doFit() {
   if (mode==='grid') gFit(G, 1.51);
-  else if (mode==='kanban') { gFit(KB, 0.8); ncFit(NKB); }
+
   else ncFit(NC);
 }
 
@@ -1582,16 +1590,7 @@ function select(id) {
   const ch   = CH[img.ch];
   const mood = img.mood || 'quiet';
 
-  if (mode === 'kanban') {
-    document.getElementById('kdet-lbl').textContent = ch?.label||img.ch;
-    document.getElementById('kdet-ch').textContent  = ch?.label||img.ch;
-    document.getElementById('kdet-ch').style.color  = ch?.color||'#daa520';
-    document.getElementById('kdet-title').textContent = img.t;
-    document.getElementById('kdet-cap').textContent   = img.c;
-    document.getElementById('kdet-img').src = img.src;
-    document.getElementById('kdet-empty').style.display  = 'none';
-    document.getElementById('kdet-filled').style.display = 'flex';
-  } else if (mode === 'nodes') {
+  if (mode === 'nodes') {
     // nodes: vignette + drawer
     const nd = NC.nodes[id];
     let sx = window.innerWidth/2, sy = window.innerHeight/2;
@@ -1641,7 +1640,7 @@ function setCh(ch) {
   document.getElementById('sct').textContent = vis().length + ' moments';
   doFit();
   if (mode==='nodes') { buildNodes(NC); ncFit(NC); }
-  if (mode==='kanban') { buildNodes(NKB); ncFit(NKB); }
+
 }
 
 // ── COMPOSE ───────────────────────────────────────────────────────────────────
@@ -1752,6 +1751,13 @@ function toast(msg,dur=1800){
   clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),dur);
 }
 
+// right-click anywhere → suppress browser menu, reset view
+document.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  if (mode==='nodes') ncFit(NC);
+  else gFit(G, 1.51);
+});
+
 // ── KEYS ──────────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
@@ -1761,7 +1767,7 @@ document.addEventListener('keydown', e => {
   if (e.key==='ArrowLeft') adj(-1);
   if (e.key==='1') setMode('grid');
   if (e.key==='2') setMode('nodes');
-  if (e.key==='3') setMode('kanban');
+
 });
 
 // ── RESIZE ────────────────────────────────────────────────────────────────────
@@ -1778,27 +1784,41 @@ window.addEventListener('resize', () => {
     NC.el.width=r.width; NC.el.height=r.height;
     NC.el.style.width=r.width+'px'; NC.el.style.height=r.height+'px';
     buildNodes(NC); ncFit(NC);
-  } else if (mode==='kanban') {
-    const ar=document.getElementById('area').getBoundingClientRect();
-    const cW=Math.floor(ar.width/3), cH=ar.height;
-    [KB.el,NKB.el].forEach(el=>{el.width=cW;el.height=cH;el.style.width=cW+'px';el.style.height=cH+'px';});
-    gFit(KB,0.8); buildNodes(NKB); ncFit(NKB);
   }
 });
 
+
+
+
+// ── PAGE LOADER ──────────────────────────────────────────────────────────────
+(function initPageLoader() {
+  const loader  = document.getElementById('pageLoader');
+  if (!loader) return;
+  function dismissLoader() {
+    loader.classList.add('fade-out');
+    setTimeout(() => loader.remove(), 680);
+  }
+  // 2.6s cinematic minimum — matches wolfie.love
+  const MIN = 2600;
+  const t0  = Date.now();
+  function tryDismiss() {
+    const wait = Math.max(0, MIN - (Date.now() - t0));
+    setTimeout(dismissLoader, wait);
+  }
+  if (document.readyState === 'complete') { tryDismiss(); }
+  else { window.addEventListener('load', tryDismiss, {once:true}); }
+  setTimeout(dismissLoader, 5000); // safety
+})();
 // ── INIT ──────────────────────────────────────────────────────────────────────
-IMGS.forEach(i => loadImg(i.src));
 buildSpine();
 
 attachGrid(G,  document.getElementById('cv'),   'ghost', 1.51);
-attachGrid(KB, document.getElementById('kcv'),  null,    0.8);
 attachNC(NC,   document.getElementById('ncv'));
-attachNC(NKB,  document.getElementById('kncv'));
 
 requestAnimationFrame(() => requestAnimationFrame(() => {
   setMode('grid');
   initWidgetDrag();
-  toast(IMGS.length + ' moments · 1 grid  2 nodes  3 kanban', 3200);
+  toast(IMGS.length + ' moments · 1 grid  2 nodes', 3200);
 }));
 </script>
 
@@ -1861,5 +1881,6 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   <button class="zbtn zbtn-reset" onclick="zoomReset()">⊙</button>
   <button class="zbtn" onclick="zoomStep(1)">+</button>
 </div>
+
 </body>
 </html>
