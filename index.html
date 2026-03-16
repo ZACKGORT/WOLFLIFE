@@ -111,15 +111,15 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
 /* ── NODES IMAGE VIGNETTES ── two layers for crossfade, positioned at node */
 .node-vignette{
   position:fixed;pointer-events:none;z-index:0;
+  /* base size set inline — scales with nc.scale */
   width:44vmin;height:44vmin;
   border-radius:50%;
   background-size:cover;background-position:center;
-  /* radial mask for soft edges — image fades into nothing */
   -webkit-mask-image:radial-gradient(circle, rgba(0,0,0,.92) 0%, rgba(0,0,0,.7) 35%, rgba(0,0,0,.3) 62%, transparent 80%);
   mask-image:radial-gradient(circle, rgba(0,0,0,.92) 0%, rgba(0,0,0,.7) 35%, rgba(0,0,0,.3) 62%, transparent 80%);
   transform:translate(-50%,-50%);
   opacity:0;
-  transition:opacity .55s cubic-bezier(.4,0,.2,1), left .4s cubic-bezier(.32,.72,0,1), top .4s cubic-bezier(.32,.72,0,1);
+  transition:opacity .55s cubic-bezier(.4,0,.2,1), left .4s cubic-bezier(.32,.72,0,1), top .4s cubic-bezier(.32,.72,0,1), width .4s cubic-bezier(.32,.72,0,1), height .4s cubic-bezier(.32,.72,0,1);
 }
 /* mood wash overlay */
 #node-wash{
@@ -246,55 +246,112 @@ body.nodes-mode #nthumb{display:none!important;}
   .mbtn-kanban { display:none !important; }
 }
 
-/* ── BOTTOM DRAWER ── */
-#drawer-scrim{
-  position:fixed;inset:0;z-index:1190;background:rgba(0,0,0,.5);
-  opacity:0;pointer-events:none;transition:opacity var(--T);
-  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-}
-#drawer-scrim.show{opacity:1;pointer-events:all;}
+/* ── FLOATING DETAIL WIDGET ── */
 #drawer{
-  position:fixed;left:0;right:0;bottom:0;
-  height:min(72vh,620px);
-  background:rgba(4,4,4,.98);
-  border-top:1px solid var(--b2);
-  border-radius:14px 14px 0 0;
+  position:fixed;
+  bottom:60px;right:20px;
+  width:min(300px,calc(100vw - 32px));
+  max-height:calc(100vh - 120px);
+  background:rgba(4,4,4,.96);
+  border:1px solid var(--b2);
+  border-radius:10px;
   z-index:1200;
-  transform:translateY(100%);
-  transition:transform var(--T);
-  display:flex;flex-direction:column;
-  box-shadow:0 -12px 60px rgba(0,0,0,.8);
+  opacity:0;pointer-events:none;
+  transform:translateY(6px) scale(.98);
+  transition:opacity .2s cubic-bezier(.32,.72,0,1), transform .2s cubic-bezier(.32,.72,0,1);
+  box-shadow:0 8px 40px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
   overflow:hidden;
+  display:flex;flex-direction:column;
 }
-#drawer.open{transform:translateY(0);}
+#drawer.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1);}
+/* expanded: wider + taller */
+#drawer.expanded{width:min(520px,calc(100vw - 32px));}
+
+/* drag handle */
 #drawer-handle{
-  flex-shrink:0;height:28px;display:flex;align-items:center;
-  justify-content:center;cursor:pointer;
+  height:34px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px 0 12px;cursor:grab;border-bottom:1px solid var(--b);
+  flex-shrink:0;touch-action:none;
 }
-.dh-bar{width:36px;height:3px;background:var(--b2);border-radius:2px;}
-#drawer-inner{
-  flex:1;display:flex;flex-direction:column;overflow:hidden;
+#drawer-handle:active{cursor:grabbing;}
+.dh-bar{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
+.dh-dot{width:5px;height:5px;border-radius:50%;background:var(--mood-color);transition:background .5s;flex-shrink:0;}
+#dh-label{font-size:6.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* handle buttons */
+#drawer-expand,#drawer-close{
+  background:none;border:none;color:var(--ink3);font-size:13px;
+  cursor:pointer;padding:3px 5px;line-height:1;transition:color .15s;flex-shrink:0;
 }
+#drawer-expand:hover,#drawer-close:hover{color:#fff;}
+
+#drawer-inner{display:flex;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;}
+
+/* photo — aspect ratio set dynamically by JS based on image orientation */
 #drawer-photo{
-  width:100%;flex-shrink:0;overflow:hidden;
-  /* portrait crop: ~16:9 */
-  aspect-ratio:16/9;background:#111;
+  width:100%;overflow:hidden;background:#111;flex-shrink:0;
+  aspect-ratio:4/3; /* default, overridden by JS */
 }
-#drawer-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-#drawer-meta{
-  flex:1;overflow-y:auto;padding:16px 18px 0;
+#drawer.expanded #drawer-photo{aspect-ratio:unset;max-height:55vh;}
+#drawer-photo img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:opacity .2s;
 }
+
+#drawer-meta{padding:11px 13px 0;}
+
 #drawer-meta::-webkit-scrollbar{width:2px;}
-#drawer-ch{font-size:7px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;color:var(--ink3);}
-#drawer-title{font-family:var(--body);font-size:22px;font-weight:600;line-height:1.2;margin-bottom:9px;}
-#drawer-cap{font-family:var(--body);font-size:16px;line-height:1.75;color:rgba(255,255,255,.58);margin-bottom:14px;}
-#drawer-mood-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:4px;}
-.dmood{font-size:7px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;border:1px solid var(--b);color:var(--ink3);cursor:pointer;transition:all .15s;font-family:var(--mono);}
+#drawer-ch{font-size:7px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;color:var(--ink3);}
+#drawer-title{font-family:var(--body);font-size:17px;font-weight:600;line-height:1.25;margin-bottom:6px;}
+#drawer-cap{font-family:var(--body);font-size:13px;line-height:1.7;color:rgba(255,255,255,.52);margin-bottom:9px;}
+#drawer-mood-row{display:flex;gap:4px;flex-wrap:wrap;padding-bottom:9px;}
+.dmood{font-size:6.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:20px;border:1px solid var(--b);color:var(--ink3);cursor:pointer;transition:all .15s;font-family:var(--mono);}
 .dmood:hover{border-color:var(--b2);color:var(--ink2);}
 .dmood.on{border-color:var(--accent);color:var(--accent);background:rgba(218,165,32,.1);}
+
+/* related — hidden until expanded */
+#drawer-related-wrap{
+  display:none;padding:0 13px 10px;border-top:1px solid var(--b);
+}
+#drawer.expanded #drawer-related-wrap{display:block;}
+#drawer-related-lbl{
+  font-size:6.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink3);padding:9px 0 7px;
+}
+#drawer-related{display:flex;gap:6px;flex-wrap:wrap;}
+.rel-thumb{
+  width:54px;cursor:pointer;flex-shrink:0;
+}
+.rel-thumb img{
+  width:54px;height:54px;object-fit:cover;border-radius:3px;
+  border:1px solid var(--b);display:block;
+  transition:border-color .15s, opacity .15s;opacity:.7;
+}
+.rel-thumb:hover img{opacity:1;border-color:var(--accent);}
+.rel-label{
+  font-size:6px;letter-spacing:.06em;color:var(--ink3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-top:3px;text-align:center;
+}
+.rel-empty{font-size:8px;color:var(--ink3);padding:4px 0;}
+
+/* nav — redesigned */
 #drawer-nav{
-  flex-shrink:0;display:flex;gap:6px;padding:10px 18px 18px;
+  display:flex;align-items:center;gap:0;
   border-top:1px solid var(--b);
+  flex-shrink:0;
+}
+.dnav-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
+  background:none;border:none;color:var(--ink3);
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:10px 0;cursor:pointer;transition:all .15s;
+}
+.dnav-btn:hover{color:#fff;background:rgba(255,255,255,.04);}
+.dnav-btn:first-child{border-right:1px solid var(--b);}
+.dnav-next{border-left:1px solid var(--b);}
+#drawer-counter{
+  font-size:7px;letter-spacing:.08em;color:var(--ink3);
+  padding:0 12px;text-align:center;flex-shrink:0;white-space:nowrap;
 }
 
 /* ── TOC PANEL ── */
@@ -894,28 +951,7 @@ function attachGrid(g, el, ghostId, defaultScale) {
     gClamp(g);
   }, { passive: false });
 
-  el.addEventListener('touchstart', e => {
-    if (e.touches.length === 2) {
-      g.pinchD0 = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-      g.pinchS0 = g.scale;
-    }
-  }, { passive: true });
-
-  el.addEventListener('touchmove', e => {
-    if (e.touches.length === 2 && g.pinchD0) {
-      e.preventDefault();
-      const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-      const cx = (e.touches[0].clientX+e.touches[1].clientX)/2, cy = (e.touches[0].clientY+e.touches[1].clientY)/2;
-      const r = el.getBoundingClientRect();
-      const mx = cx-r.left, my = cy-r.top;
-      const wx = (mx-g.ox)/g.scale, wy = (my-g.oy)/g.scale;
-      g.scale = Math.min(4, Math.max(0.25, g.pinchS0*(d/g.pinchD0)));
-      g.ox = mx-wx*g.scale; g.oy = my-wy*g.scale;
-      gClamp(g);
-    }
-  }, { passive: false });
-
-  el.addEventListener('touchend', () => { g.pinchD0 = null; });
+  // pinch zoom disabled — use zoom widget
 }
 
 // Grid instances
@@ -1005,27 +1041,37 @@ function drawNC(nc) {
     if (!na || !nb) return;
     const key = a < b ? a+b : b+a;
     if (drawn.has(key)) return; drawn.add(key);
-    const isAct = activeId && (a===activeId||b===activeId);
     const mx = (na.x+nb.x)/2+(na.y-nb.y)*.08, my = (na.y+nb.y)/2-(na.x-nb.x)*.04;
     ctx.beginPath(); ctx.moveTo(na.x,na.y); ctx.quadraticCurveTo(mx,my,nb.x,nb.y);
-    // unconnected lines still visible, just quiet
-    ctx.strokeStyle = isAct ? 'rgba(218,165,32,.55)' : activeId ? 'rgba(218,165,32,.09)' : 'rgba(218,165,32,.14)';
-    ctx.lineWidth = isAct ? 1.5 : .6;
-    ctx.setLineDash(isAct ? [] : [3,5]); ctx.stroke(); ctx.setLineDash([]);
+    const fId = activeId || NC.hov || NKB.hov;
+    const isAct = fId && (a===fId||b===fId);
+    // 2nd degree: both endpoints are direct connections of focal
+    const is2nd = !isAct && fId && (isConn(a,fId)||isConn(b,fId));
+    ctx.strokeStyle = isAct ? 'rgba(218,165,32,.6)' : is2nd ? 'rgba(218,165,32,.18)' : fId ? 'rgba(218,165,32,.06)' : 'rgba(218,165,32,.14)';
+    ctx.lineWidth = isAct ? 1.5 : is2nd ? .7 : .5;
+    ctx.setLineDash(isAct ? [] : is2nd ? [2,4] : [3,6]); ctx.stroke(); ctx.setLineDash([]);
   });
 
   Object.values(nc.nodes).forEach(nd => {
     const t = (now - nd.t0) / 4000;
     const isSel = nd.id===activeId, isHov = nd.id===nc.hov;
-    // progressive dimming: 0=selected, 1=direct conn, 2=unconnected (but never invisible)
-    let connDist = 2;
-    if (!activeId || isSel)        connDist = 0;
-    else if (isConn(nd.id,activeId)) connDist = 1;
+    // focal point is active selection, or hovered node if nothing selected
+    const focalId = activeId || nc.hov;
+    // connection distance from focal: 0=focal, 1=direct, 2=second-degree, 3=unconnected
+    let connDist = 3;
+    if (!focalId || nd.id===focalId)          connDist = 0;
+    else if (isConn(nd.id, focalId))          connDist = 1;
+    else {
+      // check if connected to any direct connection of focal
+      const directOfFocal = CONNS
+        .filter(([a,b]) => a===focalId || b===focalId)
+        .map(([a,b]) => a===focalId ? b : a);
+      if (directOfFocal.some(mid => isConn(nd.id, mid))) connDist = 2;
+    }
     const [h,s,l] = nd.hsl;
-    // fill alpha: selected .85, direct conn .32, unconnected .14 (always visible)
-    const bA = connDist===0 ? (isHov?.7:.85) : connDist===1 ? .32 : .14;
-    // stroke alpha: selected .95, direct conn .48, unconnected .22 (readable)
-    const sA = connDist===0 ? (isHov?.85:.95) : connDist===1 ? .48 : .22;
+    // opacity tiers: focal full, 1st-degree bright, 2nd-degree medium, unconnected quiet
+    const bA = connDist===0 ? (isHov&&!activeId?.7:.85) : connDist===1 ? .45 : connDist===2 ? .24 : .12;
+    const sA = connDist===0 ? .95 : connDist===1 ? .65 : connDist===2 ? .35 : .18;
     const targetRy = (isHov||isSel) ? nd.rx : nd.ry;
     nd.lerpRy = nd.lerpRy===undefined ? nd.ry : nd.lerpRy + (targetRy - nd.lerpRy) * 0.09;
     const scale = isSel?1.3:isHov?1.18:1;
@@ -1150,22 +1196,7 @@ function attachNC(nc, el) {
     nc.ox=mx-wx*nc.scale; nc.oy=my-wy*nc.scale;
   }, {passive:false});
 
-  let pinchD0=null, pinchS0=1;
-  el.addEventListener('touchstart', e=>{
-    if(e.touches.length===2){pinchD0=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);pinchS0=nc.scale;}
-  },{passive:true});
-  el.addEventListener('touchmove', e=>{
-    if(e.touches.length===2&&pinchD0){
-      e.preventDefault();
-      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      const cx=(e.touches[0].clientX+e.touches[1].clientX)/2,cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
-      const r=el.getBoundingClientRect(),mx=cx-r.left,my=cy-r.top;
-      const wx=(mx-nc.ox)/nc.scale,wy=(my-nc.oy)/nc.scale;
-      nc.scale=Math.min(4,Math.max(0.2,pinchS0*(d/pinchD0)));
-      nc.ox=mx-wx*nc.scale;nc.oy=my-wy*nc.scale;
-    }
-  },{passive:false});
-  el.addEventListener('touchend',()=>{pinchD0=null;});
+  // pinch zoom disabled — use zoom widget
 }
 
 // ── MODE ──────────────────────────────────────────────────────────────────────
@@ -1298,6 +1329,11 @@ function nodeShowBg(img, screenX, screenY) {
   const elCurr = _vEls[_vActive];
 
   // position next layer at node's screen position before fading in
+  // size scales with zoom — base 44vmin * nc.scale, capped at viewport
+  const baseVmin = Math.min(window.innerWidth, window.innerHeight) * 0.44;
+  const vigSize  = Math.min(baseVmin * NC.scale, window.innerWidth * 0.92);
+  elNext.style.width  = vigSize + 'px';
+  elNext.style.height = vigSize + 'px';
   elNext.style.left = screenX + 'px';
   elNext.style.top  = screenY + 'px';
   elNext.style.backgroundImage = `url('${src}')`;
@@ -1340,30 +1376,142 @@ function nodeClearAll() {
   document.documentElement.style.removeProperty('--mood-wash');
 }
 
-// ── DRAWER ────────────────────────────────────────────────────────────────────
+// ── FLOATING WIDGET: drag + expand ───────────────────────────────────────────
+let _wPos   = null;   // remembered drag position
+let _wExpanded = false;
+
+function initWidgetDrag() {
+  const el     = document.getElementById('drawer');
+  const handle = document.getElementById('drawer-handle');
+  if (!el || !handle) return;
+
+  let dragging=false, startX=0, startY=0, startL=0, startT=0;
+
+  handle.addEventListener('pointerdown', e => {
+    if (e.target.closest('#drawer-close') || e.target.closest('#drawer-expand')) return;
+    e.preventDefault();
+    dragging=true;
+    handle.setPointerCapture(e.pointerId);
+    // switch from right/bottom anchoring to left/top so we can drag freely
+    const r=el.getBoundingClientRect();
+    el.style.transition='none';  // disable during drag
+    el.style.right=''; el.style.bottom='';
+    el.style.left=r.left+'px'; el.style.top=r.top+'px';
+    startX=e.clientX; startY=e.clientY; startL=r.left; startT=r.top;
+  });
+
+  // pointermove on window so drag doesn't lose if cursor moves fast
+  window.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const nx = Math.max(0, Math.min(window.innerWidth-60,  startL + e.clientX - startX));
+    const ny = Math.max(0, Math.min(window.innerHeight-60, startT + e.clientY - startY));
+    el.style.left=nx+'px'; el.style.top=ny+'px';
+    _wPos={x:nx,y:ny};
+  });
+
+  window.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging=false;
+    // restore smooth transitions after drag ends
+    el.style.transition='';
+  });
+}
+
+function toggleWidgetExpand() {
+  _wExpanded = !_wExpanded;
+  const el  = document.getElementById('drawer');
+  const btn = document.getElementById('drawer-expand');
+  el.classList.toggle('expanded', _wExpanded);
+  if (btn) btn.textContent = _wExpanded ? '⊟' : '⊞';
+  if (_wExpanded) drawRelated();
+}
+
+function drawRelated() {
+  if (!activeId) return;
+  const rel = document.getElementById('drawer-related');
+  if (!rel) return;
+  // find directly connected images
+  const connIds = CONNS
+    .filter(([a,b]) => a===activeId || b===activeId)
+    .map(([a,b]) => a===activeId ? b : a);
+  rel.innerHTML = '';
+  connIds.slice(0,8).forEach(id => {
+    const img = IMGS.find(i=>i.id===id);
+    if (!img) return;
+    const d = document.createElement('div');
+    d.className='rel-thumb';
+    d.title = img.t;
+    d.innerHTML=`<img src="${img.src}" alt="${img.t}"><div class="rel-label">${img.t}</div>`;
+    d.addEventListener('click', () => select(img.id));
+    rel.appendChild(d);
+  });
+  if (!connIds.length) rel.innerHTML='<div class="rel-empty">no direct connections</div>';
+}
+
 function openDrawer(img) {
   const ch   = CH[img.ch];
   const mood = img.mood || 'quiet';
-  document.getElementById('drawer-img').src           = img.src;
+  const moodColor = MOOD_COLORS[mood] || '#9aa8b8';
+
+  const imgEl = document.getElementById('drawer-img');
+  imgEl.style.opacity='0';
+  imgEl.onload = () => {
+    imgEl.style.opacity='1';
+    // adapt photo container to image orientation
+    const photo = document.getElementById('drawer-photo');
+    const ratio = imgEl.naturalWidth / imgEl.naturalHeight;
+    if (ratio < 0.85) {
+      // portrait — taller crop
+      photo.style.aspectRatio = '3/4';
+    } else if (ratio > 1.2) {
+      // landscape
+      photo.style.aspectRatio = '4/3';
+    } else {
+      // near-square
+      photo.style.aspectRatio = '1/1';
+    }
+  };
+  imgEl.src = img.src;
+
   document.getElementById('drawer-ch').textContent    = ch?.label||img.ch;
   document.getElementById('drawer-ch').style.color    = ch?.color||'#daa520';
   document.getElementById('drawer-title').textContent = img.t;
   document.getElementById('drawer-cap').textContent   = img.c;
-  // set mood pills
+  document.getElementById('dh-label').textContent     = ch?.label||img.ch;
+  document.querySelector('.dh-dot').style.background  = moodColor;
   document.querySelectorAll('.dmood').forEach(p => p.classList.toggle('on', p.dataset.m===mood));
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawer-scrim').classList.add('show');
+  // counter
+  const v=vis(), idx=v.findIndex(i=>i.id===img.id);
+  document.getElementById('drawer-counter').textContent = (idx+1)+' / '+v.length;
+
+  // restore saved position or use default
+  const el = document.getElementById('drawer');
+  if (_wPos) {
+    el.style.right=''; el.style.bottom='';
+    el.style.left=_wPos.x+'px'; el.style.top=_wPos.y+'px';
+  } else {
+    el.style.left=''; el.style.top='';
+    el.style.right='20px'; el.style.bottom='60px';
+  }
+  el.classList.add('open');
+
+  // update related if expanded
+  if (_wExpanded) drawRelated();
 }
+
 function closeDrawer() {
   document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawer-scrim').classList.remove('show');
+  activeId = null;
 }
+
 function editMood(el) {
   const mood = el.dataset.m;
   document.querySelectorAll('.dmood').forEach(p => p.classList.toggle('on', p===el));
   if (activeId) {
     const img = IMGS.find(i=>i.id===activeId);
-    if (img) { img.mood = mood; applyMood(mood); }
+    if (img) { img.mood=mood; applyMood(mood);
+      document.querySelector('.dh-dot').style.background = MOOD_COLORS[mood]||'#9aa8b8';
+    }
   }
 }
 
@@ -1649,14 +1797,20 @@ attachNC(NKB,  document.getElementById('kncv'));
 
 requestAnimationFrame(() => requestAnimationFrame(() => {
   setMode('grid');
+  initWidgetDrag();
   toast(IMGS.length + ' moments · 1 grid  2 nodes  3 kanban', 3200);
 }));
 </script>
 
-<!-- ── BOTTOM DRAWER (detail, replaces rail) ── -->
-<div id="drawer-scrim" onclick="closeDrawer()"></div>
+<!-- ── FLOATING DETAIL WIDGET ── -->
 <div id="drawer">
-  <div id="drawer-handle" onclick="closeDrawer()"><div class="dh-bar"></div></div>
+  <div id="drawer-handle">
+    <div class="dh-bar"><div class="dh-dot"></div><span id="dh-label">moment</span></div>
+    <div style="display:flex;align-items:center;gap:4px;">
+      <button id="drawer-expand" onclick="toggleWidgetExpand()" title="Expand">⊞</button>
+      <button id="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+  </div>
   <div id="drawer-inner">
     <div id="drawer-photo"><img id="drawer-img" src="" alt=""></div>
     <div id="drawer-meta">
@@ -1672,9 +1826,21 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
         <span class="dmood" data-m="defiant" onclick="editMood(this)">defiant</span>
       </div>
     </div>
+    <!-- related — only visible when expanded -->
+    <div id="drawer-related-wrap">
+      <div id="drawer-related-lbl">connected</div>
+      <div id="drawer-related"></div>
+    </div>
     <div id="drawer-nav">
-      <button class="dbtn" onclick="adj(-1)">← prev</button>
-      <button class="dbtn a" onclick="adj(1)">next →</button>
+      <button class="dnav-btn" onclick="adj(-1)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="8,2 4,6 8,10"/></svg>
+        prev
+      </button>
+      <div id="drawer-counter"></div>
+      <button class="dnav-btn dnav-next" onclick="adj(1)">
+        next
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4,2 8,6 4,10"/></svg>
+      </button>
     </div>
   </div>
 </div>
