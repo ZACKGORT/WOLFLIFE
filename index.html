@@ -1065,7 +1065,7 @@ function attachGrid(g, el, ghostId, defaultScale) {
     if (e.button !== 0) return;
     e.preventDefault();
     // if a second finger is already tracked, this is a pinch — don't start drag
-    if (_gPtrs.size >= 1) return;
+    if (_gPtrs.size >= 2) return;
     el.setPointerCapture(e.pointerId);
     g.drag = true; g.moved = false;
     g.dragX = e.clientX; g.dragY = e.clientY;
@@ -1386,7 +1386,7 @@ function attachNC(nc, el) {
     if (e.button !== 0) return;
     e.preventDefault();
     // if a second finger is already tracked, this becomes a pinch — handled above
-    if (_nPtrs.size >= 1) return;
+    if (_nPtrs.size >= 2) return;
     el.setPointerCapture(e.pointerId);
     nc.drag=true; nc.dragX=e.clientX; nc.dragY=e.clientY; nc.dragOx=nc.ox; nc.dragOy=nc.oy; nc.vx=nc.vy=0;
     el.style.cursor='grabbing';
