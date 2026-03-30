@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Zack Gort · Spatial Resume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+canvas{display:block;width:100vw;height:100vh;}
+#brand{position:fixed;top:24px;left:28px;z-index:100;pointer-events:none;font-family:'DM Mono',monospace;}
+#brand-name{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,236,226,0.55);}
+#brand-sub{font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(240,236,226,0.18);margin-top:4px;}
+#hud{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:1px;background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.08);border-radius:4px;overflow:hidden;z-index:100;}
+.hud-btn{background:none;border:none;cursor:pointer;color:rgba(240,236,226,0.3);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;padding:9px 18px;border-right:1px solid rgba(240,236,226,0.06);transition:color 0.2s,background 0.2s;}
+.hud-btn:last-child{border-right:none;}
+.hud-btn:hover{color:rgba(240,236,226,0.7);background:rgba(240,236,226,0.04);}
+.hud-btn.active{color:#f0ece2;background:rgba(240,236,226,0.07);}
+#hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(240,236,226,0.12);z-index:100;pointer-events:none;white-space:nowrap;transition:opacity 1.2s;}
+#focus-hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,236,226,0.22);z-index:100;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 0.5s;}
+#focus-hint.vis{opacity:1;}
+#tooltip{position:fixed;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200;}
+#tooltip.vis{opacity:1;}
+#tt-inner{background:rgba(8,7,6,0.93);border:1px solid rgba(240,236,226,0.1);border-radius:4px;padding:10px 14px;backdrop-filter:blur(8px);max-width:220px;}
+.tt-era{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(240,236,226,0.3);margin-bottom:4px;}
+.tt-title{font-family:'DM Serif Display',serif;font-size:13px;color:#f0ece2;line-height:1.25;margin-bottom:4px;}
+.tt-type{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;}
+
+/* GHOST CARD */
+#ghost{position:fixed;z-index:700;width:310px;pointer-events:none;opacity:0;transform:translateX(10px) scale(0.96);transition:opacity 0.26s,transform 0.26s;}
+#ghost.on{opacity:1;transform:none;pointer-events:all;}
+.gc{background:rgba(9,9,13,0.97);border:1px solid rgba(240,236,226,0.10);border-radius:6px;box-shadow:0 18px 62px rgba(0,0,0,0.9),0 0 0 1px rgba(240,236,226,0.03);backdrop-filter:blur(26px);overflow:hidden;}
+.gcscroll{max-height:82vh;overflow-y:auto;scrollbar-width:none;}
+.gcscroll::-webkit-scrollbar{display:none;}
+.gcbar{height:2px;width:100%;transition:background 0.4s;}
+.gchead{padding:13px 14px 10px;border-bottom:1px solid rgba(240,236,226,0.06);}
+.gcera{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,236,226,0.28);margin-bottom:6px;}
+.gctitle{font-family:'DM Serif Display',serif;font-size:16px;letter-spacing:-0.02em;color:#f0ece2;line-height:1.15;margin-bottom:4px;}
+.gcrole{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(240,236,226,0.3);}
+.gcbody{padding:11px 14px 12px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.82;color:rgba(240,236,226,0.52);border-bottom:1px solid rgba(240,236,226,0.06);}
+.gcstat{display:flex;border-bottom:1px solid rgba(240,236,226,0.06);}
+.gcst{flex:1;padding:9px 10px;border-right:1px solid rgba(240,236,226,0.06);text-align:center;}
+.gcst:last-child{border-right:none;}
+.gcsv{font-family:'DM Serif Display',serif;font-size:15px;color:rgba(240,236,226,0.7);display:block;letter-spacing:-0.01em;}
+.gcsk{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(240,236,226,0.22);display:block;margin-top:2px;}
+.gcft{display:flex;align-items:center;justify-content:space-between;padding:9px 14px 11px;}
+.gctag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
+.gcclose{background:none;border:1px solid rgba(240,236,226,0.14);color:rgba(240,236,226,0.3);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;}
+.gcclose:hover{color:#f0ece2;border-color:rgba(240,236,226,0.45);}
+
+/* MOON DETAIL CARD */
+#moon-card{position:fixed;z-index:800;width:256px;pointer-events:none;opacity:0;transform:translateY(6px) scale(0.97);transition:opacity 0.18s,transform 0.18s;}
+#moon-card.on{opacity:1;transform:none;}
+.mc{background:rgba(6,6,10,0.98);border:1px solid rgba(240,236,226,0.08);border-radius:5px;box-shadow:0 10px 40px rgba(0,0,0,0.92);backdrop-filter:blur(22px);overflow:hidden;}
+.mcbar{height:1.5px;width:100%;}
+.mchead{padding:11px 13px 8px;}
+.mclabel{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,236,226,0.24);margin-bottom:5px;}
+.mctitle{font-family:'DM Serif Display',serif;font-size:13.5px;color:#f0ece2;line-height:1.2;}
+.mcbody{padding:7px 13px 13px;font-family:'DM Mono',monospace;font-size:10.5px;line-height:1.76;color:rgba(240,236,226,0.44);}
+
+/* MOBILE BOTTOM SHEET */
+#msheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(9,9,13,0.98);border-top:1px solid rgba(240,236,226,0.08);border-radius:14px 14px 0 0;max-height:72vh;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);backdrop-filter:blur(28px);}
+#msheet::-webkit-scrollbar{display:none;}
+#msheet.on{transform:translateY(0);}
+.mshandle{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:12px auto 6px;}
+.msbar{height:2px;width:100%;transition:background 0.4s;}
+.mshead{padding:16px 20px 12px;border-bottom:1px solid rgba(240,236,226,0.06);}
+.msera{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,236,226,0.28);margin-bottom:6px;}
+.mstitle{font-family:'DM Serif Display',serif;font-size:20px;letter-spacing:-0.02em;color:#f0ece2;line-height:1.15;margin-bottom:4px;}
+.msrole{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(240,236,226,0.3);}
+.msbody{padding:13px 20px 14px;font-family:'DM Mono',monospace;font-size:11.5px;line-height:1.82;color:rgba(240,236,226,0.52);border-bottom:1px solid rgba(240,236,226,0.06);}
+.msft{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;}
+.mstag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
+.msclose{background:none;border:1px solid rgba(240,236,226,0.14);color:rgba(240,236,226,0.3);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;}
+.msclose:hover{color:#f0ece2;border-color:rgba(240,236,226,0.45);}
+@media(max-width:768px){#ghost{display:none;}#moon-card{display:none;}#msheet{display:block;}}
+#contact{position:fixed;top:24px;right:28px;z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:5px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;}
+.cl{color:rgba(240,236,226,0.18);}
+.cl a{color:inherit;text-decoration:none;pointer-events:all;transition:color 0.2s;}
+.cl a:hover{color:rgba(240,236,226,0.55);}
+@media(max-width:600px){#contact{display:none;}}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div id="brand">
+  <div id="brand-name">Zachary Gort</div>
+  <div id="brand-sub">Senior UX+UI Designer &amp; Strategist</div>
+</div>
+
+<div id="contact">
+  <div class="cl"><a href="mailto:zack.gort@gmail.com">zack.gort@gmail.com</a></div>
+  <div class="cl"><a href="https://zackgort.com" target="_blank">zackgort.com</a></div>
+  <div class="cl">484·888·1287</div>
+</div>
+
+<div id="hud">
+  <button class="hud-btn" data-view="iso">ISO</button>
+  <button class="hud-btn active" data-view="top">SKY</button>
+  <button class="hud-btn" data-view="side">ORBIT</button>
+</div>
+
+<div id="hint">drag to orbit · scroll to zoom · click any node</div>
+<div id="focus-hint">— orbiting · hover a moon for detail · ✕ to release —</div>
+
+<div id="tooltip"><div id="tt-inner">
+  <div class="tt-era" id="tt-era"></div>
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-type" id="tt-type"></div>
+</div></div>
+
+<div id="ghost">
+  <div class="gc">
+    <div class="gcbar" id="gc-bar"></div>
+    <div class="gcscroll">
+      <div class="gchead">
+        <div class="gcera" id="gc-era"></div>
+        <div class="gctitle" id="gc-title"></div>
+        <div class="gcrole" id="gc-role"></div>
+      </div>
+      <div class="gcbody" id="gc-body"></div>
+      <div class="gcstat">
+        <div class="gcst"><span class="gcsv" id="gc-tier"></span><span class="gcsk">Layer</span></div>
+        <div class="gcst"><span class="gcsv" id="gc-type-v"></span><span class="gcsk">Type</span></div>
+      </div>
+      <div class="gcft">
+        <span class="gctag" id="gc-tag"></span>
+        <button class="gcclose" onclick="closePanel()">✕</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="moon-card">
+  <div class="mc">
+    <div class="mcbar" id="mc-bar"></div>
+    <div class="mchead">
+      <div class="mclabel" id="mc-label"></div>
+      <div class="mctitle" id="mc-title"></div>
+    </div>
+    <div class="mcbody" id="mc-body"></div>
+  </div>
+</div>
+
+<div id="msheet">
+  <div class="mshandle"></div>
+  <div class="msbar" id="ms-bar"></div>
+  <div class="mshead">
+    <div class="msera" id="ms-era"></div>
+    <div class="mstitle" id="ms-title"></div>
+    <div class="msrole" id="ms-role"></div>
+  </div>
+  <div class="msbody" id="ms-body"></div>
+  <div class="msft">
+    <span class="mstag" id="ms-tag"></span>
+    <button class="msclose" onclick="closePanel()">✕</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// MOON CONTENT DATA
+// ═══════════════════════════════════════════
+const MOON_DATA = {
+  'origin': [
+    { label:'Philosophy', title:'The underneath', body:'Design problems are communication problems. Every friction point is a gap between what someone means and what the interface understands.' },
+    { label:'Method', title:'Language first', body:'I start with words. A sentence that describes a feature accurately is a blueprint. If the sentence is confused, the design will be too.' },
+    { label:'Stance', title:'Cost of friction', body:'Bad interfaces extract attention, erode trust, and quietly teach people that technology doesn\'t care about them.' },
+  ],
+  'gnc-cs': [
+    { label:'Scope', title:'One designer, one dev', body:'Discovery through delivery. Mobile-first Shopify redesign executed in 12 weeks without handoff gaps.' },
+    { label:'Impact', title:'~$500M influenced', body:'Revenue touched by the redesign. Component-based architecture, shipped on time, no scope creep.' },
+    { label:'Method', title:'Strategy in the same hands', body:'The person who ran discovery also ran delivery. That continuity is the difference between a brief and a build.' },
+  ],
+  'tiktok-cs': [
+    { label:'Arc', title:'Senior → ACD → DRI', body:'Moved from Senior Designer to Associate Creative Director to Directly Responsible Individual in under a year.' },
+    { label:'Platform', title:'TikTok For Business', body:'One of the fastest-growing advertising platforms in the world at the moment I was working on it.' },
+    { label:'Lesson', title:'Speed as design constraint', body:'At TikTok\'s velocity, the ability to make a decision and move is itself a design skill.' },
+  ],
+  'bny-cs': [
+    { label:'Structure', title:'Three Agile tracks', body:'One design architect across three simultaneous Agile workstreams. I built the coordination layer nobody asked for.' },
+    { label:'Output', title:'Wove design system', body:'A modular system that centralized a sprawling product ecosystem. Named and owned by me before anyone commissioned it.' },
+    { label:'Role', title:'Interim Product Owner', body:'A role I wasn\'t hired for and became anyway. Client liaison, backlog owner, cross-functional translator.' },
+  ],
+  'phenom-cs': [
+    { label:'Discovery', title:'Named the silos', body:'Identified operational divisions nobody else had mapped — the invisible architecture that shapes everything downstream.' },
+    { label:'Scope', title:'Marketing · Sales · Product', body:'Corporate web presence owned end-to-end across three distinct internal stakeholder groups.' },
+    { label:'Challenge', title:'Alignment before design', body:'The design problem was secondary. The primary problem was that the organization didn\'t agree on what it was saying.' },
+  ],
+  'pfs-cs': [
+    { label:'Platform', title:'Salesforce Commerce Cloud', body:'Full-spectrum B2C and B2B builds. I ran UX strategy and the design function across the full project lifecycle.' },
+    { label:'Scope', title:'B2C + B2B', body:'Both consumer and enterprise commerce patterns in the same practice. That range sharpened the thinking.' },
+    { label:'Role', title:'Manager, UX', body:'Not just the designer — the person responsible for how design happened, who did it, and whether it was good.' },
+  ],
+  'workarea-cs': [
+    { label:'Process', title:'No mockup theater', body:'Napkin sketches and real conversations with engineers until the thing was right. Fidelity follows understanding.' },
+    { label:'Platform', title:'Proprietary SaaS', body:'An e-commerce platform shaped through direct client relationships and data-informed iteration over two years.' },
+    { label:'Principle', title:'Iteration over presentation', body:'A design that\'s never shown to an engineer is an opinion. I kept the work in contact with reality.' },
+  ],
+  '160-cs': [
+    { label:'Clients', title:'Comcast · Kent State · Eagles', body:'ADA-compliant interaction design for large institutional clients with real accessibility stakes.' },
+    { label:'Foundation', title:'Where culture formed', body:'This is where I learned what a design culture could be — and what it costs to build one intentionally.' },
+    { label:'Practice', title:'ADA as design', body:'Accessibility constraints aren\'t limitations. They\'re the minimum bar for designing for a full range of humans.' },
+  ],
+  '160over90': [
+    { label:'Sector', title:'.EDU specialist', body:'Full-service interaction design for higher education clients. Complex stakeholder environments, long decision cycles.' },
+    { label:'Formation', title:'Culture over tools', body:'The agency environment here was the first place I saw what intentional design culture could look like.' },
+    { label:'Duration', title:'2014–2016', body:'Two years that set the foundation for how I think about team, practice, and what work is actually for.' },
+  ],
+  'o3': [
+    { label:'Sector', title:'FinTech + iOS', body:'Lean UX for financial technology and mobile products in Fishtown, Philadelphia. Fast cycles, real stakes.' },
+    { label:'Credential', title:'Certified Scrum Master', body:'Not just a badge — I ran sprint ceremonies and understood how design lives inside an Agile process.' },
+    { label:'Environment', title:'Whiteboards and ship dates', body:'The kind of studio where wireframes go straight to developers and everyone knows the sprint velocity.' },
+  ],
+  'workarea': [
+    { label:'Platform', title:'SaaS e-commerce', body:'A proprietary platform shaped through direct client relationships across two years of iteration.' },
+    { label:'Approach', title:'Data-informed, not data-led', body:'Numbers tell you what happened. They don\'t tell you why. I used both.' },
+    { label:'Ethic', title:'No mockup theater', body:'I don\'t design to impress stakeholders. I design to solve problems, then show work at the moment it\'s useful.' },
+  ],
+  'pfs': [
+    { label:'Function', title:'UX strategy + execution', body:'Ran the design function — not just the deliverables, but the process, the people, and the standards.' },
+    { label:'Platform', title:'Salesforce Commerce Cloud', body:'Enterprise-grade e-commerce builds for clients across B2C and B2B contexts.' },
+    { label:'Scope', title:'Full project lifecycle', body:'Discovery through delivery, client-facing throughout. I didn\'t hand off work — I saw it through.' },
+  ],
+  'huge': [
+    { label:'Client', title:'Sentral Lifestyle Apts', body:'End-to-end UX and booking flow for a multifamily residential brand targeting lifestyle renters.' },
+    { label:'Condition', title:'Constrained and shipped', body:'Delivered under resource and timeline constraints that required sharp prioritization decisions.' },
+    { label:'Craft', title:'Booking flow architecture', body:'The conversion path from discovery to lease. High-stakes UX where friction is measured in signed leases.' },
+  ],
+  'elva': [
+    { label:'Client', title:'GNC · Shopify rebuild', body:'Mobile-first, component-based redesign from discovery through delivery. One designer across the full scope.' },
+    { label:'Duration', title:'12 weeks', body:'A tight engagement requiring immediate confidence in every decision. No revision cycles for clarity.' },
+    { label:'Model', title:'Discovery owns delivery', body:'The person who understands the problem should be the one solving it. I was both.' },
+  ],
+  'ct': [
+    { label:'Agency', title:'Code & Theory', body:'One of the more rigorous design agencies — the work had to be defensible, not just presentable.' },
+    { label:'Client', title:'TikTok For Business', body:'The advertising platform for the fastest-growing social media company in that window of time.' },
+    { label:'Trajectory', title:'Three titles in one year', body:'Senior Designer. Associate Creative Director. Directly Responsible Individual. The work earned each step.' },
+  ],
+  'sapient': [
+    { label:'Client', title:'BNY Mellon', body:'One of the oldest and largest financial institutions in the world. Design with institutional gravity.' },
+    { label:'Role', title:'Interim Product Owner', body:'A role I inherited by being the person who understood both the design and the business context.' },
+    { label:'System', title:'Wove', body:'The design system I built for BNY Mellon — modular, centralized, mine before anyone asked for it.' },
+  ],
+  'phenom': [
+    { label:'Scope', title:'Corporate web presence', body:'End-to-end ownership of the public-facing digital surface across Marketing, Sales, and Product.' },
+    { label:'Discovery', title:'Naming the invisible', body:'I surfaced operational silos nobody had documented. The map preceded the design.' },
+    { label:'Challenge', title:'Org alignment as UX', body:'Before I could design the site, I had to design the conversation between three teams who didn\'t agree.' },
+  ],
+  'wolfgang': [
+    { label:'Model', title:'Concept studio', body:'Not an agency. Not a consultancy. A studio that builds tools and thinking, then applies them to client problems.' },
+    { label:'Focus', title:'Craft, language, intent', body:'The three constraints I design within. Everything else is a medium for those three.' },
+    { label:'Engine', title:'Narrative as nodes', body:'This map is the proof of concept. The sentence engine is the theory. Wolfgang is where both live.' },
+  ],
+  'selfcurriculum': [
+    { label:'Duration', title:'Six years', body:'2006 to 2012. Reading, building, and breaking things before anyone paid me to do any of it.' },
+    { label:'Receipts', title:'Gaps have context', body:'Every gap in a traditional resume is a decision. Mine come with documentation.' },
+    { label:'Ethic', title:'Self-directed learning', body:'I didn\'t wait for a program to teach me. I found the problems and learned what solving them required.' },
+  ],
+  'flightpath': [
+    { label:'Structure', title:'Co-founded', body:'A design studio started before I had the vocabulary to describe what I was doing.' },
+    { label:'Lesson', title:'Independence early', body:'The habit of working outside institutional permission started here. It never fully stopped.' },
+    { label:'Era', title:'2016', body:'Between O3 World and Workarea. A detour that turned out to be the main road.' },
+  ],
+  'haiku': [
+    { label:'Incident', title:'Broken clavicle', body:'Three weeks flat. Can\'t type, can\'t draw. Can still think in seventeen syllables.' },
+    { label:'Output', title:'A haiku every day', body:'The constraint forced clarity. Every word had to earn its place. That\'s a design problem.' },
+    { label:'Principle', title:'Constraints as tools', body:'A limitation is a design problem. Design problems have solutions. This one produced thirty-one haiku.' },
+  ],
+  'wolfie-origin': [
+    { label:'Context', title:'Pandemic year', body:'2020. Everything paused. I started building tools for myself because the existing ones didn\'t think the way I think.' },
+    { label:'Motive', title:'Tools that fit the mind', body:'Most tools are built for average use patterns. I wanted one built for the way I actually work.' },
+    { label:'Outcome', title:'Beginning of Wolfgang', body:'wolfie.love was the first node. The studio grew from the same conviction: build what doesn\'t exist yet.' },
+  ],
+  'sentence': [
+    { label:'Conviction', title:'The sentence as unit', body:'One complete sentence is the most honest unit of human thought. It has a subject, a verb, a commitment.' },
+    { label:'Application', title:'Design tool', body:'If you can\'t write the sentence that describes what something does, you can\'t design it. Start there.' },
+    { label:'Origin', title:'Wolfgang & Co.', body:'The engine that drives the studio — and the map you\'re navigating right now.' },
+  ],
+  'frank': [
+    { label:'Model', title:'Writing with a POV', body:'A framework for writing that doesn\'t apologize for having a position. Named for what it is.' },
+    { label:'Principle', title:'The name says it', body:'ifimaybefrank.com. The URL is the thesis. No hedging, no passive voice, no buried lede.' },
+    { label:'Application', title:'Client work', body:'Used in brand voice, editorial strategy, and any context where writing needs to actually do something.' },
+  ],
+  'reasonably': [
+    { label:'Model', title:'Reasoning as craft', body:'A structured way to hold a position without becoming the position. You can be wrong. The framework survives.' },
+    { label:'Distinction', title:'Not performance', body:'Reasoning as performance is what happens in arguments. Reasoning as craft is what produces good decisions.' },
+    { label:'Use', title:'reasonably.cc', body:'A thinking model applied to design strategy, client recommendations, and any situation requiring a defensible position.' },
+  ],
+  'intoview': [
+    { label:'Function', title:'Instead of a resume', body:'The document I send when I want to be taken seriously. It thinks back at the reader.' },
+    { label:'Form', title:'Living document', body:'Not a PDF snapshot. A document that updates, responds, and reflects the current state of the work.' },
+    { label:'Audience', title:'For humans, not bots', body:'The PDF exists for ATS systems. This exists for the person who will actually make a decision.' },
+  ],
+  'wolfie-life': [
+    { label:'Category', title:'Spatial autobiography', body:'Not a blog. Not a portfolio. A spatial record of a life — moments as nodes, mood as infrastructure.' },
+    { label:'Structure', title:'Memory as navigation', body:'The interface is the thesis. You don\'t scroll through a life. You move through it.' },
+    { label:'Status', title:'2024–ongoing', body:'The map grows as the life does.' },
+  ],
+  'this-map': [
+    { label:'Form', title:'Declaration over statement', body:'A resume states facts. A declaration takes a position. This is the declaration.' },
+    { label:'Fallback', title:'The PDF is for bots', body:'Applicant tracking systems can\'t navigate this. That\'s the point. It filters for humans.' },
+    { label:'Medium', title:'Nodes as argument', body:'The structure is the thesis. Every design decision in this interface is a claim about how I think.' },
+  ],
+};
+
+// ═══════════════════════════════════════════
+// NODE DATA
+// ═══════════════════════════════════════════
+const NODES = [
+  { id:'origin', tier:'center', angle:0, type:'intro', era:'Declaration',
+    title:'I think deeply about human-to-human interaction.',
+    role:'',
+    body:'Not about tools. Not about deliverables. About the thing underneath — how we communicate, and what it costs when the interface gets in the way.' },
+  { id:'gnc-cs',     tier:'inner', angle:0.08, type:'deck',    era:'Case Study · 2021',    title:'GNC · The Rebuild',           role:'Discovery → Delivery · 12 weeks',   body:'Mobile-first Shopify redesign — strategy and execution in the same hands, shipped in 12 weeks, ~$500M in influenced revenue.' },
+  { id:'tiktok-cs',  tier:'inner', angle:0.20, type:'deck',    era:'Case Study · 2021–22', title:'TikTok For Business',          role:'DRI · ACD · Code & Theory',          body:'From Senior Designer to ACD to Directly Responsible Individual on one of the fastest-growing advertising platforms in the world.' },
+  { id:'bny-cs',     tier:'inner', angle:0.33, type:'deck',    era:'Case Study · 2022',    title:'BNY Mellon · Wove',           role:'Interim PO · Design Architect',      body:'Three Agile tracks. One design architect. I centralized a sprawling product ecosystem into a modular design system nobody asked me to build.' },
+  { id:'phenom-cs',  tier:'inner', angle:0.48, type:'deck',    era:'Case Study · 2025',    title:'Phenom · Web Presence',       role:'UX Strategist',                      body:'Named operational silos nobody else had mapped. Owned the corporate web presence end-to-end across Marketing, Sales, and Product.' },
+  { id:'pfs-cs',     tier:'inner', angle:0.63, type:'deck',    era:'Case Study · 2020–21', title:'PFSWeb LiveArea',             role:'Manager, UX',                        body:'Full-spectrum Salesforce Commerce Cloud builds across B2C and B2B. Ran UX strategy and design function throughout every project lifecycle.' },
+  { id:'workarea-cs',tier:'inner', angle:0.76, type:'deck',    era:'Case Study · 2017–18', title:'Workarea · SaaS Platform',    role:'Senior UX Designer',                 body:'No mockup theater — napkin sketches and real conversations with engineers until the thing was right.' },
+  { id:'160-cs',     tier:'inner', angle:0.90, type:'deck',    era:'Case Study · 2014–16', title:'One Sixty Over Ninety',       role:'Interaction Designer',               body:'ADA-compliant interaction design for Comcast, Kent State, Philadelphia Eagles. This is where I learned what design culture could be.' },
+  { id:'160over90',  tier:'mid',   angle:0.02, type:'work',   era:'2014–2016', title:'One Sixty Over Ninety',          role:'Interaction Designer',        body:'Full-service interaction design for .EDU clients. This is where I learned what design culture could be.' },
+  { id:'o3',         tier:'mid',   angle:0.11, type:'work',   era:'2016–2017', title:'O3 World',                       role:'UX Designer',                 body:'Lean UX for FinTech and iOS products in Fishtown. Whiteboards, wireframes, sprint cycles, shipped. Certified Scrum Master.' },
+  { id:'workarea',   tier:'mid',   angle:0.20, type:'work',   era:'2017–2018', title:'Workarea',                       role:'Senior UX Designer',          body:'Shaped a proprietary SaaS e-commerce platform through direct client relationships and data-informed iteration. No mockup theater.' },
+  { id:'pfs',        tier:'mid',   angle:0.30, type:'work',   era:'2020–2021', title:'PFSWeb LiveArea',                role:'Manager, UX',                 body:'Ran UX strategy and design function throughout every Salesforce Commerce Cloud project lifecycle.' },
+  { id:'huge',       tier:'mid',   angle:0.39, type:'work',   era:'2021',      title:'HUGE Inc.',                      role:'Senior UX Designer',          body:'End-to-end UX and booking flow for Sentral Lifestyle Apartments — delivered under constrained conditions.' },
+  { id:'elva',       tier:'mid',   angle:0.47, type:'work',   era:'2021',      title:'Elva · GNC',                     role:'Senior UX Designer',          body:'Owned discovery through delivery for GNC\'s Shopify redesign — mobile-first, component-based, 12 weeks.' },
+  { id:'ct',         tier:'mid',   angle:0.56, type:'work',   era:'2021–2022', title:'Code & Theory · TikTok',         role:'Senior Interaction Designer', body:'Led UX for TikTok For Business. Moved from Senior Designer to ACD to DRI in under a year.' },
+  { id:'sapient',    tier:'mid',   angle:0.66, type:'work',   era:'2022–2023', title:'Publicis Sapient · BNY Mellon',  role:'Senior UX Designer',          body:'Embedded as interim Product Owner and primary client liaison — a role I wasn\'t hired for and became anyway.' },
+  { id:'phenom',     tier:'mid',   angle:0.76, type:'work',   era:'2025',      title:'Phenom',                         role:'UX Strategist',               body:'Owned the corporate web presence end-to-end. Named operational silos nobody else had mapped.' },
+  { id:'wolfgang',   tier:'mid',   angle:0.88, type:'launch', era:'Current',   title:'Wolfgang & Co.',                 role:'Concept Studio · Founder',    body:'A concept studio focused on craft, language, and human intent — as realized through a bespoke narrative-as-nodes engine. My answer is The Sentence.' },
+  { id:'selfcurriculum',tier:'outer',angle:0.02,type:'reflect',era:'2006–2012', title:'The Self-Curriculum',           role:'Personal',           body:'Six years of reading, building, and breaking things before anyone paid me to. The gaps in my resume come with receipts.' },
+  { id:'flightpath',    tier:'outer',angle:0.12,type:'launch', era:'2016',      title:'FlightPath · Co-Founded',       role:'Co-Founder',         body:'Co-founded a design studio before I had the language for what I was doing. The independent thinking started here.' },
+  { id:'haiku',         tier:'outer',angle:0.22,type:'story',  era:'2016',      title:'The Clavicle & The Haiku',      role:'Personal',           body:'A broken clavicle, three weeks flat. I wrote a haiku every day. Constraints are a design tool, not a design problem.' },
+  { id:'wolfie-origin', tier:'outer',angle:0.33,type:'reflect',era:'2020',      title:'wolfie.love · Origin',          role:'Self-directed',       body:'The pandemic year. I started building tools for myself because the ones that existed didn\'t think the way I think.' },
+  { id:'sentence',      tier:'outer',angle:0.44,type:'concept',era:'2023',      title:'The Sentence Engine',           role:'Wolfgang & Co.',     body:'The conviction at the center of everything: a single, complete sentence is the most honest unit of human thought.' },
+  { id:'frank',         tier:'outer',angle:0.54,type:'launch', era:'2023',      title:'ifimaybefrank.com',              role:'A writing model',    body:'A model for writing that doesn\'t apologize for having a point of view. The name says everything about the intent.' },
+  { id:'reasonably',    tier:'outer',angle:0.63,type:'launch', era:'2023',      title:'reasonably.cc',                 role:'A thinking model',   body:'A structured way to hold a position without becoming it. Reasoning as craft, not as performance.' },
+  { id:'intoview',      tier:'outer',angle:0.72,type:'launch', era:'2023–',     title:'intoview.pro',                  role:'My model',           body:'The one I send instead of a resume when I want to be taken seriously. A living document that thinks back.' },
+  { id:'wolfie-life',   tier:'outer',angle:0.82,type:'launch', era:'2024',      title:'wolfie.life',                   role:'A new category',     body:'Not a blog. Not a portfolio. A spatial record of a life — moments as nodes, mood as infrastructure, memory as navigation.' },
+  { id:'this-map',      tier:'outer',angle:0.92,type:'concept',era:'2024–',     title:'This Map',                      role:'Declaration',        body:'A resume should serve as a declaration, not a statement. This is the declaration. The PDF is the fallback — for bots.' },
+];
+
+// ═══════════════════════════════════════════
+// TYPE CONFIG
+// ═══════════════════════════════════════════
+const TYPE_CFG = {
+  intro:   {color:0xf0ece2,size:0.30,label:'Origin'},
+  work:    {color:0xc8704a,size:0.13,label:'Role'},
+  launch:  {color:0xd4a84a,size:0.15,label:'Launch'},
+  story:   {color:0xc87060,size:0.11,label:'Story'},
+  reflect: {color:0x9a8070,size:0.11,label:'Reflect'},
+  concept: {color:0x7a8ecc,size:0.13,label:'Concept'},
+  deck:    {color:0xb07acc,size:0.14,label:'Case Study'},
+  default: {color:0x8a8680,size:0.10,label:''},
+};
+const tcfg=t=>TYPE_CFG[t]||TYPE_CFG.default;
+const tcol=t=>tcfg(t).color;
+const thex=t=>'#'+tcol(t).toString(16).padStart(6,'0');
+
+// ═══════════════════════════════════════════
+// ELLIPSE LAYOUT
+// ═══════════════════════════════════════════
+const TILT=17*Math.PI/180;
+const ELLIPSES={inner:{rx:9,rz:5.5},mid:{rx:16,rz:9.5},outer:{rx:23,rz:14}};
+const TIER_Y={inner:0.05,mid:0.2,outer:0.5};
+
+function ellipsePos(tier,angleFrac){
+  if(tier==='center') return new THREE.Vector3(0,0,0);
+  const e=ELLIPSES[tier];
+  const a=(angleFrac||0)*Math.PI*2;
+  const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);
+  return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),TIER_Y[tier]||0,lx*Math.sin(TILT)+lz*Math.cos(TILT));
+}
+NODES.forEach(n=>{n._pos=ellipsePos(n.tier,n.angle);});
+
+// ═══════════════════════════════════════════
+// THREE SETUP
+// ═══════════════════════════════════════════
+const canvas=document.getElementById('canvas');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(0x000000);
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x000000,0.018);
+const cam=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,2000);
+const VIEWS={
+  iso: {phi:Math.PI*0.26, theta:-Math.PI*0.12,radius:42},
+  top: {phi:Math.PI*0.018,theta:0,            radius:52},
+  side:{phi:Math.PI*0.18, theta:Math.PI*0.5,  radius:46},
+};
+let camState={...VIEWS.top},camTarget={...VIEWS.top};
+const scenePivot=new THREE.Vector3(),scenePivotTgt=new THREE.Vector3();
+function applyCam(){
+  const{phi,theta,radius}=camState,c=scenePivot;
+  cam.position.set(c.x+radius*Math.sin(phi)*Math.sin(theta),c.y+radius*Math.cos(phi),c.z+radius*Math.sin(phi)*Math.cos(theta));
+  cam.lookAt(c);
+}
+applyCam();
+scene.add(new THREE.AmbientLight(0xffffff,0.1));
+const dLight=new THREE.DirectionalLight(0xf0ece2,0.25);
+dLight.position.set(10,40,10);scene.add(dLight);
+
+// ═══════════════════════════════════════════
+// PARTICLES
+// ═══════════════════════════════════════════
+const PC=1400;
+const pPos=new Float32Array(PC*3),pPh=new Float32Array(PC),pSp=new Float32Array(PC);
+for(let i=0;i<PC;i++){
+  let x,y,z,a=0;
+  do{const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=10+Math.pow(Math.random(),0.7)*18;
+    x=r*Math.sin(p)*Math.cos(t);y=(Math.random()-0.5)*5;z=r*Math.sin(p)*Math.sin(t);a++;}
+  while(Math.sqrt(x*x+z*z)<5.5&&a<30);
+  pPos[i*3]=x;pPos[i*3+1]=y;pPos[i*3+2]=z;
+  pPh[i]=Math.random()*Math.PI*2;pSp[i]=0.18+Math.random()*0.28;
+}
+const pGeo=new THREE.BufferGeometry();
+pGeo.setAttribute('position',new THREE.BufferAttribute(pPos.slice(),3));
+const pOrig=pPos.slice();
+const pMat=new THREE.PointsMaterial({color:0xf0ece2,size:0.065,transparent:true,opacity:0.18,sizeAttenuation:true,fog:true,depthWrite:false});
+scene.add(new THREE.Points(pGeo,pMat));
+
+// ═══════════════════════════════════════════
+// BUILD SCENE
+// ═══════════════════════════════════════════
+const nodeObjects=[];
+const raycaster=new THREE.Raycaster();
+
+function drawEllipse(rx,rz,op,col,y){
+  const pts=[];
+  for(let i=0;i<=128;i++){const a=i/128*Math.PI*2,lx=rx*Math.cos(a),lz=rz*Math.sin(a);pts.push(new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),y||-0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT)));}
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op})));
+}
+
+function addLabel(text,x,y,z,color,fs){
+  const c=document.createElement('canvas');c.width=512;c.height=64;
+  const ctx=c.getContext('2d');ctx.fillStyle=color;ctx.font=`${fs*2.4}px "DM Mono",monospace`;ctx.fillText(text.toUpperCase(),10,42);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));
+  spr.position.set(x,y,z);spr.scale.set(9,1.15,1);scene.add(spr);
+}
+
+function buildScene(){
+  drawEllipse(ELLIPSES.inner.rx,ELLIPSES.inner.rz,0.20,0xb07acc,0.04);
+  drawEllipse(ELLIPSES.mid.rx,  ELLIPSES.mid.rz,  0.24,0xc8704a,0.18);
+  drawEllipse(ELLIPSES.outer.rx,ELLIPSES.outer.rz,0.17,0xd4a84a,0.45);
+  const gM=new THREE.LineBasicMaterial({color:0xf0ece2,transparent:true,opacity:0.013});
+  for(let i=-7;i<=7;i++){
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-36),new THREE.Vector3(i*4,-0.5,36)]),gM));
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-36,-0.5,i*4),new THREE.Vector3(36,-0.5,i*4)]),gM));
+  }
+  // origin
+  const oN=NODES.find(n=>n.id==='origin');
+  const oM=new THREE.Mesh(new THREE.SphereGeometry(0.32,16,16),new THREE.MeshBasicMaterial({color:0xf0ece2}));
+  oM.position.copy(oN._pos);oM.userData={node:oN,origColor:0xf0ece2,origOpacity:1};
+  scene.add(oM);nodeObjects.push({mesh:oM,node:oN});
+  const grPts=[];for(let i=0;i<=64;i++){const a=i/64*Math.PI*2;grPts.push(new THREE.Vector3(Math.cos(a)*1.1,0,Math.sin(a)*1.1));}
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(grPts),new THREE.LineBasicMaterial({color:0xf0ece2,transparent:true,opacity:0.14})));
+  // spokes
+  NODES.filter(n=>n.id!=='origin').forEach(n=>{
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),n._pos.clone()]),new THREE.LineBasicMaterial({color:tcol(n.type),transparent:true,opacity:0.05})));
+  });
+  // nodes
+  NODES.filter(n=>n.id!=='origin').forEach(n=>{
+    const pos=n._pos,cfg=tcfg(n.type);
+    const da=0.018,a1=((n.angle||0)-da)*Math.PI*2,a2=((n.angle||0)+da)*Math.PI*2;
+    const e=ELLIPSES[n.tier]||ELLIPSES.mid;
+    function eP(a){const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),pos.y,lx*Math.sin(TILT)+lz*Math.cos(TILT));}
+    const tang=eP(a2).sub(eP(a1)).normalize(),tL=0.36;
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pos.clone().addScaledVector(tang,-tL),pos.clone().addScaledVector(tang,tL)]),new THREE.LineBasicMaterial({color:cfg.color,transparent:true,opacity:0.55})));
+    [-0.55,0.55].forEach(off=>{const m=pos.clone().addScaledVector(tang,off*0.18);scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([m.clone().addScaledVector(tang,-tL*0.38),m.clone().addScaledVector(tang,tL*0.38)]),new THREE.LineBasicMaterial({color:cfg.color,transparent:true,opacity:0.18})));});
+    const mesh=new THREE.Mesh(new THREE.SphereGeometry(cfg.size,12,12),new THREE.MeshBasicMaterial({color:cfg.color,transparent:true,opacity:0.82}));
+    mesh.position.copy(pos);mesh.userData={node:n,origColor:cfg.color,origOpacity:0.82};
+    scene.add(mesh);nodeObjects.push({mesh,node:n});
+    addLabel(n.title.length>26?n.title.slice(0,24)+'…':n.title,pos.x+0.5,pos.y+0.4,pos.z,thex(n.type)+'99',6.2);
+  });
+  const iX=ELLIPSES.inner.rx*Math.cos(TILT),iZ=ELLIPSES.inner.rx*Math.sin(TILT);
+  const mX=ELLIPSES.mid.rx*Math.cos(TILT),  mZ=ELLIPSES.mid.rx*Math.sin(TILT);
+  const oX=ELLIPSES.outer.rx*Math.cos(TILT),oZ=ELLIPSES.outer.rx*Math.sin(TILT);
+  addLabel('Case Studies',iX+0.4,0.1,iZ,'rgba(176,122,204,0.32)',6);
+  addLabel('Career',      mX+0.4,0.1,mZ,'rgba(200,112,74,0.32)', 6);
+  addLabel('Independent', oX+0.4,0.1,oZ,'rgba(212,168,74,0.32)', 6);
+}
+buildScene();
+
+// ═══════════════════════════════════════════
+// MOON SYSTEM
+// ═══════════════════════════════════════════
+let activeMoons=[];   // { mesh, connLine, labelSpr, moonData, parentNode, orbitAngle, orbitRadius, orbitSpeed }
+let moonMeshList=[];  // flat list for raycaster
+let hoveredMoon=null;
+let moonBirth=0;
+const MOON_R=0.058, MOON_ORBIT=2.0, MOON_FADEDUR=0.65;
+
+function spawnMoons(node){
+  const moons=MOON_DATA[node.id];
+  if(!moons||!moons.length) return;
+  moonBirth=performance.now()/1000;
+  const col=tcol(node.type);
+  moons.forEach((md,i)=>{
+    const startAngle=(i/moons.length)*Math.PI*2 + 0.4;
+    const speed=0.22+i*0.07;
+    // sphere
+    const mesh=new THREE.Mesh(
+      new THREE.SphereGeometry(MOON_R,8,8),
+      new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false})
+    );
+    mesh.userData={isMoon:true,moonData:md,parentNode:node,origColor:col,origOpacity:0.7};
+    scene.add(mesh);
+    // connector
+    const cGeo=new THREE.BufferGeometry().setFromPoints([node._pos.clone(),node._pos.clone()]);
+    const cLine=new THREE.Line(cGeo,new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false}));
+    scene.add(cLine);
+    // label sprite
+    const lSpr=makeMoonLabel(md.label,col);
+    lSpr.material.opacity=0;
+    scene.add(lSpr);
+
+    activeMoons.push({mesh,connLine:cLine,labelSpr:lSpr,moonData:md,parentNode:node,orbitAngle:startAngle,orbitRadius:MOON_ORBIT,orbitSpeed:speed});
+    moonMeshList.push(mesh);
+  });
+}
+
+function makeMoonLabel(text,color){
+  const c=document.createElement('canvas');c.width=280;c.height=36;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#'+color.toString(16).padStart(6,'0')+'aa';
+  ctx.font='16px "DM Mono",monospace';
+  ctx.fillText(text.toUpperCase(),6,24);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+  spr.scale.set(2.2,0.28,1);
+  return spr;
+}
+
+function clearMoons(){
+  activeMoons.forEach(m=>{
+    scene.remove(m.mesh);scene.remove(m.connLine);scene.remove(m.labelSpr);
+    m.mesh.geometry.dispose();m.mesh.material.dispose();
+    m.connLine.geometry.dispose();m.connLine.material.dispose();
+    m.labelSpr.material.map.dispose();m.labelSpr.material.dispose();
+  });
+  activeMoons=[];moonMeshList=[];hoveredMoon=null;
+  document.getElementById('moon-card').classList.remove('on');
+}
+
+function tickMoons(elapsed,dt){
+  if(!activeMoons.length) return;
+  const age=elapsed-moonBirth;
+  const fadeT=Math.min(age/MOON_FADEDUR,1);
+  const eased=fadeT*fadeT*(3-2*fadeT);
+
+  activeMoons.forEach(m=>{
+    m.orbitAngle+=m.orbitSpeed*dt;
+    const pp=m.parentNode._pos;
+    // Orbit in XZ plane, slight Y wobble for depth
+    const ox=pp.x+Math.cos(m.orbitAngle)*m.orbitRadius;
+    const oy=pp.y+Math.sin(m.orbitAngle*0.5)*0.25;
+    const oz=pp.z+Math.sin(m.orbitAngle)*m.orbitRadius*0.52;
+    m.mesh.position.set(ox,oy,oz);
+    m.labelSpr.position.set(ox+0.18,oy+0.15,oz);
+
+    const isHov=hoveredMoon===m;
+    const tOp=isHov?1.0:0.70;
+    const tSc=isHov?1.9:1.0;
+    m.mesh.material.opacity=eased*tOp;
+    m.connLine.material.opacity=eased*0.16;
+    m.labelSpr.material.opacity=eased*(isHov?0.92:0.52);
+
+    // Smooth scale lerp
+    const cs=m.mesh.scale.x;
+    m.mesh.scale.setScalar(cs+(tSc-cs)*0.14);
+
+    // Update connector positions
+    const pa=m.connLine.geometry.attributes.position.array;
+    pa[0]=pp.x;pa[1]=pp.y;pa[2]=pp.z;
+    pa[3]=ox;  pa[4]=oy;  pa[5]=oz;
+    m.connLine.geometry.attributes.position.needsUpdate=true;
+  });
+}
+
+// ═══════════════════════════════════════════
+// MOON CARD
+// ═══════════════════════════════════════════
+function showMoonCard(md,parentNode,cx,cy){
+  const col=thex(parentNode.type);
+  document.getElementById('mc-bar').style.background=col;
+  document.getElementById('mc-label').textContent=md.label;
+  document.getElementById('mc-title').textContent=md.title;
+  document.getElementById('mc-body').textContent=md.body;
+  document.querySelector('.mc').style.borderColor=`rgba(${hexToRgb(col)},0.18)`;
+  const cw=256,ch=160,mg=16;
+  let left=cx+20,top=cy-ch/2;
+  if(left+cw+mg>innerWidth) left=cx-cw-20;
+  left=Math.max(mg,Math.min(innerWidth-cw-mg,left));
+  top=Math.max(mg,Math.min(innerHeight-ch-mg,top));
+  const card=document.getElementById('moon-card');
+  card.style.left=left+'px';card.style.top=top+'px';
+  card.classList.add('on');
+}
+
+// ═══════════════════════════════════════════
+// FOCUS
+// ═══════════════════════════════════════════
+let isFocused=false,focusNode=null,focusOrbit=0;
+
+function enterFocus(node){
+  isFocused=true;focusNode=node;focusOrbit=camTarget.theta;
+  scenePivotTgt.copy(node._pos);
+  camTarget.radius=node.tier==='center'?5:node.tier==='inner'?8:node.tier==='mid'?10:12;
+  camTarget.phi=Math.PI*0.22;
+  document.getElementById('focus-hint').classList.add('vis');
+  document.getElementById('hint').style.opacity='0';
+  openPanel(node);
+  clearMoons();
+  spawnMoons(node);
+}
+
+function exitFocus(){
+  isFocused=false;focusNode=null;
+  scenePivotTgt.set(0,0,0);
+  camTarget.radius=VIEWS.top.radius;camTarget.phi=VIEWS.top.phi;
+  document.getElementById('focus-hint').classList.remove('vis');
+  document.getElementById('ghost').classList.remove('on');
+  document.getElementById('msheet').classList.remove('on');
+  clearMoons();
+}
+
+// ═══════════════════════════════════════════
+// PANEL
+// ═══════════════════════════════════════════
+const TIER_LABELS={center:'Origin',inner:'Case Studies',mid:'Career',outer:'Independent'};
+
+function openPanel(node){
+  const col=thex(node.type),lbl=tcfg(node.type).label,tier=TIER_LABELS[node.tier]||node.tier;
+  document.getElementById('gc-bar').style.background=col;
+  document.getElementById('gc-era').textContent=node.era||'';
+  document.getElementById('gc-title').textContent=node.title||'';
+  document.getElementById('gc-role').textContent=node.role||'';
+  document.getElementById('gc-body').textContent=node.body||'';
+  document.getElementById('gc-tier').textContent=tier;
+  document.getElementById('gc-type-v').textContent=lbl;
+  const gcTag=document.getElementById('gc-tag');gcTag.textContent=lbl;gcTag.style.color=col;
+  document.querySelector('.gc').style.borderColor=`rgba(${hexToRgb(col)},0.18)`;
+  positionGhost(node);
+  document.getElementById('ghost').classList.add('on');
+  document.getElementById('ms-bar').style.background=col;
+  document.getElementById('ms-era').textContent=node.era||'';
+  document.getElementById('ms-title').textContent=node.title||'';
+  document.getElementById('ms-role').textContent=node.role||'';
+  document.getElementById('ms-body').textContent=node.body||'';
+  const msTag=document.getElementById('ms-tag');msTag.textContent=lbl;msTag.style.color=col;
+  document.getElementById('msheet').classList.add('on');
+}
+
+function hexToRgb(h){return `${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)}`;}
+
+function positionGhost(node){
+  const ghost=document.getElementById('ghost');
+  const vp=node._pos.clone().project(cam);
+  const sx=(vp.x*0.5+0.5)*innerWidth,sy=(-vp.y*0.5+0.5)*innerHeight;
+  const cw=310,mg=20;
+  let left=sx+28;if(left+cw+mg>innerWidth) left=sx-cw-28;
+  left=Math.max(mg,Math.min(innerWidth-cw-mg,left));
+  let top=sy-60;top=Math.max(mg+60,Math.min(innerHeight-420,top));
+  ghost.style.left=left+'px';ghost.style.top=top+'px';
+}
+
+window.closePanel=function(){exitFocus();};
+
+// ═══════════════════════════════════════════
+// INTERACTION
+// ═══════════════════════════════════════════
+const tooltip=document.getElementById('tooltip');
+let hoveredMesh=null,mouse=new THREE.Vector2(),drag=false;
+let pointerStart={x:0,y:0},lastMouse={x:0,y:0},lastXY={x:0,y:0};
+let autoRotate=false,autoTimer=null,hintFaded=false;
+
+function posTooltip(cx,cy){tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;}
+
+function checkHover(){
+  raycaster.setFromCamera(mouse,cam);
+
+  // moons first
+  if(moonMeshList.length){
+    const mHits=raycaster.intersectObjects(moonMeshList);
+    if(mHits.length){
+      const hitMesh=mHits[0].object;
+      const mo=activeMoons.find(m=>m.mesh===hitMesh);
+      if(mo&&mo!==hoveredMoon){
+        hoveredMoon=mo;
+        showMoonCard(mo.moonData,mo.parentNode,lastXY.x,lastXY.y);
+      }
+      // clear main hover
+      if(hoveredMesh){hoveredMesh.material.color.setHex(hoveredMesh.userData.origColor);hoveredMesh.material.opacity=hoveredMesh.userData.origOpacity;hoveredMesh.scale.setScalar(1);hoveredMesh=null;}
+      tooltip.classList.remove('vis');
+      canvas.style.cursor='pointer';
+      return;
+    }
+  }
+  // no moon hit
+  if(hoveredMoon){hoveredMoon=null;document.getElementById('moon-card').classList.remove('on');}
+
+  // main nodes
+  const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+  if(hits.length){
+    const obj=nodeObjects.find(o=>o.mesh===hits[0].object);
+    if(obj&&obj.mesh!==hoveredMesh){
+      if(hoveredMesh){hoveredMesh.material.color.setHex(hoveredMesh.userData.origColor);hoveredMesh.material.opacity=hoveredMesh.userData.origOpacity;hoveredMesh.scale.setScalar(1);}
+      hoveredMesh=obj.mesh;
+      hoveredMesh.material.color.setHex(0xffffff);hoveredMesh.material.opacity=1;hoveredMesh.scale.setScalar(2.6);
+      const n=obj.node;
+      document.getElementById('tt-era').textContent=n.era||'';
+      document.getElementById('tt-title').textContent=n.title;
+      document.getElementById('tt-type').style.color=thex(n.type);
+      document.getElementById('tt-type').textContent=tcfg(n.type).label;
+      tooltip.classList.add('vis');canvas.style.cursor='pointer';
+    }
+  } else {
+    if(hoveredMesh){hoveredMesh.material.color.setHex(hoveredMesh.userData.origColor);hoveredMesh.material.opacity=hoveredMesh.userData.origOpacity;hoveredMesh.scale.setScalar(1);hoveredMesh=null;}
+    tooltip.classList.remove('vis');canvas.style.cursor='default';
+  }
+}
+
+canvas.addEventListener('pointerdown',e=>{
+  drag=true;pointerStart={x:e.clientX,y:e.clientY};lastMouse={x:e.clientX,y:e.clientY};
+  if(!hintFaded){document.getElementById('hint').style.opacity='0';hintFaded=true;}
+});
+window.addEventListener('pointerup',e=>{
+  const dx=Math.abs(e.clientX-pointerStart.x),dy=Math.abs(e.clientY-pointerStart.y);
+  if(drag&&dx<5&&dy<5){
+    if(hoveredMoon){
+      // tap on moon — card already shown on hover, no-op
+    } else if(hoveredMesh){
+      const node=hoveredMesh.userData.node;
+      if(isFocused&&focusNode===node){exitFocus();}else{enterFocus(node);}
+    } else if(isFocused){exitFocus();}
+  }
+  drag=false;
+  if(!isFocused){clearTimeout(autoTimer);autoTimer=setTimeout(()=>{autoRotate=true;},9000);}
+});
+window.addEventListener('pointermove',e=>{
+  mouse.set((e.clientX/innerWidth)*2-1,-(e.clientY/innerHeight)*2+1);
+  lastXY={x:e.clientX,y:e.clientY};
+  posTooltip(e.clientX,e.clientY);
+  if(!drag||isFocused) return;
+  const dx=e.clientX-lastMouse.x,dy=e.clientY-lastMouse.y;
+  lastMouse={x:e.clientX,y:e.clientY};
+  autoRotate=false;clearTimeout(autoTimer);
+  camTarget.theta-=dx*0.006;
+  camTarget.phi=Math.max(0.01,Math.min(Math.PI*0.48,camTarget.phi+dy*0.005));
+});
+canvas.addEventListener('wheel',e=>{
+  e.preventDefault();
+  camTarget.radius=Math.max(5,Math.min(150,camTarget.radius+e.deltaY*0.06));
+  if(!isFocused){autoRotate=false;clearTimeout(autoTimer);autoTimer=setTimeout(()=>{autoRotate=true;},5000);}
+},{passive:false});
+let lastPinch=null;
+canvas.addEventListener('touchstart',e=>{if(e.touches.length===2){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;lastPinch=Math.sqrt(dx*dx+dy*dy);}},{passive:true});
+canvas.addEventListener('touchmove',e=>{if(e.touches.length===2&&lastPinch){const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY,d=Math.sqrt(dx*dx+dy*dy);camTarget.radius=Math.max(5,Math.min(150,camTarget.radius*(lastPinch/d)));lastPinch=d;}},{passive:true});
+document.querySelectorAll('.hud-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const v=btn.dataset.view;if(!VIEWS[v]) return;
+    if(isFocused) exitFocus();
+    camTarget={...VIEWS[v]};
+    document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    autoRotate=false;clearTimeout(autoTimer);autoTimer=setTimeout(()=>{autoRotate=true;},9000);
+  });
+});
+
+// ═══════════════════════════════════════════
+// RENDER LOOP
+// ═══════════════════════════════════════════
+const LERP=0.065,PIVL=0.055;
+let lt=0;
+const pA=pGeo.getAttribute('position');
+
+function tick(t){
+  requestAnimationFrame(tick);
+  const dt=Math.min((t-lt)/1000,0.05);lt=t;
+  const el=t*0.001;
+
+  // particles
+  for(let i=0;i<PC;i++){
+    const ox=pOrig[i*3],oy=pOrig[i*3+1],oz=pOrig[i*3+2],ph=pPh[i],sp=pSp[i];
+    pA.array[i*3]  =ox+Math.sin(el*sp*0.31+ph)*0.55;
+    pA.array[i*3+1]=oy+Math.sin(el*sp*0.19+ph*1.3)*0.28;
+    pA.array[i*3+2]=oz+Math.cos(el*sp*0.27+ph*0.7)*0.55;
+  }
+  pA.needsUpdate=true;
+  pMat.opacity=0.14+Math.sin(el*0.11)*0.04;
+
+  // moons
+  tickMoons(el,dt);
+
+  // update moon card position as camera orbits
+  if(hoveredMoon&&isFocused){
+    showMoonCard(hoveredMoon.moonData,hoveredMoon.parentNode,lastXY.x,lastXY.y);
+  }
+
+  if(isFocused){
+    focusOrbit+=dt*0.30;camTarget.theta=focusOrbit;
+    if(focusNode) positionGhost(focusNode);
+  } else if(autoRotate){camTarget.theta+=dt*0.032;}
+
+  camState.phi   +=(camTarget.phi   -camState.phi)  *LERP;
+  camState.theta +=(camTarget.theta -camState.theta) *LERP;
+  camState.radius+=(camTarget.radius-camState.radius)*LERP;
+  scenePivot.lerp(scenePivotTgt,PIVL);
+
+  applyCam();checkHover();
+  renderer.render(scene,cam);
+}
+requestAnimationFrame(tick);
+
+window.addEventListener('resize',()=>{
+  cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+});
+</script>
+</body>
+</html>
