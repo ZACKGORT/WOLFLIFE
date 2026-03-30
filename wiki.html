@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Three-Body Problem · Spatial Knowledge Surface</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:#030308;transition:background 0.6s;}
+body.light{background:#f0ece4;}
+#bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;}
+canvas{display:block;width:100vw;height:100vh;position:relative;z-index:1;}
+#brand{position:fixed;top:24px;left:28px;z-index:100;pointer-events:none;font-family:'DM Mono',monospace;}
+#brand-name{font-size:10px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.65);transition:color 0.5s;}
+#brand-sub{font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.24);margin-top:5px;transition:color 0.5s;}
+body.light #brand-name{color:rgba(10,14,30,0.72);}
+body.light #brand-sub{color:rgba(10,14,30,0.34);}
+#hud{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:1px;background:rgba(180,210,255,0.03);border:1px solid rgba(180,210,255,0.10);border-radius:4px;overflow:hidden;z-index:100;transition:background 0.5s,border-color 0.5s;}
+.hud-btn{background:none;border:none;cursor:pointer;color:rgba(180,210,255,0.32);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;padding:9px 18px;border-right:1px solid rgba(180,210,255,0.08);transition:color 0.2s,background 0.2s;}
+.hud-btn:last-child{border-right:none;}
+.hud-btn:hover{color:rgba(180,210,255,0.75);background:rgba(180,210,255,0.05);}
+.hud-btn.active{color:#b4d2ff;background:rgba(180,210,255,0.08);}
+body.light #hud{background:rgba(10,14,30,0.04);border-color:rgba(10,14,30,0.16);}
+body.light .hud-btn{color:rgba(10,14,30,0.36);border-right-color:rgba(10,14,30,0.10);}
+body.light .hud-btn:hover{color:rgba(10,14,30,0.80);background:rgba(10,14,30,0.06);}
+body.light .hud-btn.active{color:#0a0e1e;background:rgba(10,14,30,0.10);}
+#hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(180,210,255,0.14);z-index:100;pointer-events:none;white-space:nowrap;transition:opacity 1.2s,color 0.5s;}
+#focus-hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.24);z-index:100;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 0.5s;}
+#focus-hint.vis{opacity:1;}
+body.light #hint{color:rgba(10,14,30,0.22);}
+body.light #focus-hint{color:rgba(10,14,30,0.32);}
+#theme-toggle{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:100;background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.28);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.20em;text-transform:uppercase;padding:6px 14px;border-radius:2px;cursor:pointer;transition:all 0.2s;}
+#theme-toggle:hover{color:rgba(180,210,255,0.65);border-color:rgba(180,210,255,0.38);}
+body.light #theme-toggle{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.40);}
+body.light #theme-toggle:hover{color:rgba(10,14,30,0.78);border-color:rgba(10,14,30,0.55);}
+#tooltip{position:fixed;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200;}
+#tooltip.vis{opacity:1;}
+#tt-inner{background:rgba(4,6,14,0.96);border:1px solid rgba(180,210,255,0.14);border-radius:4px;padding:12px 16px;backdrop-filter:blur(12px);max-width:240px;}
+.tt-ring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.32);margin-bottom:5px;}
+.tt-title{font-family:'DM Serif Display',serif;font-size:15px;color:#dcecff;line-height:1.2;margin-bottom:5px;letter-spacing:-0.01em;}
+.tt-type{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.40);}
+body.light #tt-inner{background:rgba(240,236,228,0.98);border-color:rgba(10,14,30,0.20);box-shadow:2px 3px 0 rgba(10,14,30,0.10);}
+body.light .tt-ring{color:rgba(10,14,30,0.40);}
+body.light .tt-title{color:#0a0e1e;}
+body.light .tt-type{color:rgba(10,14,30,0.45);}
+#ghost{position:fixed;z-index:700;width:320px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s;}
+#ghost.on{opacity:1;transform:translateY(-50%) translateX(0) scale(1);pointer-events:all;}
+.gc{background:rgba(4,6,18,0.97);border:1px solid rgba(180,210,255,0.10);border-radius:6px;box-shadow:0 18px 62px rgba(0,0,0,0.9),0 0 0 1px rgba(180,210,255,0.03);backdrop-filter:blur(26px);overflow:hidden;}
+.gcscroll{max-height:82vh;overflow-y:auto;scrollbar-width:none;}
+.gcscroll::-webkit-scrollbar{display:none;}
+.gcbar{height:2px;width:100%;transition:background 0.4s;}
+.gchead{padding:16px 16px 12px;border-bottom:1px solid rgba(180,210,255,0.06);}
+.gcring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:6px;}
+.gctitle{font-family:'DM Serif Display',serif;font-size:17px;letter-spacing:-0.02em;color:#dcecff;line-height:1.2;margin-bottom:5px;}
+.gcrole{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.30);}
+.gcbody{padding:14px 16px 14px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.88;color:rgba(180,210,255,0.52);border-bottom:1px solid rgba(180,210,255,0.06);}
+.gcstat{display:flex;border-bottom:1px solid rgba(180,210,255,0.06);}
+.gcst{flex:1;padding:10px 12px;border-right:1px solid rgba(180,210,255,0.06);text-align:center;}
+.gcst:last-child{border-right:none;}
+.gcsv{font-family:'DM Serif Display',serif;font-size:14px;color:rgba(180,210,255,0.72);display:block;letter-spacing:-0.01em;}
+.gcsk{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.22);display:block;margin-top:2px;}
+.gc-connections{padding:12px 16px;border-bottom:1px solid rgba(180,210,255,0.06);}
+.gc-conn-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:8px;}
+.gc-conn-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;padding:4px 6px;border-radius:3px;transition:background 0.15s;}
+.gc-conn-item:hover{background:rgba(180,210,255,0.05);}
+.gc-conn-type{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;padding:2px 7px;border-radius:8px;border:1px solid currentColor;opacity:0.7;white-space:nowrap;}
+.gc-conn-target{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,255,0.55);flex:1;}
+.gcft{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;}
+.gctag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
+.gcclose{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;}
+.gcclose:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
+body.light .gc{background:rgba(240,236,228,0.99);border-color:rgba(10,14,30,0.18);box-shadow:3px 4px 0 rgba(10,14,30,0.10),0 0 0 1px rgba(10,14,30,0.06);}
+body.light .gchead,body.light .gcbody,body.light .gcstat,body.light .gcst,body.light .gc-connections{border-color:rgba(10,14,30,0.10);}
+body.light .gcring{color:rgba(10,14,30,0.38);}
+body.light .gctitle{color:#0a0e1e;}
+body.light .gcrole{color:rgba(10,14,30,0.44);}
+body.light .gcbody{color:rgba(10,14,30,0.62);}
+body.light .gcsv{color:rgba(10,14,30,0.82);}
+body.light .gcsk{color:rgba(10,14,30,0.32);}
+body.light .gc-conn-label{color:rgba(10,14,30,0.30);}
+body.light .gc-conn-target{color:rgba(10,14,30,0.58);}
+body.light .gc-conn-item:hover{background:rgba(10,14,30,0.04);}
+body.light .gcclose{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.38);}
+body.light .gcclose:hover{color:#0a0e1e;border-color:rgba(10,14,30,0.65);}
+#legend{position:fixed;top:24px;right:28px;z-index:100;font-family:'DM Mono',monospace;pointer-events:none;}
+.leg-title{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:8px;transition:color 0.5s;}
+.leg-item{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.leg-line{width:22px;height:1px;}
+.leg-label{font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.30);transition:color 0.5s;}
+body.light .leg-title{color:rgba(10,14,30,0.30);}
+body.light .leg-label{color:rgba(10,14,30,0.48);}
+#msheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(4,6,18,0.98);border-top:1px solid rgba(180,210,255,0.08);border-radius:14px 14px 0 0;max-height:72vh;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);backdrop-filter:blur(28px);}
+#msheet::-webkit-scrollbar{display:none;}
+#msheet.on{transform:translateY(0);}
+.mshandle{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:12px auto 6px;}
+.msbar{height:2px;width:100%;transition:background 0.4s;}
+.mshead{padding:16px 20px 12px;border-bottom:1px solid rgba(180,210,255,0.06);}
+.msring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:6px;}
+.mstitle{font-family:'DM Serif Display',serif;font-size:20px;letter-spacing:-0.02em;color:#dcecff;line-height:1.15;margin-bottom:4px;}
+.msbody{padding:13px 20px 14px;font-family:'DM Mono',monospace;font-size:11.5px;line-height:1.82;color:rgba(180,210,255,0.52);}
+.msft{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;}
+.mstag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
+.msclose{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;}
+.msclose:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
+body.light #msheet{background:rgba(240,236,228,0.99);border-top-color:rgba(10,14,30,0.14);}
+body.light .mshandle{background:rgba(10,14,30,0.18);}
+body.light .msring{color:rgba(10,14,30,0.38);}
+body.light .mstitle{color:#0a0e1e;}
+body.light .msbody{color:rgba(10,14,30,0.62);}
+body.light .msclose{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.38);}
+body.light .msclose:hover{color:#0a0e1e;border-color:rgba(10,14,30,0.65);}
+body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
+@media(max-width:768px){#ghost{display:none;}#legend{display:none;}#msheet{display:block;}}
+</style>
+</head>
+<body>
+<canvas id="bg-mesh"></canvas>
+<canvas id="canvas"></canvas>
+<div id="brand">
+  <div id="brand-name">Three-Body Problem</div>
+  <div id="brand-sub">Spatial Knowledge Surface · Prototype I</div>
+</div>
+<button id="theme-toggle">Light</button>
+<div id="legend">
+  <div class="leg-title">Connections</div>
+  <div class="leg-item"><div class="leg-line" style="background:rgba(74,138,220,0.75);"></div><div class="leg-label" style="color:rgba(74,138,220,0.80);">Preceded</div></div>
+  <div class="leg-item"><div class="leg-line" style="background:rgba(154,112,204,0.75);"></div><div class="leg-label" style="color:rgba(154,112,204,0.80);">Same Structure</div></div>
+  <div class="leg-item"><div class="leg-line" style="background:rgba(80,216,176,0.75);"></div><div class="leg-label" style="color:rgba(80,216,176,0.80);">Enabled</div></div>
+  <div class="leg-item"><div class="leg-line" style="border-top:1px dashed rgba(216,176,80,0.70);height:0;"></div><div class="leg-label" style="color:rgba(216,176,80,0.75);">Lives In</div></div>
+</div>
+<div id="hud">
+  <button class="hud-btn" data-view="iso">ISO</button>
+  <button class="hud-btn active" data-view="top">SKY</button>
+  <button class="hud-btn" data-view="side">ORBIT</button>
+</div>
+<div id="hint">drag to orbit · scroll to zoom · click any node</div>
+<div id="focus-hint">— right-click or space to pause · esc to release —</div>
+<div id="tooltip"><div id="tt-inner">
+  <div class="tt-ring" id="tt-ring"></div>
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-type" id="tt-type"></div>
+</div></div>
+<div id="ghost"><div class="gc">
+  <div class="gcbar" id="gc-bar"></div>
+  <div class="gcscroll">
+    <div class="gchead">
+      <div class="gcring" id="gc-ring"></div>
+      <div class="gctitle" id="gc-title"></div>
+      <div class="gcrole" id="gc-role"></div>
+    </div>
+    <div class="gcbody" id="gc-body"></div>
+    <div class="gcstat">
+      <div class="gcst"><span class="gcsv" id="gc-ring-v"></span><span class="gcsk">Ring</span></div>
+      <div class="gcst"><span class="gcsv" id="gc-domain"></span><span class="gcsk">Domain</span></div>
+    </div>
+    <div class="gc-connections" id="gc-connections"></div>
+    <div class="gcft">
+      <span class="gctag" id="gc-tag"></span>
+      <button class="gcclose" onclick="closePanel()">✕</button>
+    </div>
+  </div>
+</div></div>
+<div id="msheet">
+  <div class="mshandle"></div>
+  <div class="msbar" id="ms-bar"></div>
+  <div class="mshead">
+    <div class="msring" id="ms-ring"></div>
+    <div class="mstitle" id="ms-title"></div>
+  </div>
+  <div class="msbody" id="ms-body"></div>
+  <div class="msft">
+    <span class="mstag" id="ms-tag"></span>
+    <button class="msclose" onclick="closePanel()">✕</button>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+let isLight=false;
+const DOMAIN_CFG={
+  statement:{color:0xf0f4ff,lightColor:0x0a0e1e,size:0.36,label:'Statement',hex:'#f0f4ff',lightHex:'#0a0e1e'},
+  formalism:{color:0x4a8adc,lightColor:0x1a3a6c,size:0.14,label:'Formalism',hex:'#4a8adc',lightHex:'#1a3a6c'},
+  history:  {color:0x9a70cc,lightColor:0x4a2880,size:0.13,label:'History',  hex:'#9a70cc',lightHex:'#4a2880'},
+  analogue: {color:0x50d8b0,lightColor:0x0a6048,size:0.13,label:'Analogue', hex:'#50d8b0',lightHex:'#0a6048'},
+  cultural: {color:0xd8b050,lightColor:0x7a5c08,size:0.12,label:'Cultural', hex:'#d8b050',lightHex:'#7a5c08'},
+};
+const dcfg=d=>DOMAIN_CFG[d]||DOMAIN_CFG.formalism;
+const dhex=d=>isLight?dcfg(d).lightHex:dcfg(d).hex;
+
+const NODES=[
+  {id:'problem',tier:'center',angle:0,domain:'statement',title:'Three bodies, no formula',role:'The Problem Statement',era:'Statement',
+   body:'Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge — it is a structural property of the system. Add one body to a solvable problem, and solvability disappears.'},
+  {id:'newton',tier:'inner',angle:0.04,domain:'formalism',title:"Newton's equations of motion",role:'Mathematical Foundation',era:'Ring 1 · Formalism',
+   body:"Each body exerts a gravitational force on every other. F = Gm₁m₂/r². In two bodies, the forces balance into solvable conic sections. In three, the forces interact recursively — each position depends on all others simultaneously."},
+  {id:'hamilton',tier:'inner',angle:0.20,domain:'formalism',title:'Hamiltonian formulation',role:'Phase Space Representation',era:'Ring 1 · Formalism',
+   body:'Reformulates the problem in phase space — position and momentum as conjugate variables. The Hamiltonian H = T + V is conserved but insufficient for a closed-form solution. Energy conservation alone does not constrain the trajectory.'},
+  {id:'jacobi',tier:'inner',angle:0.36,domain:'formalism',title:'The Jacobi integral',role:'Restricted Problem Conserved Quantity',era:'Ring 1 · Formalism',
+   body:'In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is conserved. It defines Hill regions the test particle cannot cross. The only exactly conserved quantity in the general problem.'},
+  {id:'restricted',tier:'inner',angle:0.52,domain:'formalism',title:'The restricted problem',role:'Tractable Simplification',era:'Ring 1 · Formalism',
+   body:'If one body is massless, it cannot affect the two massive bodies. This breaks the full mutual dependency. Most spacecraft trajectory problems use this form — the restricted circular three-body problem (CR3BP).'},
+  {id:'integrals',tier:'inner',angle:0.68,domain:'formalism',title:'Conservation laws',role:"What Is and Isn't Conserved",era:'Ring 1 · Formalism',
+   body:'Total energy, total momentum, and total angular momentum are conserved — ten integrals of motion. But a general solution requires 18. The gap of 8 is exactly what makes the problem unsolvable by classical methods.'},
+  {id:'lagrange-pts',tier:'inner',angle:0.84,domain:'formalism',title:'Lagrange points',role:'Five Equilibrium Solutions',era:'Ring 1 · Formalism',
+   body:'Euler (1767) found three collinear equilibrium points; Lagrange (1772) found two triangular points (L4, L5). These are the only exact analytical solutions to the three-body problem. L4 and L5 are stable — Trojan asteroids occupy them.'},
+  {id:'euler1767',tier:'mid',angle:0.03,domain:'history',title:'Euler · 1767',role:'Collinear Solutions',era:'Ring 2 · History',
+   body:'Found three collinear configurations where all three bodies maintain constant ratios of distance — three bodies in a line, rotating about their common center. All are unstable in the general case.'},
+  {id:'lagrange1772',tier:'mid',angle:0.14,domain:'history',title:'Lagrange · 1772',role:'Equilateral Triangle Solutions',era:'Ring 2 · History',
+   body:'Showed that equilateral triangular configurations rotate stably. Three equal masses at the vertices of an equilateral triangle — all orbiting the common center — are exact periodic solutions. The geometry solves what the calculus cannot.'},
+  {id:'poincare1889',tier:'mid',angle:0.25,domain:'history',title:'Poincaré · 1889',role:'Proof of Non-Integrability',era:'Ring 2 · History',
+   body:"Submitted a prize essay claiming orbital stability, then found his own error before publication. The correction introduced chaos: nearby trajectories diverge exponentially. This is the founding moment of dynamical systems theory — a mistake that became a field."},
+  {id:'sundman1912',tier:'mid',angle:0.36,domain:'history',title:'Sundman · 1912',role:'Convergent Series Solution',era:'Ring 2 · History',
+   body:'Proved the three-body problem has a convergent power series solution — in a new time variable. Technically complete. Practically useless: the series converges so slowly that 10⁸⁰⁰⁰⁰⁰⁰ terms are needed for practical precision.'},
+  {id:'moore1993',tier:'mid',angle:0.47,domain:'history',title:'Moore · 1993',role:'Figure-Eight Orbit',era:'Ring 2 · History',
+   body:'Discovered numerically that three equal masses can chase each other around a figure-eight in a stable periodic orbit. Verified analytically by Chenciner & Montgomery (2000). Symmetry constrains what calculus cannot solve.'},
+  {id:'wang1991',tier:'mid',angle:0.58,domain:'history',title:'Wang · 1991',role:'n-Body Series Extension',era:'Ring 2 · History',
+   body:"Extended Sundman's convergent series method to the general n-body problem. Same result: mathematically complete, physically unusable. The existence of a solution and its computability remain different categories."},
+  {id:'suvakov2013',tier:'mid',angle:0.69,domain:'history',title:'Šuvakov & Dmitrašinović · 2013',role:'13 New Periodic Families',era:'Ring 2 · History',
+   body:'Using high-precision numerical methods, found 13 new families of periodic three-body orbits — the first new families since the figure-eight. Each requires exquisite initial conditions; any perturbation breaks them.'},
+  {id:'hristov2023',tier:'mid',angle:0.80,domain:'history',title:'Hristov et al. · 2023',role:'12,000+ New Periodic Orbits',era:'Ring 2 · History',
+   body:'Machine-precision numerical search found over 12,000 new periodic orbit families. The solution space is far richer than expected — but these are exact solutions only at knife-edge initial conditions. The generic trajectory remains chaotic.'},
+  {id:'nn2019',tier:'mid',angle:0.91,domain:'history',title:'Neural Network Solver · 2019',role:'Deep Learning Approximation',era:'Ring 2 · History',
+   body:'Breen et al. trained a deep neural network to predict three-body trajectories — 100 million times faster than direct integration. Same goal as Sundman, 111 years later.'},
+  {id:'chaos',tier:'outer',angle:0.02,domain:'analogue',title:'Chaos theory',role:'Discovered Here',era:'Ring 3 · Analogue',
+   body:"Poincaré's 1889 correction to his prize essay is the founding document of chaos theory. Sensitive dependence on initial conditions — the butterfly effect — was first observed in the three-body problem. The field was born from a celestial mechanics mistake."},
+  {id:'nbody',tier:'outer',angle:0.16,domain:'analogue',title:'The n-body problem',role:'General Extension',era:'Ring 3 · Analogue',
+   body:'The three-body problem is the n=3 case of the general gravitational n-body problem. Galaxy formation, globular cluster dynamics, and planetary system stability all require n-body simulation. None are analytically solvable.'},
+  {id:'helium',tier:'outer',angle:0.30,domain:'analogue',title:'The helium atom',role:'Same Structure · Different Scale',era:'Ring 3 · Analogue',
+   body:'A nucleus plus two electrons — structurally identical to the three-body gravitational problem, with Coulomb force replacing gravity. The helium atom has no closed-form solution either. Same mathematics, 10³⁰ smaller.'},
+  {id:'efimov',tier:'outer',angle:0.44,domain:'analogue',title:'The Efimov effect',role:'Unexpected Symmetry',era:'Ring 3 · Analogue',
+   body:'Three particles with very weak pairwise attraction can form bound three-body states even when no two-body bound state exists. Predicted 1970, confirmed 2006. The three-body problem reappears in nuclear physics with the same structural surprise.'},
+  {id:'vortex',tier:'outer',angle:0.58,domain:'analogue',title:'Vortex dynamics',role:'Fluid Mechanics Analogue',era:'Ring 3 · Analogue',
+   body:'Three interacting point vortices in a fluid obey equations formally identical to the gravitational three-body problem. The same integrability question arises; the same chaos appears. Weather systems and ocean circulation contain embedded three-body problems.'},
+  {id:'gr',tier:'outer',angle:0.72,domain:'analogue',title:'Post-Newtonian corrections',role:'General Relativity Extension',era:'Ring 3 · Analogue',
+   body:"In general relativity, the three-body problem becomes harder: spacetime curvature means distances are not Euclidean, and gravitational waves carry energy away. Binary pulsars and black hole mergers require post-Newtonian approximations."},
+  {id:'liucixin',tier:'outer2',angle:0.06,domain:'cultural',title:'The Three-Body Problem · Liu Cixin',role:'Novel · 2008',era:'Ring 4 · Cultural',
+   body:"Hugo Award-winning science fiction trilogy. The title refers to the orbital instability of the Trisolaran star system — three suns, unpredictable climate, impossible civilization. The mathematical unsolvability becomes the engine of a civilization's desperation."},
+  {id:'spacecraft',tier:'outer2',angle:0.22,domain:'cultural',title:'Lagrange point missions',role:'Applied Astrodynamics',era:'Ring 4 · Applied',
+   body:'L1, L2, L4, L5 are used as spacecraft parking locations. Webb Space Telescope sits at L2 of the Sun-Earth system. The halo orbits discovered by numerical methods are used for real mission design. The unsolvable problem is navigated, not solved.'},
+  {id:'trojans',tier:'outer2',angle:0.38,domain:'cultural',title:'Trojan asteroids',role:'Natural Laboratory',era:'Ring 4 · Applied',
+   body:"Over 12,000 asteroids occupy Jupiter's L4 and L5 points — the only stable equilibrium in the three-body problem. Named after characters from the Trojan War. The solar system validates Lagrange's 1772 geometry continuously."},
+  {id:'figureeight',tier:'outer2',angle:0.54,domain:'cultural',title:'The figure-eight orbit',role:'Most Recognizable Solution',era:'Ring 4 · Cultural',
+   body:'Three equal masses chasing each other in a stable figure-eight. Zero margin for perturbation. But as an image, it communicates the entire character of the problem: motion that looks simple, is in fact a knife-edge balance that nature never achieves.'},
+  {id:'tvshow',tier:'outer2',angle:0.70,domain:'cultural',title:'3 Body Problem · Netflix 2024',role:'Adaptation',era:'Ring 4 · Cultural',
+   body:"David Benioff, D.B. Weiss, and Alexander Woo adapted Liu Cixin's trilogy. The orbital mechanics appear in visualizations of the Trisolaran system — three suns creating stable and chaotic eras that the civilization must predict and survive."},
+];
+
+const CONNECTIONS=[
+  {from:'euler1767',   to:'lagrange1772', type:'preceded',       label:'Euler → Lagrange'},
+  {from:'lagrange1772',to:'poincare1889', type:'preceded',       label:'Lagrange → Poincaré'},
+  {from:'poincare1889',to:'moore1993',    type:'preceded',       label:'periodic orbit thread'},
+  {from:'sundman1912', to:'wang1991',     type:'preceded',       label:'series solution method'},
+  {from:'moore1993',   to:'suvakov2013',  type:'preceded',       label:'numerical families'},
+  {from:'suvakov2013', to:'hristov2023',  type:'preceded',       label:'systematic search'},
+  {from:'sundman1912', to:'nn2019',       type:'preceded',       label:'same goal · 111 years apart'},
+  {from:'helium',      to:'lagrange-pts', type:'same-structure', label:'Coulomb ↔ gravity'},
+  {from:'efimov',      to:'lagrange1772', type:'same-structure', label:'unexpected symmetry'},
+  {from:'vortex',      to:'hamilton',     type:'same-structure', label:'identical equations'},
+  {from:'poincare1889',to:'chaos',        type:'enabled',        label:'discovered here'},
+  {from:'jacobi',      to:'spacecraft',   type:'enabled',        label:'Hill regions → orbits'},
+  {from:'lagrange-pts',to:'spacecraft',   type:'enabled',        label:'L-points → missions'},
+  {from:'lagrange-pts',to:'trojans',      type:'enabled',        label:'L4/L5 → asteroids'},
+  {from:'moore1993',   to:'figureeight',  type:'enabled',        label:'numerical → visual'},
+  {from:'chaos',       to:'nbody',        type:'lives-in',       label:'chaos lives in n-body'},
+  {from:'gr',          to:'restricted',   type:'lives-in',       label:'GR extends restricted'},
+  {from:'liucixin',    to:'figureeight',  type:'lives-in',       label:'fiction uses the geometry'},
+];
+
+const CONN_CFG={
+  'preceded':      {dkH:0x4a8adc,lkH:0x1a3a80,dkO:0.40,lkO:0.60},
+  'same-structure':{dkH:0x9a70cc,lkH:0x5a2896,dkO:0.38,lkO:0.58},
+  'enabled':       {dkH:0x50d8b0,lkH:0x0a7058,dkO:0.42,lkO:0.60},
+  'lives-in':      {dkH:0xd8b050,lkH:0x8a6410,dkO:0.32,lkO:0.50},
+};
+const cc=t=>CONN_CFG[t]||CONN_CFG['preceded'];
+
+const TILT=16*Math.PI/180;
+const ELLIPSES={inner:{rx:7.5,rz:4.5},mid:{rx:15,rz:9},outer:{rx:22,rz:13},outer2:{rx:30,rz:18}};
+const TIER_Y={inner:0.05,mid:0.18,outer:0.38,outer2:0.60};
+function ellipsePos(tier,af){
+  if(tier==='center')return new THREE.Vector3(0,0,0);
+  const e=ELLIPSES[tier],a=(af||0)*Math.PI*2;
+  const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);
+  return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),TIER_Y[tier]||0,lx*Math.sin(TILT)+lz*Math.cos(TILT));
+}
+NODES.forEach(n=>{n._pos=ellipsePos(n.tier,n.angle);});
+const NODE_BY_ID={};NODES.forEach(n=>{NODE_BY_ID[n.id]=n;});
+
+const cvs=document.getElementById('canvas');
+const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(0x000000,0);
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x000000,0.012);
+const cam=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,2000);
+const VIEWS={iso:{phi:Math.PI*0.26,theta:-Math.PI*0.12,radius:48},top:{phi:Math.PI*0.015,theta:0,radius:58},side:{phi:Math.PI*0.18,theta:Math.PI*0.5,radius:52}};
+let camState={...VIEWS.top},camTarget={...VIEWS.top};
+const scenePivot=new THREE.Vector3(),scenePivotTgt=new THREE.Vector3();
+function applyCam(){const{phi,theta,radius}=camState,c=scenePivot;cam.position.set(c.x+radius*Math.sin(phi)*Math.sin(theta),c.y+radius*Math.cos(phi),c.z+radius*Math.sin(phi)*Math.cos(theta));cam.lookAt(c);}
+applyCam();
+const ambLight=new THREE.AmbientLight(0xffffff,0.15);scene.add(ambLight);
+const dLight=new THREE.DirectionalLight(0xb4d2ff,0.3);dLight.position.set(10,40,10);scene.add(dLight);
+const neonA=new THREE.PointLight(0x4a8adc,6,130);neonA.position.set(-20,8,-20);scene.add(neonA);
+const neonB=new THREE.PointLight(0x50d8b0,5,130);neonB.position.set(20,8,20);scene.add(neonB);
+const neonC=new THREE.PointLight(0x9a70cc,4,90);neonC.position.set(0,14,0);scene.add(neonC);
+const DARK_FOG=0x000000,LIGHT_FOG=0xf0ece4;
+
+const PC=1200;
+const pPos=new Float32Array(PC*3),pPh=new Float32Array(PC),pSp=new Float32Array(PC);
+for(let i=0;i<PC;i++){let x,y,z,a=0;do{const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=12+Math.pow(Math.random(),0.7)*22;x=r*Math.sin(p)*Math.cos(t);y=(Math.random()-0.5)*6;z=r*Math.sin(p)*Math.sin(t);a++;}while(Math.sqrt(x*x+z*z)<6&&a<30);pPos[i*3]=x;pPos[i*3+1]=y;pPos[i*3+2]=z;pPh[i]=Math.random()*Math.PI*2;pSp[i]=0.18+Math.random()*0.28;}
+const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(pPos.slice(),3));const pOrig=pPos.slice();
+const pMat=new THREE.PointsMaterial({color:0x8ab4ff,size:0.06,transparent:true,opacity:0.14,sizeAttenuation:true,fog:true,depthWrite:false});
+scene.add(new THREE.Points(pGeo,pMat));
+
+const nodeObjects=[],allLines=[],connLineObjects=[],allLabels=[],glowSprites=[];
+const raycaster=new THREE.Raycaster();
+
+function drawEllipse(rx,rz,op,col,y,lCol,lOp){
+  const pts=[];for(let i=0;i<=128;i++){const a=i/128*Math.PI*2,lx=rx*Math.cos(a),lz=rz*Math.sin(a);pts.push(new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),y||-0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT)));}
+  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op});
+  const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),mat);
+  scene.add(line);allLines.push({line,darkColor:col,lightColor:lCol||0x0a0e1e,darkOp:op,lightOp:lOp||op*4});
+}
+
+function drawLabelCanvas(text,color,fs){
+  const c=document.createElement('canvas');c.width=512;c.height=64;
+  const ctx=c.getContext('2d');ctx.fillStyle=color;ctx.font=`${fs*2.4}px "DM Mono",monospace`;ctx.fillText(text.toUpperCase(),10,42);return c;
+}
+function addLabel(text,x,y,z,dkColor,fs,lkColor){
+  const lc=lkColor||'rgba(10,14,30,0.90)';
+  const c=drawLabelCanvas(text,dkColor,fs);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));
+  spr.position.set(x,y,z);spr.scale.set(9,1.15,1);scene.add(spr);
+  allLabels.push({spr,text,darkColor:dkColor,lightColor:lc,fs});return spr;
+}
+function redrawLabels(){allLabels.forEach(({spr,text,darkColor,lightColor,fs})=>{const color=isLight?lightColor:darkColor;const c=drawLabelCanvas(text,color,fs);spr.material.map.dispose();spr.material.map=new THREE.CanvasTexture(c);spr.material.needsUpdate=true;});}
+
+function makeGlowSprite(color,radius){
+  const sz=128,c=document.createElement('canvas');c.width=sz;c.height=sz;
+  const ctx=c.getContext('2d'),cx=sz/2,cy=sz/2;
+  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,sz/2);
+  const r=(color>>16)&255,g=(color>>8)&255,b=color&255;
+  grad.addColorStop(0,`rgba(${r},${g},${b},0.55)`);grad.addColorStop(0.3,`rgba(${r},${g},${b},0.18)`);grad.addColorStop(0.7,`rgba(${r},${g},${b},0.04)`);grad.addColorStop(1,`rgba(${r},${g},${b},0)`);
+  ctx.fillStyle=grad;ctx.fillRect(0,0,sz,sz);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+  spr.scale.set(radius*6,radius*6,1);return spr;
+}
+
+function buildScene(){
+  drawEllipse(ELLIPSES.inner.rx, ELLIPSES.inner.rz, 0.24,0x4a8adc,0.04, 0x1a3a6c,0.55);
+  drawEllipse(ELLIPSES.mid.rx,   ELLIPSES.mid.rz,   0.22,0x9a70cc,0.18, 0x5a2896,0.55);
+  drawEllipse(ELLIPSES.outer.rx, ELLIPSES.outer.rz,  0.18,0x50d8b0,0.35, 0x0a6048,0.55);
+  drawEllipse(ELLIPSES.outer2.rx,ELLIPSES.outer2.rz, 0.14,0xd8b050,0.55, 0x7a5c08,0.55);
+  const gM=new THREE.LineBasicMaterial({color:0x4a8adc,transparent:true,opacity:0.010});
+  for(let i=-10;i<=10;i++){[new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-50),new THREE.Vector3(i*4,-0.5,50)]),gM.clone()),new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-50,-0.5,i*4),new THREE.Vector3(50,-0.5,i*4)]),gM.clone())].forEach(l=>{scene.add(l);allLines.push({line:l,darkColor:0x4a8adc,lightColor:0x0a0e1e,darkOp:0.010,lightOp:0.055});});}
+
+  const cN=NODES.find(n=>n.id==='problem');
+  const cM=new THREE.Mesh(new THREE.SphereGeometry(0.36,20,20),new THREE.MeshPhysicalMaterial({color:0xf0f4ff,emissive:0xf0f4ff,emissiveIntensity:2.2,metalness:0,roughness:0.04,clearcoat:1.0}));
+  cM.position.copy(cN._pos);cM.userData={node:cN,origColor:0xf0f4ff,origEI:2.2,lightOrigColor:0x0a0e1e};
+  scene.add(cM);nodeObjects.push({mesh:cM,node:cN});
+  [3.4,2.1,1.2].forEach((sc,i)=>{const gs=makeGlowSprite(0xc0d8ff,0.36);gs.scale.setScalar(sc);gs.position.copy(cN._pos);gs.material.opacity=[0.20,0.36,0.52][i];scene.add(gs);glowSprites.push(gs);});
+
+  NODES.filter(n=>n.id!=='problem').forEach(n=>{
+    const pos=n._pos,cfg=dcfg(n.domain);
+    const spokeM=new THREE.LineBasicMaterial({color:cfg.color,transparent:true,opacity:0.04});
+    const spoke=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),pos.clone()]),spokeM);
+    scene.add(spoke);allLines.push({line:spoke,darkColor:cfg.color,lightColor:cfg.lightColor,darkOp:0.04,lightOp:0.18});
+    const e=ELLIPSES[n.tier]||ELLIPSES.mid,da=0.018;
+    const a1=((n.angle||0)-da)*Math.PI*2,a2=((n.angle||0)+da)*Math.PI*2;
+    function eP(a){const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),pos.y,lx*Math.sin(TILT)+lz*Math.cos(TILT));}
+    const tang=eP(a2).sub(eP(a1)).normalize(),tL=0.36;
+    const tM=new THREE.LineBasicMaterial({color:cfg.color,transparent:true,opacity:0.55});
+    const tLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pos.clone().addScaledVector(tang,-tL),pos.clone().addScaledVector(tang,tL)]),tM);
+    scene.add(tLine);allLines.push({line:tLine,darkColor:cfg.color,lightColor:cfg.lightColor,darkOp:0.55,lightOp:0.90});
+    const mesh=new THREE.Mesh(new THREE.SphereGeometry(cfg.size,16,16),new THREE.MeshPhysicalMaterial({color:cfg.color,emissive:cfg.color,emissiveIntensity:1.4,metalness:0.2,roughness:0.08,clearcoat:1.0,transparent:true,opacity:0.95}));
+    mesh.position.copy(pos);mesh.userData={node:n,origColor:cfg.color,origEI:1.4,lightOrigColor:cfg.lightColor};
+    scene.add(mesh);nodeObjects.push({mesh,node:n});
+    const gs=makeGlowSprite(cfg.color,cfg.size);gs.position.copy(pos);gs.material.opacity=0.72;scene.add(gs);glowSprites.push(gs);
+    const short=n.title.length>24?n.title.slice(0,22)+'…':n.title;
+    addLabel(short,pos.x+0.5,pos.y+0.45,pos.z,cfg.hex+'cc',7.0,cfg.lightHex+'dd');
+  });
+
+  function rlp(tier,af){const e=ELLIPSES[tier],a=(af||0)*Math.PI*2;const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT)+0.4,0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT));}
+  addLabel('Ring 1 · Formalism',rlp('inner',0.93).x,0.1,rlp('inner',0.93).z,'rgba(74,138,220,0.42)',6.5,'rgba(26,58,108,0.65)');
+  addLabel('Ring 2 · History',  rlp('mid',0.93).x,  0.1,rlp('mid',0.93).z,  'rgba(154,112,204,0.42)',6.5,'rgba(90,40,150,0.65)');
+  addLabel('Ring 3 · Analogues',rlp('outer',0.93).x, 0.1,rlp('outer',0.93).z,'rgba(80,216,176,0.42)',6.5,'rgba(10,112,88,0.65)');
+  addLabel('Ring 4 · Cultural', rlp('outer2',0.93).x,0.1,rlp('outer2',0.93).z,'rgba(216,176,80,0.42)',6.5,'rgba(138,100,16,0.65)');
+
+  CONNECTIONS.forEach(conn=>{
+    const fN=NODE_BY_ID[conn.from],tN=NODE_BY_ID[conn.to];if(!fN||!tN)return;
+    const cf=cc(conn.type),isDash=conn.type==='lives-in';
+    const p1=fN._pos.clone(),p2=tN._pos.clone(),mid=p1.clone().add(p2).multiplyScalar(0.5);
+    mid.y+=2.2+Math.random()*1.5;
+    const pts=new THREE.QuadraticBezierCurve3(p1,mid,p2).getPoints(48);
+    if(isDash){
+      for(let i=0;i<pts.length-1;i+=2){
+        const sg=new THREE.BufferGeometry().setFromPoints([pts[i],pts[Math.min(i+1,pts.length-1)]]);
+        const sm=new THREE.LineBasicMaterial({color:cf.dkH,transparent:true,opacity:cf.dkO});
+        const sl=new THREE.Line(sg,sm);scene.add(sl);
+        connLineObjects.push({line:sl,conn,darkOp:cf.dkO,lightOp:cf.lkO,darkColor:cf.dkH,lightColor:cf.lkH});
+        allLines.push({line:sl,darkColor:cf.dkH,lightColor:cf.lkH,darkOp:cf.dkO,lightOp:cf.lkO});
+      }
+    } else {
+      const geo=new THREE.BufferGeometry().setFromPoints(pts);
+      const mat=new THREE.LineBasicMaterial({color:cf.dkH,transparent:true,opacity:cf.dkO});
+      const line=new THREE.Line(geo,mat);scene.add(line);
+      connLineObjects.push({line,conn,darkOp:cf.dkO,lightOp:cf.lkO,darkColor:cf.dkH,lightColor:cf.lkH});
+      allLines.push({line,darkColor:cf.dkH,lightColor:cf.lkH,darkOp:cf.dkO,lightOp:cf.lkO});
+    }
+  });
+}
+buildScene();
+
+function applyTheme(){
+  document.body.classList.toggle('light',isLight);
+  document.getElementById('theme-toggle').textContent=isLight?'Dark':'Light';
+  allLines.forEach(({line,darkColor,lightColor,darkOp,lightOp})=>{line.material.color.setHex(isLight?lightColor:darkColor);line.material.opacity=isLight?lightOp:darkOp;});
+  nodeObjects.forEach(({mesh})=>{
+    const ud=mesh.userData;
+    if(isLight){mesh.material.color.setHex(ud.lightOrigColor||0x0a0e1e);mesh.material.emissive.setHex(ud.lightOrigColor||0x0a0e1e);mesh.material.emissiveIntensity=0;mesh.material.metalness=0;mesh.material.roughness=0.55;mesh.material.clearcoat=0;}
+    else{mesh.material.color.setHex(ud.origColor);mesh.material.emissive.setHex(ud.origColor);mesh.material.emissiveIntensity=ud.origEI||1.4;mesh.material.metalness=0.2;mesh.material.roughness=0.08;mesh.material.clearcoat=1.0;}
+  });
+  glowSprites.forEach(gs=>{gs.visible=!isLight;});
+  neonA.intensity=isLight?0:6;neonB.intensity=isLight?0:5;neonC.intensity=isLight?0:4;
+  ambLight.intensity=isLight?0.85:0.15;
+  pMat.opacity=isLight?0:0.14;
+  scene.fog.color.setHex(isLight?LIGHT_FOG:DARK_FOG);
+  renderer.setClearColor(isLight?LIGHT_FOG:0x000000,0);
+  redrawLabels();drawMesh();
+}
+document.getElementById('theme-toggle').addEventListener('click',()=>{isLight=!isLight;applyTheme();});
+
+const bgCanvas=document.getElementById('bg-mesh'),bgCtx=bgCanvas.getContext('2d');
+function resizeBg(){bgCanvas.width=innerWidth;bgCanvas.height=innerHeight;}resizeBg();
+const BD=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[8,18,44]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[14,28,52]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[6,20,36]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[4,24,42]}];
+const BL=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[215,208,195]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[225,218,205]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[208,202,192]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[218,210,198]}];
+function drawMesh(){
+  const w=bgCanvas.width,h=bgCanvas.height;bgCtx.clearRect(0,0,w,h);
+  const blobs=isLight?BL:BD;
+  bgCtx.fillStyle=isLight?'#f0ece4':'#030308';bgCtx.fillRect(0,0,w,h);
+  blobs.forEach(b=>{const cx=b.x*w,cy=b.y*h,rad=Math.max(w,h)*b.r;const grd=bgCtx.createRadialGradient(cx,cy,0,cx,cy,rad);const[r,g,bl]=b.col;grd.addColorStop(0,`rgba(${r},${g},${bl},${isLight?0.45:0.55})`);grd.addColorStop(0.5,`rgba(${r},${g},${bl},${isLight?0.14:0.16})`);grd.addColorStop(1,`rgba(${r},${g},${bl},0)`);bgCtx.fillStyle=grd;bgCtx.fillRect(0,0,w,h);});
+  const vig=bgCtx.createRadialGradient(w/2,h/2,h*0.3,w/2,h/2,isLight?h*0.88:h*0.92);vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,isLight?'rgba(10,14,30,0.08)':'rgba(0,0,0,0.75)');bgCtx.fillStyle=vig;bgCtx.fillRect(0,0,w,h);
+}
+let meshT=0;
+function tickMesh(){meshT++;[...BD,...BL].forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>1)b.vx*=-1;if(b.y<0||b.y>1)b.vy*=-1;});if(meshT%3===0)drawMesh();requestAnimationFrame(tickMesh);}
+drawMesh();tickMesh();
+
+const RING_NAMES={center:'Center',inner:'Ring 1 · Formalism',mid:'Ring 2 · History',outer:'Ring 3 · Analogues',outer2:'Ring 4 · Cultural'};
+const CONN_TYPE_LABELS={'preceded':'Preceded','same-structure':'Same Structure','enabled':'Enabled','lives-in':'Lives In'};
+const CONN_TYPE_CSS_DK={'preceded':'rgba(74,138,220,0.82)','same-structure':'rgba(154,112,204,0.82)','enabled':'rgba(80,216,176,0.82)','lives-in':'rgba(216,176,80,0.82)'};
+const CONN_TYPE_CSS_LK={'preceded':'rgba(26,58,128,0.82)','same-structure':'rgba(90,40,150,0.82)','enabled':'rgba(10,112,88,0.82)','lives-in':'rgba(138,100,16,0.82)'};
+
+function openPanel(node){
+  const cfg=dcfg(node.domain),col=isLight?cfg.lightHex:cfg.hex;
+  document.getElementById('gc-bar').style.background=col;
+  document.getElementById('gc-ring').textContent=node.era||RING_NAMES[node.tier];
+  document.getElementById('gc-title').textContent=node.title||'';
+  document.getElementById('gc-role').textContent=node.role||'';
+  document.getElementById('gc-body').textContent=node.body||'';
+  document.getElementById('gc-ring-v').textContent=RING_NAMES[node.tier]||node.tier;
+  document.getElementById('gc-domain').textContent=cfg.label;
+  const gcTag=document.getElementById('gc-tag');gcTag.textContent=cfg.label;gcTag.style.color=col;
+  const conns=CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id);
+  const gcConn=document.getElementById('gc-connections');
+  if(conns.length){
+    gcConn.style.display='';
+    const cssDef=isLight?CONN_TYPE_CSS_LK:CONN_TYPE_CSS_DK;
+    let html='<div class="gc-conn-label">Connections</div>';
+    conns.forEach(c=>{const otherId=c.from===node.id?c.to:c.from,other=NODE_BY_ID[otherId];if(!other)return;html+=`<div class="gc-conn-item" data-ct="${other.id}"><span class="gc-conn-type" style="color:${cssDef[c.type]||cssDef['preceded']}">${CONN_TYPE_LABELS[c.type]||c.type}</span><span class="gc-conn-target">${other.title}</span></div>`;});
+    gcConn.innerHTML=html;
+    gcConn.querySelectorAll('.gc-conn-item').forEach(item=>{item.addEventListener('click',()=>{const t=NODE_BY_ID[item.dataset.ct];if(t)enterFocus(t);});});
+  } else {gcConn.style.display='none';}
+  document.getElementById('ghost').classList.add('on');
+  document.getElementById('ms-bar').style.background=col;
+  document.getElementById('ms-ring').textContent=node.era||RING_NAMES[node.tier];
+  document.getElementById('ms-title').textContent=node.title||'';
+  document.getElementById('ms-body').textContent=node.body||'';
+  const msTag=document.getElementById('ms-tag');msTag.textContent=cfg.label;msTag.style.color=col;
+  document.getElementById('msheet').classList.add('on');
+}
+
+let isFocused=false,focusNode=null;
+function highlightConnections(node){
+  const rIds=new Set(CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id).flatMap(c=>[c.from,c.to]));
+  connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});
+  nodeObjects.forEach(({mesh,node:n})=>{mesh.material.opacity=rIds.has(n.id)||n.id===node.id?0.95:0.20;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=rIds.has(n.id)||n.id===node.id?(isLight?0:mesh.userData.origEI*1.8):0.15;});
+}
+function resetConnectionHighlights(){connLineObjects.forEach(obj=>{obj.line.material.opacity=isLight?obj.lightOp:obj.darkOp;});nodeObjects.forEach(({mesh})=>{mesh.material.opacity=0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;});}
+
+function enterFocus(node){
+  isFocused=true;focusNode=node;scenePivotTgt.copy(node._pos);
+  const zm={center:5,inner:8,mid:10,outer:13,outer2:16};
+  camTarget.radius=zm[node.tier]||10;camTarget.phi=Math.PI*0.22;
+  document.getElementById('focus-hint').classList.add('vis');
+  document.getElementById('hint').style.opacity='0';
+  openPanel(node);highlightConnections(node);
+}
+function exitFocus(){
+  isFocused=false;focusNode=null;scenePivotTgt.set(0,0,0);
+  camTarget.radius=VIEWS.top.radius;camTarget.phi=VIEWS.top.phi;
+  document.getElementById('focus-hint').classList.remove('vis');
+  document.getElementById('hint').style.opacity='1';
+  document.getElementById('ghost').classList.remove('on');
+  document.getElementById('msheet').classList.remove('on');
+  resetConnectionHighlights();
+}
+window.closePanel=function(){exitFocus();};
+
+const tooltip=document.getElementById('tooltip');
+let hoveredMesh=null,mouse=new THREE.Vector2(),drag=false,lastDragX=0,lastDragY=0,isDragging=false,hintFaded=false;
+function posTooltip(cx,cy){tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;}
+function checkHover(){
+  raycaster.setFromCamera(mouse,cam);
+  const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+  if(hits.length){
+    const hit=hits[0].object,obj=nodeObjects.find(o=>o.mesh===hit);
+    if(obj&&hoveredMesh!==hit){hoveredMesh=hit;const n=obj.node,cfg=dcfg(n.domain);document.getElementById('tt-ring').textContent=n.era||RING_NAMES[n.tier];document.getElementById('tt-title').textContent=n.title;document.getElementById('tt-title').style.color=isLight?cfg.lightHex:cfg.hex;document.getElementById('tt-type').textContent=cfg.label;tooltip.classList.add('vis');}
+    document.body.style.cursor='pointer';
+  } else {if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
+}
+cvs.addEventListener('pointerdown',e=>{isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);});
+cvs.addEventListener('pointermove',e=>{const rect=cvs.getBoundingClientRect();mouse.x=(e.clientX-rect.left)/rect.width*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;posTooltip(e.clientX,e.clientY);if(e.buttons){isDragging=true;drag=true;camTarget.theta-=(e.clientX-lastDragX)*0.005;camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));lastDragX=e.clientX;lastDragY=e.clientY;}else{checkHover();}});
+cvs.addEventListener('pointerup',e=>{if(!drag){raycaster.setFromCamera(mouse,cam);const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}else if(isFocused)exitFocus();}if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}});
+cvs.addEventListener('wheel',e=>{camTarget.radius=Math.max(4,Math.min(80,camTarget.radius+e.deltaY*0.04));},{passive:true});
+let orbitPaused=false;
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){exitFocus();return;}
+  if(e.code==='Space'){e.preventDefault();orbitPaused=!orbitPaused;}
+});
+cvs.addEventListener('contextmenu',e=>{e.preventDefault();orbitPaused=!orbitPaused;});
+document.querySelectorAll('.hud-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const v=VIEWS[btn.dataset.view];if(v){camTarget.phi=v.phi;camTarget.theta=v.theta;camTarget.radius=v.radius;}});});
+
+let lastTime=0,elapsed=0;
+function animate(ts){
+  requestAnimationFrame(animate);
+  const dt=Math.min((ts-lastTime)/1000,0.05);lastTime=ts;elapsed+=dt;
+  camState.phi+=(camTarget.phi-camState.phi)*0.08;camState.theta+=(camTarget.theta-camState.theta)*0.08;camState.radius+=(camTarget.radius-camState.radius)*0.08;
+  scenePivot.lerp(scenePivotTgt,0.08);
+  if(!isFocused&&!isDragging&&!orbitPaused)camTarget.theta+=dt*0.018;
+  const pa=pGeo.attributes.position.array;
+  for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;
+  pGeo.attributes.position.needsUpdate=true;
+  nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
+  applyCam();renderer.render(scene,cam);isDragging=false;
+}
+requestAnimationFrame(animate);
+window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);resizeBg();drawMesh();});
+</script>
+</body>
+</html>
