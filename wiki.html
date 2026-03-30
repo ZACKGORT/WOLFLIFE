@@ -136,7 +136,7 @@ body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
   <button class="hud-btn" data-view="side">ORBIT</button>
 </div>
 <div id="hint">drag to orbit · scroll to zoom · click any node</div>
-<div id="focus-hint">— right-click or space to pause · esc to release —</div>
+<div id="focus-hint">— scroll orbits connections · click moon to navigate · space or right-click to pause · esc to release —</div>
 <div id="tooltip"><div id="tt-inner">
   <div class="tt-ring" id="tt-ring"></div>
   <div class="tt-title" id="tt-title"></div>
@@ -412,6 +412,149 @@ function buildScene(){
 }
 buildScene();
 
+// ═══════════════════════════════════════════
+// MOON SYSTEM — connected nodes orbit as satellites
+// Each moon = a CONNECTIONS entry from/to the focused node
+// Color = connection type color
+// Click = jump to that node
+// ═══════════════════════════════════════════
+let activeMoons=[]; // {mesh,glowSpr,labelSpr,connLine,targetNode,connType,orbitAngle,orbitRadius,orbitSpeed}
+let moonMeshList=[];
+let hoveredMoon=null;
+let moonBirth=0;
+let orbitPaused=false;
+
+const MOON_FADEDUR=0.55;
+const MOON_R=0.055;
+
+function makeMoonLabel(text,hexColor){
+  const c=document.createElement('canvas');c.width=320;c.height=40;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle=hexColor+'cc';
+  ctx.font='bold 13px "DM Mono",monospace';
+  ctx.fillText(text.toUpperCase(),6,26);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+  spr.scale.set(2.6,0.32,1);
+  return spr;
+}
+
+function spawnMoons(node){
+  moonBirth=performance.now()/1000;
+  const conns=CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id);
+  if(!conns.length) return;
+
+  const orbitR=node.tier==='center'?2.2:node.tier==='inner'?2.6:3.0;
+
+  conns.forEach((conn,i)=>{
+    const otherId=conn.from===node.id?conn.to:conn.from;
+    const other=NODE_BY_ID[otherId];
+    if(!other) return;
+
+    const cfg=cc(conn.type);
+    const col=isLight?cfg.lkH:cfg.dkH;
+    const hexCol='#'+col.toString(16).padStart(6,'0');
+    const startAngle=(i/conns.length)*Math.PI*2;
+    const speed=0.20+i*0.04;
+
+    // Moon sphere
+    const mesh=new THREE.Mesh(
+      new THREE.SphereGeometry(MOON_R,8,8),
+      new THREE.MeshPhysicalMaterial({color:col,emissive:col,emissiveIntensity:isLight?0:1.8,metalness:0,roughness:0.1,transparent:true,opacity:0,depthWrite:false})
+    );
+    mesh.userData={isMoon:true,targetNode:other,connType:conn.type};
+    scene.add(mesh);
+
+    // Glow sprite behind moon
+    const glowSpr=makeGlowSprite(col,MOON_R);
+    glowSpr.material.opacity=0;
+    glowSpr.scale.setScalar(MOON_R*9);
+    scene.add(glowSpr);
+
+    // Label: connection type + truncated target title
+    const short=other.title.length>20?other.title.slice(0,18)+'…':other.title;
+    const labelText=`${CONN_TYPE_LABELS[conn.type]||conn.type} · ${short}`;
+    const labelSpr=makeMoonLabel(labelText,hexCol);
+    labelSpr.material.opacity=0;
+    scene.add(labelSpr);
+
+    // Connector line from parent node to moon
+    const cGeo=new THREE.BufferGeometry().setFromPoints([node._pos.clone(),node._pos.clone()]);
+    const cMat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false});
+    const connLine=new THREE.Line(cGeo,cMat);
+    scene.add(connLine);
+
+    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node});
+    moonMeshList.push(mesh);
+  });
+}
+
+function clearMoons(){
+  activeMoons.forEach(m=>{
+    scene.remove(m.mesh);scene.remove(m.glowSpr);scene.remove(m.labelSpr);scene.remove(m.connLine);
+    m.mesh.geometry.dispose();m.mesh.material.dispose();
+    m.glowSpr.material.map.dispose();m.glowSpr.material.dispose();
+    m.labelSpr.material.map.dispose();m.labelSpr.material.dispose();
+    m.connLine.geometry.dispose();m.connLine.material.dispose();
+  });
+  activeMoons=[];moonMeshList=[];hoveredMoon=null;
+  hideMoonTip();
+}
+
+function tickMoons(elapsed,dt){
+  if(!activeMoons.length) return;
+  const age=elapsed-moonBirth;
+  const fadeT=Math.min(age/MOON_FADEDUR,1);
+  const eased=fadeT*fadeT*(3-2*fadeT);
+
+  activeMoons.forEach(m=>{
+    if(!orbitPaused) m.orbitAngle+=m.orbitSpeed*dt;
+    const pp=m.parentNode._pos;
+    const ox=pp.x+Math.cos(m.orbitAngle)*m.orbitRadius;
+    const oy=pp.y+Math.sin(m.orbitAngle*0.5)*0.3;
+    const oz=pp.z+Math.sin(m.orbitAngle)*m.orbitRadius*0.52;
+    m.mesh.position.set(ox,oy,oz);
+    m.glowSpr.position.set(ox,oy,oz);
+    m.labelSpr.position.set(ox+0.2,oy+0.18,oz);
+
+    const isHov=hoveredMoon===m;
+    const tOp=isHov?1.0:0.75;
+    const tSc=isHov?2.2:1.0;
+    m.mesh.material.opacity=eased*tOp;
+    m.glowSpr.material.opacity=eased*(isHov?0.85:0.50);
+    m.connLine.material.opacity=eased*0.18;
+    m.labelSpr.material.opacity=eased*(isHov?0.95:0.48);
+
+    // Light theme: kill emissive
+    if(m.mesh.material.emissiveIntensity>0&&isLight) m.mesh.material.emissiveIntensity=0;
+
+    const cs=m.mesh.scale.x;
+    m.mesh.scale.setScalar(cs+(tSc-cs)*0.14);
+
+    // Update connector line
+    const pa=m.connLine.geometry.attributes.position.array;
+    pa[0]=pp.x;pa[1]=pp.y;pa[2]=pp.z;
+    pa[3]=ox;pa[4]=oy;pa[5]=oz;
+    m.connLine.geometry.attributes.position.needsUpdate=true;
+  });
+}
+
+// Moon tooltip
+function showMoonTip(m,cx,cy){
+  const tt=document.getElementById('tooltip');
+  const cfg=cc(m.connType);
+  const col=isLight?'#'+cfg.lkH.toString(16).padStart(6,'0'):'#'+cfg.dkH.toString(16).padStart(6,'0');
+  document.getElementById('tt-ring').textContent=CONN_TYPE_LABELS[m.connType]||m.connType;
+  document.getElementById('tt-title').textContent=m.targetNode.title;
+  document.getElementById('tt-title').style.color=col;
+  document.getElementById('tt-type').textContent='Click to navigate';
+  posTooltip(cx,cy);
+  tt.classList.add('vis');
+}
+function hideMoonTip(){
+  document.getElementById('tooltip').classList.remove('vis');
+  hoveredMoon=null;
+}
+
 function applyTheme(){
   document.body.classList.toggle('light',isLight);
   document.getElementById('theme-toggle').textContent=isLight?'Dark':'Light';
@@ -495,6 +638,7 @@ function enterFocus(node){
   document.getElementById('focus-hint').classList.add('vis');
   document.getElementById('hint').style.opacity='0';
   openPanel(node);highlightConnections(node);
+  clearMoons();spawnMoons(node);
 }
 function exitFocus(){
   isFocused=false;focusNode=null;scenePivotTgt.set(0,0,0);
@@ -504,14 +648,32 @@ function exitFocus(){
   document.getElementById('ghost').classList.remove('on');
   document.getElementById('msheet').classList.remove('on');
   resetConnectionHighlights();
+  clearMoons();
 }
 window.closePanel=function(){exitFocus();};
 
 const tooltip=document.getElementById('tooltip');
 let hoveredMesh=null,mouse=new THREE.Vector2(),drag=false,lastDragX=0,lastDragY=0,isDragging=false,hintFaded=false;
+let lastXY={x:0,y:0};
 function posTooltip(cx,cy){tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;}
+
 function checkHover(){
   raycaster.setFromCamera(mouse,cam);
+
+  // Moons first when focused
+  if(isFocused&&moonMeshList.length){
+    const mHits=raycaster.intersectObjects(moonMeshList);
+    if(mHits.length){
+      const hit=mHits[0].object;
+      const mo=activeMoons.find(m=>m.mesh===hit);
+      if(mo&&mo!==hoveredMoon){hoveredMoon=mo;showMoonTip(mo,lastXY.x,lastXY.y);}
+      document.body.style.cursor='pointer';
+      if(hoveredMesh){hoveredMesh=null;}
+      return;
+    }
+  }
+  if(hoveredMoon){hideMoonTip();}
+
   const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
   if(hits.length){
     const hit=hits[0].object,obj=nodeObjects.find(o=>o.mesh===hit);
@@ -519,16 +681,59 @@ function checkHover(){
     document.body.style.cursor='pointer';
   } else {if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
 }
-cvs.addEventListener('pointerdown',e=>{isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);});
-cvs.addEventListener('pointermove',e=>{const rect=cvs.getBoundingClientRect();mouse.x=(e.clientX-rect.left)/rect.width*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;posTooltip(e.clientX,e.clientY);if(e.buttons){isDragging=true;drag=true;camTarget.theta-=(e.clientX-lastDragX)*0.005;camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));lastDragX=e.clientX;lastDragY=e.clientY;}else{checkHover();}});
-cvs.addEventListener('pointerup',e=>{if(!drag){raycaster.setFromCamera(mouse,cam);const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}else if(isFocused)exitFocus();}if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}});
-cvs.addEventListener('wheel',e=>{camTarget.radius=Math.max(4,Math.min(80,camTarget.radius+e.deltaY*0.04));},{passive:true});
-let orbitPaused=false;
+
+cvs.addEventListener('pointerdown',e=>{
+  if(e.button===2) return;
+  isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);
+});
+cvs.addEventListener('pointermove',e=>{
+  const rect=cvs.getBoundingClientRect();
+  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
+  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  lastXY={x:e.clientX,y:e.clientY};
+  posTooltip(e.clientX,e.clientY);
+  if(e.buttons&&e.button!==2){
+    isDragging=true;drag=true;
+    camTarget.theta-=(e.clientX-lastDragX)*0.005;
+    camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));
+    lastDragX=e.clientX;lastDragY=e.clientY;
+  } else {checkHover();}
+});
+cvs.addEventListener('pointerup',e=>{
+  if(e.button===2) return;
+  if(!drag){
+    raycaster.setFromCamera(mouse,cam);
+    // Check moons first
+    if(isFocused&&moonMeshList.length){
+      const mHits=raycaster.intersectObjects(moonMeshList);
+      if(mHits.length){
+        const mo=activeMoons.find(m=>m.mesh===mHits[0].object);
+        if(mo){enterFocus(mo.targetNode);return;}
+      }
+    }
+    const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+    if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}
+    else if(isFocused)exitFocus();
+  }
+  if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
+});
+cvs.addEventListener('wheel',e=>{
+  if(isFocused&&activeMoons.length){
+    // Scroll orbits moons
+    const delta=e.deltaY*0.003;
+    activeMoons.forEach(m=>{m.orbitAngle+=delta;});
+    return;
+  }
+  camTarget.radius=Math.max(4,Math.min(80,camTarget.radius+e.deltaY*0.04));
+},{passive:true});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){exitFocus();return;}
   if(e.code==='Space'){e.preventDefault();orbitPaused=!orbitPaused;}
 });
-cvs.addEventListener('contextmenu',e=>{e.preventDefault();orbitPaused=!orbitPaused;});
+cvs.addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  if(isFocused) orbitPaused=!orbitPaused;
+});
 document.querySelectorAll('.hud-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const v=VIEWS[btn.dataset.view];if(v){camTarget.phi=v.phi;camTarget.theta=v.theta;camTarget.radius=v.radius;}});});
 
 let lastTime=0,elapsed=0;
@@ -542,6 +747,7 @@ function animate(ts){
   for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;
   pGeo.attributes.position.needsUpdate=true;
   nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
+  tickMoons(elapsed,dt);
   applyCam();renderer.render(scene,cam);isDragging=false;
 }
 requestAnimationFrame(animate);
