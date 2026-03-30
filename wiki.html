@@ -45,8 +45,27 @@ body.light #tt-inner{background:rgba(240,236,228,0.98);border-color:rgba(10,14,3
 body.light .tt-ring{color:rgba(10,14,30,0.40);}
 body.light .tt-title{color:#0a0e1e;}
 body.light .tt-type{color:rgba(10,14,30,0.45);}
-#ghost{position:fixed;z-index:700;width:320px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s;}
+#ghost{position:fixed;z-index:700;width:320px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s,width 0.30s;}
 #ghost.on{opacity:1;transform:translateY(-50%) translateX(0) scale(1);pointer-events:all;}
+#ghost.expanded{width:520px;}
+#ghost.expanded .gcbody{font-size:12.5px;line-height:2.0;}
+#ghost.expanded .gctitle{font-size:20px;}
+#ghost.expanded .gcscroll{max-height:88vh;}
+#ghost.expanded .gc-moons{columns:2;column-gap:12px;}
+.gcexpand{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;margin-right:6px;}
+.gcexpand:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
+body.light .gcexpand{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.38);}
+body.light .gcexpand:hover{color:#0a0e1e;border-color:rgba(10,14,30,0.65);}
+.gc-moons{padding:10px 16px 12px;border-bottom:1px solid rgba(180,210,255,0.06);}
+.gc-moon-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:8px;}
+.gc-moon-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;break-inside:avoid;}
+.gc-moon-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px;opacity:0.7;}
+.gc-moon-text{font-family:'DM Mono',monospace;font-size:9px;line-height:1.65;color:rgba(180,210,255,0.45);}
+.gc-moon-tag{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(180,210,255,0.22);display:block;margin-top:1px;}
+body.light .gc-moons{border-color:rgba(10,14,30,0.10);}
+body.light .gc-moon-label{color:rgba(10,14,30,0.30);}
+body.light .gc-moon-text{color:rgba(10,14,30,0.55);}
+body.light .gc-moon-tag{color:rgba(10,14,30,0.32);}
 .gc{background:rgba(4,6,18,0.97);border:1px solid rgba(180,210,255,0.10);border-radius:6px;box-shadow:0 18px 62px rgba(0,0,0,0.9),0 0 0 1px rgba(180,210,255,0.03);backdrop-filter:blur(26px);overflow:hidden;}
 .gcscroll{max-height:82vh;overflow-y:auto;scrollbar-width:none;}
 .gcscroll::-webkit-scrollbar{display:none;}
@@ -136,7 +155,7 @@ body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
   <button class="hud-btn" data-view="side">ORBIT</button>
 </div>
 <div id="hint">drag to orbit · scroll to zoom · click any node</div>
-<div id="focus-hint">— scroll orbits connections · click moon to navigate · space or right-click to pause · esc to release —</div>
+<div id="focus-hint">— right-click or space to pause · esc to release —</div>
 <div id="tooltip"><div id="tt-inner">
   <div class="tt-ring" id="tt-ring"></div>
   <div class="tt-title" id="tt-title"></div>
@@ -156,9 +175,13 @@ body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
       <div class="gcst"><span class="gcsv" id="gc-domain"></span><span class="gcsk">Domain</span></div>
     </div>
     <div class="gc-connections" id="gc-connections"></div>
+    <div class="gc-moons" id="gc-moons" style="display:none"></div>
     <div class="gcft">
       <span class="gctag" id="gc-tag"></span>
-      <button class="gcclose" onclick="closePanel()">✕</button>
+      <div style="display:flex;align-items:center;">
+        <button class="gcexpand" id="gc-expand" title="Expand panel">⤢</button>
+        <button class="gcclose" onclick="closePanel()">✕</button>
+      </div>
     </div>
   </div>
 </div></div>
@@ -177,7 +200,11 @@ body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-let isLight=false;
+// ── State variables declared first to avoid ReferenceError ──────────────────
+let isFocused = false;
+let focusNode = null;
+let isLight = false;
+
 const DOMAIN_CFG={
   statement:{color:0xf0f4ff,lightColor:0x0a0e1e,size:0.36,label:'Statement',hex:'#f0f4ff',lightHex:'#0a0e1e'},
   formalism:{color:0x4a8adc,lightColor:0x1a3a6c,size:0.14,label:'Formalism',hex:'#4a8adc',lightHex:'#1a3a6c'},
@@ -190,59 +217,200 @@ const dhex=d=>isLight?dcfg(d).lightHex:dcfg(d).hex;
 
 const NODES=[
   {id:'problem',tier:'center',angle:0,domain:'statement',title:'Three bodies, no formula',role:'The Problem Statement',era:'Statement',
-   body:'Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge — it is a structural property of the system. Add one body to a solvable problem, and solvability disappears.'},
+   body:'Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge — it is a structural property of the system. Add one body to a solvable problem, and solvability disappears.',
+   moons:[
+     {text:'First posed by Isaac Newton in Principia Mathematica, 1687',tag:'origin'},
+     {text:'König Oscar II of Sweden offered a prize in 1887 for its solution — which Poincaré won by finding it unsolvable',tag:'prize'},
+     {text:'The two-body problem is exactly solvable; three bodies destroys this property permanently',tag:'contrast'},
+   ]},
   {id:'newton',tier:'inner',angle:0.04,domain:'formalism',title:"Newton's equations of motion",role:'Mathematical Foundation',era:'Ring 1 · Formalism',
-   body:"Each body exerts a gravitational force on every other. F = Gm₁m₂/r². In two bodies, the forces balance into solvable conic sections. In three, the forces interact recursively — each position depends on all others simultaneously."},
+   body:"Each body exerts a gravitational force on every other. F = Gm₁m₂/r². In two bodies, the forces balance into solvable conic sections. In three, the forces interact recursively — each position depends on all others simultaneously.",
+   moons:[
+     {text:'Published in Principia Mathematica (1687) as a set of geometric proofs, not the algebraic form used today',tag:'history'},
+     {text:"Newton himself struggled with the Moon's motion — an early three-body problem (Sun–Earth–Moon)",tag:'struggle'},
+     {text:"The inverse-square law was partly inferred from Kepler's third law, not derived from first principles",tag:'derivation'},
+   ]},
   {id:'hamilton',tier:'inner',angle:0.20,domain:'formalism',title:'Hamiltonian formulation',role:'Phase Space Representation',era:'Ring 1 · Formalism',
-   body:'Reformulates the problem in phase space — position and momentum as conjugate variables. The Hamiltonian H = T + V is conserved but insufficient for a closed-form solution. Energy conservation alone does not constrain the trajectory.'},
+   body:'Reformulates the problem in phase space — position and momentum as conjugate variables. The Hamiltonian H = T + V is conserved but insufficient for a closed-form solution. Energy conservation alone does not constrain the trajectory.',
+   moons:[
+     {text:'William Rowan Hamilton introduced the formulation in 1833, building on Lagrangian mechanics (1788)',tag:'1833'},
+     {text:'Phase space for three bodies has 18 dimensions — 3 position + 3 momentum coordinates per body',tag:'dimensions'},
+     {text:"Hamiltonian mechanics is the natural language of quantum mechanics; Schrödinger's equation is its quantum analogue",tag:'quantum link'},
+   ]},
   {id:'jacobi',tier:'inner',angle:0.36,domain:'formalism',title:'The Jacobi integral',role:'Restricted Problem Conserved Quantity',era:'Ring 1 · Formalism',
-   body:'In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is conserved. It defines Hill regions the test particle cannot cross. The only exactly conserved quantity in the general problem.'},
+   body:'In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is conserved. It defines Hill regions the test particle cannot cross. The only exactly conserved quantity in the general problem.',
+   moons:[
+     {text:'Named after Carl Gustav Jacob Jacobi, who derived it in 1836 for the circular restricted problem',tag:'1836'},
+     {text:'Hill regions — forbidden zones — are used in spacecraft trajectory design to rule out collision paths',tag:'application'},
+     {text:'George William Hill used the Jacobi integral in 1878 to prove the Moon cannot escape the Earth\'s gravitational domain',tag:'moon stability'},
+   ]},
   {id:'restricted',tier:'inner',angle:0.52,domain:'formalism',title:'The restricted problem',role:'Tractable Simplification',era:'Ring 1 · Formalism',
-   body:'If one body is massless, it cannot affect the two massive bodies. This breaks the full mutual dependency. Most spacecraft trajectory problems use this form — the restricted circular three-body problem (CR3BP).'},
+   body:'If one body is massless, it cannot affect the two massive bodies. This breaks the full mutual dependency. Most spacecraft trajectory problems use this form — the restricted circular three-body problem (CR3BP).',
+   moons:[
+     {text:'Euler introduced the restricted formulation in 1772 to make the problem tractable for lunar theory',tag:'Euler 1772'},
+     {text:'The CR3BP has five equilibrium points — the Lagrange points — and no other exact closed-form solutions',tag:'equilibria'},
+     {text:"Low-energy transfer trajectories (ballistic capture) exploit the CR3BP's chaotic regions for fuel-efficient spaceflight",tag:'spaceflight'},
+   ]},
   {id:'integrals',tier:'inner',angle:0.68,domain:'formalism',title:'Conservation laws',role:"What Is and Isn't Conserved",era:'Ring 1 · Formalism',
-   body:'Total energy, total momentum, and total angular momentum are conserved — ten integrals of motion. But a general solution requires 18. The gap of 8 is exactly what makes the problem unsolvable by classical methods.'},
+   body:'Total energy, total momentum, and total angular momentum are conserved — ten integrals of motion. But a general solution requires 18. The gap of 8 is exactly what makes the problem unsolvable by classical methods.',
+   moons:[
+     {text:'Bruns (1887) proved no new algebraic integrals exist beyond the classical ten — making the gap of 8 permanent',tag:'Bruns 1887'},
+     {text:"The ten integrals correspond to symmetries via Noether's theorem: time, space translation, rotation",tag:'Noether'},
+     {text:"Poincaré extended Bruns's result to transcendental integrals in 1889, closing the door entirely",tag:'Poincaré extension'},
+   ]},
   {id:'lagrange-pts',tier:'inner',angle:0.84,domain:'formalism',title:'Lagrange points',role:'Five Equilibrium Solutions',era:'Ring 1 · Formalism',
-   body:'Euler (1767) found three collinear equilibrium points; Lagrange (1772) found two triangular points (L4, L5). These are the only exact analytical solutions to the three-body problem. L4 and L5 are stable — Trojan asteroids occupy them.'},
+   body:'Euler (1767) found three collinear equilibrium points; Lagrange (1772) found two triangular points (L4, L5). These are the only exact analytical solutions to the three-body problem. L4 and L5 are stable — Trojan asteroids occupy them.',
+   moons:[
+     {text:'L1 of the Sun–Earth system is ~1.5 million km from Earth — home to SOHO, DSCOVR solar wind monitors',tag:'L1 missions'},
+     {text:'L2 hosts the James Webb Space Telescope, Gaia, and Planck — ideal for cold, unobstructed sky views',tag:'L2 missions'},
+     {text:'L4 and L5 are stable only if the primary mass ratio exceeds ~24.96:1 — the Sun–Earth and Sun–Jupiter systems both qualify',tag:'stability criterion'},
+     {text:'The Greeks (L4) and Trojans (L5) of Jupiter number over 12,000 known asteroids as of 2024',tag:'asteroid count'},
+   ]},
   {id:'euler1767',tier:'mid',angle:0.03,domain:'history',title:'Euler · 1767',role:'Collinear Solutions',era:'Ring 2 · History',
-   body:'Found three collinear configurations where all three bodies maintain constant ratios of distance — three bodies in a line, rotating about their common center. All are unstable in the general case.'},
+   body:'Found three collinear configurations where all three bodies maintain constant ratios of distance — three bodies in a line, rotating about their common center. All are unstable in the general case.',
+   moons:[
+     {text:'Published in "De motu rectilineo trium corporum se mutuo attrahentium" (1767)',tag:'source'},
+     {text:'Euler discovered L1, L2, L3 — all collinear, all unstable saddle points in the effective potential',tag:'L-points'},
+     {text:'Euler also introduced the rotating reference frame technique that makes these solutions visible',tag:'method'},
+   ]},
   {id:'lagrange1772',tier:'mid',angle:0.14,domain:'history',title:'Lagrange · 1772',role:'Equilateral Triangle Solutions',era:'Ring 2 · History',
-   body:'Showed that equilateral triangular configurations rotate stably. Three equal masses at the vertices of an equilateral triangle — all orbiting the common center — are exact periodic solutions. The geometry solves what the calculus cannot.'},
+   body:'Showed that equilateral triangular configurations rotate stably. Three equal masses at the vertices of an equilateral triangle — all orbiting the common center — are exact periodic solutions. The geometry solves what the calculus cannot.',
+   moons:[
+     {text:"Published in \"Essai sur le problème des trois corps\" — submitted for the same 1772 Paris Academy prize as Euler's work",tag:'source'},
+     {text:"L4 and L5 stability was not confirmed observationally until the discovery of Jupiter's Trojan asteroids in 1906",tag:'confirmation 1906'},
+     {text:'Lagrange also co-invented the calculus of variations and introduced generalized coordinates (Lagrangian mechanics) in 1788',tag:'legacy'},
+   ]},
   {id:'poincare1889',tier:'mid',angle:0.25,domain:'history',title:'Poincaré · 1889',role:'Proof of Non-Integrability',era:'Ring 2 · History',
-   body:"Submitted a prize essay claiming orbital stability, then found his own error before publication. The correction introduced chaos: nearby trajectories diverge exponentially. This is the founding moment of dynamical systems theory — a mistake that became a field."},
+   body:"Submitted a prize essay claiming orbital stability, then found his own error before publication. The correction introduced chaos: nearby trajectories diverge exponentially. This is the founding moment of dynamical systems theory — a mistake that became a field.",
+   moons:[
+     {text:'The prize was 2,500 Swedish kronor — Poincaré paid more than that to suppress the already-printed erroneous version',tag:'cost of error'},
+     {text:'His corrected 1890 paper introduced homoclinic intersections — the geometric signature of chaos',tag:'homoclinic'},
+     {text:"Poincaré's qualitative methods — topology applied to dynamics — replaced the search for formulas with the study of structure",tag:'method shift'},
+     {text:'The work was rediscovered by Birkhoff (1913) and later by Smale (1960s), who coined "chaos" as a technical term',tag:'rediscovery'},
+   ]},
   {id:'sundman1912',tier:'mid',angle:0.36,domain:'history',title:'Sundman · 1912',role:'Convergent Series Solution',era:'Ring 2 · History',
-   body:'Proved the three-body problem has a convergent power series solution — in a new time variable. Technically complete. Practically useless: the series converges so slowly that 10⁸⁰⁰⁰⁰⁰⁰ terms are needed for practical precision.'},
+   body:'Proved the three-body problem has a convergent power series solution — in a new time variable. Technically complete. Practically useless: the series converges so slowly that 10⁸⁰⁰⁰⁰⁰⁰ terms are needed for practical precision.',
+   moons:[
+     {text:'Karl Frithiof Sundman was a Finnish mathematician working at the University of Helsinki',tag:'biography'},
+     {text:'His key technique was regularizing collisions using a new time variable τ related to real time by dt = r₁₂ r₁₃ r₂₃ dτ',tag:'technique'},
+     {text:'The 10⁸⁰⁰⁰⁰⁰⁰ term estimate is from Beloriszky (1930) — so large it defeats any conceivable computation',tag:'impracticality'},
+   ]},
   {id:'moore1993',tier:'mid',angle:0.47,domain:'history',title:'Moore · 1993',role:'Figure-Eight Orbit',era:'Ring 2 · History',
-   body:'Discovered numerically that three equal masses can chase each other around a figure-eight in a stable periodic orbit. Verified analytically by Chenciner & Montgomery (2000). Symmetry constrains what calculus cannot solve.'},
+   body:'Discovered numerically that three equal masses can chase each other around a figure-eight in a stable periodic orbit. Verified analytically by Chenciner & Montgomery (2000). Symmetry constrains what calculus cannot solve.',
+   moons:[
+     {text:'Cris Moore discovered it at the Santa Fe Institute using variational methods and numerical search',tag:'discovery'},
+     {text:'The orbit has a period of ~6.3259 time units (in natural units where G=m=1) and zero net angular momentum',tag:'parameters'},
+     {text:"Chenciner & Montgomery's 2000 proof used the \"choreography\" symmetry — all three bodies trace the same curve",tag:'choreography'},
+     {text:'The figure-eight is the simplest member of an infinite family of choreographic orbits discovered afterward',tag:'family'},
+   ]},
   {id:'wang1991',tier:'mid',angle:0.58,domain:'history',title:'Wang · 1991',role:'n-Body Series Extension',era:'Ring 2 · History',
-   body:"Extended Sundman's convergent series method to the general n-body problem. Same result: mathematically complete, physically unusable. The existence of a solution and its computability remain different categories."},
+   body:"Extended Sundman's convergent series method to the general n-body problem. Same result: mathematically complete, physically unusable. The existence of a solution and its computability remain different categories.",
+   moons:[
+     {text:'Qiudong Wang published the result in Celestial Mechanics and Dynamical Astronomy, Vol. 50 (1991)',tag:'publication'},
+     {text:'The extension required excluding a set of initial conditions of measure zero — triple simultaneous collisions',tag:'caveat'},
+     {text:"Wang's series, like Sundman's, converges too slowly for any physical application — a mathematical existence proof only",tag:'limitation'},
+   ]},
   {id:'suvakov2013',tier:'mid',angle:0.69,domain:'history',title:'Šuvakov & Dmitrašinović · 2013',role:'13 New Periodic Families',era:'Ring 2 · History',
-   body:'Using high-precision numerical methods, found 13 new families of periodic three-body orbits — the first new families since the figure-eight. Each requires exquisite initial conditions; any perturbation breaks them.'},
+   body:'Using high-precision numerical methods, found 13 new families of periodic three-body orbits — the first new families since the figure-eight. Each requires exquisite initial conditions; any perturbation breaks them.',
+   moons:[
+     {text:'Published in Physical Review Letters 110, 114301 (2013) — a physics journal, not mathematics',tag:'publication'},
+     {text:'Orbits were classified by their "shape space" trajectory — a 2D curve encoding how mutual distances evolve',tag:'classification'},
+     {text:'The 13 families include "butterfly", "moth", "yarn", and "bumblebee" orbits — named for their visual shape',tag:'names'},
+   ]},
   {id:'hristov2023',tier:'mid',angle:0.80,domain:'history',title:'Hristov et al. · 2023',role:'12,000+ New Periodic Orbits',era:'Ring 2 · History',
-   body:'Machine-precision numerical search found over 12,000 new periodic orbit families. The solution space is far richer than expected — but these are exact solutions only at knife-edge initial conditions. The generic trajectory remains chaotic.'},
+   body:'Machine-precision numerical search found over 12,000 new periodic orbit families. The solution space is far richer than expected — but these are exact solutions only at knife-edge initial conditions. The generic trajectory remains chaotic.',
+   moons:[
+     {text:'Used quad-precision arithmetic (128-bit floats) to overcome numerical instability in long integrations',tag:'method'},
+     {text:'Orbits were found by searching over "topological" families defined by braids — strands that encode how bodies exchange positions',tag:'topology'},
+     {text:'The result does not change the fundamental unsolvability — most initial conditions still produce chaotic, non-periodic motion',tag:'caveat'},
+   ]},
   {id:'nn2019',tier:'mid',angle:0.91,domain:'history',title:'Neural Network Solver · 2019',role:'Deep Learning Approximation',era:'Ring 2 · History',
-   body:'Breen et al. trained a deep neural network to predict three-body trajectories — 100 million times faster than direct integration. Same goal as Sundman, 111 years later.'},
+   body:'Breen et al. trained a deep neural network to predict three-body trajectories — 100 million times faster than direct integration. Same goal as Sundman, 111 years later.',
+   moons:[
+     {text:'Published in Monthly Notices of the Royal Astronomical Society: Letters, 2019; trained on 9,900 simulated trajectories',tag:'publication'},
+     {text:'The network predicts outcomes after close encounters — the hardest part, where standard integrators must take tiny steps',tag:'focus'},
+     {text:'Accuracy degrades over time due to chaos: small errors amplify. The network is an approximator, not an oracle',tag:'limitation'},
+   ]},
   {id:'chaos',tier:'outer',angle:0.02,domain:'analogue',title:'Chaos theory',role:'Discovered Here',era:'Ring 3 · Analogue',
-   body:"Poincaré's 1889 correction to his prize essay is the founding document of chaos theory. Sensitive dependence on initial conditions — the butterfly effect — was first observed in the three-body problem. The field was born from a celestial mechanics mistake."},
+   body:"Poincaré's 1889 correction to his prize essay is the founding document of chaos theory. Sensitive dependence on initial conditions — the butterfly effect — was first observed in the three-body problem. The field was born from a celestial mechanics mistake.",
+   moons:[
+     {text:'The term "butterfly effect" was coined by Edward Lorenz in 1972, from his 1961 weather model — a later, independent rediscovery of the same phenomenon',tag:'butterfly effect'},
+     {text:'Chaos theory entered mainstream mathematics with Stephen Smale\'s "horseshoe map" (1960) and the Lorenz attractor (1963)',tag:'formalization'},
+     {text:'Lyapunov exponents quantify the rate of divergence; the three-body problem has at least one positive Lyapunov exponent for generic initial conditions',tag:'measurement'},
+   ]},
   {id:'nbody',tier:'outer',angle:0.16,domain:'analogue',title:'The n-body problem',role:'General Extension',era:'Ring 3 · Analogue',
-   body:'The three-body problem is the n=3 case of the general gravitational n-body problem. Galaxy formation, globular cluster dynamics, and planetary system stability all require n-body simulation. None are analytically solvable.'},
+   body:'The three-body problem is the n=3 case of the general gravitational n-body problem. Galaxy formation, globular cluster dynamics, and planetary system stability all require n-body simulation. None are analytically solvable.',
+   moons:[
+     {text:'Modern n-body codes (GADGET, AREPO) simulate ~10¹⁰ particles to model galaxy formation',tag:'scale'},
+     {text:'The Barnes–Hut algorithm (1986) reduces n-body computation from O(n²) to O(n log n) using an octree approximation',tag:'algorithm'},
+     {text:"The solar system's long-term stability is uncertain: simulations show a ~1% chance of Mercury's orbit destabilizing within 5 billion years",tag:'solar system'},
+   ]},
   {id:'helium',tier:'outer',angle:0.30,domain:'analogue',title:'The helium atom',role:'Same Structure · Different Scale',era:'Ring 3 · Analogue',
-   body:'A nucleus plus two electrons — structurally identical to the three-body gravitational problem, with Coulomb force replacing gravity. The helium atom has no closed-form solution either. Same mathematics, 10³⁰ smaller.'},
+   body:'A nucleus plus two electrons — structurally identical to the three-body gravitational problem, with Coulomb force replacing gravity. The helium atom has no closed-form solution either. Same mathematics, 10³⁰ smaller.',
+   moons:[
+     {text:"Bohr's 1913 model correctly predicted hydrogen but failed for helium — the two-electron interaction is exactly the three-body problem",tag:'Bohr failure'},
+     {text:'The modern solution uses variational methods; Hylleraas (1929) achieved 5-digit accuracy with a cleverly parameterized wavefunction',tag:'Hylleraas 1929'},
+     {text:"Helium's ground state energy is known experimentally to 12 significant figures — computed numerically, never analytically",tag:'precision'},
+   ]},
   {id:'efimov',tier:'outer',angle:0.44,domain:'analogue',title:'The Efimov effect',role:'Unexpected Symmetry',era:'Ring 3 · Analogue',
-   body:'Three particles with very weak pairwise attraction can form bound three-body states even when no two-body bound state exists. Predicted 1970, confirmed 2006. The three-body problem reappears in nuclear physics with the same structural surprise.'},
+   body:'Three particles with very weak pairwise attraction can form bound three-body states even when no two-body bound state exists. Predicted 1970, confirmed 2006. The three-body problem reappears in nuclear physics with the same structural surprise.',
+   moons:[
+     {text:'Vitaly Efimov predicted the effect in 1970 using nuclear physics; it was confirmed in ultracold cesium atoms at Innsbruck in 2006',tag:'timeline'},
+     {text:'Efimov states form a geometric series: each successive state is ~22.7 times larger than the previous one',tag:'scaling'},
+     {text:'The effect has been observed in helium-4 trimers, ultracold lithium, and potassium atoms — a universal quantum three-body phenomenon',tag:'universality'},
+   ]},
   {id:'vortex',tier:'outer',angle:0.58,domain:'analogue',title:'Vortex dynamics',role:'Fluid Mechanics Analogue',era:'Ring 3 · Analogue',
-   body:'Three interacting point vortices in a fluid obey equations formally identical to the gravitational three-body problem. The same integrability question arises; the same chaos appears. Weather systems and ocean circulation contain embedded three-body problems.'},
+   body:'Three interacting point vortices in a fluid obey equations formally identical to the gravitational three-body problem. The same integrability question arises; the same chaos appears. Weather systems and ocean circulation contain embedded three-body problems.',
+   moons:[
+     {text:'The point-vortex equations were derived by Helmholtz in 1858 and Kirchhoff in 1876',tag:'history'},
+     {text:'Three vortices are integrable (solvable); four are not — mirroring the two-body vs. three-body divide in gravity',tag:'threshold'},
+     {text:'Tropical cyclone tracks are influenced by vortex interactions — practical weather forecasting encounters the three-body problem',tag:'weather'},
+   ]},
   {id:'gr',tier:'outer',angle:0.72,domain:'analogue',title:'Post-Newtonian corrections',role:'General Relativity Extension',era:'Ring 3 · Analogue',
-   body:"In general relativity, the three-body problem becomes harder: spacetime curvature means distances are not Euclidean, and gravitational waves carry energy away. Binary pulsars and black hole mergers require post-Newtonian approximations."},
+   body:"In general relativity, the three-body problem becomes harder: spacetime curvature means distances are not Euclidean, and gravitational waves carry energy away. Binary pulsars and black hole mergers require post-Newtonian approximations.",
+   moons:[
+     {text:'The first post-Newtonian (1PN) correction adds v²/c² terms; LIGO waveforms require up to 3.5PN accuracy',tag:'precision levels'},
+     {text:'The Hulse–Taylor binary pulsar (Nobel Prize 1993) confirmed gravitational wave energy loss — an n-body GR effect measured indirectly',tag:'Nobel'},
+     {text:'Triple black hole systems (hierarchical triples) are thought to drive supermassive black hole mergers in galaxy cores',tag:'black holes'},
+   ]},
   {id:'liucixin',tier:'outer2',angle:0.06,domain:'cultural',title:'The Three-Body Problem · Liu Cixin',role:'Novel · 2008',era:'Ring 4 · Cultural',
-   body:"Hugo Award-winning science fiction trilogy. The title refers to the orbital instability of the Trisolaran star system — three suns, unpredictable climate, impossible civilization. The mathematical unsolvability becomes the engine of a civilization's desperation."},
+   body:"Hugo Award-winning science fiction trilogy. The title refers to the orbital instability of the Trisolaran star system — three suns, unpredictable climate, impossible civilization. The mathematical unsolvability becomes the engine of a civilization's desperation.",
+   moons:[
+     {text:'Won the Hugo Award for Best Novel in 2015 — the first work in translation to do so',tag:'Hugo 2015'},
+     {text:'The Chinese title is 《三体》(Sān Tǐ); originally serialized in Science Fiction World magazine 2006–2010',tag:'publication'},
+     {text:"Liu Cixin cited Asimov's Foundation and Clarke's works as influences; the trilogy sold over 21 million copies in China",tag:'sales'},
+     {text:'The Trisolaran system is loosely based on Alpha Centauri — a real triple-star system 4.37 light-years away',tag:'real basis'},
+   ]},
   {id:'spacecraft',tier:'outer2',angle:0.22,domain:'cultural',title:'Lagrange point missions',role:'Applied Astrodynamics',era:'Ring 4 · Applied',
-   body:'L1, L2, L4, L5 are used as spacecraft parking locations. Webb Space Telescope sits at L2 of the Sun-Earth system. The halo orbits discovered by numerical methods are used for real mission design. The unsolvable problem is navigated, not solved.'},
+   body:'L1, L2, L4, L5 are used as spacecraft parking locations. Webb Space Telescope sits at L2 of the Sun-Earth system. The halo orbits discovered by numerical methods are used for real mission design. The unsolvable problem is navigated, not solved.',
+   moons:[
+     {text:'JWST launched December 2021; it reached L2 after a 30-day journey and a precisely timed burn on January 24, 2022',tag:'JWST'},
+     {text:'Halo orbits around L1/L2 were first computed numerically by Robert Farquhar in 1968 for the ISEE-3 mission',tag:'Farquhar 1968'},
+     {text:'The Genesis (2001) and WIND spacecraft used "Interplanetary Superhighway" routes — low-energy paths through L-point saddles',tag:'superhighway'},
+     {text:"ESA's LISA mission (2030s) will place three spacecraft in a triangular formation — a deliberate three-body configuration",tag:'LISA'},
+   ]},
   {id:'trojans',tier:'outer2',angle:0.38,domain:'cultural',title:'Trojan asteroids',role:'Natural Laboratory',era:'Ring 4 · Applied',
-   body:"Over 12,000 asteroids occupy Jupiter's L4 and L5 points — the only stable equilibrium in the three-body problem. Named after characters from the Trojan War. The solar system validates Lagrange's 1772 geometry continuously."},
+   body:"Over 12,000 asteroids occupy Jupiter's L4 and L5 points — the only stable equilibrium in the three-body problem. Named after characters from the Trojan War. The solar system validates Lagrange's 1772 geometry continuously.",
+   moons:[
+     {text:'The first Jupiter Trojan, 588 Achilles, was discovered by Max Wolf in 1906 — 134 years after Lagrange predicted the stable points',tag:'first discovery 1906'},
+     {text:'L4 (Greek camp) and L5 (Trojan camp) are kept separate by convention; 617 Patroclus is a deliberate exception in the "wrong" camp',tag:'naming'},
+     {text:"NASA's Lucy mission (launched 2021) will visit 8 Trojan asteroids between 2027–2033 — the first spacecraft to do so",tag:'Lucy mission'},
+     {text:'Earth also has a Trojan: 2010 TK7, discovered 2010, ~300m across, librating around L4',tag:'Earth Trojan'},
+   ]},
   {id:'figureeight',tier:'outer2',angle:0.54,domain:'cultural',title:'The figure-eight orbit',role:'Most Recognizable Solution',era:'Ring 4 · Cultural',
-   body:'Three equal masses chasing each other in a stable figure-eight. Zero margin for perturbation. But as an image, it communicates the entire character of the problem: motion that looks simple, is in fact a knife-edge balance that nature never achieves.'},
+   body:'Three equal masses chasing each other in a stable figure-eight. Zero margin for perturbation. But as an image, it communicates the entire character of the problem: motion that looks simple, is in fact a knife-edge balance that nature never achieves.',
+   moons:[
+     {text:'The orbit has the symmetry group D₆ — rotations and reflections of a regular hexagon — which is why it\'s stable',tag:'symmetry'},
+     {text:'In shape space, the orbit traces a simple closed curve — the "trefoil" — relating it to knot theory',tag:'topology'},
+     {text:'No figure-eight orbit has been observed in nature; the required equal masses and zero angular momentum never occur spontaneously',tag:'nature'},
+   ]},
   {id:'tvshow',tier:'outer2',angle:0.70,domain:'cultural',title:'3 Body Problem · Netflix 2024',role:'Adaptation',era:'Ring 4 · Cultural',
-   body:"David Benioff, D.B. Weiss, and Alexander Woo adapted Liu Cixin's trilogy. The orbital mechanics appear in visualizations of the Trisolaran system — three suns creating stable and chaotic eras that the civilization must predict and survive."},
+   body:"David Benioff, D.B. Weiss, and Alexander Woo adapted Liu Cixin's trilogy. The orbital mechanics appear in visualizations of the Trisolaran system — three suns creating stable and chaotic eras that the civilization must predict and survive.",
+   moons:[
+     {text:'Released March 21, 2024; the showrunners relocated much of the story from China to Oxford, UK',tag:'production'},
+     {text:'The "stable era / chaotic era" framing mirrors real three-body behavior: near-periodic windows interrupted by chaotic excursions',tag:'accuracy'},
+     {text:'Liu Cixin served as a consultant; a separate Chinese adaptation (三体, 2023, Tencent) stayed closer to the original setting',tag:'adaptation'},
+   ]},
 ];
 
 const CONNECTIONS=[
@@ -412,149 +580,6 @@ function buildScene(){
 }
 buildScene();
 
-// ═══════════════════════════════════════════
-// MOON SYSTEM — connected nodes orbit as satellites
-// Each moon = a CONNECTIONS entry from/to the focused node
-// Color = connection type color
-// Click = jump to that node
-// ═══════════════════════════════════════════
-let activeMoons=[]; // {mesh,glowSpr,labelSpr,connLine,targetNode,connType,orbitAngle,orbitRadius,orbitSpeed}
-let moonMeshList=[];
-let hoveredMoon=null;
-let moonBirth=0;
-let orbitPaused=false;
-
-const MOON_FADEDUR=0.55;
-const MOON_R=0.055;
-
-function makeMoonLabel(text,hexColor){
-  const c=document.createElement('canvas');c.width=320;c.height=40;
-  const ctx=c.getContext('2d');
-  ctx.fillStyle=hexColor+'cc';
-  ctx.font='bold 13px "DM Mono",monospace';
-  ctx.fillText(text.toUpperCase(),6,26);
-  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
-  spr.scale.set(2.6,0.32,1);
-  return spr;
-}
-
-function spawnMoons(node){
-  moonBirth=performance.now()/1000;
-  const conns=CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id);
-  if(!conns.length) return;
-
-  const orbitR=node.tier==='center'?2.2:node.tier==='inner'?2.6:3.0;
-
-  conns.forEach((conn,i)=>{
-    const otherId=conn.from===node.id?conn.to:conn.from;
-    const other=NODE_BY_ID[otherId];
-    if(!other) return;
-
-    const cfg=cc(conn.type);
-    const col=isLight?cfg.lkH:cfg.dkH;
-    const hexCol='#'+col.toString(16).padStart(6,'0');
-    const startAngle=(i/conns.length)*Math.PI*2;
-    const speed=0.20+i*0.04;
-
-    // Moon sphere
-    const mesh=new THREE.Mesh(
-      new THREE.SphereGeometry(MOON_R,8,8),
-      new THREE.MeshPhysicalMaterial({color:col,emissive:col,emissiveIntensity:isLight?0:1.8,metalness:0,roughness:0.1,transparent:true,opacity:0,depthWrite:false})
-    );
-    mesh.userData={isMoon:true,targetNode:other,connType:conn.type};
-    scene.add(mesh);
-
-    // Glow sprite behind moon
-    const glowSpr=makeGlowSprite(col,MOON_R);
-    glowSpr.material.opacity=0;
-    glowSpr.scale.setScalar(MOON_R*9);
-    scene.add(glowSpr);
-
-    // Label: connection type + truncated target title
-    const short=other.title.length>20?other.title.slice(0,18)+'…':other.title;
-    const labelText=`${CONN_TYPE_LABELS[conn.type]||conn.type} · ${short}`;
-    const labelSpr=makeMoonLabel(labelText,hexCol);
-    labelSpr.material.opacity=0;
-    scene.add(labelSpr);
-
-    // Connector line from parent node to moon
-    const cGeo=new THREE.BufferGeometry().setFromPoints([node._pos.clone(),node._pos.clone()]);
-    const cMat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false});
-    const connLine=new THREE.Line(cGeo,cMat);
-    scene.add(connLine);
-
-    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node});
-    moonMeshList.push(mesh);
-  });
-}
-
-function clearMoons(){
-  activeMoons.forEach(m=>{
-    scene.remove(m.mesh);scene.remove(m.glowSpr);scene.remove(m.labelSpr);scene.remove(m.connLine);
-    m.mesh.geometry.dispose();m.mesh.material.dispose();
-    m.glowSpr.material.map.dispose();m.glowSpr.material.dispose();
-    m.labelSpr.material.map.dispose();m.labelSpr.material.dispose();
-    m.connLine.geometry.dispose();m.connLine.material.dispose();
-  });
-  activeMoons=[];moonMeshList=[];hoveredMoon=null;
-  hideMoonTip();
-}
-
-function tickMoons(elapsed,dt){
-  if(!activeMoons.length) return;
-  const age=elapsed-moonBirth;
-  const fadeT=Math.min(age/MOON_FADEDUR,1);
-  const eased=fadeT*fadeT*(3-2*fadeT);
-
-  activeMoons.forEach(m=>{
-    if(!orbitPaused) m.orbitAngle+=m.orbitSpeed*dt;
-    const pp=m.parentNode._pos;
-    const ox=pp.x+Math.cos(m.orbitAngle)*m.orbitRadius;
-    const oy=pp.y+Math.sin(m.orbitAngle*0.5)*0.3;
-    const oz=pp.z+Math.sin(m.orbitAngle)*m.orbitRadius*0.52;
-    m.mesh.position.set(ox,oy,oz);
-    m.glowSpr.position.set(ox,oy,oz);
-    m.labelSpr.position.set(ox+0.2,oy+0.18,oz);
-
-    const isHov=hoveredMoon===m;
-    const tOp=isHov?1.0:0.75;
-    const tSc=isHov?2.2:1.0;
-    m.mesh.material.opacity=eased*tOp;
-    m.glowSpr.material.opacity=eased*(isHov?0.85:0.50);
-    m.connLine.material.opacity=eased*0.18;
-    m.labelSpr.material.opacity=eased*(isHov?0.95:0.48);
-
-    // Light theme: kill emissive
-    if(m.mesh.material.emissiveIntensity>0&&isLight) m.mesh.material.emissiveIntensity=0;
-
-    const cs=m.mesh.scale.x;
-    m.mesh.scale.setScalar(cs+(tSc-cs)*0.14);
-
-    // Update connector line
-    const pa=m.connLine.geometry.attributes.position.array;
-    pa[0]=pp.x;pa[1]=pp.y;pa[2]=pp.z;
-    pa[3]=ox;pa[4]=oy;pa[5]=oz;
-    m.connLine.geometry.attributes.position.needsUpdate=true;
-  });
-}
-
-// Moon tooltip
-function showMoonTip(m,cx,cy){
-  const tt=document.getElementById('tooltip');
-  const cfg=cc(m.connType);
-  const col=isLight?'#'+cfg.lkH.toString(16).padStart(6,'0'):'#'+cfg.dkH.toString(16).padStart(6,'0');
-  document.getElementById('tt-ring').textContent=CONN_TYPE_LABELS[m.connType]||m.connType;
-  document.getElementById('tt-title').textContent=m.targetNode.title;
-  document.getElementById('tt-title').style.color=col;
-  document.getElementById('tt-type').textContent='Click to navigate';
-  posTooltip(cx,cy);
-  tt.classList.add('vis');
-}
-function hideMoonTip(){
-  document.getElementById('tooltip').classList.remove('vis');
-  hoveredMoon=null;
-}
-
 function applyTheme(){
   document.body.classList.toggle('light',isLight);
   document.getElementById('theme-toggle').textContent=isLight?'Dark':'Light';
@@ -614,6 +639,15 @@ function openPanel(node){
     gcConn.innerHTML=html;
     gcConn.querySelectorAll('.gc-conn-item').forEach(item=>{item.addEventListener('click',()=>{const t=NODE_BY_ID[item.dataset.ct];if(t)enterFocus(t);});});
   } else {gcConn.style.display='none';}
+  const gcMoons=document.getElementById('gc-moons');
+  if(node.moons&&node.moons.length){
+    gcMoons.style.display='';
+    let mHtml='<div class="gc-moon-label">Satellite Facts</div>';
+    node.moons.forEach(m=>{
+      mHtml+=`<div class="gc-moon-item"><div class="gc-moon-dot" style="background:${col}"></div><div><div class="gc-moon-text">${m.text}</div><span class="gc-moon-tag">${m.tag}</span></div></div>`;
+    });
+    gcMoons.innerHTML=mHtml;
+  } else {gcMoons.style.display='none';}
   document.getElementById('ghost').classList.add('on');
   document.getElementById('ms-bar').style.background=col;
   document.getElementById('ms-ring').textContent=node.era||RING_NAMES[node.tier];
@@ -623,7 +657,35 @@ function openPanel(node){
   document.getElementById('msheet').classList.add('on');
 }
 
-let isFocused=false,focusNode=null;
+let ghostExpanded=false;
+document.getElementById('gc-expand').addEventListener('click',()=>{
+  ghostExpanded=!ghostExpanded;
+  const ghost=document.getElementById('ghost');
+  ghost.classList.toggle('expanded',ghostExpanded);
+  document.getElementById('gc-expand').textContent=ghostExpanded?'⤡':'⤢';
+  document.getElementById('gc-expand').title=ghostExpanded?'Collapse panel':'Expand panel';
+});
+
+const moonObjects=[];
+function buildMoonOrbits(){
+  NODES.filter(n=>n.id!=='problem'&&n.moons&&n.moons.length).forEach(n=>{
+    const cfg=dcfg(n.domain);
+    const moonCount=n.moons.length;
+    const orbitR=cfg.size*4.5+0.25;
+    for(let mi=0;mi<moonCount;mi++){
+      const phase=(mi/moonCount)*Math.PI*2;
+      const moonMesh=new THREE.Mesh(
+        new THREE.SphereGeometry(0.022,6,6),
+        new THREE.MeshBasicMaterial({color:cfg.color,transparent:true,opacity:0.55})
+      );
+      moonMesh.userData={nodeId:n.id,phase,orbitR,speed:0.28+mi*0.07,tilt:Math.PI*(0.12+mi*0.09)};
+      scene.add(moonMesh);
+      moonObjects.push({mesh:moonMesh,node:n,phase,orbitR,speed:0.28+mi*0.07,tilt:Math.PI*(0.12+mi*0.09)});
+    }
+  });
+}
+buildMoonOrbits();
+
 function highlightConnections(node){
   const rIds=new Set(CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id).flatMap(c=>[c.from,c.to]));
   connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});
@@ -638,7 +700,6 @@ function enterFocus(node){
   document.getElementById('focus-hint').classList.add('vis');
   document.getElementById('hint').style.opacity='0';
   openPanel(node);highlightConnections(node);
-  clearMoons();spawnMoons(node);
 }
 function exitFocus(){
   isFocused=false;focusNode=null;scenePivotTgt.set(0,0,0);
@@ -648,32 +709,14 @@ function exitFocus(){
   document.getElementById('ghost').classList.remove('on');
   document.getElementById('msheet').classList.remove('on');
   resetConnectionHighlights();
-  clearMoons();
 }
 window.closePanel=function(){exitFocus();};
 
 const tooltip=document.getElementById('tooltip');
 let hoveredMesh=null,mouse=new THREE.Vector2(),drag=false,lastDragX=0,lastDragY=0,isDragging=false,hintFaded=false;
-let lastXY={x:0,y:0};
 function posTooltip(cx,cy){tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;}
-
 function checkHover(){
   raycaster.setFromCamera(mouse,cam);
-
-  // Moons first when focused
-  if(isFocused&&moonMeshList.length){
-    const mHits=raycaster.intersectObjects(moonMeshList);
-    if(mHits.length){
-      const hit=mHits[0].object;
-      const mo=activeMoons.find(m=>m.mesh===hit);
-      if(mo&&mo!==hoveredMoon){hoveredMoon=mo;showMoonTip(mo,lastXY.x,lastXY.y);}
-      document.body.style.cursor='pointer';
-      if(hoveredMesh){hoveredMesh=null;}
-      return;
-    }
-  }
-  if(hoveredMoon){hideMoonTip();}
-
   const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
   if(hits.length){
     const hit=hits[0].object,obj=nodeObjects.find(o=>o.mesh===hit);
@@ -681,59 +724,16 @@ function checkHover(){
     document.body.style.cursor='pointer';
   } else {if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
 }
-
-cvs.addEventListener('pointerdown',e=>{
-  if(e.button===2) return;
-  isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);
-});
-cvs.addEventListener('pointermove',e=>{
-  const rect=cvs.getBoundingClientRect();
-  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
-  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
-  lastXY={x:e.clientX,y:e.clientY};
-  posTooltip(e.clientX,e.clientY);
-  if(e.buttons&&e.button!==2){
-    isDragging=true;drag=true;
-    camTarget.theta-=(e.clientX-lastDragX)*0.005;
-    camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));
-    lastDragX=e.clientX;lastDragY=e.clientY;
-  } else {checkHover();}
-});
-cvs.addEventListener('pointerup',e=>{
-  if(e.button===2) return;
-  if(!drag){
-    raycaster.setFromCamera(mouse,cam);
-    // Check moons first
-    if(isFocused&&moonMeshList.length){
-      const mHits=raycaster.intersectObjects(moonMeshList);
-      if(mHits.length){
-        const mo=activeMoons.find(m=>m.mesh===mHits[0].object);
-        if(mo){enterFocus(mo.targetNode);return;}
-      }
-    }
-    const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
-    if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}
-    else if(isFocused)exitFocus();
-  }
-  if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
-});
-cvs.addEventListener('wheel',e=>{
-  if(isFocused&&activeMoons.length){
-    // Scroll orbits moons
-    const delta=e.deltaY*0.003;
-    activeMoons.forEach(m=>{m.orbitAngle+=delta;});
-    return;
-  }
-  camTarget.radius=Math.max(4,Math.min(80,camTarget.radius+e.deltaY*0.04));
-},{passive:true});
+cvs.addEventListener('pointerdown',e=>{isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);});
+cvs.addEventListener('pointermove',e=>{const rect=cvs.getBoundingClientRect();mouse.x=(e.clientX-rect.left)/rect.width*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;posTooltip(e.clientX,e.clientY);if(e.buttons){isDragging=true;drag=true;camTarget.theta-=(e.clientX-lastDragX)*0.005;camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));lastDragX=e.clientX;lastDragY=e.clientY;}else{checkHover();}});
+cvs.addEventListener('pointerup',e=>{if(!drag){raycaster.setFromCamera(mouse,cam);const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}else if(isFocused)exitFocus();}if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}});
+cvs.addEventListener('wheel',e=>{camTarget.radius=Math.max(4,Math.min(80,camTarget.radius+e.deltaY*0.04));},{passive:true});
+let orbitPaused=false;
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){exitFocus();return;}
   if(e.code==='Space'){e.preventDefault();orbitPaused=!orbitPaused;}
 });
-cvs.addEventListener('contextmenu',e=>{
-  e.preventDefault();
-  if(isFocused) orbitPaused=!orbitPaused;
-});
+cvs.addEventListener('contextmenu',e=>{e.preventDefault();orbitPaused=!orbitPaused;});
 document.querySelectorAll('.hud-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const v=VIEWS[btn.dataset.view];if(v){camTarget.phi=v.phi;camTarget.theta=v.theta;camTarget.radius=v.radius;}});});
 
 let lastTime=0,elapsed=0;
@@ -747,7 +747,16 @@ function animate(ts){
   for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;
   pGeo.attributes.position.needsUpdate=true;
   nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
-  tickMoons(elapsed,dt);
+  moonObjects.forEach(obj=>{
+    const t=elapsed*obj.speed+obj.phase;
+    const cx=obj.node._pos.x,cy=obj.node._pos.y,cz=obj.node._pos.z;
+    const r=obj.orbitR,tilt=obj.tilt;
+    obj.mesh.position.set(
+      cx+r*Math.cos(t),
+      cy+r*Math.sin(t)*Math.sin(tilt),
+      cz+r*Math.sin(t)*Math.cos(tilt)
+    );
+  });
   applyCam();renderer.render(scene,cam);isDragging=false;
 }
 requestAnimationFrame(animate);
