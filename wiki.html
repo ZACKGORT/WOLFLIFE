@@ -522,7 +522,7 @@ const NODE_BY_ID={};NODES.forEach(n=>{NODE_BY_ID[n.id]=n;});
 
 const cvs=document.getElementById('canvas');
 const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setPixelRatio(isMobile?1:Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 renderer.setClearColor(0x000000,0);
 const scene=new THREE.Scene();
@@ -594,7 +594,7 @@ const neonB=new THREE.PointLight(0x50d8b0,5,130);neonB.position.set(20,8,20);sce
 const neonC=new THREE.PointLight(0x9a70cc,4,90);neonC.position.set(0,14,0);scene.add(neonC);
 const DARK_FOG=0x000000,LIGHT_FOG=0xf0ece4;
 
-const PC=1200;
+const PC=isMobile?300:1200;
 const pPos=new Float32Array(PC*3),pPh=new Float32Array(PC),pSp=new Float32Array(PC);
 for(let i=0;i<PC;i++){let x,y,z,a=0;do{const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=12+Math.pow(Math.random(),0.7)*22;x=r*Math.sin(p)*Math.cos(t);y=(Math.random()-0.5)*6;z=r*Math.sin(p)*Math.sin(t);a++;}while(Math.sqrt(x*x+z*z)<6&&a<30);pPos[i*3]=x;pPos[i*3+1]=y;pPos[i*3+2]=z;pPh[i]=Math.random()*Math.PI*2;pSp[i]=0.18+Math.random()*0.28;}
 const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(pPos.slice(),3));const pOrig=pPos.slice();
@@ -819,7 +819,11 @@ const hubMeshList=[galaxyHubGroup.userData.mesh];
 let galaxyAlpha=0,isGalaxyView=false;
 const GALAXY_ENTER_THRESHOLD=115,GALAXY_FADE_SPEED=0.045;
 
+let _gaFrame=0;
 function updateGalaxyAlpha(){
+  _gaFrame++;
+  // On mobile skip material update every other frame — camera still updates every frame
+  const skipMaterials=isMobile&&(_gaFrame%2===0);
   const r=camState.radius;
   let target=0;
   if(r>GALAXY_ENTER_THRESHOLD)target=Math.min((r-GALAXY_ENTER_THRESHOLD)/(GALAXY_FULL-GALAXY_ENTER_THRESHOLD),1);
@@ -828,13 +832,15 @@ function updateGalaxyAlpha(){
   isGalaxyView=galaxyAlpha>0.01;
   galaxyGroup.visible=isGalaxyView;galaxyHubGroup.visible=isGalaxyView;
   const orreryAlpha=1-galaxyAlpha;
+  if(!skipMaterials){
   nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?orreryAlpha*0.88:orreryAlpha*0.95;});
   glowSprites.forEach(gs=>{gs.material.opacity=isLight?0:orreryAlpha*0.72;});
   allLabels.forEach(({spr})=>{spr.material.opacity=orreryAlpha;});
   allLines.forEach(({line,darkOp,lightOp,isGrid})=>{const baseOp=isLight?lightOp:darkOp;line.material.opacity=isGrid?baseOp*(orreryAlpha*(1-galaxyAlpha)):baseOp*orreryAlpha;});
   connLineObjects.forEach(({line,darkOp,lightOp})=>{line.material.opacity=(isLight?lightOp:darkOp)*orreryAlpha;});
+  }
   const ga=galaxyAlpha,focCl=activeGalaxyCluster;
-  galaxyObjects.forEach(obj=>{
+  if(ga>0.001)galaxyObjects.forEach(obj=>{
     const isFocused=focCl&&obj.cluster===focCl,dimFactor=(focCl&&!isFocused)?0.18:1.0;
     if(obj.type==='cluster'){
       const boost=isFocused?1.25:1.0;
@@ -854,7 +860,7 @@ function updateGalaxyAlpha(){
       if(obj.glow){obj.glow.material.opacity=obj.glow.material.opacity+(tgtGlow-obj.glow.material.opacity)*lk;obj.glow.scale.setScalar(obj.mesh.scale.x*obj.mesh.geometry.parameters.radius*11);}
     }
   });
-  galaxyLines.forEach(({line,baseOp,isArc,clFrom,clTo,clusterId})=>{
+  if(ga>0.001)galaxyLines.forEach(({line,baseOp,isArc,clFrom,clTo,clusterId})=>{
     let op=baseOp,dimFactor=1.0;
     if(focCl){if(isArc){const arcInvolved=clFrom===focCl.id||clTo===focCl.id;dimFactor=arcInvolved?1.0:0.08;if(arcInvolved)op=Math.min(op*2.0,0.80);}else{dimFactor=(!clusterId||clusterId===focCl.id)?1.0:0.08;if(clusterId===focCl.id)op=Math.min(op*1.8,0.55);}}
     line.material.opacity=ga*op*dimFactor;
@@ -986,7 +992,7 @@ const BD=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[10,28,74]},{x:0.72,y:
 const BL=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[190,210,240]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[210,195,235]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[185,230,220]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[235,215,185]}];
 function drawMesh(){const w=bgCanvas.width,h=bgCanvas.height;bgCtx.clearRect(0,0,w,h);const blobs=isLight?BL:BD;bgCtx.fillStyle=isLight?'#f0ece4':'#030308';bgCtx.fillRect(0,0,w,h);blobs.forEach(b=>{const cx=b.x*w,cy=b.y*h,rad=Math.max(w,h)*b.r;const grd=bgCtx.createRadialGradient(cx,cy,0,cx,cy,rad);const[r,g,bl]=b.col;grd.addColorStop(0,`rgba(${r},${g},${bl},${isLight?0.45:0.55})`);grd.addColorStop(0.5,`rgba(${r},${g},${bl},${isLight?0.14:0.16})`);grd.addColorStop(1,`rgba(${r},${g},${bl},0)`);bgCtx.fillStyle=grd;bgCtx.fillRect(0,0,w,h);});const vig=bgCtx.createRadialGradient(w/2,h/2,h*0.3,w/2,h/2,isLight?h*0.88:h*0.92);vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,isLight?'rgba(10,14,30,0.08)':'rgba(0,0,0,0.75)');bgCtx.fillStyle=vig;bgCtx.fillRect(0,0,w,h);}
 let meshT=0;
-function tickMesh(){meshT++;[...BD,...BL].forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>1)b.vx*=-1;if(b.y<0||b.y>1)b.vy*=-1;});if(meshT%3===0)drawMesh();requestAnimationFrame(tickMesh);}
+function tickMesh(){meshT++;[...BD,...BL].forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>1)b.vx*=-1;if(b.y<0||b.y>1)b.vy*=-1;});const rate=isMobile?18:3;if(meshT%rate===0)drawMesh();requestAnimationFrame(tickMesh);}
 drawMesh();tickMesh();
 
 const RING_NAMES={center:'Center',inner:'Ring 1 · Formalism',mid:'Ring 2 · History',outer:'Ring 3 · Analogues',outer2:'Ring 4 · Cultural'};
@@ -1153,19 +1159,22 @@ let lastTime=0,elapsed=0;
 function animate(ts){
   requestAnimationFrame(animate);
   const dt=Math.min((ts-lastTime)/1000,0.05);lastTime=ts;elapsed+=dt;
-  camState.phi+=(camTarget.phi-camState.phi)*0.08;camState.theta+=(camTarget.theta-camState.theta)*0.08;camState.radius+=(camTarget.radius-camState.radius)*0.08;
-  scenePivot.lerp(scenePivotTgt,0.08);
+  const camLk=isMobile?0.22:0.08;
+  camState.phi+=(camTarget.phi-camState.phi)*camLk;camState.theta+=(camTarget.theta-camState.theta)*camLk;camState.radius+=(camTarget.radius-camState.radius)*camLk;
+  scenePivot.lerp(scenePivotTgt,camLk);
   if(!isFocused&&!isDragging&&!orbitPaused)camTarget.theta+=dt*0.018;
   updateGalaxyAlpha();
   if(isGalaxyView){
     galaxyDrift+=dt*0.004;galaxyGroup.rotation.y=galaxyDrift;
-    if(galaxyHubGroup.userData.mesh){const hub=galaxyHubGroup.userData,hpulse=0.65+Math.sin(elapsed*1.1)*0.20;hub.mesh.material.emissiveIntensity=hpulse*galaxyAlpha;if(!isLight)hub.glow.material.opacity=Math.min(hub.glow.material.opacity,hpulse*0.60*galaxyAlpha);}
-    galaxyObjects.forEach(obj=>{if(obj.type==='cluster'){const pulse=0.55+Math.sin(elapsed*0.7+obj.cluster.pos.x*0.02)*0.18;obj.mesh.material.emissiveIntensity=pulse*galaxyAlpha;obj.glow.material.opacity=isLight?0:pulse*0.55*galaxyAlpha;}});
+    if(!isMobile||!isDragging){
+      if(galaxyHubGroup.userData.mesh){const hub=galaxyHubGroup.userData,hpulse=0.65+Math.sin(elapsed*1.1)*0.20;hub.mesh.material.emissiveIntensity=hpulse*galaxyAlpha;if(!isLight)hub.glow.material.opacity=Math.min(hub.glow.material.opacity,hpulse*0.60*galaxyAlpha);}
+      galaxyObjects.forEach(obj=>{if(obj.type==='cluster'){const pulse=0.55+Math.sin(elapsed*0.7+obj.cluster.pos.x*0.02)*0.18;obj.mesh.material.emissiveIntensity=pulse*galaxyAlpha;obj.glow.material.opacity=isLight?0:pulse*0.55*galaxyAlpha;}});
+    }
     scene.fog.density=0.012*(1-galaxyAlpha*0.75);
     if(activeGalaxyCluster){const baseFog=isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR;const tintStr=isLight?0.10:0.22;scene.fog.color.setHex(lerpHex(baseFog,activeGalaxyCluster.color,tintStr*galaxyAlpha));}else{scene.fog.color.setHex(isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR);}
   }else{scene.fog.density=0.012;if(!activeGalaxyCluster)scene.fog.color.setHex(isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR);}
-  const pa=pGeo.attributes.position.array;for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;pGeo.attributes.position.needsUpdate=true;
-  if(galaxyAlpha<0.95&&!activeClusterFilter)nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
+  if(!isMobile){const pa=pGeo.attributes.position.array;for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;pGeo.attributes.position.needsUpdate=true;}
+  if(!isMobile&&galaxyAlpha<0.95&&!activeClusterFilter)nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
   tickMoons(elapsed,dt);tickNodeMorph(dt);applyCam();renderer.render(scene,cam);isDragging=false;
 }
 requestAnimationFrame(animate);
