@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Wiki · Spatial Knowledge Surface · by Zack Gort</title>
+<title>Three-Body Problem · Spatial Knowledge Surface</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -866,13 +866,23 @@ function buildGalaxyLayer(){
         cl.pos.z + offset.z
       );
       const dotSize = offset.size || 0.22;
-      const dotGeo = new THREE.SphereGeometry(dotSize, 8, 8);
-      const dotMat = new THREE.MeshBasicMaterial({color: cl.color, transparent: true, opacity: 0});
+      const dotGeo = new THREE.SphereGeometry(dotSize, 16, 16);
+      const dotMat = new THREE.MeshPhysicalMaterial({
+        color: cl.color, emissive: cl.color, emissiveIntensity: 0.55,
+        metalness: 0.15, roughness: 0.18, clearcoat: 0.7,
+        transparent: true, opacity: 0,
+      });
       const dot = new THREE.Mesh(dotGeo, dotMat);
       dot.position.copy(dotPos);
       dot.userData = {clusterDot: true, nodeId: nid, cluster: cl};
       galaxyGroup.add(dot);
-      galaxyObjects.push({type:'dot', mesh:dot, cluster:cl, nodeId:nid});
+      // Inner glow halo — like the cluster orbs, just smaller
+      const dotGlow = makeGlowSprite(cl.color, dotSize);
+      dotGlow.scale.setScalar(dotSize * 9);
+      dotGlow.position.copy(dotPos);
+      dotGlow.material.opacity = 0;
+      galaxyGroup.add(dotGlow);
+      galaxyObjects.push({type:'dot', mesh:dot, glow:dotGlow, cluster:cl, nodeId:nid});
 
       // Thread: chain layouts link dot-to-dot; radial layouts link to core
       const threadTarget = (offset.chainTo && ni > 0)
@@ -884,7 +894,8 @@ function buildGalaxyLayer(){
         threadMat
       );
       galaxyGroup.add(threadLine);
-      galaxyLines.push({line: threadLine, baseOp: offset.chainTo ? 0.22 : 0.12});
+      threadLine.userData = {cluster: cl};
+      galaxyLines.push({line: threadLine, baseOp: offset.chainTo ? 0.22 : 0.12, clusterId: cl.id});
     });
 
     galaxyObjects.push({type:'cluster', mesh, atm, glow:glowSpr, label:lSpr, ring:ringLine, cluster:cl});
@@ -904,7 +915,8 @@ function buildGalaxyLayer(){
     });
     const arcLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), arcMat);
     galaxyGroup.add(arcLine);
-    galaxyLines.push({line: arcLine, baseOp: 0.28, isArc: true, label: cc.label});
+    arcLine.userData = {clFrom: cc.from, clTo: cc.to};
+    galaxyLines.push({line: arcLine, baseOp: 0.28, isArc: true, label: cc.label, clFrom: cc.from, clTo: cc.to});
   });
 }
 
@@ -949,19 +961,74 @@ function updateGalaxyAlpha(){
 
   // Fade galaxy layer
   const ga = galaxyAlpha;
+  const focCl = activeGalaxyCluster;
+
   galaxyObjects.forEach(obj => {
+    const isFocused  = focCl && obj.cluster === focCl;
+    const isAny      = !focCl;
+    const dimFactor  = (focCl && !isFocused) ? 0.18 : 1.0;
+
     if(obj.type === 'cluster'){
-      obj.mesh.material.opacity = ga * 0.82;
-      obj.atm.material.opacity  = ga * 0.12;
-      obj.glow.material.opacity = isLight ? 0 : ga * 0.55;
-      obj.label.material.opacity = ga;
-      obj.ring.material.opacity  = ga * 0.35;
+      const boost = isFocused ? 1.25 : 1.0;
+      obj.mesh.material.opacity  = ga * 0.82 * dimFactor * boost;
+      obj.atm.material.opacity   = ga * (isFocused ? 0.32 : 0.12) * dimFactor;
+      obj.glow.material.opacity  = isLight ? 0 : ga * (isFocused ? 1.1 : 0.55) * dimFactor;
+      obj.label.material.opacity = ga * dimFactor;
+      obj.ring.material.opacity  = ga * (isFocused ? 0.75 : 0.35) * dimFactor;
     } else if(obj.type === 'dot'){
-      obj.mesh.material.opacity  = ga * 0.65;
+      // Three-tier intensity: hovered dot > same-cluster ambient > other clusters
+      const isHoveredDot  = obj.mesh === hoveredDotMesh;
+      const inFocusCluster = focCl && obj.cluster === focCl;
+      const nofocus       = !focCl;
+
+      let tgtOpacity, tgtEI, tgtGlow, tgtScale;
+      if(isHoveredDot){
+        // The one dot under cursor — full brightness
+        tgtOpacity = ga * 0.95;
+        tgtEI      = 1.8;
+        tgtGlow    = isLight ? 0 : ga * 0.55;
+        tgtScale   = 1.55;
+      } else if(inFocusCluster || nofocus){
+        // Cluster members at rest — soft ambient, no blowout
+        tgtOpacity = ga * 0.62;
+        tgtEI      = 0.55 + Math.sin(elapsed * 0.6 + obj.mesh.position.x * 0.25) * 0.12;
+        tgtGlow    = isLight ? 0 : ga * 0.18;
+        tgtScale   = 1.0;
+      } else {
+        // Non-cluster dots — barely visible
+        tgtOpacity = ga * 0.08;
+        tgtEI      = 0.1;
+        tgtGlow    = 0;
+        tgtScale   = 0.85;
+      }
+
+      // Smooth lerp everything
+      const lk = 0.10;
+      obj.mesh.material.opacity = obj.mesh.material.opacity + (tgtOpacity - obj.mesh.material.opacity) * lk;
+      obj.mesh.material.emissiveIntensity = obj.mesh.material.emissiveIntensity + (tgtEI - obj.mesh.material.emissiveIntensity) * lk;
+      const cs = obj.mesh.scale.x;
+      obj.mesh.scale.setScalar(cs + (tgtScale - cs) * lk);
+      if(obj.glow){
+        obj.glow.material.opacity = obj.glow.material.opacity + (tgtGlow - obj.glow.material.opacity) * lk;
+        obj.glow.scale.setScalar(obj.mesh.scale.x * obj.mesh.geometry.parameters.radius * 11);
+      }
     }
   });
-  galaxyLines.forEach(({line, baseOp}) => {
-    line.material.opacity = ga * baseOp;
+  galaxyLines.forEach(({line, baseOp, isArc, clFrom, clTo, clusterId}) => {
+    let op = baseOp;
+    let dimFactor = 1.0;
+    if(focCl){
+      if(isArc){
+        const arcInvolved = clFrom === focCl.id || clTo === focCl.id;
+        dimFactor = arcInvolved ? 1.0 : 0.08;
+        if(arcInvolved) op = Math.min(op * 2.0, 0.80);
+      } else {
+        // Thread line — use stored clusterId
+        dimFactor = (!clusterId || clusterId === focCl.id) ? 1.0 : 0.08;
+        if(clusterId === focCl.id) op = Math.min(op * 1.8, 0.55);
+      }
+    }
+    line.material.opacity = ga * op * dimFactor;
   });
 }
 
@@ -969,6 +1036,33 @@ function updateGalaxyAlpha(){
 const clusterMeshes = galaxyObjects.filter(o=>o.type==='cluster').map(o=>o.mesh);
 const dotMeshes     = galaxyObjects.filter(o=>o.type==='dot').map(o=>o.mesh);
 let hoveredCluster  = null;
+let hoveredDotMesh  = null;
+let activeGalaxyCluster = null; // cluster currently focused (hover or click)
+const DARK_FOG_COLOR  = 0x000000;
+const LIGHT_FOG_COLOR = 0xf0ece4;
+
+// Lerp between two hex colors, returns hex int
+function lerpHex(a, b, t){
+  const ar=(a>>16)&255, ag=(a>>8)&255, ab=a&255;
+  const br=(b>>16)&255, bg=(b>>8)&255, bb=b&255;
+  return (Math.round(ar+(br-ar)*t)<<16)|(Math.round(ag+(bg-ag)*t)<<8)|Math.round(ab+(bb-ab)*t);
+}
+
+function setGalaxyFocus(cl){
+  activeGalaxyCluster = cl;
+}
+function clearGalaxyFocus(){
+  if(!activeGalaxyCluster) return;
+  // Reset any boosted dot scales
+  galaxyObjects.forEach(obj => {
+    if(obj.type === 'dot'){
+      obj.mesh.scale.setScalar(1.0);
+      if(obj.glow) obj.glow.scale.setScalar(obj.mesh.geometry.parameters.radius * 14);
+    }
+  });
+  activeGalaxyCluster = null;
+  scene.fog.color.setHex(isLight ? LIGHT_FOG_COLOR : DARK_FOG_COLOR);
+}
 
 function checkGalaxyHover(mouseVec){
   if(!isGalaxyView || galaxyAlpha < 0.3) return false;
@@ -986,6 +1080,8 @@ function checkGalaxyHover(mouseVec){
       document.getElementById('tt-type').textContent  = cl.sub;
       tooltip.classList.add('vis');
     }
+    hoveredDotMesh = null;
+    setGalaxyFocus(cl);
     document.body.style.cursor = 'pointer';
     return true;
   }
@@ -1003,11 +1099,15 @@ function checkGalaxyHover(mouseVec){
       document.getElementById('tt-type').textContent  = dcfg(node.domain).label;
       tooltip.classList.add('vis');
     }
+    hoveredDotMesh = dot;
+    setGalaxyFocus(cl);
     document.body.style.cursor = 'pointer';
     return true;
   }
 
+  hoveredDotMesh = null;
   if(hoveredCluster){ hoveredCluster = null; tooltip.classList.remove('vis'); }
+  clearGalaxyFocus();
   return false;
 }
 
@@ -1016,13 +1116,16 @@ function handleGalaxyClick(mouseVec){
   if(!isGalaxyView || galaxyAlpha < 0.3) return false;
   raycaster.setFromCamera(mouseVec, cam);
 
-  // Click cluster core → drop into SKY view
+  // Click cluster core → drop into SKY view with cluster filter applied
   const cHits = raycaster.intersectObjects(clusterMeshes);
   if(cHits.length){
     const cl = cHits[0].object.userData.cluster;
     document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('[data-view="top"]').classList.add('active');
     camTarget = {...VIEWS.top};
+    clearGalaxyFocus();
+    // Apply cluster filter once orrery has faded in
+    setTimeout(() => applyClusterFilter(cl), 700);
     return true;
   }
 
@@ -1297,6 +1400,96 @@ function openPanel(node){
 }
 
 let isFocused=false,focusNode=null;
+let activeClusterFilter = null; // cluster whose nodes are highlighted in orrery
+
+function applyClusterFilter(cl){
+  activeClusterFilter = cl;
+  const memberIds = new Set(cl.nodeIds);
+  // Dim non-member nodes, boost members
+  nodeObjects.forEach(({mesh, node}) => {
+    const isMember = memberIds.has(node.id);
+    mesh.material.opacity = isMember ? 0.98 : 0.06;
+    if(mesh.userData.origEI !== undefined){
+      mesh.material.emissiveIntensity = isMember ? (isLight ? 0 : mesh.userData.origEI * 1.4) : 0;
+    }
+    // Scale member nodes up
+    const tgtScale = isMember ? 1.5 : 0.7;
+    mesh.scale.setScalar(tgtScale);
+  });
+  // Dim non-member lines, boost member connections
+  connLineObjects.forEach(obj => {
+    const rel = memberIds.has(obj.conn.from) || memberIds.has(obj.conn.to);
+    const bOp = isLight ? obj.lightOp : obj.darkOp;
+    obj.line.material.opacity = rel ? Math.min(bOp * 3.0, 0.95) : bOp * 0.04;
+  });
+  allLines.forEach(({line, darkOp, lightOp}) => {
+    line.material.opacity = (isLight ? lightOp : darkOp) * 0.04;
+  });
+  glowSprites.forEach((gs, i) => {
+    // Find which node this glow belongs to — glowSprites mirrors nodeObjects roughly
+    gs.material.opacity = isLight ? 0 : 0.35;
+  });
+  // Show cluster filter badge
+  showClusterBadge(cl);
+}
+
+function clearClusterFilter(){
+  if(!activeClusterFilter) return;
+  activeClusterFilter = null;
+  nodeObjects.forEach(({mesh}) => {
+    mesh.material.opacity = isLight ? 0.88 : 0.95;
+    if(mesh.userData.origEI !== undefined){
+      mesh.material.emissiveIntensity = isLight ? 0 : mesh.userData.origEI;
+    }
+    mesh.scale.setScalar(1.0);
+  });
+  resetConnectionHighlights();
+  hideClusterBadge();
+}
+
+function showClusterBadge(cl){
+  let badge = document.getElementById('cluster-badge');
+  if(!badge){
+    badge = document.createElement('div');
+    badge.id = 'cluster-badge';
+    badge.style.position = 'fixed';
+    badge.style.bottom = '72px';
+    badge.style.left = '50%';
+    badge.style.transform = 'translateX(-50%)';
+    badge.style.fontFamily = "'DM Mono',monospace";
+    badge.style.fontSize = '7px';
+    badge.style.letterSpacing = '0.22em';
+    badge.style.textTransform = 'uppercase';
+    badge.style.zIndex = '100';
+    badge.style.pointerEvents = 'all';
+    badge.style.display = 'flex';
+    badge.style.alignItems = 'center';
+    badge.style.gap = '8px';
+    badge.style.background = isLight ? 'rgba(248,245,240,0.95)' : 'rgba(4,6,18,0.85)';
+    badge.style.border = isLight ? '1px solid rgba(10,14,30,0.08)' : '1px solid rgba(180,210,255,0.10)';
+    badge.style.borderRadius = '3px';
+    badge.style.padding = '6px 14px';
+    badge.style.backdropFilter = 'blur(8px)';
+    badge.style.transition = 'opacity 0.3s';
+    document.body.appendChild(badge);
+  }
+  const nameSpan = '<span style="color:' + cl.hex + ';opacity:0.9">' + cl.name.replace('\n',' ') + '</span>';
+  const muted    = isLight ? 'rgba(10,14,30,0.30)' : 'rgba(180,210,255,0.28)';
+  const label    = isLight ? 'rgba(10,14,30,0.50)' : 'rgba(180,210,255,0.40)';
+  const close    = isLight ? 'rgba(10,14,30,0.25)' : 'rgba(180,210,255,0.22)';
+  const dotSpan  = '<span style="color:' + muted + '">·</span>';
+  const labelSpan = '<span style="color:' + label + '">CLUSTER VIEW</span>';
+  const closeSpan = '<span style="color:' + close + ';cursor:pointer;margin-left:4px" onclick="clearClusterFilter()">✕</span>';
+  badge.innerHTML = nameSpan + dotSpan + labelSpan + closeSpan;
+  badge.style.opacity = '1';
+  badge.style.display = 'flex';
+}
+
+function hideClusterBadge(){
+  const badge = document.getElementById('cluster-badge');
+  if(badge){ badge.style.opacity='0'; setTimeout(()=>badge.style.display='none',300); }
+}
+window.clearClusterFilter = clearClusterFilter;
 function highlightConnections(node){
   const rIds=new Set(CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id).flatMap(c=>[c.from,c.to]));
   connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});
@@ -1322,6 +1515,7 @@ function exitFocus(){
   document.getElementById('msheet').classList.remove('on');
   resetConnectionHighlights();
   clearMoons();
+  clearClusterFilter();
 }
 window.closePanel=function(){exitFocus();};
 
@@ -1464,8 +1658,19 @@ function animate(ts){
     });
     // Adjust fog density for galaxy view
     scene.fog.density = 0.012 * (1 - galaxyAlpha * 0.75);
+    // Tint fog toward active cluster color
+    if(activeGalaxyCluster){
+      const baseFog = isLight ? LIGHT_FOG_COLOR : DARK_FOG_COLOR;
+      const tintStr = isLight ? 0.10 : 0.22;
+      scene.fog.color.setHex(lerpHex(baseFog, activeGalaxyCluster.color, tintStr * galaxyAlpha));
+    } else {
+      scene.fog.color.setHex(isLight ? LIGHT_FOG_COLOR : DARK_FOG_COLOR);
+    }
   } else {
     scene.fog.density = 0.012;
+    if(!activeGalaxyCluster){
+      scene.fog.color.setHex(isLight ? LIGHT_FOG_COLOR : DARK_FOG_COLOR);
+    }
   }
 
   const pa=pGeo.attributes.position.array;
