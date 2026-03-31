@@ -15,57 +15,38 @@ canvas{display:block;width:100vw;height:100vh;position:relative;z-index:1;}
 #brand{position:fixed;top:24px;left:28px;z-index:100;pointer-events:none;font-family:'DM Mono',monospace;}
 #brand-name{font-size:10px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.65);transition:color 0.5s;}
 #brand-sub{font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.24);margin-top:5px;transition:color 0.5s;}
-body.light #brand-name{color:rgba(10,14,30,0.72);}
-body.light #brand-sub{color:rgba(10,14,30,0.34);}
+body.light #brand-name{color:rgba(10,14,30,0.50);}
+body.light #brand-sub{color:rgba(10,14,30,0.24);}
 #hud{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:1px;background:rgba(180,210,255,0.03);border:1px solid rgba(180,210,255,0.10);border-radius:4px;overflow:hidden;z-index:100;transition:background 0.5s,border-color 0.5s;}
 .hud-btn{background:none;border:none;cursor:pointer;color:rgba(180,210,255,0.32);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;padding:9px 18px;border-right:1px solid rgba(180,210,255,0.08);transition:color 0.2s,background 0.2s;}
 .hud-btn:last-child{border-right:none;}
 .hud-btn:hover{color:rgba(180,210,255,0.75);background:rgba(180,210,255,0.05);}
 .hud-btn.active{color:#b4d2ff;background:rgba(180,210,255,0.08);}
-body.light #hud{background:rgba(10,14,30,0.04);border-color:rgba(10,14,30,0.16);}
-body.light .hud-btn{color:rgba(10,14,30,0.36);border-right-color:rgba(10,14,30,0.10);}
-body.light .hud-btn:hover{color:rgba(10,14,30,0.80);background:rgba(10,14,30,0.06);}
-body.light .hud-btn.active{color:#0a0e1e;background:rgba(10,14,30,0.10);}
+body.light #hud{background:rgba(10,14,30,0.02);border-color:rgba(10,14,30,0.07);}
+body.light .hud-btn{color:rgba(10,14,30,0.28);border-right-color:rgba(10,14,30,0.06);}
+body.light .hud-btn:hover{color:rgba(10,14,30,0.60);background:rgba(10,14,30,0.04);}
+body.light .hud-btn.active{color:rgba(10,14,30,0.72);background:rgba(10,14,30,0.06);}
 #hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(180,210,255,0.14);z-index:100;pointer-events:none;white-space:nowrap;transition:opacity 1.2s,color 0.5s;}
 #focus-hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.24);z-index:100;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 0.5s;}
 #focus-hint.vis{opacity:1;}
-body.light #hint{color:rgba(10,14,30,0.22);}
-body.light #focus-hint{color:rgba(10,14,30,0.32);}
+body.light #hint{color:rgba(10,14,30,0.16);}
+body.light #focus-hint{color:rgba(10,14,30,0.22);}
 #theme-toggle{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:100;background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.28);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.20em;text-transform:uppercase;padding:6px 14px;border-radius:2px;cursor:pointer;transition:all 0.2s;}
 #theme-toggle:hover{color:rgba(180,210,255,0.65);border-color:rgba(180,210,255,0.38);}
-body.light #theme-toggle{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.40);}
-body.light #theme-toggle:hover{color:rgba(10,14,30,0.78);border-color:rgba(10,14,30,0.55);}
+body.light #theme-toggle{border-color:rgba(10,14,30,0.10);color:rgba(10,14,30,0.28);}
+body.light #theme-toggle:hover{color:rgba(10,14,30,0.55);border-color:rgba(10,14,30,0.22);}
 #tooltip{position:fixed;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200;}
 #tooltip.vis{opacity:1;}
 #tt-inner{background:rgba(4,6,14,0.96);border:1px solid rgba(180,210,255,0.14);border-radius:4px;padding:12px 16px;backdrop-filter:blur(12px);max-width:240px;}
 .tt-ring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.32);margin-bottom:5px;}
 .tt-title{font-family:'DM Serif Display',serif;font-size:15px;color:#dcecff;line-height:1.2;margin-bottom:5px;letter-spacing:-0.01em;}
 .tt-type{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.40);}
-body.light #tt-inner{background:rgba(240,236,228,0.98);border-color:rgba(10,14,30,0.20);box-shadow:2px 3px 0 rgba(10,14,30,0.10);}
-body.light .tt-ring{color:rgba(10,14,30,0.40);}
-body.light .tt-title{color:#0a0e1e;}
-body.light .tt-type{color:rgba(10,14,30,0.45);}
-#ghost{position:fixed;z-index:700;width:320px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s,width 0.30s;}
+body.light #tt-inner{background:rgba(248,245,240,0.97);border-color:transparent;box-shadow:0 2px 18px rgba(10,14,30,0.08),0 1px 4px rgba(10,14,30,0.05);}
+body.light .tt-ring{color:rgba(10,14,30,0.28);}
+body.light .tt-title{color:rgba(10,14,30,0.80);}
+body.light .tt-type{color:rgba(10,14,30,0.32);}
+#ghost{position:fixed;z-index:700;width:320px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s;}
 #ghost.on{opacity:1;transform:translateY(-50%) translateX(0) scale(1);pointer-events:all;}
-#ghost.expanded{width:520px;}
-#ghost.expanded .gcbody{font-size:12.5px;line-height:2.0;}
-#ghost.expanded .gctitle{font-size:20px;}
-#ghost.expanded .gcscroll{max-height:88vh;}
-#ghost.expanded .gc-moons{columns:2;column-gap:12px;}
-.gcexpand{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;margin-right:6px;}
-.gcexpand:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
-body.light .gcexpand{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.38);}
-body.light .gcexpand:hover{color:#0a0e1e;border-color:rgba(10,14,30,0.65);}
-.gc-moons{padding:10px 16px 12px;border-bottom:1px solid rgba(180,210,255,0.06);}
-.gc-moon-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:8px;}
-.gc-moon-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;break-inside:avoid;}
-.gc-moon-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px;opacity:0.7;}
-.gc-moon-text{font-family:'DM Mono',monospace;font-size:9px;line-height:1.65;color:rgba(180,210,255,0.45);}
-.gc-moon-tag{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(180,210,255,0.22);display:block;margin-top:1px;}
-body.light .gc-moons{border-color:rgba(10,14,30,0.10);}
-body.light .gc-moon-label{color:rgba(10,14,30,0.30);}
-body.light .gc-moon-text{color:rgba(10,14,30,0.55);}
-body.light .gc-moon-tag{color:rgba(10,14,30,0.32);}
 .gc{background:rgba(4,6,18,0.97);border:1px solid rgba(180,210,255,0.10);border-radius:6px;box-shadow:0 18px 62px rgba(0,0,0,0.9),0 0 0 1px rgba(180,210,255,0.03);backdrop-filter:blur(26px);overflow:hidden;}
 .gcscroll{max-height:82vh;overflow-y:auto;scrollbar-width:none;}
 .gcscroll::-webkit-scrollbar{display:none;}
@@ -90,26 +71,26 @@ body.light .gc-moon-tag{color:rgba(10,14,30,0.32);}
 .gctag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
 .gcclose{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;}
 .gcclose:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
-body.light .gc{background:rgba(240,236,228,0.99);border-color:rgba(10,14,30,0.18);box-shadow:3px 4px 0 rgba(10,14,30,0.10),0 0 0 1px rgba(10,14,30,0.06);}
-body.light .gchead,body.light .gcbody,body.light .gcstat,body.light .gcst,body.light .gc-connections{border-color:rgba(10,14,30,0.10);}
-body.light .gcring{color:rgba(10,14,30,0.38);}
-body.light .gctitle{color:#0a0e1e;}
-body.light .gcrole{color:rgba(10,14,30,0.44);}
-body.light .gcbody{color:rgba(10,14,30,0.62);}
-body.light .gcsv{color:rgba(10,14,30,0.82);}
-body.light .gcsk{color:rgba(10,14,30,0.32);}
-body.light .gc-conn-label{color:rgba(10,14,30,0.30);}
-body.light .gc-conn-target{color:rgba(10,14,30,0.58);}
-body.light .gc-conn-item:hover{background:rgba(10,14,30,0.04);}
-body.light .gcclose{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.38);}
-body.light .gcclose:hover{color:#0a0e1e;border-color:rgba(10,14,30,0.65);}
+body.light .gc{background:rgba(250,247,242,0.98);border-color:transparent;box-shadow:0 8px 40px rgba(10,14,30,0.08),0 2px 8px rgba(10,14,30,0.05);}
+body.light .gchead,body.light .gcbody,body.light .gcstat,body.light .gcst,body.light .gc-connections{border-color:rgba(10,14,30,0.06);}
+body.light .gcring{color:rgba(10,14,30,0.28);}
+body.light .gctitle{color:rgba(10,14,30,0.78);}
+body.light .gcrole{color:rgba(10,14,30,0.32);}
+body.light .gcbody{color:rgba(10,14,30,0.55);}
+body.light .gcsv{color:rgba(10,14,30,0.68);}
+body.light .gcsk{color:rgba(10,14,30,0.24);}
+body.light .gc-conn-label{color:rgba(10,14,30,0.22);}
+body.light .gc-conn-target{color:rgba(10,14,30,0.45);}
+body.light .gc-conn-item:hover{background:rgba(10,14,30,0.03);}
+body.light .gcclose{border-color:rgba(10,14,30,0.10);color:rgba(10,14,30,0.28);}
+body.light .gcclose:hover{color:rgba(10,14,30,0.65);border-color:rgba(10,14,30,0.28);}
 #legend{position:fixed;top:24px;right:28px;z-index:100;font-family:'DM Mono',monospace;pointer-events:none;}
 .leg-title{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:8px;transition:color 0.5s;}
 .leg-item{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
 .leg-line{width:22px;height:1px;}
 .leg-label{font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.30);transition:color 0.5s;}
-body.light .leg-title{color:rgba(10,14,30,0.30);}
-body.light .leg-label{color:rgba(10,14,30,0.48);}
+body.light .leg-title{color:rgba(10,14,30,0.20);}
+body.light .leg-label{color:rgba(10,14,30,0.32);}
 #msheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(4,6,18,0.98);border-top:1px solid rgba(180,210,255,0.08);border-radius:14px 14px 0 0;max-height:72vh;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);backdrop-filter:blur(28px);}
 #msheet::-webkit-scrollbar{display:none;}
 #msheet.on{transform:translateY(0);}
@@ -123,15 +104,154 @@ body.light .leg-label{color:rgba(10,14,30,0.48);}
 .mstag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
 .msclose{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;}
 .msclose:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
-body.light #msheet{background:rgba(240,236,228,0.99);border-top-color:rgba(10,14,30,0.14);}
-body.light .mshandle{background:rgba(10,14,30,0.18);}
-body.light .msring{color:rgba(10,14,30,0.38);}
-body.light .mstitle{color:#0a0e1e;}
-body.light .msbody{color:rgba(10,14,30,0.62);}
-body.light .msclose{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.38);}
-body.light .msclose:hover{color:#0a0e1e;border-color:rgba(10,14,30,0.65);}
-body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
+body.light #msheet{background:rgba(250,247,242,0.99);border-top-color:rgba(10,14,30,0.06);}
+body.light .mshandle{background:rgba(10,14,30,0.10);}
+body.light .msring{color:rgba(10,14,30,0.28);}
+body.light .mstitle{color:rgba(10,14,30,0.78);}
+body.light .msbody{color:rgba(10,14,30,0.55);}
+body.light .msclose{border-color:rgba(10,14,30,0.10);color:rgba(10,14,30,0.28);}
+body.light .msclose:hover{color:rgba(10,14,30,0.65);border-color:rgba(10,14,30,0.28);}
+body.light .mshead{border-bottom-color:rgba(10,14,30,0.06);}
 @media(max-width:768px){#ghost{display:none;}#legend{display:none;}#msheet{display:block;}}
+
+/* ── SENTENCE STREAM PANEL ── */
+#stream-panel{position:fixed;top:0;right:0;width:42vw;max-width:560px;min-width:320px;height:100vh;z-index:800;display:flex;flex-direction:column;background:rgba(4,6,18,0.98);border-left:1px solid rgba(180,210,255,0.07);backdrop-filter:blur(32px);transform:translateX(100%);transition:transform 0.45s cubic-bezier(0.22,1,0.36,1);pointer-events:none;}
+#stream-panel.open{transform:translateX(0);pointer-events:all;}
+body.light #stream-panel{background:rgba(250,247,242,0.99);border-left-color:rgba(10,14,30,0.06);}
+#sp-header{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;border-bottom:1px solid rgba(180,210,255,0.06);flex-shrink:0;}
+body.light #sp-header{border-bottom-color:rgba(10,14,30,0.05);}
+#sp-domain-bar{width:3px;height:28px;border-radius:2px;flex-shrink:0;transition:background 0.4s;}
+#sp-meta{flex:1;min-width:0;}
+#sp-eyebrow{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:4px;}
+body.light #sp-eyebrow{color:rgba(10,14,30,0.26);}
+#sp-title{font-family:'DM Serif Display',serif;font-size:15px;color:#dcecff;letter-spacing:-0.01em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.light #sp-title{color:rgba(10,14,30,0.72);}
+#sp-close{background:none;border:1px solid rgba(180,210,255,0.12);color:rgba(180,210,255,0.28);width:24px;height:24px;border-radius:2px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.18s;flex-shrink:0;}
+#sp-close:hover{color:#dcecff;border-color:rgba(180,210,255,0.40);}
+body.light #sp-close{border-color:rgba(10,14,30,0.08);color:rgba(10,14,30,0.26);}
+body.light #sp-close:hover{color:rgba(10,14,30,0.65);border-color:rgba(10,14,30,0.24);}
+#sp-progress-track{height:1px;background:rgba(180,210,255,0.05);flex-shrink:0;position:relative;overflow:hidden;}
+#sp-progress-fill{height:100%;width:0%;transition:width 0.28s ease;position:absolute;top:0;left:0;}
+body.light #sp-progress-track{background:rgba(10,14,30,0.05);}
+#sp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:80px;scrollbar-width:none;position:relative;}
+#sp-scroll::-webkit-scrollbar{display:none;}
+#sp-stream{max-width:420px;margin:0 auto;padding:32px 28px 0;}
+.sp-sent{display:block;opacity:0.20;cursor:pointer;transition:opacity 0.35s ease;position:relative;}
+.sp-sent.revealed{opacity:0.65;}
+.sp-sent.active{opacity:1;}
+.sp-sent.past{opacity:0.50;}
+.sp-sent:hover{opacity:0.85;}
+.sp-sent.s-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.26em;text-transform:uppercase;padding:6px 0 3px;color:var(--sp-accent,#6a9bdc);}
+.sp-sent.s-poster{font-family:'DM Serif Display',serif;font-size:clamp(20px,2.6vw,34px);line-height:1.0;letter-spacing:-0.02em;color:#dcecff;padding:12px 0 8px;}
+body.light .sp-sent.s-poster{color:rgba(10,14,30,0.78);}
+.sp-sent.s-poster .ac{color:var(--sp-accent,#6a9bdc);}
+.sp-sent.s-body{font-family:'DM Mono',monospace;font-size:11.5px;line-height:1.88;color:rgba(180,210,255,0.78);padding:8px 0;}
+body.light .sp-sent.s-body{color:rgba(10,14,30,0.58);}
+.sp-sent.s-body .ac{color:#dcecff;}
+.sp-sent.s-body em{font-style:italic;color:rgba(180,210,255,0.90);}
+body.light .sp-sent.s-body em{color:rgba(10,14,30,0.70);}
+.sp-sent.s-pull{font-family:'DM Serif Display',serif;font-style:italic;font-size:14px;line-height:1.62;color:rgba(180,210,255,0.86);border-left:2px solid var(--sp-accent,#6a9bdc);padding:8px 0 8px 16px;margin:4px 0;}
+body.light .sp-sent.s-pull{color:rgba(10,14,30,0.62);}
+.sp-sent.s-spec{display:flex;align-items:baseline;gap:14px;font-family:'DM Mono',monospace;font-size:10px;padding:5px 0;border-bottom:1px solid rgba(180,210,255,0.05);}
+body.light .sp-sent.s-spec{border-bottom-color:rgba(10,14,30,0.05);}
+.sp-spec-key{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sp-accent,#6a9bdc);min-width:90px;flex-shrink:0;}
+.sp-spec-val{color:rgba(180,210,255,0.62);flex:1;line-height:1.5;}
+body.light .sp-spec-val{color:rgba(10,14,30,0.46);}
+.sp-sent.s-break{display:block;height:28px;opacity:1!important;cursor:default;pointer-events:none;}
+.sp-sent.s-break::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(to right,transparent,var(--sp-accent,rgba(100,155,220,0.28)),transparent);}
+.sp-sent.active.s-body::after,.sp-sent.active.s-pull::after{content:'◉';margin-left:6px;font-size:6px;color:var(--sp-accent,#6a9bdc);animation:spdot 2s ease-in-out infinite;vertical-align:middle;}
+@keyframes spdot{0%,100%{opacity:1}50%{opacity:0.2}}
+#sp-nav{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;gap:6px;padding:12px 20px 16px;background:linear-gradient(to top,rgba(4,6,18,1) 55%,rgba(4,6,18,0));pointer-events:all;}
+body.light #sp-nav{background:linear-gradient(to top,rgba(250,247,242,1) 55%,rgba(250,247,242,0));}
+.sp-nav-btn{background:none;border:1px solid rgba(180,210,255,0.12);color:rgba(180,210,255,0.30);width:26px;height:26px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.18s;flex-shrink:0;}
+.sp-nav-btn:hover{color:#dcecff;border-color:rgba(180,210,255,0.38);}
+body.light .sp-nav-btn{border-color:rgba(10,14,30,0.08);color:rgba(10,14,30,0.28);}
+body.light .sp-nav-btn:hover{color:rgba(10,14,30,0.68);border-color:rgba(10,14,30,0.24);}
+#sp-counter{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(180,210,255,0.20);flex:1;text-align:center;}
+body.light #sp-counter{color:rgba(10,14,30,0.20);}
+#sp-signal-bar{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;color:rgba(180,210,255,0.18);text-transform:uppercase;}
+body.light #sp-signal-bar{color:rgba(10,14,30,0.18);}
+#gc-read-btn{display:none;width:100%;padding:11px 16px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;background:none;border:none;border-top:1px solid rgba(180,210,255,0.06);color:rgba(180,210,255,0.40);cursor:pointer;text-align:left;transition:all 0.18s;}
+#gc-read-btn:hover{color:#dcecff;background:rgba(180,210,255,0.03);}
+body.light #gc-read-btn{border-top-color:rgba(10,14,30,0.05);color:rgba(10,14,30,0.34);}
+body.light #gc-read-btn:hover{color:rgba(10,14,30,0.65);background:rgba(10,14,30,0.02);}
+body.stream-open #canvas{width:58vw!important;}
+body.stream-open #bg-mesh{width:58vw!important;}
+body.stream-open #hud{left:29vw;transform:translateX(-50%);}
+body.stream-open #hint,body.stream-open #focus-hint{left:29vw;transform:translateX(-50%);}
+body.stream-open #theme-toggle{left:29vw;}
+
+/* ── NODE EXPAND PANEL ── */
+#expand-panel{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;background:rgba(3,3,8,0.97);backdrop-filter:blur(40px);opacity:0;pointer-events:none;transition:opacity 0.38s ease;}
+#expand-panel.open{opacity:1;pointer-events:all;}
+body.light #expand-panel{background:rgba(248,245,240,0.98);}
+
+#ep-header{display:flex;align-items:center;gap:14px;padding:22px 32px 18px;border-bottom:1px solid rgba(180,210,255,0.06);flex-shrink:0;}
+body.light #ep-header{border-bottom-color:rgba(10,14,30,0.06);}
+#ep-domain-pill{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;padding:4px 10px;border-radius:10px;border:1px solid currentColor;opacity:0.7;}
+#ep-node-title{font-family:'DM Serif Display',serif;font-size:clamp(22px,2.8vw,40px);letter-spacing:-0.02em;color:#dcecff;flex:1;line-height:1.1;}
+body.light #ep-node-title{color:rgba(10,14,30,0.82);}
+#ep-role{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.30);margin-top:5px;}
+body.light #ep-role{color:rgba(10,14,30,0.30);}
+#ep-close{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.35);width:32px;height:32px;border-radius:3px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.18s;flex-shrink:0;}
+#ep-close:hover{color:#dcecff;border-color:rgba(180,210,255,0.50);}
+body.light #ep-close{border-color:rgba(10,14,30,0.12);color:rgba(10,14,30,0.32);}
+body.light #ep-close:hover{color:rgba(10,14,30,0.75);border-color:rgba(10,14,30,0.35);}
+
+#ep-body{flex:1;display:flex;overflow:hidden;}
+
+/* Left: reading column */
+#ep-reading{flex:1;overflow-y:auto;padding:40px 48px 60px;scrollbar-width:thin;scrollbar-color:rgba(180,210,255,0.10) transparent;}
+#ep-reading::-webkit-scrollbar{width:2px;}
+#ep-reading::-webkit-scrollbar-thumb{background:rgba(180,210,255,0.12);border-radius:0;}
+body.light #ep-reading{scrollbar-color:rgba(10,14,30,0.10) transparent;}
+#ep-era{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:22px;}
+body.light #ep-era{color:rgba(10,14,30,0.28);}
+#ep-text{font-family:'DM Serif Display',serif;font-size:clamp(17px,1.6vw,24px);line-height:1.78;color:rgba(180,210,255,0.88);max-width:640px;}
+body.light #ep-text{color:rgba(10,14,30,0.78);}
+#ep-connections{margin-top:40px;max-width:640px;}
+#ep-conn-heading{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:14px;}
+body.light #ep-conn-heading{color:rgba(10,14,30,0.22);}
+.ep-conn-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(180,210,255,0.05);cursor:pointer;transition:all 0.15s;}
+.ep-conn-row:hover{padding-left:6px;}
+body.light .ep-conn-row{border-bottom-color:rgba(10,14,30,0.05);}
+.ep-conn-badge{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border-radius:8px;border:1px solid currentColor;opacity:0.65;white-space:nowrap;flex-shrink:0;}
+.ep-conn-title{font-family:'DM Mono',monospace;font-size:11px;color:rgba(180,210,255,0.55);flex:1;}
+body.light .ep-conn-title{color:rgba(10,14,30,0.50);}
+.ep-conn-arrow{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,255,0.20);transition:color 0.15s;}
+.ep-conn-row:hover .ep-conn-arrow{color:rgba(180,210,255,0.55);}
+body.light .ep-conn-arrow{color:rgba(10,14,30,0.18);}
+
+/* Right: image gallery */
+#ep-gallery{width:38vw;max-width:520px;min-width:280px;border-left:1px solid rgba(180,210,255,0.06);display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;}
+#ep-gallery::-webkit-scrollbar{display:none;}
+body.light #ep-gallery{border-left-color:rgba(10,14,30,0.06);}
+#ep-gallery-main{flex-shrink:0;height:52vh;overflow:hidden;position:relative;background:#050510;}
+body.light #ep-gallery-main{background:#e8e4dc;}
+#ep-gallery-main img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 0.55s ease;}
+#ep-gallery-main img.ep-img-vis{opacity:0.88;}
+body.light #ep-gallery-main img.ep-img-vis{opacity:0.72;mix-blend-mode:multiply;}
+#ep-img-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(3,3,8,0.75) 0%,rgba(3,3,8,0) 55%);pointer-events:none;}
+body.light #ep-img-scrim{background:linear-gradient(to top,rgba(248,245,240,0.65) 0%,rgba(248,245,240,0) 55%);}
+#ep-img-caption{position:absolute;bottom:14px;left:16px;right:16px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.40);}
+body.light #ep-img-caption{color:rgba(10,14,30,0.32);}
+#ep-gallery-thumbs{padding:12px;display:flex;flex-wrap:wrap;gap:6px;flex-shrink:0;}
+.ep-thumb{width:60px;height:44px;object-fit:cover;object-position:center;cursor:pointer;opacity:0.40;transition:opacity 0.18s;border-radius:2px;}
+.ep-thumb:hover{opacity:0.72;}
+.ep-thumb.active{opacity:1;outline:1px solid rgba(180,210,255,0.45);}
+body.light .ep-thumb.active{outline-color:rgba(10,14,30,0.35);}
+#ep-gallery-meta{padding:14px 16px;flex:1;}
+#ep-node-id{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.20em;text-transform:uppercase;color:rgba(180,210,255,0.18);}
+body.light #ep-node-id{color:rgba(10,14,30,0.18);}
+
+/* Expand toggle button on ghost card */
+#gc-expand-btn{display:none;width:100%;padding:11px 16px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;background:none;border:none;border-top:1px solid rgba(180,210,255,0.06);color:rgba(180,210,255,0.40);cursor:pointer;text-align:left;transition:all 0.18s;}
+#gc-expand-btn:hover{color:#dcecff;background:rgba(180,210,255,0.03);}
+body.light #gc-expand-btn{border-top-color:rgba(10,14,30,0.05);color:rgba(10,14,30,0.34);}
+body.light #gc-expand-btn:hover{color:rgba(10,14,30,0.65);background:rgba(10,14,30,0.02);}
+#gc-expand-btn::before{content:'⤢  ';}
+
+@media(max-width:900px){#ep-gallery{display:none;}}
 </style>
 </head>
 <body>
@@ -153,9 +273,10 @@ body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
   <button class="hud-btn" data-view="iso">ISO</button>
   <button class="hud-btn active" data-view="top">SKY</button>
   <button class="hud-btn" data-view="side">ORBIT</button>
+  <button class="hud-btn" data-view="galaxy">GALAXY</button>
 </div>
-<div id="hint">drag to orbit · scroll to zoom · click any node</div>
-<div id="focus-hint">— right-click or space to pause · esc to release —</div>
+<div id="hint">drag to orbit · scroll to zoom · scroll far out for galaxy · click any node</div>
+<div id="focus-hint">— scroll to cycle ring · click moon to navigate · space or right-click to pause · esc to release —</div>
 <div id="tooltip"><div id="tt-inner">
   <div class="tt-ring" id="tt-ring"></div>
   <div class="tt-title" id="tt-title"></div>
@@ -175,13 +296,11 @@ body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
       <div class="gcst"><span class="gcsv" id="gc-domain"></span><span class="gcsk">Domain</span></div>
     </div>
     <div class="gc-connections" id="gc-connections"></div>
-    <div class="gc-moons" id="gc-moons" style="display:none"></div>
+    <button id="gc-expand-btn">Expand node</button>
+    <button id="gc-read-btn">Read node →</button>
     <div class="gcft">
       <span class="gctag" id="gc-tag"></span>
-      <div style="display:flex;align-items:center;">
-        <button class="gcexpand" id="gc-expand" title="Expand panel">⤢</button>
-        <button class="gcclose" onclick="closePanel()">✕</button>
-      </div>
+      <button class="gcclose" onclick="closePanel()">✕</button>
     </div>
   </div>
 </div></div>
@@ -198,219 +317,129 @@ body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
     <button class="msclose" onclick="closePanel()">✕</button>
   </div>
 </div>
+
+<!-- SENTENCE STREAM PANEL -->
+<div id="stream-panel">
+  <div id="sp-header">
+    <div id="sp-domain-bar"></div>
+    <div id="sp-meta">
+      <div id="sp-eyebrow"></div>
+      <div id="sp-title"></div>
+    </div>
+    <button id="sp-close">✕</button>
+  </div>
+  <div id="sp-progress-track"><div id="sp-progress-fill"></div></div>
+  <div id="sp-scroll">
+    <div id="sp-stream"></div>
+    <div id="sp-nav">
+      <button class="sp-nav-btn" id="sp-prev">↑</button>
+      <button class="sp-nav-btn" id="sp-next">↓</button>
+      <div id="sp-counter"></div>
+      <div id="sp-signal-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NODE EXPAND PANEL -->
+<div id="expand-panel">
+  <div id="ep-header">
+    <span id="ep-domain-pill"></span>
+    <div style="flex:1;min-width:0;">
+      <div id="ep-node-title"></div>
+      <div id="ep-role"></div>
+    </div>
+    <button id="ep-close">✕</button>
+  </div>
+  <div id="ep-body">
+    <div id="ep-reading">
+      <div id="ep-era"></div>
+      <div id="ep-text"></div>
+      <div id="ep-connections">
+        <div id="ep-conn-heading">Connections</div>
+        <div id="ep-conn-list"></div>
+      </div>
+    </div>
+    <div id="ep-gallery">
+      <div id="ep-gallery-main">
+        <img id="ep-main-img" alt="">
+        <div id="ep-img-scrim"></div>
+        <div id="ep-img-caption"></div>
+      </div>
+      <div id="ep-gallery-thumbs"></div>
+      <div id="ep-gallery-meta">
+        <div id="ep-node-id"></div>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ── State variables declared first to avoid ReferenceError ──────────────────
-let isFocused = false;
-let focusNode = null;
-let isLight = false;
-
+let isLight=false;
 const DOMAIN_CFG={
-  statement:{color:0xf0f4ff,lightColor:0x0a0e1e,size:0.36,label:'Statement',hex:'#f0f4ff',lightHex:'#0a0e1e'},
-  formalism:{color:0x4a8adc,lightColor:0x1a3a6c,size:0.14,label:'Formalism',hex:'#4a8adc',lightHex:'#1a3a6c'},
-  history:  {color:0x9a70cc,lightColor:0x4a2880,size:0.13,label:'History',  hex:'#9a70cc',lightHex:'#4a2880'},
-  analogue: {color:0x50d8b0,lightColor:0x0a6048,size:0.13,label:'Analogue', hex:'#50d8b0',lightHex:'#0a6048'},
-  cultural: {color:0xd8b050,lightColor:0x7a5c08,size:0.12,label:'Cultural', hex:'#d8b050',lightHex:'#7a5c08'},
+  statement:{color:0xf0f4ff,lightColor:0x2a2a2e,size:0.36,label:'Statement',hex:'#f0f4ff',lightHex:'#2a2a2e'},
+  formalism:{color:0x4a8adc,lightColor:0x2a2a2e,size:0.14,label:'Formalism',hex:'#4a8adc',lightHex:'#2a2a2e'},
+  history:  {color:0x9a70cc,lightColor:0x2a2a2e,size:0.13,label:'History',  hex:'#9a70cc',lightHex:'#2a2a2e'},
+  analogue: {color:0x50d8b0,lightColor:0x2a2a2e,size:0.13,label:'Analogue', hex:'#50d8b0',lightHex:'#2a2a2e'},
+  cultural: {color:0xd8b050,lightColor:0x2a2a2e,size:0.12,label:'Cultural', hex:'#d8b050',lightHex:'#2a2a2e'},
 };
 const dcfg=d=>DOMAIN_CFG[d]||DOMAIN_CFG.formalism;
 const dhex=d=>isLight?dcfg(d).lightHex:dcfg(d).hex;
 
 const NODES=[
   {id:'problem',tier:'center',angle:0,domain:'statement',title:'Three bodies, no formula',role:'The Problem Statement',era:'Statement',
-   body:'Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge — it is a structural property of the system. Add one body to a solvable problem, and solvability disappears.',
-   moons:[
-     {text:'First posed by Isaac Newton in Principia Mathematica, 1687',tag:'origin'},
-     {text:'König Oscar II of Sweden offered a prize in 1887 for its solution — which Poincaré won by finding it unsolvable',tag:'prize'},
-     {text:'The two-body problem is exactly solvable; three bodies destroys this property permanently',tag:'contrast'},
-   ]},
+   body:'Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge — it is a structural property of the system. Add one body to a solvable problem, and solvability disappears.'},
   {id:'newton',tier:'inner',angle:0.04,domain:'formalism',title:"Newton's equations of motion",role:'Mathematical Foundation',era:'Ring 1 · Formalism',
-   body:"Each body exerts a gravitational force on every other. F = Gm₁m₂/r². In two bodies, the forces balance into solvable conic sections. In three, the forces interact recursively — each position depends on all others simultaneously.",
-   moons:[
-     {text:'Published in Principia Mathematica (1687) as a set of geometric proofs, not the algebraic form used today',tag:'history'},
-     {text:"Newton himself struggled with the Moon's motion — an early three-body problem (Sun–Earth–Moon)",tag:'struggle'},
-     {text:"The inverse-square law was partly inferred from Kepler's third law, not derived from first principles",tag:'derivation'},
-   ]},
+   body:"Each body exerts a gravitational force on every other. F = Gm₁m₂/r². In two bodies, the forces balance into solvable conic sections. In three, the forces interact recursively — each position depends on all others simultaneously."},
   {id:'hamilton',tier:'inner',angle:0.20,domain:'formalism',title:'Hamiltonian formulation',role:'Phase Space Representation',era:'Ring 1 · Formalism',
-   body:'Reformulates the problem in phase space — position and momentum as conjugate variables. The Hamiltonian H = T + V is conserved but insufficient for a closed-form solution. Energy conservation alone does not constrain the trajectory.',
-   moons:[
-     {text:'William Rowan Hamilton introduced the formulation in 1833, building on Lagrangian mechanics (1788)',tag:'1833'},
-     {text:'Phase space for three bodies has 18 dimensions — 3 position + 3 momentum coordinates per body',tag:'dimensions'},
-     {text:"Hamiltonian mechanics is the natural language of quantum mechanics; Schrödinger's equation is its quantum analogue",tag:'quantum link'},
-   ]},
+   body:'Reformulates the problem in phase space — position and momentum as conjugate variables. The Hamiltonian H = T + V is conserved but insufficient for a closed-form solution. Energy conservation alone does not constrain the trajectory.'},
   {id:'jacobi',tier:'inner',angle:0.36,domain:'formalism',title:'The Jacobi integral',role:'Restricted Problem Conserved Quantity',era:'Ring 1 · Formalism',
-   body:'In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is conserved. It defines Hill regions the test particle cannot cross. The only exactly conserved quantity in the general problem.',
-   moons:[
-     {text:'Named after Carl Gustav Jacob Jacobi, who derived it in 1836 for the circular restricted problem',tag:'1836'},
-     {text:'Hill regions — forbidden zones — are used in spacecraft trajectory design to rule out collision paths',tag:'application'},
-     {text:'George William Hill used the Jacobi integral in 1878 to prove the Moon cannot escape the Earth\'s gravitational domain',tag:'moon stability'},
-   ]},
+   body:'In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is conserved. It defines Hill regions the test particle cannot cross. The only exactly conserved quantity in the general problem.'},
   {id:'restricted',tier:'inner',angle:0.52,domain:'formalism',title:'The restricted problem',role:'Tractable Simplification',era:'Ring 1 · Formalism',
-   body:'If one body is massless, it cannot affect the two massive bodies. This breaks the full mutual dependency. Most spacecraft trajectory problems use this form — the restricted circular three-body problem (CR3BP).',
-   moons:[
-     {text:'Euler introduced the restricted formulation in 1772 to make the problem tractable for lunar theory',tag:'Euler 1772'},
-     {text:'The CR3BP has five equilibrium points — the Lagrange points — and no other exact closed-form solutions',tag:'equilibria'},
-     {text:"Low-energy transfer trajectories (ballistic capture) exploit the CR3BP's chaotic regions for fuel-efficient spaceflight",tag:'spaceflight'},
-   ]},
+   body:'If one body is massless, it cannot affect the two massive bodies. This breaks the full mutual dependency. Most spacecraft trajectory problems use this form — the restricted circular three-body problem (CR3BP).'},
   {id:'integrals',tier:'inner',angle:0.68,domain:'formalism',title:'Conservation laws',role:"What Is and Isn't Conserved",era:'Ring 1 · Formalism',
-   body:'Total energy, total momentum, and total angular momentum are conserved — ten integrals of motion. But a general solution requires 18. The gap of 8 is exactly what makes the problem unsolvable by classical methods.',
-   moons:[
-     {text:'Bruns (1887) proved no new algebraic integrals exist beyond the classical ten — making the gap of 8 permanent',tag:'Bruns 1887'},
-     {text:"The ten integrals correspond to symmetries via Noether's theorem: time, space translation, rotation",tag:'Noether'},
-     {text:"Poincaré extended Bruns's result to transcendental integrals in 1889, closing the door entirely",tag:'Poincaré extension'},
-   ]},
+   body:'Total energy, total momentum, and total angular momentum are conserved — ten integrals of motion. But a general solution requires 18. The gap of 8 is exactly what makes the problem unsolvable by classical methods.'},
   {id:'lagrange-pts',tier:'inner',angle:0.84,domain:'formalism',title:'Lagrange points',role:'Five Equilibrium Solutions',era:'Ring 1 · Formalism',
-   body:'Euler (1767) found three collinear equilibrium points; Lagrange (1772) found two triangular points (L4, L5). These are the only exact analytical solutions to the three-body problem. L4 and L5 are stable — Trojan asteroids occupy them.',
-   moons:[
-     {text:'L1 of the Sun–Earth system is ~1.5 million km from Earth — home to SOHO, DSCOVR solar wind monitors',tag:'L1 missions'},
-     {text:'L2 hosts the James Webb Space Telescope, Gaia, and Planck — ideal for cold, unobstructed sky views',tag:'L2 missions'},
-     {text:'L4 and L5 are stable only if the primary mass ratio exceeds ~24.96:1 — the Sun–Earth and Sun–Jupiter systems both qualify',tag:'stability criterion'},
-     {text:'The Greeks (L4) and Trojans (L5) of Jupiter number over 12,000 known asteroids as of 2024',tag:'asteroid count'},
-   ]},
+   body:'Euler (1767) found three collinear equilibrium points; Lagrange (1772) found two triangular points (L4, L5). These are the only exact analytical solutions to the three-body problem. L4 and L5 are stable — Trojan asteroids occupy them.'},
   {id:'euler1767',tier:'mid',angle:0.03,domain:'history',title:'Euler · 1767',role:'Collinear Solutions',era:'Ring 2 · History',
-   body:'Found three collinear configurations where all three bodies maintain constant ratios of distance — three bodies in a line, rotating about their common center. All are unstable in the general case.',
-   moons:[
-     {text:'Published in "De motu rectilineo trium corporum se mutuo attrahentium" (1767)',tag:'source'},
-     {text:'Euler discovered L1, L2, L3 — all collinear, all unstable saddle points in the effective potential',tag:'L-points'},
-     {text:'Euler also introduced the rotating reference frame technique that makes these solutions visible',tag:'method'},
-   ]},
+   body:'Found three collinear configurations where all three bodies maintain constant ratios of distance — three bodies in a line, rotating about their common center. All are unstable in the general case.'},
   {id:'lagrange1772',tier:'mid',angle:0.14,domain:'history',title:'Lagrange · 1772',role:'Equilateral Triangle Solutions',era:'Ring 2 · History',
-   body:'Showed that equilateral triangular configurations rotate stably. Three equal masses at the vertices of an equilateral triangle — all orbiting the common center — are exact periodic solutions. The geometry solves what the calculus cannot.',
-   moons:[
-     {text:"Published in \"Essai sur le problème des trois corps\" — submitted for the same 1772 Paris Academy prize as Euler's work",tag:'source'},
-     {text:"L4 and L5 stability was not confirmed observationally until the discovery of Jupiter's Trojan asteroids in 1906",tag:'confirmation 1906'},
-     {text:'Lagrange also co-invented the calculus of variations and introduced generalized coordinates (Lagrangian mechanics) in 1788',tag:'legacy'},
-   ]},
+   body:'Showed that equilateral triangular configurations rotate stably. Three equal masses at the vertices of an equilateral triangle — all orbiting the common center — are exact periodic solutions. The geometry solves what the calculus cannot.'},
   {id:'poincare1889',tier:'mid',angle:0.25,domain:'history',title:'Poincaré · 1889',role:'Proof of Non-Integrability',era:'Ring 2 · History',
-   body:"Submitted a prize essay claiming orbital stability, then found his own error before publication. The correction introduced chaos: nearby trajectories diverge exponentially. This is the founding moment of dynamical systems theory — a mistake that became a field.",
-   moons:[
-     {text:'The prize was 2,500 Swedish kronor — Poincaré paid more than that to suppress the already-printed erroneous version',tag:'cost of error'},
-     {text:'His corrected 1890 paper introduced homoclinic intersections — the geometric signature of chaos',tag:'homoclinic'},
-     {text:"Poincaré's qualitative methods — topology applied to dynamics — replaced the search for formulas with the study of structure",tag:'method shift'},
-     {text:'The work was rediscovered by Birkhoff (1913) and later by Smale (1960s), who coined "chaos" as a technical term',tag:'rediscovery'},
-   ]},
+   body:"Submitted a prize essay claiming orbital stability, then found his own error before publication. The correction introduced chaos: nearby trajectories diverge exponentially. This is the founding moment of dynamical systems theory — a mistake that became a field."},
   {id:'sundman1912',tier:'mid',angle:0.36,domain:'history',title:'Sundman · 1912',role:'Convergent Series Solution',era:'Ring 2 · History',
-   body:'Proved the three-body problem has a convergent power series solution — in a new time variable. Technically complete. Practically useless: the series converges so slowly that 10⁸⁰⁰⁰⁰⁰⁰ terms are needed for practical precision.',
-   moons:[
-     {text:'Karl Frithiof Sundman was a Finnish mathematician working at the University of Helsinki',tag:'biography'},
-     {text:'His key technique was regularizing collisions using a new time variable τ related to real time by dt = r₁₂ r₁₃ r₂₃ dτ',tag:'technique'},
-     {text:'The 10⁸⁰⁰⁰⁰⁰⁰ term estimate is from Beloriszky (1930) — so large it defeats any conceivable computation',tag:'impracticality'},
-   ]},
+   body:'Proved the three-body problem has a convergent power series solution — in a new time variable. Technically complete. Practically useless: the series converges so slowly that 10⁸⁰⁰⁰⁰⁰⁰ terms are needed for practical precision.'},
   {id:'moore1993',tier:'mid',angle:0.47,domain:'history',title:'Moore · 1993',role:'Figure-Eight Orbit',era:'Ring 2 · History',
-   body:'Discovered numerically that three equal masses can chase each other around a figure-eight in a stable periodic orbit. Verified analytically by Chenciner & Montgomery (2000). Symmetry constrains what calculus cannot solve.',
-   moons:[
-     {text:'Cris Moore discovered it at the Santa Fe Institute using variational methods and numerical search',tag:'discovery'},
-     {text:'The orbit has a period of ~6.3259 time units (in natural units where G=m=1) and zero net angular momentum',tag:'parameters'},
-     {text:"Chenciner & Montgomery's 2000 proof used the \"choreography\" symmetry — all three bodies trace the same curve",tag:'choreography'},
-     {text:'The figure-eight is the simplest member of an infinite family of choreographic orbits discovered afterward',tag:'family'},
-   ]},
+   body:'Discovered numerically that three equal masses can chase each other around a figure-eight in a stable periodic orbit. Verified analytically by Chenciner & Montgomery (2000). Symmetry constrains what calculus cannot solve.'},
   {id:'wang1991',tier:'mid',angle:0.58,domain:'history',title:'Wang · 1991',role:'n-Body Series Extension',era:'Ring 2 · History',
-   body:"Extended Sundman's convergent series method to the general n-body problem. Same result: mathematically complete, physically unusable. The existence of a solution and its computability remain different categories.",
-   moons:[
-     {text:'Qiudong Wang published the result in Celestial Mechanics and Dynamical Astronomy, Vol. 50 (1991)',tag:'publication'},
-     {text:'The extension required excluding a set of initial conditions of measure zero — triple simultaneous collisions',tag:'caveat'},
-     {text:"Wang's series, like Sundman's, converges too slowly for any physical application — a mathematical existence proof only",tag:'limitation'},
-   ]},
+   body:"Extended Sundman's convergent series method to the general n-body problem. Same result: mathematically complete, physically unusable. The existence of a solution and its computability remain different categories."},
   {id:'suvakov2013',tier:'mid',angle:0.69,domain:'history',title:'Šuvakov & Dmitrašinović · 2013',role:'13 New Periodic Families',era:'Ring 2 · History',
-   body:'Using high-precision numerical methods, found 13 new families of periodic three-body orbits — the first new families since the figure-eight. Each requires exquisite initial conditions; any perturbation breaks them.',
-   moons:[
-     {text:'Published in Physical Review Letters 110, 114301 (2013) — a physics journal, not mathematics',tag:'publication'},
-     {text:'Orbits were classified by their "shape space" trajectory — a 2D curve encoding how mutual distances evolve',tag:'classification'},
-     {text:'The 13 families include "butterfly", "moth", "yarn", and "bumblebee" orbits — named for their visual shape',tag:'names'},
-   ]},
+   body:'Using high-precision numerical methods, found 13 new families of periodic three-body orbits — the first new families since the figure-eight. Each requires exquisite initial conditions; any perturbation breaks them.'},
   {id:'hristov2023',tier:'mid',angle:0.80,domain:'history',title:'Hristov et al. · 2023',role:'12,000+ New Periodic Orbits',era:'Ring 2 · History',
-   body:'Machine-precision numerical search found over 12,000 new periodic orbit families. The solution space is far richer than expected — but these are exact solutions only at knife-edge initial conditions. The generic trajectory remains chaotic.',
-   moons:[
-     {text:'Used quad-precision arithmetic (128-bit floats) to overcome numerical instability in long integrations',tag:'method'},
-     {text:'Orbits were found by searching over "topological" families defined by braids — strands that encode how bodies exchange positions',tag:'topology'},
-     {text:'The result does not change the fundamental unsolvability — most initial conditions still produce chaotic, non-periodic motion',tag:'caveat'},
-   ]},
+   body:'Machine-precision numerical search found over 12,000 new periodic orbit families. The solution space is far richer than expected — but these are exact solutions only at knife-edge initial conditions. The generic trajectory remains chaotic.'},
   {id:'nn2019',tier:'mid',angle:0.91,domain:'history',title:'Neural Network Solver · 2019',role:'Deep Learning Approximation',era:'Ring 2 · History',
-   body:'Breen et al. trained a deep neural network to predict three-body trajectories — 100 million times faster than direct integration. Same goal as Sundman, 111 years later.',
-   moons:[
-     {text:'Published in Monthly Notices of the Royal Astronomical Society: Letters, 2019; trained on 9,900 simulated trajectories',tag:'publication'},
-     {text:'The network predicts outcomes after close encounters — the hardest part, where standard integrators must take tiny steps',tag:'focus'},
-     {text:'Accuracy degrades over time due to chaos: small errors amplify. The network is an approximator, not an oracle',tag:'limitation'},
-   ]},
+   body:'Breen et al. trained a deep neural network to predict three-body trajectories — 100 million times faster than direct integration. Same goal as Sundman, 111 years later.'},
   {id:'chaos',tier:'outer',angle:0.02,domain:'analogue',title:'Chaos theory',role:'Discovered Here',era:'Ring 3 · Analogue',
-   body:"Poincaré's 1889 correction to his prize essay is the founding document of chaos theory. Sensitive dependence on initial conditions — the butterfly effect — was first observed in the three-body problem. The field was born from a celestial mechanics mistake.",
-   moons:[
-     {text:'The term "butterfly effect" was coined by Edward Lorenz in 1972, from his 1961 weather model — a later, independent rediscovery of the same phenomenon',tag:'butterfly effect'},
-     {text:'Chaos theory entered mainstream mathematics with Stephen Smale\'s "horseshoe map" (1960) and the Lorenz attractor (1963)',tag:'formalization'},
-     {text:'Lyapunov exponents quantify the rate of divergence; the three-body problem has at least one positive Lyapunov exponent for generic initial conditions',tag:'measurement'},
-   ]},
+   body:"Poincaré's 1889 correction to his prize essay is the founding document of chaos theory. Sensitive dependence on initial conditions — the butterfly effect — was first observed in the three-body problem. The field was born from a celestial mechanics mistake."},
   {id:'nbody',tier:'outer',angle:0.16,domain:'analogue',title:'The n-body problem',role:'General Extension',era:'Ring 3 · Analogue',
-   body:'The three-body problem is the n=3 case of the general gravitational n-body problem. Galaxy formation, globular cluster dynamics, and planetary system stability all require n-body simulation. None are analytically solvable.',
-   moons:[
-     {text:'Modern n-body codes (GADGET, AREPO) simulate ~10¹⁰ particles to model galaxy formation',tag:'scale'},
-     {text:'The Barnes–Hut algorithm (1986) reduces n-body computation from O(n²) to O(n log n) using an octree approximation',tag:'algorithm'},
-     {text:"The solar system's long-term stability is uncertain: simulations show a ~1% chance of Mercury's orbit destabilizing within 5 billion years",tag:'solar system'},
-   ]},
+   body:'The three-body problem is the n=3 case of the general gravitational n-body problem. Galaxy formation, globular cluster dynamics, and planetary system stability all require n-body simulation. None are analytically solvable.'},
   {id:'helium',tier:'outer',angle:0.30,domain:'analogue',title:'The helium atom',role:'Same Structure · Different Scale',era:'Ring 3 · Analogue',
-   body:'A nucleus plus two electrons — structurally identical to the three-body gravitational problem, with Coulomb force replacing gravity. The helium atom has no closed-form solution either. Same mathematics, 10³⁰ smaller.',
-   moons:[
-     {text:"Bohr's 1913 model correctly predicted hydrogen but failed for helium — the two-electron interaction is exactly the three-body problem",tag:'Bohr failure'},
-     {text:'The modern solution uses variational methods; Hylleraas (1929) achieved 5-digit accuracy with a cleverly parameterized wavefunction',tag:'Hylleraas 1929'},
-     {text:"Helium's ground state energy is known experimentally to 12 significant figures — computed numerically, never analytically",tag:'precision'},
-   ]},
+   body:'A nucleus plus two electrons — structurally identical to the three-body gravitational problem, with Coulomb force replacing gravity. The helium atom has no closed-form solution either. Same mathematics, 10³⁰ smaller.'},
   {id:'efimov',tier:'outer',angle:0.44,domain:'analogue',title:'The Efimov effect',role:'Unexpected Symmetry',era:'Ring 3 · Analogue',
-   body:'Three particles with very weak pairwise attraction can form bound three-body states even when no two-body bound state exists. Predicted 1970, confirmed 2006. The three-body problem reappears in nuclear physics with the same structural surprise.',
-   moons:[
-     {text:'Vitaly Efimov predicted the effect in 1970 using nuclear physics; it was confirmed in ultracold cesium atoms at Innsbruck in 2006',tag:'timeline'},
-     {text:'Efimov states form a geometric series: each successive state is ~22.7 times larger than the previous one',tag:'scaling'},
-     {text:'The effect has been observed in helium-4 trimers, ultracold lithium, and potassium atoms — a universal quantum three-body phenomenon',tag:'universality'},
-   ]},
+   body:'Three particles with very weak pairwise attraction can form bound three-body states even when no two-body bound state exists. Predicted 1970, confirmed 2006. The three-body problem reappears in nuclear physics with the same structural surprise.'},
   {id:'vortex',tier:'outer',angle:0.58,domain:'analogue',title:'Vortex dynamics',role:'Fluid Mechanics Analogue',era:'Ring 3 · Analogue',
-   body:'Three interacting point vortices in a fluid obey equations formally identical to the gravitational three-body problem. The same integrability question arises; the same chaos appears. Weather systems and ocean circulation contain embedded three-body problems.',
-   moons:[
-     {text:'The point-vortex equations were derived by Helmholtz in 1858 and Kirchhoff in 1876',tag:'history'},
-     {text:'Three vortices are integrable (solvable); four are not — mirroring the two-body vs. three-body divide in gravity',tag:'threshold'},
-     {text:'Tropical cyclone tracks are influenced by vortex interactions — practical weather forecasting encounters the three-body problem',tag:'weather'},
-   ]},
+   body:'Three interacting point vortices in a fluid obey equations formally identical to the gravitational three-body problem. The same integrability question arises; the same chaos appears. Weather systems and ocean circulation contain embedded three-body problems.'},
   {id:'gr',tier:'outer',angle:0.72,domain:'analogue',title:'Post-Newtonian corrections',role:'General Relativity Extension',era:'Ring 3 · Analogue',
-   body:"In general relativity, the three-body problem becomes harder: spacetime curvature means distances are not Euclidean, and gravitational waves carry energy away. Binary pulsars and black hole mergers require post-Newtonian approximations.",
-   moons:[
-     {text:'The first post-Newtonian (1PN) correction adds v²/c² terms; LIGO waveforms require up to 3.5PN accuracy',tag:'precision levels'},
-     {text:'The Hulse–Taylor binary pulsar (Nobel Prize 1993) confirmed gravitational wave energy loss — an n-body GR effect measured indirectly',tag:'Nobel'},
-     {text:'Triple black hole systems (hierarchical triples) are thought to drive supermassive black hole mergers in galaxy cores',tag:'black holes'},
-   ]},
+   body:"In general relativity, the three-body problem becomes harder: spacetime curvature means distances are not Euclidean, and gravitational waves carry energy away. Binary pulsars and black hole mergers require post-Newtonian approximations."},
   {id:'liucixin',tier:'outer2',angle:0.06,domain:'cultural',title:'The Three-Body Problem · Liu Cixin',role:'Novel · 2008',era:'Ring 4 · Cultural',
-   body:"Hugo Award-winning science fiction trilogy. The title refers to the orbital instability of the Trisolaran star system — three suns, unpredictable climate, impossible civilization. The mathematical unsolvability becomes the engine of a civilization's desperation.",
-   moons:[
-     {text:'Won the Hugo Award for Best Novel in 2015 — the first work in translation to do so',tag:'Hugo 2015'},
-     {text:'The Chinese title is 《三体》(Sān Tǐ); originally serialized in Science Fiction World magazine 2006–2010',tag:'publication'},
-     {text:"Liu Cixin cited Asimov's Foundation and Clarke's works as influences; the trilogy sold over 21 million copies in China",tag:'sales'},
-     {text:'The Trisolaran system is loosely based on Alpha Centauri — a real triple-star system 4.37 light-years away',tag:'real basis'},
-   ]},
+   body:"Hugo Award-winning science fiction trilogy. The title refers to the orbital instability of the Trisolaran star system — three suns, unpredictable climate, impossible civilization. The mathematical unsolvability becomes the engine of a civilization's desperation."},
   {id:'spacecraft',tier:'outer2',angle:0.22,domain:'cultural',title:'Lagrange point missions',role:'Applied Astrodynamics',era:'Ring 4 · Applied',
-   body:'L1, L2, L4, L5 are used as spacecraft parking locations. Webb Space Telescope sits at L2 of the Sun-Earth system. The halo orbits discovered by numerical methods are used for real mission design. The unsolvable problem is navigated, not solved.',
-   moons:[
-     {text:'JWST launched December 2021; it reached L2 after a 30-day journey and a precisely timed burn on January 24, 2022',tag:'JWST'},
-     {text:'Halo orbits around L1/L2 were first computed numerically by Robert Farquhar in 1968 for the ISEE-3 mission',tag:'Farquhar 1968'},
-     {text:'The Genesis (2001) and WIND spacecraft used "Interplanetary Superhighway" routes — low-energy paths through L-point saddles',tag:'superhighway'},
-     {text:"ESA's LISA mission (2030s) will place three spacecraft in a triangular formation — a deliberate three-body configuration",tag:'LISA'},
-   ]},
+   body:'L1, L2, L4, L5 are used as spacecraft parking locations. Webb Space Telescope sits at L2 of the Sun-Earth system. The halo orbits discovered by numerical methods are used for real mission design. The unsolvable problem is navigated, not solved.'},
   {id:'trojans',tier:'outer2',angle:0.38,domain:'cultural',title:'Trojan asteroids',role:'Natural Laboratory',era:'Ring 4 · Applied',
-   body:"Over 12,000 asteroids occupy Jupiter's L4 and L5 points — the only stable equilibrium in the three-body problem. Named after characters from the Trojan War. The solar system validates Lagrange's 1772 geometry continuously.",
-   moons:[
-     {text:'The first Jupiter Trojan, 588 Achilles, was discovered by Max Wolf in 1906 — 134 years after Lagrange predicted the stable points',tag:'first discovery 1906'},
-     {text:'L4 (Greek camp) and L5 (Trojan camp) are kept separate by convention; 617 Patroclus is a deliberate exception in the "wrong" camp',tag:'naming'},
-     {text:"NASA's Lucy mission (launched 2021) will visit 8 Trojan asteroids between 2027–2033 — the first spacecraft to do so",tag:'Lucy mission'},
-     {text:'Earth also has a Trojan: 2010 TK7, discovered 2010, ~300m across, librating around L4',tag:'Earth Trojan'},
-   ]},
+   body:"Over 12,000 asteroids occupy Jupiter's L4 and L5 points — the only stable equilibrium in the three-body problem. Named after characters from the Trojan War. The solar system validates Lagrange's 1772 geometry continuously."},
   {id:'figureeight',tier:'outer2',angle:0.54,domain:'cultural',title:'The figure-eight orbit',role:'Most Recognizable Solution',era:'Ring 4 · Cultural',
-   body:'Three equal masses chasing each other in a stable figure-eight. Zero margin for perturbation. But as an image, it communicates the entire character of the problem: motion that looks simple, is in fact a knife-edge balance that nature never achieves.',
-   moons:[
-     {text:'The orbit has the symmetry group D₆ — rotations and reflections of a regular hexagon — which is why it\'s stable',tag:'symmetry'},
-     {text:'In shape space, the orbit traces a simple closed curve — the "trefoil" — relating it to knot theory',tag:'topology'},
-     {text:'No figure-eight orbit has been observed in nature; the required equal masses and zero angular momentum never occur spontaneously',tag:'nature'},
-   ]},
+   body:'Three equal masses chasing each other in a stable figure-eight. Zero margin for perturbation. But as an image, it communicates the entire character of the problem: motion that looks simple, is in fact a knife-edge balance that nature never achieves.'},
   {id:'tvshow',tier:'outer2',angle:0.70,domain:'cultural',title:'3 Body Problem · Netflix 2024',role:'Adaptation',era:'Ring 4 · Cultural',
-   body:"David Benioff, D.B. Weiss, and Alexander Woo adapted Liu Cixin's trilogy. The orbital mechanics appear in visualizations of the Trisolaran system — three suns creating stable and chaotic eras that the civilization must predict and survive.",
-   moons:[
-     {text:'Released March 21, 2024; the showrunners relocated much of the story from China to Oxford, UK',tag:'production'},
-     {text:'The "stable era / chaotic era" framing mirrors real three-body behavior: near-periodic windows interrupted by chaotic excursions',tag:'accuracy'},
-     {text:'Liu Cixin served as a consultant; a separate Chinese adaptation (三体, 2023, Tencent) stayed closer to the original setting',tag:'adaptation'},
-   ]},
+   body:"David Benioff, D.B. Weiss, and Alexander Woo adapted Liu Cixin's trilogy. The orbital mechanics appear in visualizations of the Trisolaran system — three suns creating stable and chaotic eras that the civilization must predict and survive."},
 ];
 
 const CONNECTIONS=[
@@ -435,10 +464,10 @@ const CONNECTIONS=[
 ];
 
 const CONN_CFG={
-  'preceded':      {dkH:0x4a8adc,lkH:0x1a3a80,dkO:0.40,lkO:0.60},
-  'same-structure':{dkH:0x9a70cc,lkH:0x5a2896,dkO:0.38,lkO:0.58},
-  'enabled':       {dkH:0x50d8b0,lkH:0x0a7058,dkO:0.42,lkO:0.60},
-  'lives-in':      {dkH:0xd8b050,lkH:0x8a6410,dkO:0.32,lkO:0.50},
+  'preceded':      {dkH:0x4a8adc,lkH:0x8ab0d8,dkO:0.40,lkO:0.35},
+  'same-structure':{dkH:0x9a70cc,lkH:0xb090cc,dkO:0.38,lkO:0.32},
+  'enabled':       {dkH:0x50d8b0,lkH:0x40a888,dkO:0.42,lkO:0.35},
+  'lives-in':      {dkH:0xd8b050,lkH:0xb89040,dkO:0.32,lkO:0.28},
 };
 const cc=t=>CONN_CFG[t]||CONN_CFG['preceded'];
 
@@ -462,7 +491,7 @@ renderer.setClearColor(0x000000,0);
 const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0x000000,0.012);
 const cam=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,2000);
-const VIEWS={iso:{phi:Math.PI*0.26,theta:-Math.PI*0.12,radius:48},top:{phi:Math.PI*0.015,theta:0,radius:58},side:{phi:Math.PI*0.18,theta:Math.PI*0.5,radius:52}};
+const VIEWS={iso:{phi:Math.PI*0.26,theta:-Math.PI*0.12,radius:48},top:{phi:Math.PI*0.015,theta:0,radius:58},side:{phi:Math.PI*0.18,theta:Math.PI*0.5,radius:52},galaxy:{phi:Math.PI*0.08,theta:-Math.PI*0.08,radius:220}};
 let camState={...VIEWS.top},camTarget={...VIEWS.top};
 const scenePivot=new THREE.Vector3(),scenePivotTgt=new THREE.Vector3();
 function applyCam(){const{phi,theta,radius}=camState,c=scenePivot;cam.position.set(c.x+radius*Math.sin(phi)*Math.sin(theta),c.y+radius*Math.cos(phi),c.z+radius*Math.sin(phi)*Math.cos(theta));cam.lookAt(c);}
@@ -516,10 +545,10 @@ function makeGlowSprite(color,radius){
 }
 
 function buildScene(){
-  drawEllipse(ELLIPSES.inner.rx, ELLIPSES.inner.rz, 0.24,0x4a8adc,0.04, 0x1a3a6c,0.55);
-  drawEllipse(ELLIPSES.mid.rx,   ELLIPSES.mid.rz,   0.22,0x9a70cc,0.18, 0x5a2896,0.55);
-  drawEllipse(ELLIPSES.outer.rx, ELLIPSES.outer.rz,  0.18,0x50d8b0,0.35, 0x0a6048,0.55);
-  drawEllipse(ELLIPSES.outer2.rx,ELLIPSES.outer2.rz, 0.14,0xd8b050,0.55, 0x7a5c08,0.55);
+  drawEllipse(ELLIPSES.inner.rx, ELLIPSES.inner.rz, 0.24,0x4a8adc,0.04, 0x4a8adc,0.22);
+  drawEllipse(ELLIPSES.mid.rx,   ELLIPSES.mid.rz,   0.22,0x9a70cc,0.18, 0x9a70cc,0.20);
+  drawEllipse(ELLIPSES.outer.rx, ELLIPSES.outer.rz,  0.18,0x50d8b0,0.35, 0x50d8b0,0.18);
+  drawEllipse(ELLIPSES.outer2.rx,ELLIPSES.outer2.rz, 0.14,0xd8b050,0.55, 0xd8b050,0.16);
   const gM=new THREE.LineBasicMaterial({color:0x4a8adc,transparent:true,opacity:0.010});
   for(let i=-10;i<=10;i++){[new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-50),new THREE.Vector3(i*4,-0.5,50)]),gM.clone()),new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-50,-0.5,i*4),new THREE.Vector3(50,-0.5,i*4)]),gM.clone())].forEach(l=>{scene.add(l);allLines.push({line:l,darkColor:0x4a8adc,lightColor:0x0a0e1e,darkOp:0.010,lightOp:0.055});});}
 
@@ -550,10 +579,10 @@ function buildScene(){
   });
 
   function rlp(tier,af){const e=ELLIPSES[tier],a=(af||0)*Math.PI*2;const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT)+0.4,0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT));}
-  addLabel('Ring 1 · Formalism',rlp('inner',0.93).x,0.1,rlp('inner',0.93).z,'rgba(74,138,220,0.42)',6.5,'rgba(26,58,108,0.65)');
-  addLabel('Ring 2 · History',  rlp('mid',0.93).x,  0.1,rlp('mid',0.93).z,  'rgba(154,112,204,0.42)',6.5,'rgba(90,40,150,0.65)');
-  addLabel('Ring 3 · Analogues',rlp('outer',0.93).x, 0.1,rlp('outer',0.93).z,'rgba(80,216,176,0.42)',6.5,'rgba(10,112,88,0.65)');
-  addLabel('Ring 4 · Cultural', rlp('outer2',0.93).x,0.1,rlp('outer2',0.93).z,'rgba(216,176,80,0.42)',6.5,'rgba(138,100,16,0.65)');
+  addLabel('Ring 1 · Formalism',rlp('inner',0.93).x,0.1,rlp('inner',0.93).z,'rgba(74,138,220,0.42)',6.5,'rgba(74,138,220,0.32)');
+  addLabel('Ring 2 · History',  rlp('mid',0.93).x,  0.1,rlp('mid',0.93).z,  'rgba(154,112,204,0.42)',6.5,'rgba(154,112,204,0.32)');
+  addLabel('Ring 3 · Analogues',rlp('outer',0.93).x, 0.1,rlp('outer',0.93).z,'rgba(80,216,176,0.42)',6.5,'rgba(80,200,160,0.32)');
+  addLabel('Ring 4 · Cultural', rlp('outer2',0.93).x,0.1,rlp('outer2',0.93).z,'rgba(216,176,80,0.42)',6.5,'rgba(200,170,60,0.32)');
 
   CONNECTIONS.forEach(conn=>{
     const fN=NODE_BY_ID[conn.from],tN=NODE_BY_ID[conn.to];if(!fN||!tN)return;
@@ -580,19 +609,559 @@ function buildScene(){
 }
 buildScene();
 
+// ═══════════════════════════════════════════════════════════════
+// GALAXY LAYER — five cluster meshes representing domain taxonomy
+// Visible when camState.radius > GALAXY_THRESHOLD
+// Crossfades with the orrery node layer
+// ═══════════════════════════════════════════════════════════════
+
+const GALAXY_THRESHOLD = 110; // radius above which galaxy fades in
+const GALAXY_FULL      = 180; // radius at which galaxy is fully visible
+
+// ── Cluster definitions ──
+// Position is in world space, chosen so clusters that share the most
+// connections sit closest together. Formalism ↔ History are adjacent.
+// Chaos branches off History. Computation extends Chaos outward.
+// Physical/Cultural arcs to the far side.
+const CLUSTERS = [
+  {
+    id: 'formalism',
+    name: 'Classical\nFoundations',
+    sub: 'Newton · Hamilton · Jacobi · Lagrange Points',
+    color: 0x4a8adc, hex: '#4a8adc',
+    pos: new THREE.Vector3(-55, 0, -20),
+    nodeIds: ['problem','newton','hamilton','jacobi','restricted','integrals','lagrange-pts'],
+    size: 5.2,
+  },
+  {
+    id: 'history',
+    name: 'Solution\nHistory',
+    sub: 'Euler · Lagrange · Poincaré · Sundman · Moore',
+    color: 0x9a70cc, hex: '#9a70cc',
+    pos: new THREE.Vector3(20, 0, -55),
+    nodeIds: ['euler1767','lagrange1772','poincare1889','sundman1912','moore1993','wang1991','suvakov2013','hristov2023','nn2019'],
+    size: 5.8,
+  },
+  {
+    id: 'chaos',
+    name: 'Chaos &\nDynamics',
+    sub: 'Butterfly Effect · n-Body · Vortex · GR',
+    color: 0x50d8b0, hex: '#50d8b0',
+    pos: new THREE.Vector3(60, 0, 10),
+    nodeIds: ['chaos','nbody','vortex','gr','helium','efimov'],
+    size: 4.8,
+  },
+  {
+    id: 'physical',
+    name: 'Physical\nManifestations',
+    sub: 'Lagrange Missions · Trojans · Figure-Eight',
+    color: 0xd8b050, hex: '#d8b050',
+    pos: new THREE.Vector3(-15, 0, 65),
+    nodeIds: ['spacecraft','trojans','figureeight'],
+    size: 4.0,
+  },
+  {
+    id: 'cultural',
+    name: 'Cultural &\nAnalogues',
+    sub: 'Liu Cixin · Netflix · Helium Atom · Efimov',
+    color: 0xe07090, hex: '#e07090',
+    pos: new THREE.Vector3(30, 0, 70),
+    nodeIds: ['liucixin','tvshow','helium','efimov'],
+    size: 3.6,
+  },
+];
+
+// ── Inter-cluster connection threads ──
+const CLUSTER_CONNECTIONS = [
+  {from:'formalism', to:'history',  label:'Formal tools → historical attempts'},
+  {from:'history',   to:'chaos',    label:'Poincaré → chaos theory'},
+  {from:'chaos',     to:'physical', label:'Dynamics → real-world systems'},
+  {from:'formalism', to:'physical', label:'Lagrange points → spacecraft'},
+  {from:'history',   to:'cultural', label:'Solutions → cultural resonance'},
+  {from:'chaos',     to:'cultural', label:'Chaos → fiction & analogy'},
+];
+
+// ── Build galaxy layer ──
+const galaxyObjects   = []; // {mesh, glow, label, cluster}
+const galaxyLines     = []; // {line}
+const galaxyGroup     = new THREE.Group();
+scene.add(galaxyGroup);
+galaxyGroup.visible = false;
+
+// Cluster node-count label canvas
+function makeClusterCanvas(cluster, forLight){
+  const c = document.createElement('canvas');
+  c.width = 512; c.height = 256;
+  const ctx = c.getContext('2d');
+
+  // Dark backing to eliminate WebGL blending fringe
+  if(!forLight){
+    ctx.fillStyle = 'rgba(4,6,18,0.72)';
+    ctx.beginPath();
+    ctx.roundRect(0, 0, 512, 256, 8);
+    ctx.fill();
+  }
+
+  const r=(cluster.color>>16)&255, g=(cluster.color>>8)&255, b=cluster.color&255;
+  const nameColor  = forLight ? `rgba(10,14,30,0.88)` : `rgba(${r},${g},${b},0.95)`;
+  const subColor   = forLight ? `rgba(10,14,30,0.44)` : `rgba(${r},${g},${b},0.50)`;
+  const countColor = forLight ? `rgba(10,14,30,0.28)` : `rgba(${r},${g},${b},0.30)`;
+
+  // Name
+  ctx.fillStyle = nameColor;
+  ctx.font = '900 38px "DM Serif Display", serif';
+  const lines = cluster.name.split('\n');
+  lines.forEach((ln, i) => ctx.fillText(ln, 12, 60 + i * 48));
+
+  // Sub
+  ctx.fillStyle = subColor;
+  ctx.font = '300 18px "DM Mono", monospace';
+  ctx.fillText(cluster.sub, 12, 60 + lines.length * 48 + 24);
+
+  // Node count
+  ctx.fillStyle = countColor;
+  ctx.font = '300 15px "DM Mono", monospace';
+  ctx.fillText(cluster.nodeIds.length + ' nodes', 12, 60 + lines.length * 48 + 48);
+
+  return c;
+}
+
+function buildGalaxyLayer(){
+  CLUSTERS.forEach(cl => {
+    // Core sphere
+    const geo  = new THREE.SphereGeometry(cl.size, 32, 32);
+    const mat  = new THREE.MeshPhysicalMaterial({
+      color: cl.color, emissive: cl.color, emissiveIntensity: 0.6,
+      metalness: 0.1, roughness: 0.55, clearcoat: 0.4,
+      transparent: true, opacity: 0,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(cl.pos);
+    mesh.userData = {cluster: cl};
+    galaxyGroup.add(mesh);
+
+    // Outer atmosphere shell
+    const atmGeo = new THREE.SphereGeometry(cl.size * 1.55, 24, 24);
+    const atmMat = new THREE.MeshBasicMaterial({
+      color: cl.color, transparent: true, opacity: 0,
+      side: THREE.BackSide, depthWrite: false,
+    });
+    const atm = new THREE.Mesh(atmGeo, atmMat);
+    atm.position.copy(cl.pos);
+    galaxyGroup.add(atm);
+
+    // Glow sprite
+    const glowSpr = makeGlowSprite(cl.color, cl.size);
+    glowSpr.scale.setScalar(cl.size * 9);
+    glowSpr.position.copy(cl.pos);
+    glowSpr.material.opacity = 0;
+    galaxyGroup.add(glowSpr);
+
+    // Text label sprite
+    const lc = makeClusterCanvas(cl, false);
+    const lSpr = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: new THREE.CanvasTexture(lc), transparent: true, depthWrite: false,
+    }));
+    lSpr.scale.set(28, 14, 1);
+    lSpr.position.set(cl.pos.x + cl.size * 1.1, cl.pos.y + cl.size * 1.3, cl.pos.z);
+    lSpr.material.opacity = 0;
+    galaxyGroup.add(lSpr);
+
+    // Ring around cluster
+    const ringPts = [];
+    for(let i = 0; i <= 80; i++){
+      const a = i / 80 * Math.PI * 2;
+      ringPts.push(new THREE.Vector3(
+        cl.pos.x + Math.cos(a) * cl.size * 1.35,
+        cl.pos.y,
+        cl.pos.z + Math.sin(a) * cl.size * 1.35
+      ));
+    }
+    const ringMat = new THREE.LineBasicMaterial({color: cl.color, transparent: true, opacity: 0});
+    const ringLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), ringMat);
+    galaxyGroup.add(ringLine);
+    galaxyLines.push({line: ringLine, baseOp: 0.35});
+
+    // Scatter mini-dots representing member nodes
+    cl.nodeIds.forEach((nid, ni) => {
+      const node = NODE_BY_ID[nid];
+      if(!node) return;
+      const angle = (ni / cl.nodeIds.length) * Math.PI * 2;
+      const dist  = cl.size * (1.6 + Math.random() * 0.8);
+      const dotPos = new THREE.Vector3(
+        cl.pos.x + Math.cos(angle) * dist,
+        cl.pos.y + (Math.random() - 0.5) * 2,
+        cl.pos.z + Math.sin(angle) * dist
+      );
+      const dotGeo = new THREE.SphereGeometry(0.22, 8, 8);
+      const dotMat = new THREE.MeshBasicMaterial({color: cl.color, transparent: true, opacity: 0});
+      const dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.copy(dotPos);
+      dot.userData = {clusterDot: true, nodeId: nid, cluster: cl};
+      galaxyGroup.add(dot);
+      galaxyObjects.push({type:'dot', mesh:dot, cluster:cl, nodeId:nid});
+
+      // Thread from dot to cluster core
+      const threadMat = new THREE.LineBasicMaterial({color: cl.color, transparent: true, opacity: 0});
+      const threadLine = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([dotPos, cl.pos]),
+        threadMat
+      );
+      galaxyGroup.add(threadLine);
+      galaxyLines.push({line: threadLine, baseOp: 0.12});
+    });
+
+    galaxyObjects.push({type:'cluster', mesh, atm, glow:glowSpr, label:lSpr, ring:ringLine, cluster:cl});
+  });
+
+  // Inter-cluster connection arcs
+  CLUSTER_CONNECTIONS.forEach(cc => {
+    const fromCl = CLUSTERS.find(c => c.id === cc.from);
+    const toCl   = CLUSTERS.find(c => c.id === cc.to);
+    if(!fromCl || !toCl) return;
+    const p1 = fromCl.pos.clone(), p2 = toCl.pos.clone();
+    const mid = p1.clone().add(p2).multiplyScalar(0.5);
+    mid.y += 18 + Math.random() * 12;
+    const pts = new THREE.QuadraticBezierCurve3(p1, mid, p2).getPoints(40);
+    const arcMat = new THREE.LineBasicMaterial({
+      color: 0x8ab4e0, transparent: true, opacity: 0, depthWrite: false,
+    });
+    const arcLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), arcMat);
+    galaxyGroup.add(arcLine);
+    galaxyLines.push({line: arcLine, baseOp: 0.28, isArc: true, label: cc.label});
+  });
+}
+
+buildGalaxyLayer();
+
+// ── Crossfade state ──
+let galaxyAlpha     = 0;   // 0 = orrery fully visible, 1 = galaxy fully visible
+let isGalaxyView    = false;
+const GALAXY_ENTER_THRESHOLD = 115;
+const GALAXY_FADE_SPEED      = 0.045;
+
+function updateGalaxyAlpha(){
+  const r = camState.radius;
+  let target = 0;
+  if(r > GALAXY_ENTER_THRESHOLD){
+    target = Math.min((r - GALAXY_ENTER_THRESHOLD) / (GALAXY_FULL - GALAXY_ENTER_THRESHOLD), 1);
+  }
+  galaxyAlpha += (target - galaxyAlpha) * GALAXY_FADE_SPEED;
+  if(galaxyAlpha < 0.001) galaxyAlpha = 0;
+  if(galaxyAlpha > 0.999) galaxyAlpha = 1;
+
+  const wasGalaxy = isGalaxyView;
+  isGalaxyView = galaxyAlpha > 0.01;
+  galaxyGroup.visible = isGalaxyView;
+
+  const orreryAlpha = 1 - galaxyAlpha;
+
+  // Fade orrery node layer
+  nodeObjects.forEach(({mesh}) => {
+    mesh.material.opacity = isLight
+      ? orreryAlpha * 0.88
+      : orreryAlpha * 0.95;
+  });
+  glowSprites.forEach(gs => { gs.material.opacity = isLight ? 0 : orreryAlpha * 0.72; });
+  allLabels.forEach(({spr}) => { spr.material.opacity = orreryAlpha; });
+  allLines.forEach(({line, darkOp, lightOp}) => {
+    line.material.opacity = (isLight ? lightOp : darkOp) * orreryAlpha;
+  });
+  connLineObjects.forEach(({line, darkOp, lightOp}) => {
+    line.material.opacity = (isLight ? lightOp : darkOp) * orreryAlpha;
+  });
+
+  // Fade galaxy layer
+  const ga = galaxyAlpha;
+  galaxyObjects.forEach(obj => {
+    if(obj.type === 'cluster'){
+      obj.mesh.material.opacity = ga * 0.82;
+      obj.atm.material.opacity  = ga * 0.12;
+      obj.glow.material.opacity = isLight ? 0 : ga * 0.55;
+      obj.label.material.opacity = ga;
+      obj.ring.material.opacity  = ga * 0.35;
+    } else if(obj.type === 'dot'){
+      obj.mesh.material.opacity  = ga * 0.65;
+    }
+  });
+  galaxyLines.forEach(({line, baseOp}) => {
+    line.material.opacity = ga * baseOp;
+  });
+}
+
+// ── Cluster hover tooltip ──
+const clusterMeshes = galaxyObjects.filter(o=>o.type==='cluster').map(o=>o.mesh);
+const dotMeshes     = galaxyObjects.filter(o=>o.type==='dot').map(o=>o.mesh);
+let hoveredCluster  = null;
+
+function checkGalaxyHover(mouseVec){
+  if(!isGalaxyView || galaxyAlpha < 0.3) return false;
+  raycaster.setFromCamera(mouseVec, cam);
+
+  // Check cluster cores
+  const cHits = raycaster.intersectObjects(clusterMeshes);
+  if(cHits.length){
+    const cl = cHits[0].object.userData.cluster;
+    if(cl !== hoveredCluster){
+      hoveredCluster = cl;
+      document.getElementById('tt-ring').textContent  = cl.nodeIds.length + ' nodes';
+      document.getElementById('tt-title').textContent = cl.name.replace('\n',' ');
+      document.getElementById('tt-title').style.color = cl.hex;
+      document.getElementById('tt-type').textContent  = cl.sub;
+      tooltip.classList.add('vis');
+    }
+    document.body.style.cursor = 'pointer';
+    return true;
+  }
+
+  // Check member dots
+  const dHits = raycaster.intersectObjects(dotMeshes);
+  if(dHits.length){
+    const dot = dHits[0].object;
+    const node = NODE_BY_ID[dot.userData.nodeId];
+    const cl   = dot.userData.cluster;
+    if(node){
+      document.getElementById('tt-ring').textContent  = cl.name.replace('\n',' ');
+      document.getElementById('tt-title').textContent = node.title;
+      document.getElementById('tt-title').style.color = cl.hex;
+      document.getElementById('tt-type').textContent  = dcfg(node.domain).label;
+      tooltip.classList.add('vis');
+    }
+    document.body.style.cursor = 'pointer';
+    return true;
+  }
+
+  if(hoveredCluster){ hoveredCluster = null; tooltip.classList.remove('vis'); }
+  return false;
+}
+
+// Clicking a cluster in galaxy view zooms into orrery centered on that cluster
+function handleGalaxyClick(mouseVec){
+  if(!isGalaxyView || galaxyAlpha < 0.3) return false;
+  raycaster.setFromCamera(mouseVec, cam);
+
+  // Click cluster core → drop into SKY view
+  const cHits = raycaster.intersectObjects(clusterMeshes);
+  if(cHits.length){
+    const cl = cHits[0].object.userData.cluster;
+    document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('[data-view="top"]').classList.add('active');
+    camTarget = {...VIEWS.top};
+    return true;
+  }
+
+  // Click a member dot → zoom in and focus that node
+  const dHits = raycaster.intersectObjects(dotMeshes);
+  if(dHits.length){
+    const node = NODE_BY_ID[dHits[0].object.userData.nodeId];
+    if(node){
+      document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelector('[data-view="top"]').classList.add('active');
+      camTarget = {...VIEWS.top};
+      // Small delay so orrery fades in before focus panel opens
+      setTimeout(()=>enterFocus(node), 600);
+    }
+    return true;
+  }
+  return false;
+}
+
+// ── Slow galaxy drift ──
+let galaxyDrift = 0;
+
+// ═══════════════════════════════════════════
+// MOON SYSTEM — connected nodes orbit as satellites
+// Each moon = a CONNECTIONS entry from/to the focused node
+// Color = connection type color
+// Click = jump to that node
+// ═══════════════════════════════════════════
+let activeMoons=[]; // {mesh,glowSpr,labelSpr,connLine,targetNode,connType,orbitAngle,orbitRadius,orbitSpeed}
+let moonMeshList=[];
+let hoveredMoon=null;
+let moonBirth=0;
+let orbitPaused=false;
+
+const MOON_FADEDUR=0.55;
+const MOON_R=0.055;
+
+function makeMoonLabel(text,hexColor){
+  const c=document.createElement('canvas');c.width=320;c.height=40;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle=hexColor+'cc';
+  ctx.font='bold 13px "DM Mono",monospace';
+  ctx.fillText(text.toUpperCase(),6,26);
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+  spr.scale.set(2.6,0.32,1);
+  return spr;
+}
+
+function spawnMoons(node){
+  moonBirth=elapsed; // use elapsed (seconds since page load), not wall-clock
+  const conns=CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id);
+  if(!conns.length) return;
+
+  const orbitR=node.tier==='center'?2.2:node.tier==='inner'?2.6:3.0;
+
+  conns.forEach((conn,i)=>{
+    const otherId=conn.from===node.id?conn.to:conn.from;
+    const other=NODE_BY_ID[otherId];
+    if(!other) return;
+
+    const cfg=cc(conn.type);
+    const col=isLight?cfg.lkH:cfg.dkH;
+    const hexCol='#'+col.toString(16).padStart(6,'0');
+    const startAngle=(i/conns.length)*Math.PI*2;
+    const speed=0.20+i*0.04;
+
+    // Moon sphere
+    const mesh=new THREE.Mesh(
+      new THREE.SphereGeometry(MOON_R,8,8),
+      new THREE.MeshPhysicalMaterial({color:col,emissive:col,emissiveIntensity:isLight?0:1.8,metalness:0,roughness:0.1,transparent:true,opacity:0,depthWrite:false})
+    );
+    mesh.userData={isMoon:true,targetNode:other,connType:conn.type};
+    scene.add(mesh);
+
+    // Glow sprite behind moon
+    const glowSpr=makeGlowSprite(col,MOON_R);
+    glowSpr.material.opacity=0;
+    glowSpr.scale.setScalar(MOON_R*9);
+    scene.add(glowSpr);
+
+    // Label: connection type + truncated target title
+    const short=other.title.length>20?other.title.slice(0,18)+'…':other.title;
+    const labelText=`${CONN_TYPE_LABELS[conn.type]||conn.type} · ${short}`;
+    const labelSpr=makeMoonLabel(labelText,hexCol);
+    labelSpr.material.opacity=0;
+    scene.add(labelSpr);
+
+    // Connector line from parent node to moon
+    const cGeo=new THREE.BufferGeometry().setFromPoints([node._pos.clone(),node._pos.clone()]);
+    const cMat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false});
+    const connLine=new THREE.Line(cGeo,cMat);
+    scene.add(connLine);
+
+    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node});
+    moonMeshList.push(mesh);
+  });
+}
+
+function clearMoons(){
+  activeMoons.forEach(m=>{
+    scene.remove(m.mesh);scene.remove(m.glowSpr);scene.remove(m.labelSpr);scene.remove(m.connLine);
+    m.mesh.geometry.dispose();m.mesh.material.dispose();
+    m.glowSpr.material.map.dispose();m.glowSpr.material.dispose();
+    m.labelSpr.material.map.dispose();m.labelSpr.material.dispose();
+    m.connLine.geometry.dispose();m.connLine.material.dispose();
+  });
+  activeMoons=[];moonMeshList=[];hoveredMoon=null;
+  hideMoonTip();
+}
+
+function tickMoons(elapsed,dt){
+  if(!activeMoons.length) return;
+  const age=elapsed-moonBirth;
+  const fadeT=Math.min(age/MOON_FADEDUR,1);
+  const eased=fadeT*fadeT*(3-2*fadeT);
+
+  activeMoons.forEach(m=>{
+    if(!orbitPaused) m.orbitAngle+=m.orbitSpeed*dt;
+    const pp=m.parentNode._pos;
+    const ox=pp.x+Math.cos(m.orbitAngle)*m.orbitRadius;
+    const oy=pp.y+Math.sin(m.orbitAngle*0.5)*0.3;
+    const oz=pp.z+Math.sin(m.orbitAngle)*m.orbitRadius*0.52;
+    m.mesh.position.set(ox,oy,oz);
+    m.glowSpr.position.set(ox,oy,oz);
+    m.labelSpr.position.set(ox+0.2,oy+0.18,oz);
+
+    const isHov=hoveredMoon===m;
+    const tOp=isHov?1.0:0.75;
+    const tSc=isHov?2.2:1.0;
+    m.mesh.material.opacity=eased*tOp;
+    m.glowSpr.material.opacity=eased*(isHov?0.85:0.50);
+    m.connLine.material.opacity=eased*0.18;
+    m.labelSpr.material.opacity=eased*(isHov?0.95:0.48);
+
+    // Light theme: kill emissive
+    if(m.mesh.material.emissiveIntensity>0&&isLight) m.mesh.material.emissiveIntensity=0;
+
+    const cs=m.mesh.scale.x;
+    m.mesh.scale.setScalar(cs+(tSc-cs)*0.14);
+
+    // Update connector line
+    const pa=m.connLine.geometry.attributes.position.array;
+    pa[0]=pp.x;pa[1]=pp.y;pa[2]=pp.z;
+    pa[3]=ox;pa[4]=oy;pa[5]=oz;
+    m.connLine.geometry.attributes.position.needsUpdate=true;
+  });
+}
+
+// Moon tooltip
+function showMoonTip(m,cx,cy){
+  const tt=document.getElementById('tooltip');
+  const cfg=cc(m.connType);
+  const col=isLight?'#'+cfg.lkH.toString(16).padStart(6,'0'):'#'+cfg.dkH.toString(16).padStart(6,'0');
+  document.getElementById('tt-ring').textContent=CONN_TYPE_LABELS[m.connType]||m.connType;
+  document.getElementById('tt-title').textContent=m.targetNode.title;
+  document.getElementById('tt-title').style.color=col;
+  document.getElementById('tt-type').textContent='Click to navigate';
+  posTooltip(cx,cy);
+  tt.classList.add('vis');
+}
+function hideMoonTip(){
+  document.getElementById('tooltip').classList.remove('vis');
+  hoveredMoon=null;
+}
+
 function applyTheme(){
   document.body.classList.toggle('light',isLight);
   document.getElementById('theme-toggle').textContent=isLight?'Dark':'Light';
   allLines.forEach(({line,darkColor,lightColor,darkOp,lightOp})=>{line.material.color.setHex(isLight?lightColor:darkColor);line.material.opacity=isLight?lightOp:darkOp;});
   nodeObjects.forEach(({mesh})=>{
     const ud=mesh.userData;
-    if(isLight){mesh.material.color.setHex(ud.lightOrigColor||0x0a0e1e);mesh.material.emissive.setHex(ud.lightOrigColor||0x0a0e1e);mesh.material.emissiveIntensity=0;mesh.material.metalness=0;mesh.material.roughness=0.55;mesh.material.clearcoat=0;}
-    else{mesh.material.color.setHex(ud.origColor);mesh.material.emissive.setHex(ud.origColor);mesh.material.emissiveIntensity=ud.origEI||1.4;mesh.material.metalness=0.2;mesh.material.roughness=0.08;mesh.material.clearcoat=1.0;}
+    if(isLight){
+      mesh.material.color.setHex(0x1a1a20);
+      mesh.material.emissive.setHex(0x000000);
+      mesh.material.emissiveIntensity=0;
+      mesh.material.metalness=0;
+      mesh.material.roughness=0.65;
+      mesh.material.clearcoat=0;
+      mesh.material.opacity=0.88; // much more opaque in light mode
+    } else {
+      mesh.material.color.setHex(ud.origColor);
+      mesh.material.emissive.setHex(ud.origColor);
+      mesh.material.emissiveIntensity=ud.origEI||1.4;
+      mesh.material.metalness=0.2;
+      mesh.material.roughness=0.08;
+      mesh.material.clearcoat=1.0;
+      mesh.material.opacity=0.95;
+    }
   });
   glowSprites.forEach(gs=>{gs.visible=!isLight;});
   neonA.intensity=isLight?0:6;neonB.intensity=isLight?0:5;neonC.intensity=isLight?0:4;
-  ambLight.intensity=isLight?0.85:0.15;
+  ambLight.intensity=isLight?1.2:0.15; // brighter ambient in light so ink nodes are fully lit
   pMat.opacity=isLight?0:0.14;
+  // Galaxy cluster glows off in light mode; redraw labels with correct contrast
+  galaxyObjects.forEach(obj=>{
+    if(obj.type==='cluster'){
+      obj.glow.material.opacity=isLight?0:obj.glow.material.opacity;
+      // Darker cluster cores in light mode for visibility
+      if(isLight){
+        obj.mesh.material.opacity=0.92;
+        obj.atm.material.opacity=0.08;
+      }
+      // Redraw label canvas for correct theme
+      const newLc=makeClusterCanvas(obj.cluster, isLight);
+      obj.label.material.map.dispose();
+      obj.label.material.map=new THREE.CanvasTexture(newLc);
+      obj.label.material.needsUpdate=true;
+    }
+    // Dots: darker in light mode
+    if(obj.type==='dot'&&isLight){
+      obj.mesh.material.color.setHex(0x1a1a20);
+    } else if(obj.type==='dot'&&!isLight){
+      obj.mesh.material.color.setHex(obj.cluster.color);
+    }
+  });
   scene.fog.color.setHex(isLight?LIGHT_FOG:DARK_FOG);
   renderer.setClearColor(isLight?LIGHT_FOG:0x000000,0);
   redrawLabels();drawMesh();
@@ -617,10 +1186,13 @@ drawMesh();tickMesh();
 const RING_NAMES={center:'Center',inner:'Ring 1 · Formalism',mid:'Ring 2 · History',outer:'Ring 3 · Analogues',outer2:'Ring 4 · Cultural'};
 const CONN_TYPE_LABELS={'preceded':'Preceded','same-structure':'Same Structure','enabled':'Enabled','lives-in':'Lives In'};
 const CONN_TYPE_CSS_DK={'preceded':'rgba(74,138,220,0.82)','same-structure':'rgba(154,112,204,0.82)','enabled':'rgba(80,216,176,0.82)','lives-in':'rgba(216,176,80,0.82)'};
-const CONN_TYPE_CSS_LK={'preceded':'rgba(26,58,128,0.82)','same-structure':'rgba(90,40,150,0.82)','enabled':'rgba(10,112,88,0.82)','lives-in':'rgba(138,100,16,0.82)'};
+const CONN_TYPE_CSS_LK={'preceded':'rgba(60,110,190,0.55)','same-structure':'rgba(120,80,180,0.55)','enabled':'rgba(30,130,100,0.55)','lives-in':'rgba(160,120,30,0.55)'};
 
 function openPanel(node){
-  const cfg=dcfg(node.domain),col=isLight?cfg.lightHex:cfg.hex;
+  const cfg=dcfg(node.domain);
+  // In light mode use muted domain tints for accents, not the node ink color
+  const accentMap={statement:'rgba(120,130,160,0.45)',formalism:'rgba(74,138,220,0.40)',history:'rgba(154,112,204,0.40)',analogue:'rgba(80,200,160,0.40)',cultural:'rgba(200,170,60,0.40)'};
+  const col=isLight?(accentMap[node.domain]||'rgba(120,120,140,0.40)'):cfg.hex;
   document.getElementById('gc-bar').style.background=col;
   document.getElementById('gc-ring').textContent=node.era||RING_NAMES[node.tier];
   document.getElementById('gc-title').textContent=node.title||'';
@@ -639,15 +1211,6 @@ function openPanel(node){
     gcConn.innerHTML=html;
     gcConn.querySelectorAll('.gc-conn-item').forEach(item=>{item.addEventListener('click',()=>{const t=NODE_BY_ID[item.dataset.ct];if(t)enterFocus(t);});});
   } else {gcConn.style.display='none';}
-  const gcMoons=document.getElementById('gc-moons');
-  if(node.moons&&node.moons.length){
-    gcMoons.style.display='';
-    let mHtml='<div class="gc-moon-label">Satellite Facts</div>';
-    node.moons.forEach(m=>{
-      mHtml+=`<div class="gc-moon-item"><div class="gc-moon-dot" style="background:${col}"></div><div><div class="gc-moon-text">${m.text}</div><span class="gc-moon-tag">${m.tag}</span></div></div>`;
-    });
-    gcMoons.innerHTML=mHtml;
-  } else {gcMoons.style.display='none';}
   document.getElementById('ghost').classList.add('on');
   document.getElementById('ms-bar').style.background=col;
   document.getElementById('ms-ring').textContent=node.era||RING_NAMES[node.tier];
@@ -657,35 +1220,7 @@ function openPanel(node){
   document.getElementById('msheet').classList.add('on');
 }
 
-let ghostExpanded=false;
-document.getElementById('gc-expand').addEventListener('click',()=>{
-  ghostExpanded=!ghostExpanded;
-  const ghost=document.getElementById('ghost');
-  ghost.classList.toggle('expanded',ghostExpanded);
-  document.getElementById('gc-expand').textContent=ghostExpanded?'⤡':'⤢';
-  document.getElementById('gc-expand').title=ghostExpanded?'Collapse panel':'Expand panel';
-});
-
-const moonObjects=[];
-function buildMoonOrbits(){
-  NODES.filter(n=>n.id!=='problem'&&n.moons&&n.moons.length).forEach(n=>{
-    const cfg=dcfg(n.domain);
-    const moonCount=n.moons.length;
-    const orbitR=cfg.size*4.5+0.25;
-    for(let mi=0;mi<moonCount;mi++){
-      const phase=(mi/moonCount)*Math.PI*2;
-      const moonMesh=new THREE.Mesh(
-        new THREE.SphereGeometry(0.022,6,6),
-        new THREE.MeshBasicMaterial({color:cfg.color,transparent:true,opacity:0.55})
-      );
-      moonMesh.userData={nodeId:n.id,phase,orbitR,speed:0.28+mi*0.07,tilt:Math.PI*(0.12+mi*0.09)};
-      scene.add(moonMesh);
-      moonObjects.push({mesh:moonMesh,node:n,phase,orbitR,speed:0.28+mi*0.07,tilt:Math.PI*(0.12+mi*0.09)});
-    }
-  });
-}
-buildMoonOrbits();
-
+let isFocused=false,focusNode=null;
 function highlightConnections(node){
   const rIds=new Set(CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id).flatMap(c=>[c.from,c.to]));
   connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});
@@ -700,6 +1235,7 @@ function enterFocus(node){
   document.getElementById('focus-hint').classList.add('vis');
   document.getElementById('hint').style.opacity='0';
   openPanel(node);highlightConnections(node);
+  clearMoons();spawnMoons(node);
 }
 function exitFocus(){
   isFocused=false;focusNode=null;scenePivotTgt.set(0,0,0);
@@ -709,14 +1245,37 @@ function exitFocus(){
   document.getElementById('ghost').classList.remove('on');
   document.getElementById('msheet').classList.remove('on');
   resetConnectionHighlights();
+  clearMoons();
 }
 window.closePanel=function(){exitFocus();};
 
 const tooltip=document.getElementById('tooltip');
 let hoveredMesh=null,mouse=new THREE.Vector2(),drag=false,lastDragX=0,lastDragY=0,isDragging=false,hintFaded=false;
+let lastXY={x:0,y:0};
 function posTooltip(cx,cy){tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;}
+
 function checkHover(){
   raycaster.setFromCamera(mouse,cam);
+
+  // Galaxy layer takes priority when visible
+  if(isGalaxyView && galaxyAlpha > 0.3){
+    if(checkGalaxyHover(mouse)) return;
+  }
+
+  // Moons first when focused
+  if(isFocused&&moonMeshList.length){
+    const mHits=raycaster.intersectObjects(moonMeshList);
+    if(mHits.length){
+      const hit=mHits[0].object;
+      const mo=activeMoons.find(m=>m.mesh===hit);
+      if(mo&&mo!==hoveredMoon){hoveredMoon=mo;showMoonTip(mo,lastXY.x,lastXY.y);}
+      document.body.style.cursor='pointer';
+      if(hoveredMesh){hoveredMesh=null;}
+      return;
+    }
+  }
+  if(hoveredMoon){hideMoonTip();}
+
   const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
   if(hits.length){
     const hit=hits[0].object,obj=nodeObjects.find(o=>o.mesh===hit);
@@ -724,17 +1283,85 @@ function checkHover(){
     document.body.style.cursor='pointer';
   } else {if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
 }
-cvs.addEventListener('pointerdown',e=>{isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);});
-cvs.addEventListener('pointermove',e=>{const rect=cvs.getBoundingClientRect();mouse.x=(e.clientX-rect.left)/rect.width*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;posTooltip(e.clientX,e.clientY);if(e.buttons){isDragging=true;drag=true;camTarget.theta-=(e.clientX-lastDragX)*0.005;camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));lastDragX=e.clientX;lastDragY=e.clientY;}else{checkHover();}});
-cvs.addEventListener('pointerup',e=>{if(!drag){raycaster.setFromCamera(mouse,cam);const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}else if(isFocused)exitFocus();}if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}});
-cvs.addEventListener('wheel',e=>{camTarget.radius=Math.max(4,Math.min(80,camTarget.radius+e.deltaY*0.04));},{passive:true});
-let orbitPaused=false;
+
+cvs.addEventListener('pointerdown',e=>{
+  if(e.button===2) return;
+  isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);
+});
+cvs.addEventListener('pointermove',e=>{
+  const rect=cvs.getBoundingClientRect();
+  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
+  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  lastXY={x:e.clientX,y:e.clientY};
+  posTooltip(e.clientX,e.clientY);
+  if(e.buttons&&e.button!==2){
+    isDragging=true;drag=true;
+    camTarget.theta-=(e.clientX-lastDragX)*0.005;
+    camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));
+    lastDragX=e.clientX;lastDragY=e.clientY;
+  } else {checkHover();}
+});
+cvs.addEventListener('pointerup',e=>{
+  if(e.button===2) return;
+  if(!drag){
+    // Galaxy click takes priority
+    if(handleGalaxyClick(mouse)) {
+      if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
+      return;
+    }
+    raycaster.setFromCamera(mouse,cam);
+    // Check moons first
+    if(isFocused&&moonMeshList.length){
+      const mHits=raycaster.intersectObjects(moonMeshList);
+      if(mHits.length){
+        const mo=activeMoons.find(m=>m.mesh===mHits[0].object);
+        if(mo){enterFocus(mo.targetNode);return;}
+      }
+    }
+    const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+    if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}
+    else if(isFocused)exitFocus();
+  }
+  if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
+});
+cvs.addEventListener('wheel',e=>{
+  if(isFocused&&focusNode){
+    // Cycle through nodes on the same ring in scroll direction
+    const ringNodes=NODES
+      .filter(n=>n.tier===focusNode.tier&&n.id!==focusNode.id)
+      .sort((a,b)=>a.angle-b.angle);
+    if(ringNodes.length>0){
+      const allRing=[...NODES.filter(n=>n.tier===focusNode.tier)].sort((a,b)=>a.angle-b.angle);
+      const curIdx=allRing.findIndex(n=>n.id===focusNode.id);
+      const dir=e.deltaY>0?1:-1;
+      const nextIdx=(curIdx+dir+allRing.length)%allRing.length;
+      enterFocus(allRing[nextIdx]);
+    }
+    return;
+  }
+  // Allow scroll all the way out to galaxy
+  camTarget.radius=Math.max(4,Math.min(280,camTarget.radius+e.deltaY*0.06));
+},{passive:true});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){exitFocus();return;}
   if(e.code==='Space'){e.preventDefault();orbitPaused=!orbitPaused;}
 });
-cvs.addEventListener('contextmenu',e=>{e.preventDefault();orbitPaused=!orbitPaused;});
-document.querySelectorAll('.hud-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const v=VIEWS[btn.dataset.view];if(v){camTarget.phi=v.phi;camTarget.theta=v.theta;camTarget.radius=v.radius;}});});
+cvs.addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  if(isFocused) orbitPaused=!orbitPaused;
+});
+document.querySelectorAll('.hud-btn').forEach(btn=>{btn.addEventListener('click',()=>{
+  document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const v=VIEWS[btn.dataset.view];
+  if(v){
+    camTarget.phi=v.phi;camTarget.theta=v.theta;camTarget.radius=v.radius;
+    // Exiting galaxy view — reset orrery opacity immediately
+    if(btn.dataset.view!=='galaxy') {
+      if(isFocused) exitFocus();
+    }
+  }
+})});
 
 let lastTime=0,elapsed=0;
 function animate(ts){
@@ -743,24 +1370,568 @@ function animate(ts){
   camState.phi+=(camTarget.phi-camState.phi)*0.08;camState.theta+=(camTarget.theta-camState.theta)*0.08;camState.radius+=(camTarget.radius-camState.radius)*0.08;
   scenePivot.lerp(scenePivotTgt,0.08);
   if(!isFocused&&!isDragging&&!orbitPaused)camTarget.theta+=dt*0.018;
+
+  // Galaxy crossfade — drives orrery ↔ galaxy opacity every frame
+  updateGalaxyAlpha();
+
+  // Slow galaxy drift when in galaxy view
+  if(isGalaxyView){
+    galaxyDrift += dt * 0.004;
+    galaxyGroup.rotation.y = galaxyDrift;
+    // Pulsing cluster cores
+    galaxyObjects.forEach(obj=>{
+      if(obj.type==='cluster'){
+        const pulse = 0.55 + Math.sin(elapsed*0.7 + obj.cluster.pos.x*0.02)*0.18;
+        obj.mesh.material.emissiveIntensity = pulse * galaxyAlpha;
+        obj.glow.material.opacity = isLight ? 0 : pulse * 0.55 * galaxyAlpha;
+      }
+    });
+    // Adjust fog density for galaxy view
+    scene.fog.density = 0.012 * (1 - galaxyAlpha * 0.75);
+  } else {
+    scene.fog.density = 0.012;
+  }
+
   const pa=pGeo.attributes.position.array;
   for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;
   pGeo.attributes.position.needsUpdate=true;
-  nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
-  moonObjects.forEach(obj=>{
-    const t=elapsed*obj.speed+obj.phase;
-    const cx=obj.node._pos.x,cy=obj.node._pos.y,cz=obj.node._pos.z;
-    const r=obj.orbitR,tilt=obj.tilt;
-    obj.mesh.position.set(
-      cx+r*Math.cos(t),
-      cy+r*Math.sin(t)*Math.sin(tilt),
-      cz+r*Math.sin(t)*Math.cos(tilt)
-    );
-  });
+  // Only pulse node scales when orrery is visible
+  if(galaxyAlpha < 0.95){
+    nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
+  }
+  tickMoons(elapsed,dt);
   applyCam();renderer.render(scene,cam);isDragging=false;
 }
 requestAnimationFrame(animate);
 window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);resizeBg();drawMesh();});
+
+// ═══════════════════════════════════════════════════════════════
+// NODE EXPAND PANEL
+// Full-viewport reading mode: large text, image gallery, connections
+// ═══════════════════════════════════════════════════════════════
+
+// Image sets per node — curated Unsplash images that match each topic
+const NODE_IMAGES = {
+  problem:      [{url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85',cap:'Three bodies in gravitational dance'},
+                 {url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85',cap:'The night sky — where the problem lives'}],
+  newton:       [{url:'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&q=85',cap:'Orbital mechanics — Newtonian gravity'},
+                 {url:'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=1200&q=85',cap:'Force fields and attraction'}],
+  hamilton:     [{url:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=85',cap:'Phase space — position and momentum'},
+                 {url:'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1200&q=85',cap:'Energy conservation visualized'}],
+  poincare1889: [{url:'https://images.unsplash.com/photo-1530973428-5bf2db2e4d71?w=1200&q=85',cap:'Chaos — the butterfly effect origin'},
+                 {url:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=85',cap:"Poincaré's homoclinic tangle"}],
+  sundman1912:  [{url:'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1200&q=85',cap:'Series convergence — technically complete'},
+                 {url:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=85',cap:'Mathematics that cannot be computed'}],
+  moore1993:    [{url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85',cap:'The figure-eight — symmetry as solution'},
+                 {url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85',cap:'Three equal masses in choreography'}],
+  chaos:        [{url:'https://images.unsplash.com/photo-1530973428-5bf2db2e4d71?w=1200&q=85',cap:'Sensitive dependence on initial conditions'},
+                 {url:'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&q=85',cap:'Chaos theory — born from celestial mechanics'}],
+  spacecraft:   [{url:'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=1200&q=85',cap:'Webb Space Telescope at L2'},
+                 {url:'https://images.unsplash.com/photo-1541185933-ef5d1a71547c?w=1200&q=85',cap:'Lagrange point missions — navigating the unsolvable'}],
+  liucixin:     [{url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85',cap:'The Trisolaran sky — three suns, no pattern'},
+                 {url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85',cap:'Liu Cixin — mathematics as civilization'}],
+  helium:       [{url:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=85',cap:'The helium atom — same structure, 10³⁰ smaller'},
+                 {url:'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&q=85',cap:'Quantum analogue of gravitational three-body'}],
+};
+const DEFAULT_IMAGES = [
+  {url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85', cap:'Three-body problem'},
+  {url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85', cap:'Spatial knowledge surface'},
+];
+
+let epActiveImg = 0;
+let epNode = null;
+let epOpen = false;
+
+const CONN_TYPE_CSS_DK_EP = {'preceded':'rgba(74,138,220,0.80)','same-structure':'rgba(154,112,204,0.80)','enabled':'rgba(80,216,176,0.80)','lives-in':'rgba(216,176,80,0.80)'};
+const CONN_TYPE_CSS_LK_EP = {'preceded':'rgba(40,90,170,0.75)','same-structure':'rgba(100,55,160,0.75)','enabled':'rgba(20,110,80,0.75)','lives-in':'rgba(140,100,15,0.75)'};
+
+function openExpand(node){
+  epNode = node;
+  epOpen = true;
+  epActiveImg = 0;
+
+  const cfg   = dcfg(node.domain);
+  const col   = isLight ? cfg.lightHex : cfg.hex;
+  const imgs  = NODE_IMAGES[node.id] || DEFAULT_IMAGES;
+
+  // Header
+  const pill = document.getElementById('ep-domain-pill');
+  pill.textContent = cfg.label;
+  pill.style.color = col;
+  document.getElementById('ep-node-title').textContent = node.title || '';
+  document.getElementById('ep-role').textContent       = node.role  || '';
+  document.getElementById('ep-era').textContent        = node.era   || '';
+  document.getElementById('ep-text').textContent       = node.body  || '';
+  document.getElementById('ep-node-id').textContent    = 'node · ' + node.id;
+
+  // Connections list
+  const connList = document.getElementById('ep-conn-list');
+  const conns = CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id);
+  const cssDef = isLight ? CONN_TYPE_CSS_LK_EP : CONN_TYPE_CSS_DK_EP;
+  connList.innerHTML = conns.map(c=>{
+    const otherId = c.from===node.id?c.to:c.from;
+    const other   = NODE_BY_ID[otherId];
+    if(!other) return '';
+    const bColor = cssDef[c.type] || cssDef['preceded'];
+    return `<div class="ep-conn-row" data-nid="${other.id}">
+      <span class="ep-conn-badge" style="color:${bColor}">${CONN_TYPE_LABELS[c.type]||c.type}</span>
+      <span class="ep-conn-title">${other.title}</span>
+      <span class="ep-conn-arrow">→</span>
+    </div>`;
+  }).join('');
+  connList.querySelectorAll('.ep-conn-row').forEach(row=>{
+    row.addEventListener('click',()=>{
+      const target = NODE_BY_ID[row.dataset.nid];
+      if(target){ closeExpand(); setTimeout(()=>{ enterFocus(target); openExpand(target); },400); }
+    });
+  });
+  document.getElementById('ep-connections').style.display = conns.length ? '' : 'none';
+
+  // Gallery — main image
+  const mainImg = document.getElementById('ep-main-img');
+  mainImg.classList.remove('ep-img-vis');
+  mainImg.src = imgs[0].url;
+  mainImg.onload = ()=>{ mainImg.classList.add('ep-img-vis'); };
+  document.getElementById('ep-img-caption').textContent = imgs[0].cap || '';
+
+  // Thumbnails
+  const thumbs = document.getElementById('ep-gallery-thumbs');
+  thumbs.innerHTML = imgs.map((img,i)=>
+    `<img class="ep-thumb${i===0?' active':''}" src="${img.url}" data-idx="${i}" alt="${img.cap||''}">`
+  ).join('');
+  thumbs.querySelectorAll('.ep-thumb').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const idx = parseInt(th.dataset.idx);
+      epActiveImg = idx;
+      mainImg.classList.remove('ep-img-vis');
+      mainImg.src = imgs[idx].url;
+      mainImg.onload = ()=>mainImg.classList.add('ep-img-vis');
+      document.getElementById('ep-img-caption').textContent = imgs[idx].cap||'';
+      thumbs.querySelectorAll('.ep-thumb').forEach(t=>t.classList.toggle('active',t===th));
+    });
+  });
+
+  document.getElementById('expand-panel').classList.add('open');
+}
+
+function closeExpand(){
+  epOpen = false;
+  epNode = null;
+  document.getElementById('expand-panel').classList.remove('open');
+}
+
+document.getElementById('ep-close').addEventListener('click', closeExpand);
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && epOpen){ closeExpand(); return; }
+});
+
+// Wire expand button — shown alongside read button in ghost card
+document.getElementById('gc-expand-btn').addEventListener('click',()=>{
+  if(focusNode) openExpand(focusNode);
+});
+
+// Show expand button whenever a node is focused (always available)
+const _origOpenPanel2 = openPanel;
+openPanel = function(node){
+  _origOpenPanel2(node);
+  document.getElementById('gc-expand-btn').style.display = 'block';
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// SENTENCE ENGINE — PROTOTYPE II
+// Each node carries a narrative string. Clicking "Read node →"
+// opens the stream panel, decomposes the body into typed sentences,
+// tracks dwell per sentence, and writes signal back to node userData.
+// High-signal nodes pulse brighter on the orrery surface.
+// ═══════════════════════════════════════════════════════════════════
+
+// ── DOMAIN ACCENT COLORS for stream panel ──
+const SP_ACCENT = {
+  statement: '#8ab4e0',
+  formalism: '#6a9bdc',
+  history:   '#9a7acc',
+  analogue:  '#50c8a0',
+  cultural:  '#c8a840',
+};
+const SP_ACCENT_LK = {
+  statement: '#3a6090',
+  formalism: '#2a5a9a',
+  history:   '#5a2888',
+  analogue:  '#0a7058',
+  cultural:  '#8a6018',
+};
+
+// ── NODE NARRATIVES ──
+// Format: [label], [poster], [body], [pull], [spec key::val], [break]
+// **bold** *italic* inline markdown
+const NODE_NARRATIVES = {
+  problem: `
+[label] The Problem Statement · Center Node
+[poster] Three bodies, **no formula.**
+[body] Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge.
+[body] It is a structural property of the system. Add one body to a solvable problem, and solvability disappears entirely.
+[pull] The two-body problem has a closed-form solution. The three-body problem does not — and never will.
+[body] This is not a failure of mathematics. It is mathematics telling us something true about the universe: that interaction above a certain complexity produces irreducible behavior.
+[spec] Two bodies :: Closed-form solution exists
+[spec] Three bodies :: No closed-form solution · provably
+[spec] n bodies :: Numerical integration only
+[break]
+[body] The result is a problem that has occupied mathematicians and astronomers for over 350 years — and that still has no general analytical answer.
+`,
+  newton: `
+[label] Ring 1 · Formalism
+[poster] **F = Gm₁m₂/r².**
+[body] Each body exerts a gravitational force on every other. The magnitude is the product of the masses divided by the square of the distance, scaled by Newton's gravitational constant.
+[body] In two bodies, the forces balance into solvable conic sections — ellipses, parabolas, hyperbolas. The solution is exact.
+[pull] In three bodies, each position depends on all others *simultaneously.* The equations are coupled and nonlinear.
+[body] This coupling is the core difficulty. You cannot solve for one body's position without already knowing the others — and vice versa. There is no way in.
+[spec] Two-body solution :: Kepler's laws · exact
+[spec] Three-body equations :: Coupled ODEs · no closed form
+`,
+  hamilton: `
+[label] Ring 1 · Formalism
+[poster] Position and momentum. **Phase space.**
+[body] The Hamiltonian formulation reformulates Newtonian mechanics in phase space — a 6N-dimensional space where each dimension is a position or momentum coordinate.
+[body] H = T + V. Kinetic plus potential energy. The Hamiltonian is conserved — but conservation of the Hamiltonian alone does not determine the trajectory.
+[pull] Energy conservation is one constraint. A general solution requires eighteen. The gap of seventeen is the problem.
+[body] Hamilton's equations are beautiful. They expose the geometry of mechanics — but they do not make the three-body problem integrable.
+[spec] Dimensions :: 18 for three-body (6 per body)
+[spec] Conservation laws :: 10 of 18 required
+[spec] Gap :: 8 missing integrals
+`,
+  jacobi: `
+[label] Ring 1 · Formalism
+[poster] The **one** conserved quantity.
+[body] In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is the only exactly conserved quantity.
+[body] It defines Hill regions: volumes of space the test particle cannot escape from or enter without crossing a specific energy boundary.
+[pull] Every spacecraft mission that uses Lagrange points or halo orbits exploits Hill regions. The Jacobi integral is why those missions are possible.
+[body] The restricted problem is tractable. The general problem — three bodies with nonzero mass — has no such conserved quantity beyond the ten classical integrals.
+[spec] Valid for :: Restricted circular 3BP only
+[spec] Practical use :: Spacecraft trajectory design
+`,
+  poincare1889: `
+[label] Ring 2 · History
+[poster] A mistake that became **a field.**
+[body] In 1889, Henri Poincaré submitted a prize essay to King Oscar II of Sweden claiming he had proved the stability of the solar system.
+[body] Before publication, he found an error. The correction introduced something no one had seen before: sensitive dependence on initial conditions.
+[pull] Nearby trajectories in phase space do not stay nearby. They diverge — exponentially, and without bound. This is chaos.
+[body] Poincaré paid to suppress the printed version and rewrote the essay. The rewritten version, *Les méthodes nouvelles de la mécanique céleste*, became the founding text of dynamical systems theory.
+[body] A mistake that cost him personally launched the mathematics that now explains weather, ecology, turbulence, and the limits of prediction.
+[spec] Original claim :: Orbital stability proved
+[spec] Error found :: Homoclinic tangles · chaos
+[spec] Legacy :: Dynamical systems · chaos theory
+`,
+  sundman1912: `
+[label] Ring 2 · History
+[poster] Technically complete. **Practically useless.**
+[body] In 1912, Finnish mathematician Karl Fritiof Sundman proved that the three-body problem has a complete solution — a power series that converges for all time.
+[body] The catch: the series requires a change of time variable, and converges so slowly that an astronomical number of terms is needed for any practical precision.
+[pull] The number of terms required for useful accuracy has been estimated at 10⁸⁰⁰⁰⁰⁰⁰. The observable universe contains roughly 10⁸⁰ atoms.
+[body] Sundman's result is mathematically rigorous and physically irrelevant. It establishes the existence of a solution without providing a means to compute it.
+[body] The distinction between *existence* and *computability* is one the three-body problem makes sharper than almost anything else in physics.
+[spec] Series type :: Convergent power series in t^(1/3)
+[spec] Terms needed :: ~10⁸⁰⁰⁰⁰⁰⁰ for practical use
+[spec] Mathematical status :: Complete · exact
+[spec] Physical status :: Not computable in practice
+`,
+  moore1993: `
+[label] Ring 2 · History
+[poster] Three bodies. **One figure-eight.**
+[body] In 1993, Cris Moore discovered numerically that three equal masses could chase each other around a figure-eight curve in a stable periodic orbit.
+[body] The solution requires exact mass equality and precise initial conditions. It was verified analytically by Alain Chenciner and Richard Montgomery in 2000.
+[pull] Symmetry is doing the work that calculus cannot. The figure-eight's choreographic symmetry constrains the orbit into existence.
+[body] This was the first genuinely new family of periodic solutions in over two centuries — found not by analysis but by numerical search.
+[spec] Orbit type :: Choreography · figure-eight
+[spec] Stability :: Linearly stable · small perturbations decay
+[spec] Masses :: Must be exactly equal
+`,
+  chaos: `
+[label] Ring 3 · Analogue
+[poster] The butterfly effect **was born here.**
+[body] Chaos theory — the study of systems where small differences in initial conditions produce exponentially different outcomes — was discovered in the three-body problem.
+[body] Poincaré's 1889 correction to his prize essay is the founding document. The homoclinic tangle he found in the restricted three-body problem is the first rigorous demonstration of what we now call chaos.
+[pull] The field that explains why weather is unpredictable beyond two weeks, why populations oscillate unpredictably, why turbulence resists description — it was born from a celestial mechanics error.
+[body] The three-body problem is not just an application of chaos theory. It is the origin of chaos theory.
+[spec] First described :: Poincaré · 1889 · prize essay correction
+[spec] Applications :: Weather · ecology · turbulence · finance
+[spec] Key concept :: Sensitive dependence on initial conditions
+`,
+  helium: `
+[label] Ring 3 · Analogue
+[poster] Same mathematics. **Thirty orders smaller.**
+[body] The helium atom — one nucleus, two electrons — is structurally identical to the three-body gravitational problem.
+[body] Replace gravitational attraction with Coulomb attraction, and the equations of motion are formally the same. Two bodies attracted to a third, interacting with each other.
+[pull] The helium atom has no closed-form solution. Quantum mechanics provides approximation methods — variational, perturbative — but not an exact answer.
+[body] This is not a coincidence. It is the same mathematical structure expressing itself at a scale 10³⁰ times smaller. The unsolvability is structural, not incidental.
+[spec] Scale :: ~10⁻¹⁰ meters vs ~10¹¹ meters
+[spec] Force :: Coulomb vs gravitational
+[spec] Solution status :: No closed form · same reason
+`,
+  liucixin: `
+[label] Ring 4 · Cultural
+[poster] The problem as **civilization.**
+[body] Liu Cixin's *The Three-Body Problem* (2008) is a Hugo Award-winning science fiction trilogy in which the mathematical unsolvability of the three-body problem becomes the engine of an alien civilization's desperation.
+[body] The Trisolaran star system has three suns. Their orbits are chaotic — producing stable eras of predictable climate and chaotic eras of catastrophic instability. The civilization cannot predict which era is coming.
+[pull] The entire premise — a civilization driven to seek a new home by an unsolvable physics problem — makes the mathematics load-bearing in a work of fiction. The title is not metaphor.
+[body] The novel was translated into English by Ken Liu and published in 2014. It remains one of the few works of fiction where a mathematical result is not backdrop but plot.
+[spec] Author :: Liu Cixin · published 2008
+[spec] Translation :: Ken Liu · English 2014
+[spec] Hugo Award :: Best Novel · 2015
+`,
+  spacecraft: `
+[label] Ring 4 · Applied
+[poster] The unsolvable problem, **navigated.**
+[body] Lagrange points — the five equilibrium solutions Euler and Lagrange found in the restricted three-body problem — are used as parking locations for spacecraft.
+[body] The James Webb Space Telescope sits at L2 of the Sun-Earth system, 1.5 million kilometers from Earth in the anti-Sun direction.
+[pull] The problem has no general solution, but it has specific solutions. And those specific solutions are stable enough to park observatories in.
+[body] Halo orbits around the Lagrange points — discovered numerically, not analytically — are used for real mission design. The unsolvable problem is navigated, not solved.
+[spec] Webb Space Telescope :: L2 · Sun-Earth
+[spec] SOHO :: L1 · Sun-Earth
+[spec] LISA Pathfinder :: L1 · Sun-Earth
+`,
+};
+
+// ── INLINE MARKDOWN ──
+function spMd(text){
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'<span class="ac">$1</span>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>');
+}
+
+// ── PARSE NARRATIVE STRING ──
+function spParse(src){
+  const parts=[];
+  src.split('\n').forEach(raw=>{
+    const line=raw.trim();
+    if(!line) return;
+    const m=line.match(/^\[([a-z-]+)\]\s*(.*)/s);
+    if(!m) return;
+    const type=m[1], content=m[2].trim();
+    if(type==='break') parts.push({type:'break'});
+    else if(type==='spec'){
+      const sep=content.indexOf('::');
+      if(sep>-1) parts.push({type:'spec',key:content.slice(0,sep).trim(),val:content.slice(sep+2).trim()});
+    } else {
+      parts.push({type,content});
+    }
+  });
+  return parts;
+}
+
+// ── RENDER NARRATIVE TO DOM ──
+function spRender(parts, container){
+  container.innerHTML='';
+  parts.forEach((p,i)=>{
+    const el=document.createElement('span');
+    el.dataset.si=i;
+    if(p.type==='break'){
+      el.className='sp-sent s-break';
+      el.style.pointerEvents='none';
+    } else if(p.type==='spec'){
+      el.className='sp-sent s-spec';
+      el.innerHTML=`<span class="sp-spec-key">${p.key}</span><span class="sp-spec-val">${spMd(p.val)}</span>`;
+    } else {
+      el.className=`sp-sent s-${p.type}`;
+      if(p.type==='poster'||p.type==='body'||p.type==='pull') el.innerHTML=spMd(p.content);
+      else el.textContent=p.content;
+    }
+    el.addEventListener('click',()=>{ if(p.type!=='break') spGoTo(parseInt(el.dataset.si)); });
+    container.appendChild(el);
+  });
+}
+
+// ── ENGINE STATE ──
+let spActive=false, spNode=null, spParts=[], spCurrent=0;
+let spDwellStart=0;
+const spDwell={};   // {si: totalMs}
+const spReads={};   // {si: count}
+const SP_DWELL_THRESHOLD=1800; // ms — above this is a re-read signal
+
+// ── NAVIGATE ──
+function spGoTo(idx){
+  if(idx<0||idx>=spParts.length) return;
+
+  // Record dwell for departing sentence
+  if(spActive && spDwellStart>0){
+    const ms=performance.now()-spDwellStart;
+    spDwell[spCurrent]=(spDwell[spCurrent]||0)+ms;
+    spReads[spCurrent]=(spReads[spCurrent]||0)+1;
+  }
+
+  // Skip non-navigable types on keyboard nav
+  const part=spParts[idx];
+  if(!part||part.type==='break'||part.type==='label') {
+    // Try next navigable
+    if(idx>spCurrent) spGoTo(idx+1); else spGoTo(idx-1);
+    return;
+  }
+
+  spCurrent=idx;
+  spDwellStart=performance.now();
+
+  const sents=document.querySelectorAll('#sp-stream .sp-sent');
+  sents.forEach((el,i)=>{
+    el.classList.remove('active','past','revealed');
+    if(i<idx) el.classList.add('past','revealed');
+    else if(i===idx) el.classList.add('active','revealed');
+    else if(i<=idx+3) el.classList.add('revealed');
+  });
+
+  // Scroll active into view
+  const active=document.querySelector('#sp-stream .sp-sent.active');
+  if(active) active.scrollIntoView({behavior:'smooth',block:'center'});
+
+  // Progress
+  const navParts=spParts.filter(p=>p.type!=='break'&&p.type!=='label');
+  const navIdx=navParts.indexOf(spParts[idx]);
+  const pct=navParts.length>1?Math.round((navIdx/(navParts.length-1))*100):100;
+  document.getElementById('sp-progress-fill').style.width=pct+'%';
+
+  // Counter
+  document.getElementById('sp-counter').textContent=(navIdx+1)+' / '+navParts.length;
+
+  // Signal bar — show accumulated signal
+  const totalDwell=Object.values(spDwell).reduce((a,b)=>a+b,0);
+  const signalMs=Object.entries(spDwell).filter(([si,ms])=>ms>SP_DWELL_THRESHOLD).reduce((a,[,ms])=>a+ms,0);
+  const signalPct=totalDwell>0?Math.round((signalMs/totalDwell)*100):0;
+  document.getElementById('sp-signal-bar').textContent=signalPct>10?signalPct+'% signal':'';
+}
+
+function spNext(){
+  let n=spCurrent+1;
+  while(n<spParts.length && (spParts[n].type==='break'||spParts[n].type==='label')) n++;
+  if(n<spParts.length) spGoTo(n);
+}
+function spPrev(){
+  let n=spCurrent-1;
+  while(n>=0 && (spParts[n].type==='break'||spParts[n].type==='label')) n--;
+  if(n>=0) spGoTo(n);
+}
+
+// ── OPEN STREAM ──
+function openStream(node){
+  const src=NODE_NARRATIVES[node.id];
+  if(!src) return; // no narrative yet — silently skip
+
+  spNode=node;
+  spActive=true;
+  spCurrent=0;
+  spDwellStart=0;
+  Object.keys(spDwell).forEach(k=>delete spDwell[k]);
+  Object.keys(spReads).forEach(k=>delete spReads[k]);
+
+  spParts=spParse(src);
+
+  const cfg=dcfg(node.domain);
+  const accentColor=isLight?(SP_ACCENT_LK[node.domain]||'#2a5a9a'):(SP_ACCENT[node.domain]||'#6a9bdc');
+
+  document.getElementById('stream-panel').style.setProperty('--sp-accent',accentColor);
+  document.getElementById('sp-domain-bar').style.background=accentColor;
+  document.getElementById('sp-eyebrow').textContent=node.era||'';
+  document.getElementById('sp-title').textContent=node.title||'';
+  document.getElementById('sp-progress-fill').style.background=accentColor;
+  document.getElementById('sp-progress-fill').style.width='0%';
+
+  const stream=document.getElementById('sp-stream');
+  spRender(spParts,stream);
+
+  document.getElementById('stream-panel').classList.add('open');
+  document.body.classList.add('stream-open');
+
+  // Start at first navigable sentence
+  let first=0;
+  while(first<spParts.length&&(spParts[first].type==='break'||spParts[first].type==='label')) first++;
+  spGoTo(first);
+}
+
+// ── CLOSE STREAM ──
+function closeStream(){
+  if(!spActive) return;
+
+  // Record final dwell
+  if(spDwellStart>0){
+    const ms=performance.now()-spDwellStart;
+    spDwell[spCurrent]=(spDwell[spCurrent]||0)+ms;
+    spReads[spCurrent]=(spReads[spCurrent]||0)+1;
+  }
+
+  // Write signal back to node mesh — high-dwell sentences boost the node's emissive
+  if(spNode){
+    const totalDwell=Object.values(spDwell).reduce((a,b)=>a+b,0);
+    const highSignalCount=Object.values(spDwell).filter(ms=>ms>SP_DWELL_THRESHOLD).length;
+    const signalScore=Math.min(highSignalCount/Math.max(spParts.length,1),1);
+
+    const obj=nodeObjects.find(o=>o.node.id===spNode.id);
+    if(obj){
+      obj.node._signalScore=(obj.node._signalScore||0)+signalScore;
+      obj.mesh.userData.signalBoost=Math.min((obj.mesh.userData.signalBoost||0)+signalScore*0.8,2.4);
+    }
+  }
+
+  spActive=false;
+  spNode=null;
+  document.getElementById('stream-panel').classList.remove('open');
+  document.body.classList.remove('stream-open');
+}
+
+// ── WIRE BUTTONS ──
+document.getElementById('sp-close').addEventListener('click',closeStream);
+document.getElementById('sp-prev').addEventListener('click',spPrev);
+document.getElementById('sp-next').addEventListener('click',spNext);
+
+// ── KEYBOARD NAV (when stream is open) ──
+document.addEventListener('keydown',e=>{
+  if(!spActive) return;
+  if(e.key==='ArrowDown'||e.key==='j'||(e.key===' '&&spActive)){
+    e.preventDefault(); spNext();
+  } else if(e.key==='ArrowUp'||e.key==='k'){
+    e.preventDefault(); spPrev();
+  } else if(e.key==='Escape'){
+    closeStream();
+  }
+},{capture:false});
+
+// ── WIRE "READ NODE →" BUTTON ──
+document.getElementById('gc-read-btn').addEventListener('click',()=>{
+  if(focusNode) openStream(focusNode);
+});
+
+// ── SHOW READ BUTTON WHEN NODE HAS NARRATIVE ──
+const _origOpenPanel=openPanel;
+openPanel=function(node){
+  _origOpenPanel(node);
+  const btn=document.getElementById('gc-read-btn');
+  if(NODE_NARRATIVES[node.id]){
+    btn.style.display='block';
+    const score=node._signalScore||0;
+    btn.className=score>0.1?'has-signal':'';
+    btn.textContent=score>0.1?'Read node · signal recorded →':'Read node →';
+  } else {
+    btn.style.display='none';
+  }
+};
+
+// ── SIGNAL PULSE — nodes with accumulated signal glow brighter ──
+// Runs inside the existing animate loop via a hook
+const _origAnimate=animate;
+// Patch signal into the node pulse in the animate loop
+const spSignalPulse=()=>{
+  nodeObjects.forEach(({mesh,node:n})=>{
+    const boost=mesh.userData.signalBoost||0;
+    if(boost>0&&!isLight){
+      const pulse=1+Math.sin(elapsed*1.8)*0.06;
+      mesh.material.emissiveIntensity=Math.min((mesh.userData.origEI||1.4)+boost*pulse,3.8);
+    }
+  });
+};
+// Hook into animate — wrap the renderer call
+const _rawRender=()=>renderer.render(scene,cam);
+// We patch the pulse by overriding the nodeObjects loop section — instead
+// append spSignalPulse to the animation frame via a second requestAnimationFrame
+(function pulseTick(){
+  requestAnimationFrame(pulseTick);
+  spSignalPulse();
+})();
 </script>
 </body>
 </html>
