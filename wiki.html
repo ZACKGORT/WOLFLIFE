@@ -3,1461 +3,617 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Three-Body Problem · Spatial Knowledge Surface</title>
+<title>Zack Gort · Spatial Resume</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;overflow:hidden;background:#030308;transition:background 0.6s;}
-body.light{background:#f0ece4;}
-#bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;}
-canvas{display:block;width:100vw;height:100vh;position:relative;z-index:1;touch-action:none;}
-#brand{position:fixed;top:24px;left:28px;z-index:100;pointer-events:none;font-family:'DM Mono',monospace;}
-#brand-name{font-size:10px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.65);transition:color 0.5s;}
-#brand-sub{font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.24);margin-top:5px;transition:color 0.5s;}
-body.light #brand-name{color:rgba(10,14,30,0.80);font-size:11px;}
-body.light #brand-sub{color:rgba(10,14,30,0.50);font-size:8.5px;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;}
+canvas{display:block;width:100vw;height:100vh;}
 
-/* ── HUD — layer switcher + zoom controls ── */
+#brand{
+  position:fixed;top:24px;left:28px;z-index:100;pointer-events:none;
+  font-family:'DM Mono',monospace;
+}
+#brand-name{font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(240,236,226,0.55);}
+#brand-sub{font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(240,236,226,0.18);margin-top:4px;}
+
 #hud{
   position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
-  display:flex;align-items:center;gap:1px;
-  background:rgba(180,210,255,0.03);
-  border:1px solid rgba(180,210,255,0.10);
+  display:flex;gap:1px;
+  background:rgba(240,236,226,0.03);border:1px solid rgba(240,236,226,0.08);
   border-radius:4px;overflow:hidden;z-index:100;
-  transition:background 0.5s,border-color 0.5s;
 }
 .hud-btn{
   background:none;border:none;cursor:pointer;
-  color:rgba(180,210,255,0.32);
-  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;
-  text-transform:uppercase;padding:12px 18px;
-  border-right:1px solid rgba(180,210,255,0.08);
+  color:rgba(240,236,226,0.3);font-family:'DM Mono',monospace;
+  font-size:8px;letter-spacing:0.18em;text-transform:uppercase;
+  padding:9px 18px;border-right:1px solid rgba(240,236,226,0.06);
   transition:color 0.2s,background 0.2s;
-  -webkit-tap-highlight-color:transparent;
 }
 .hud-btn:last-child{border-right:none;}
-.hud-btn:hover{color:rgba(180,210,255,0.75);background:rgba(180,210,255,0.05);}
-.hud-btn.active{color:#b4d2ff;background:rgba(180,210,255,0.08);}
-/* zoom buttons — tighter, no letter-spacing */
-.hud-zoom{padding:12px 14px;font-size:13px;letter-spacing:0;color:rgba(180,210,255,0.28);min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
-.hud-zoom:hover{color:rgba(180,210,255,0.80);}
-/* separator rule between layer pills and zoom controls */
-.hud-sep{width:1px;background:rgba(180,210,255,0.14);align-self:stretch;flex-shrink:0;margin:6px 0;}
+.hud-btn:hover{color:rgba(240,236,226,0.7);background:rgba(240,236,226,0.04);}
+.hud-btn.active{color:#f0ece2;background:rgba(240,236,226,0.07);}
 
-body.light #hud{background:rgba(10,14,30,0.04);border-color:rgba(10,14,30,0.18);}
-body.light .hud-btn{color:rgba(10,14,30,0.55);border-right-color:rgba(10,14,30,0.12);font-size:9px;}
-body.light .hud-btn:hover{color:rgba(10,14,30,0.85);background:rgba(10,14,30,0.05);}
-body.light .hud-btn.active{color:rgba(10,14,30,0.95);background:rgba(10,14,30,0.08);font-weight:600;}
-body.light .hud-zoom{font-size:14px;}
-body.light .hud-sep{background:rgba(10,14,30,0.14);}
-
-#hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(180,210,255,0.14);z-index:100;pointer-events:none;white-space:nowrap;transition:opacity 1.2s,color 0.5s;}
-#focus-hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.24);z-index:100;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 0.5s;}
+#hint{
+  position:fixed;bottom:72px;left:50%;transform:translateX(-50%);
+  font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;
+  text-transform:uppercase;color:rgba(240,236,226,0.12);
+  z-index:100;pointer-events:none;white-space:nowrap;transition:opacity 1.2s;
+}
+#focus-hint{
+  position:fixed;bottom:72px;left:50%;transform:translateX(-50%);
+  font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;
+  text-transform:uppercase;color:rgba(240,236,226,0.22);
+  z-index:100;pointer-events:none;white-space:nowrap;
+  opacity:0;transition:opacity 0.5s;
+}
 #focus-hint.vis{opacity:1;}
-body.light #hint{color:rgba(10,14,30,0.42);font-size:8px;}
-body.light #focus-hint{color:rgba(10,14,30,0.55);font-size:8px;}
-#theme-toggle{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:100;background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.28);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.20em;text-transform:uppercase;padding:6px 14px;border-radius:2px;cursor:pointer;transition:all 0.2s;}
-#theme-toggle:hover{color:rgba(180,210,255,0.65);border-color:rgba(180,210,255,0.38);}
-body.light #theme-toggle{border-color:rgba(10,14,30,0.22);color:rgba(10,14,30,0.60);font-size:8px;}
-body.light #theme-toggle:hover{color:rgba(10,14,30,0.90);border-color:rgba(10,14,30,0.45);}
-#tooltip{position:fixed;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200;}
+
+#tooltip{
+  position:fixed;top:0;left:0;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200;
+}
 #tooltip.vis{opacity:1;}
-#tt-inner{background:rgba(4,6,14,0.96);border:1px solid rgba(180,210,255,0.14);border-radius:4px;padding:12px 16px;backdrop-filter:blur(12px);max-width:240px;}
-.tt-ring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.32);margin-bottom:5px;}
-.tt-title{font-family:'DM Serif Display',serif;font-size:15px;color:#dcecff;line-height:1.2;margin-bottom:5px;letter-spacing:-0.01em;}
-.tt-type{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.40);}
-body.light #tt-inner{background:rgba(255,253,248,0.99);border-color:rgba(10,14,30,0.14);box-shadow:0 4px 24px rgba(10,14,30,0.12),0 1px 6px rgba(10,14,30,0.08);}
-body.light .tt-ring{color:rgba(10,14,30,0.55);font-size:8px;}
-body.light .tt-title{color:rgba(10,14,30,0.92);font-size:16px;}
-body.light .tt-type{color:rgba(10,14,30,0.55);font-size:7.5px;}
-#ghost{position:fixed;z-index:700;width:320px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s;}
-#ghost.on{opacity:1;transform:translateY(-50%) translateX(0) scale(1);}
-#ghost.on .gc{pointer-events:all;}
-.gc{background:rgba(4,6,18,0.97);border:1px solid rgba(180,210,255,0.10);border-radius:6px;box-shadow:0 18px 62px rgba(0,0,0,0.9),0 0 0 1px rgba(180,210,255,0.03);backdrop-filter:blur(26px);overflow:hidden;}
-.gcscroll{max-height:82vh;overflow-y:auto;scrollbar-width:none;}
-.gcscroll::-webkit-scrollbar{display:none;}
-.gcbar{height:2px;width:100%;transition:background 0.4s;}
-.gchead{padding:16px 16px 12px;border-bottom:1px solid rgba(180,210,255,0.06);}
-.gcring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:6px;}
-.gctitle{font-family:'DM Serif Display',serif;font-size:17px;letter-spacing:-0.02em;color:#dcecff;line-height:1.2;margin-bottom:5px;}
-.gcrole{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.30);}
-.gcbody{padding:14px 16px 14px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.88;color:rgba(180,210,255,0.52);border-bottom:1px solid rgba(180,210,255,0.06);}
-.gcstat{display:flex;border-bottom:1px solid rgba(180,210,255,0.06);}
-.gcst{flex:1;padding:10px 12px;border-right:1px solid rgba(180,210,255,0.06);text-align:center;}
-.gcst:last-child{border-right:none;}
-.gcsv{font-family:'DM Serif Display',serif;font-size:14px;color:rgba(180,210,255,0.72);display:block;letter-spacing:-0.01em;}
-.gcsk{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.22);display:block;margin-top:2px;}
-.gc-connections{padding:12px 16px;border-bottom:1px solid rgba(180,210,255,0.06);}
-.gc-conn-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:8px;}
-.gc-conn-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;padding:4px 6px;border-radius:3px;transition:background 0.15s;}
-.gc-conn-item:hover{background:rgba(180,210,255,0.05);}
-.gc-conn-type{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;padding:2px 7px;border-radius:8px;border:1px solid currentColor;opacity:0.7;white-space:nowrap;}
-.gc-conn-target{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,255,0.55);flex:1;}
-.gcft{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 12px;}
-.gctag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
-.gcclose{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;pointer-events:all;}
-.gcclose:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
-body.light .gc{background:rgba(255,253,248,0.99);border-color:rgba(10,14,30,0.12);box-shadow:0 8px 40px rgba(10,14,30,0.12),0 2px 8px rgba(10,14,30,0.08);}
-body.light .gchead,body.light .gcbody,body.light .gcstat,body.light .gcst,body.light .gc-connections{border-color:rgba(10,14,30,0.10);}
-body.light .gcring{color:rgba(10,14,30,0.55);font-size:8px;}
-body.light .gctitle{color:rgba(10,14,30,0.92);font-size:19px;}
-body.light .gcrole{color:rgba(10,14,30,0.58);font-size:8.5px;}
-body.light .gcbody{color:rgba(10,14,30,0.72);font-size:12px;}
-body.light .gcsv{color:rgba(10,14,30,0.82);font-size:15px;}
-body.light .gcsk{color:rgba(10,14,30,0.50);font-size:8px;}
-body.light .gc-conn-label{color:rgba(10,14,30,0.50);font-size:8px;}
-body.light .gc-conn-target{color:rgba(10,14,30,0.72);font-size:11px;}
-body.light .gc-conn-item:hover{background:rgba(10,14,30,0.04);}
-body.light .gcclose{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.55);}
-body.light .gcclose:hover{color:rgba(10,14,30,0.90);border-color:rgba(10,14,30,0.50);}
-#legend{position:fixed;top:24px;right:28px;z-index:100;font-family:'DM Mono',monospace;pointer-events:none;}
-.leg-title{font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:8px;transition:color 0.5s;}
-.leg-item{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.leg-line{width:22px;height:1px;}
-.leg-label{font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.30);transition:color 0.5s;}
-body.light .leg-title{color:rgba(10,14,30,0.50);font-size:8px;}
-body.light .leg-label{color:rgba(10,14,30,0.65);font-size:8px;}
-#msheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(4,6,18,0.98);border-top:1px solid rgba(180,210,255,0.08);border-radius:14px 14px 0 0;max-height:72vh;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);backdrop-filter:blur(28px);}
-#msheet::-webkit-scrollbar{display:none;}
-#msheet.on{transform:translateY(0);}
-.mshandle{width:48px;height:5px;background:rgba(255,255,255,0.18);border-radius:3px;margin:14px auto 8px;cursor:pointer;}
-.msbar{height:2px;width:100%;transition:background 0.4s;}
-.mshead{padding:16px 20px 12px;border-bottom:1px solid rgba(180,210,255,0.06);}
-.msring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:6px;}
-.mstitle{font-family:'DM Serif Display',serif;font-size:20px;letter-spacing:-0.02em;color:#dcecff;line-height:1.15;margin-bottom:4px;}
-.msbody{padding:13px 20px 14px;font-family:'DM Mono',monospace;font-size:11.5px;line-height:1.82;color:rgba(180,210,255,0.52);}
-.msft{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;}
-.mstag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:3px 9px;border-radius:9px;border:1px solid currentColor;opacity:0.55;}
-.msclose{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.30);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.2s;}
-.msclose:hover{color:#dcecff;border-color:rgba(180,210,255,0.45);}
-body.light #msheet{background:rgba(255,253,248,0.99);border-top-color:rgba(10,14,30,0.14);}
-body.light .mshandle{background:rgba(10,14,30,0.20);}
-body.light .msring{color:rgba(10,14,30,0.55);font-size:8px;}
-body.light .mstitle{color:rgba(10,14,30,0.92);font-size:22px;}
-body.light .msbody{color:rgba(10,14,30,0.72);font-size:12.5px;}
-body.light .msclose{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.55);}
-body.light .msclose:hover{color:rgba(10,14,30,0.90);border-color:rgba(10,14,30,0.50);}
-body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
-@media(max-width:768px){#ghost{display:none;}#legend{display:none;}#msheet{display:block;}}
+#tt-inner{
+  background:rgba(8,7,6,0.93);border:1px solid rgba(240,236,226,0.1);
+  border-radius:4px;padding:10px 14px;backdrop-filter:blur(8px);max-width:220px;
+}
+.tt-era{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(240,236,226,0.3);margin-bottom:4px;}
+.tt-title{font-family:'DM Serif Display',serif;font-size:13px;color:#f0ece2;line-height:1.25;margin-bottom:4px;}
+.tt-type{font-family:'DM Mono',monospace;font-size:6.5px;letter-spacing:0.14em;text-transform:uppercase;}
 
-/* ── SENTENCE STREAM PANEL ── */
-#stream-panel{position:fixed;top:0;right:0;width:42vw;max-width:560px;min-width:320px;height:100vh;z-index:800;display:flex;flex-direction:column;background:rgba(4,6,18,0.98);border-left:1px solid rgba(180,210,255,0.07);backdrop-filter:blur(32px);transform:translateX(100%);transition:transform 0.45s cubic-bezier(0.22,1,0.36,1);pointer-events:none;}
-#stream-panel.open{transform:translateX(0);pointer-events:all;}
-body.light #stream-panel{background:rgba(255,253,248,0.99);border-left-color:rgba(10,14,30,0.12);}
-#sp-header{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;border-bottom:1px solid rgba(180,210,255,0.06);flex-shrink:0;}
-body.light #sp-header{border-bottom-color:rgba(10,14,30,0.10);}
-#sp-domain-bar{width:3px;height:28px;border-radius:2px;flex-shrink:0;transition:background 0.4s;}
-#sp-meta{flex:1;min-width:0;}
-#sp-eyebrow{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:4px;}
-body.light #sp-eyebrow{color:rgba(10,14,30,0.55);font-size:8px;}
-#sp-title{font-family:'DM Serif Display',serif;font-size:15px;color:#dcecff;letter-spacing:-0.01em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-body.light #sp-title{color:rgba(10,14,30,0.88);font-size:16px;}
-#sp-close{background:none;border:1px solid rgba(180,210,255,0.12);color:rgba(180,210,255,0.28);width:24px;height:24px;border-radius:2px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.18s;flex-shrink:0;}
-#sp-close:hover{color:#dcecff;border-color:rgba(180,210,255,0.40);}
-body.light #sp-close{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.55);}
-body.light #sp-close:hover{color:rgba(10,14,30,0.90);border-color:rgba(10,14,30,0.50);}
-#sp-progress-track{height:1px;background:rgba(180,210,255,0.05);flex-shrink:0;position:relative;overflow:hidden;}
-#sp-progress-fill{height:100%;width:0%;transition:width 0.28s ease;position:absolute;top:0;left:0;}
-body.light #sp-progress-track{background:rgba(10,14,30,0.08);}
-#sp-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:80px;scrollbar-width:none;position:relative;}
-#sp-scroll::-webkit-scrollbar{display:none;}
-#sp-stream{max-width:420px;margin:0 auto;padding:32px 28px 0;}
-.sp-sent{display:block;opacity:0.20;cursor:pointer;transition:opacity 0.35s ease;position:relative;}
-.sp-sent.revealed{opacity:0.65;}
-.sp-sent.active{opacity:1;}
-.sp-sent.past{opacity:0.50;}
-.sp-sent:hover{opacity:0.85;}
-.sp-sent.s-label{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.26em;text-transform:uppercase;padding:6px 0 3px;color:var(--sp-accent,#6a9bdc);}
-.sp-sent.s-poster{font-family:'DM Serif Display',serif;font-size:clamp(20px,2.6vw,34px);line-height:1.0;letter-spacing:-0.02em;color:#dcecff;padding:12px 0 8px;}
-body.light .sp-sent.s-poster{color:rgba(10,14,30,0.90);}
-.sp-sent.s-poster .ac{color:var(--sp-accent,#6a9bdc);}
-.sp-sent.s-body{font-family:'DM Mono',monospace;font-size:11.5px;line-height:1.88;color:rgba(180,210,255,0.78);padding:8px 0;}
-body.light .sp-sent.s-body{color:rgba(10,14,30,0.72);font-size:12.5px;}
-.sp-sent.s-body .ac{color:#dcecff;}
-.sp-sent.s-body em{font-style:italic;color:rgba(180,210,255,0.90);}
-body.light .sp-sent.s-body em{color:rgba(10,14,30,0.82);}
-.sp-sent.s-pull{font-family:'DM Serif Display',serif;font-style:italic;font-size:14px;line-height:1.62;color:rgba(180,210,255,0.86);border-left:2px solid var(--sp-accent,#6a9bdc);padding:8px 0 8px 16px;margin:4px 0;}
-body.light .sp-sent.s-pull{color:rgba(10,14,30,0.78);font-size:15px;}
-.sp-sent.s-spec{display:flex;align-items:baseline;gap:14px;font-family:'DM Mono',monospace;font-size:10px;padding:5px 0;border-bottom:1px solid rgba(180,210,255,0.05);}
-body.light .sp-sent.s-spec{border-bottom-color:rgba(10,14,30,0.08);}
-.sp-spec-key{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sp-accent,#6a9bdc);min-width:90px;flex-shrink:0;}
-.sp-spec-val{color:rgba(180,210,255,0.62);flex:1;line-height:1.5;}
-body.light .sp-spec-val{color:rgba(10,14,30,0.68);font-size:11px;}
-.sp-sent.s-break{display:block;height:28px;opacity:1!important;cursor:default;pointer-events:none;}
-.sp-sent.s-break::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(to right,transparent,var(--sp-accent,rgba(100,155,220,0.28)),transparent);}
-.sp-sent.active.s-body::after,.sp-sent.active.s-pull::after{content:'◉';margin-left:6px;font-size:6px;color:var(--sp-accent,#6a9bdc);animation:spdot 2s ease-in-out infinite;vertical-align:middle;}
-@keyframes spdot{0%,100%{opacity:1}50%{opacity:0.2}}
-#sp-nav{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;gap:6px;padding:12px 20px 16px;background:linear-gradient(to top,rgba(4,6,18,1) 55%,rgba(4,6,18,0));pointer-events:all;}
-body.light #sp-nav{background:linear-gradient(to top,rgba(255,253,248,1) 55%,rgba(255,253,248,0));}
-.sp-nav-btn{background:none;border:1px solid rgba(180,210,255,0.12);color:rgba(180,210,255,0.30);width:26px;height:26px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.18s;flex-shrink:0;}
-.sp-nav-btn:hover{color:#dcecff;border-color:rgba(180,210,255,0.38);}
-body.light .sp-nav-btn{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.55);}
-body.light .sp-nav-btn:hover{color:rgba(10,14,30,0.90);border-color:rgba(10,14,30,0.50);}
-#sp-counter{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(180,210,255,0.20);flex:1;text-align:center;}
-body.light #sp-counter{color:rgba(10,14,30,0.45);font-size:8px;}
-#sp-signal-bar{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;color:rgba(180,210,255,0.18);text-transform:uppercase;}
-body.light #sp-signal-bar{color:rgba(10,14,30,0.45);font-size:8px;}
-#gc-read-btn{display:none;width:100%;padding:11px 16px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;background:none;border:none;border-top:1px solid rgba(180,210,255,0.06);color:rgba(180,210,255,0.40);cursor:pointer;text-align:left;transition:all 0.18s;}
-#gc-read-btn:hover{color:#dcecff;background:rgba(180,210,255,0.03);}
-body.light #gc-read-btn{border-top-color:rgba(10,14,30,0.10);color:rgba(10,14,30,0.60);font-size:9px;}
-body.light #gc-read-btn:hover{color:rgba(10,14,30,0.90);background:rgba(10,14,30,0.03);}
-body.stream-open #canvas{width:58vw!important;}
-body.stream-open #bg-mesh{width:58vw!important;}
-body.stream-open #hud{left:29vw;transform:translateX(-50%);}
-body.stream-open #hint,body.stream-open #focus-hint{left:29vw;transform:translateX(-50%);}
-body.stream-open #theme-toggle{left:29vw;}
+#panel{
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(4,3,2,0.98) 0%,rgba(4,3,2,0.92) 70%,transparent 100%);
+  padding:36px 40px 52px;
+  transform:translateY(100%);transition:transform 0.55s cubic-bezier(0.16,1,0.3,1);
+  z-index:90;pointer-events:none;border-top:1px solid rgba(240,236,226,0.07);
+}
+#panel.open{transform:translateY(0);pointer-events:all;}
+#panel-close{
+  position:absolute;top:28px;right:36px;
+  background:none;border:1px solid rgba(240,236,226,0.15);color:rgba(240,236,226,0.35);
+  width:26px;height:26px;border-radius:2px;cursor:pointer;font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;transition:all 0.2s;
+}
+#panel-close:hover{color:#f0ece2;border-color:rgba(240,236,226,0.45);}
+#panel-era{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(240,236,226,0.28);margin-bottom:8px;}
+#panel-title{font-family:'DM Serif Display',serif;font-size:22px;color:#f0ece2;letter-spacing:-0.01em;margin-bottom:6px;line-height:1.2;}
+#panel-role{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(240,236,226,0.28);margin-bottom:16px;}
+#panel-body{font-family:'DM Mono',monospace;font-size:11.5px;color:rgba(240,236,226,0.58);line-height:1.9;max-width:560px;}
+#panel-tag{display:inline-block;margin-top:14px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid currentColor;opacity:0.5;}
 
-/* ── NODE EXPAND PANEL ── */
-#expand-panel{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;background:rgba(3,3,8,0.97);backdrop-filter:blur(40px);opacity:0;pointer-events:none;transition:opacity 0.38s ease;}
-#expand-panel.open{opacity:1;pointer-events:all;}
-body.light #expand-panel{background:rgba(255,253,248,0.99);}
+#contact{
+  position:fixed;top:24px;right:28px;z-index:100;
+  display:flex;flex-direction:column;align-items:flex-end;gap:5px;
+  font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;
+}
+.cl{color:rgba(240,236,226,0.18);}
+.cl a{color:inherit;text-decoration:none;pointer-events:all;transition:color 0.2s;}
+.cl a:hover{color:rgba(240,236,226,0.55);}
 
-#ep-header{display:flex;align-items:center;gap:14px;padding:22px 32px 18px;border-bottom:1px solid rgba(180,210,255,0.06);flex-shrink:0;}
-body.light #ep-header{border-bottom-color:rgba(10,14,30,0.12);}
-#ep-domain-pill{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;padding:4px 10px;border-radius:10px;border:1px solid currentColor;opacity:0.7;}
-body.light #ep-domain-pill{opacity:1;font-size:8px;}
-#ep-node-title{font-family:'DM Serif Display',serif;font-size:clamp(22px,2.8vw,40px);letter-spacing:-0.02em;color:#dcecff;flex:1;line-height:1.1;}
-body.light #ep-node-title{color:rgba(10,14,30,0.92);}
-#ep-role{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.30);margin-top:5px;}
-body.light #ep-role{color:rgba(10,14,30,0.58);font-size:9px;}
-#ep-close{background:none;border:1px solid rgba(180,210,255,0.14);color:rgba(180,210,255,0.35);width:32px;height:32px;border-radius:3px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;transition:all 0.18s;flex-shrink:0;}
-#ep-close:hover{color:#dcecff;border-color:rgba(180,210,255,0.50);}
-body.light #ep-close{border-color:rgba(10,14,30,0.22);color:rgba(10,14,30,0.55);}
-body.light #ep-close:hover{color:rgba(10,14,30,0.90);border-color:rgba(10,14,30,0.50);}
-
-#ep-body{flex:1;display:flex;overflow:hidden;}
-
-#ep-reading{flex:1;overflow-y:auto;padding:40px 48px 60px;scrollbar-width:thin;scrollbar-color:rgba(180,210,255,0.10) transparent;}
-#ep-reading::-webkit-scrollbar{width:2px;}
-#ep-reading::-webkit-scrollbar-thumb{background:rgba(180,210,255,0.12);border-radius:0;}
-body.light #ep-reading{scrollbar-color:rgba(10,14,30,0.15) transparent;}
-#ep-era{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:22px;}
-body.light #ep-era{color:rgba(10,14,30,0.55);font-size:8px;}
-#ep-text{font-family:'DM Serif Display',serif;font-size:clamp(17px,1.6vw,24px);line-height:1.78;color:rgba(180,210,255,0.88);max-width:640px;}
-body.light #ep-text{color:rgba(10,14,30,0.82);font-size:clamp(18px,1.7vw,26px);}
-#ep-connections{margin-top:40px;max-width:640px;}
-#ep-conn-heading{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.22);margin-bottom:14px;}
-body.light #ep-conn-heading{color:rgba(10,14,30,0.50);font-size:8px;}
-.ep-conn-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(180,210,255,0.05);cursor:pointer;transition:all 0.15s;}
-.ep-conn-row:hover{padding-left:6px;}
-body.light .ep-conn-row{border-bottom-color:rgba(10,14,30,0.10);}
-.ep-conn-badge{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 8px;border-radius:8px;border:1px solid currentColor;opacity:0.65;white-space:nowrap;flex-shrink:0;}
-body.light .ep-conn-badge{opacity:1;font-size:8px;}
-.ep-conn-title{font-family:'DM Mono',monospace;font-size:11px;color:rgba(180,210,255,0.55);flex:1;}
-body.light .ep-conn-title{color:rgba(10,14,30,0.72);font-size:12px;}
-.ep-conn-arrow{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,255,0.20);transition:color 0.15s;}
-.ep-conn-row:hover .ep-conn-arrow{color:rgba(180,210,255,0.55);}
-body.light .ep-conn-arrow{color:rgba(10,14,30,0.35);}
-
-#ep-gallery{width:38vw;max-width:520px;min-width:280px;border-left:1px solid rgba(180,210,255,0.06);display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none;}
-#ep-gallery::-webkit-scrollbar{display:none;}
-body.light #ep-gallery{border-left-color:rgba(10,14,30,0.10);}
-#ep-gallery-main{flex-shrink:0;height:52vh;overflow:hidden;position:relative;background:#050510;}
-body.light #ep-gallery-main{background:#e8e4dc;}
-#ep-gallery-main img{width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 0.55s ease;}
-#ep-gallery-main img.ep-img-vis{opacity:0.88;}
-body.light #ep-gallery-main img.ep-img-vis{opacity:0.82;mix-blend-mode:multiply;}
-#ep-img-scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(3,3,8,0.75) 0%,rgba(3,3,8,0) 55%);pointer-events:none;}
-body.light #ep-img-scrim{background:linear-gradient(to top,rgba(255,253,248,0.65) 0%,rgba(255,253,248,0) 55%);}
-#ep-img-caption{position:absolute;bottom:14px;left:16px;right:16px;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,210,255,0.40);}
-body.light #ep-img-caption{color:rgba(10,14,30,0.55);font-size:8px;}
-#ep-gallery-thumbs{padding:12px;display:flex;flex-wrap:wrap;gap:6px;flex-shrink:0;}
-.ep-thumb{width:60px;height:44px;object-fit:cover;object-position:center;cursor:pointer;opacity:0.40;transition:opacity 0.18s;border-radius:2px;}
-.ep-thumb:hover{opacity:0.72;}
-.ep-thumb.active{opacity:1;outline:1px solid rgba(180,210,255,0.45);}
-body.light .ep-thumb{opacity:0.55;}
-body.light .ep-thumb:hover{opacity:0.85;}
-body.light .ep-thumb.active{outline-color:rgba(10,14,30,0.45);}
-#ep-gallery-meta{padding:14px 16px;flex:1;}
-#ep-node-id{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.20em;text-transform:uppercase;color:rgba(180,210,255,0.18);}
-body.light #ep-node-id{color:rgba(10,14,30,0.38);font-size:8px;}
-
-#gc-expand-btn{display:none;width:100%;padding:11px 16px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;background:none;border:none;border-top:1px solid rgba(180,210,255,0.06);color:rgba(180,210,255,0.40);cursor:pointer;text-align:left;transition:all 0.18s;}
-#gc-expand-btn:hover{color:#dcecff;background:rgba(180,210,255,0.03);}
-body.light #gc-expand-btn{border-top-color:rgba(10,14,30,0.10);color:rgba(10,14,30,0.60);font-size:9px;}
-body.light #gc-expand-btn:hover{color:rgba(10,14,30,0.90);background:rgba(10,14,30,0.03);}
-#gc-expand-btn::before{content:'⤢  ';}
-
-@media(max-width:900px){#ep-gallery{display:none;}}
-
-/* ── Zoom feedback flash ── */
-@keyframes zoomFlash{0%{opacity:0.9}100%{opacity:0}}
-.zoom-flash{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.50);pointer-events:none;animation:zoomFlash 0.8s ease forwards;z-index:200;}
-body.light .zoom-flash{color:rgba(10,14,30,0.45);}
+@media(max-width:600px){
+  #panel{padding:24px 20px 40px;}
+  #panel-title{font-size:17px;}
+  #contact{display:none;}
+}
 </style>
 </head>
 <body>
-<canvas id="bg-mesh"></canvas>
 <canvas id="canvas"></canvas>
+
 <div id="brand">
-  <div id="brand-name">Three-Body Problem</div>
-  <div id="brand-sub">Spatial Knowledge Surface · Prototype I</div>
-</div>
-<button id="theme-toggle">Light</button>
-<div id="legend">
-  <div class="leg-title">Connections</div>
-  <div class="leg-item"><div class="leg-line" style="background:rgba(74,138,220,0.75);"></div><div class="leg-label" style="color:rgba(74,138,220,0.80);">Preceded</div></div>
-  <div class="leg-item"><div class="leg-line" style="background:rgba(154,112,204,0.75);"></div><div class="leg-label" style="color:rgba(154,112,204,0.80);">Same Structure</div></div>
-  <div class="leg-item"><div class="leg-line" style="background:rgba(80,216,176,0.75);"></div><div class="leg-label" style="color:rgba(80,216,176,0.80);">Enabled</div></div>
-  <div class="leg-item"><div class="leg-line" style="border-top:1px dashed rgba(216,176,80,0.70);height:0;"></div><div class="leg-label" style="color:rgba(216,176,80,0.75);">Lives In</div></div>
+  <div id="brand-name">Zachary Gort</div>
+  <div id="brand-sub">Senior UX+UI Designer &amp; Strategist</div>
 </div>
 
-<!-- HUD: ORRERY · GALAXY | − zoom + -->
+<div id="contact">
+  <div class="cl"><a href="mailto:zack.gort@gmail.com">zack.gort@gmail.com</a></div>
+  <div class="cl"><a href="https://zackgort.com" target="_blank">zackgort.com</a></div>
+  <div class="cl">484·888·1287</div>
+</div>
+
 <div id="hud">
-  <button class="hud-btn active" data-view="orrery">ORRERY</button>
-  <button class="hud-btn" data-view="galaxy">GALAXY</button>
-  <div class="hud-sep"></div>
-  <button class="hud-btn hud-zoom" id="hud-zoom-out">−</button>
-  <button class="hud-btn hud-zoom" id="hud-zoom-in">+</button>
+  <button class="hud-btn" data-view="iso">ISO</button>
+  <button class="hud-btn active" data-view="top">SKY</button>
+  <button class="hud-btn" data-view="side">ORBIT</button>
 </div>
 
-<div id="hint">drag to orbit · scroll to zoom · click any node · space or right-click pauses orbit</div>
-<div id="focus-hint">— scroll to cycle ring · click moon to navigate · space or right-click to pause · esc to release —</div>
+<div id="hint">drag to orbit · scroll to zoom · click any node</div>
+<div id="focus-hint">— orbiting node · click elsewhere or ✕ to release —</div>
+
 <div id="tooltip"><div id="tt-inner">
-  <div class="tt-ring" id="tt-ring"></div>
+  <div class="tt-era" id="tt-era"></div>
   <div class="tt-title" id="tt-title"></div>
   <div class="tt-type" id="tt-type"></div>
 </div></div>
-<div id="ghost"><div class="gc">
-  <div class="gcbar" id="gc-bar"></div>
-  <div class="gcscroll">
-    <div class="gchead">
-      <div class="gcring" id="gc-ring"></div>
-      <div class="gctitle" id="gc-title"></div>
-      <div class="gcrole" id="gc-role"></div>
-    </div>
-    <div class="gcbody" id="gc-body"></div>
-    <div class="gcstat">
-      <div class="gcst"><span class="gcsv" id="gc-ring-v"></span><span class="gcsk">Ring</span></div>
-      <div class="gcst"><span class="gcsv" id="gc-domain"></span><span class="gcsk">Domain</span></div>
-    </div>
-    <div class="gc-connections" id="gc-connections"></div>
-    <button id="gc-expand-btn">Expand node</button>
-    <button id="gc-read-btn">Read node →</button>
-    <div class="gcft">
-      <span class="gctag" id="gc-tag"></span>
-      <button class="gcclose">✕</button>
-    </div>
-  </div>
-</div></div>
-<div id="msheet">
-  <div class="mshandle"></div>
-  <div class="msbar" id="ms-bar"></div>
-  <div class="mshead">
-    <div class="msring" id="ms-ring"></div>
-    <div class="mstitle" id="ms-title"></div>
-  </div>
-  <div class="msbody" id="ms-body"></div>
-  <div class="msft">
-    <span class="mstag" id="ms-tag"></span>
-    <button class="msclose" onclick="closePanel()">✕</button>
-  </div>
+
+<div id="panel">
+  <button id="panel-close" onclick="closePanel()">✕</button>
+  <div id="panel-era"></div>
+  <div id="panel-title"></div>
+  <div id="panel-role"></div>
+  <div id="panel-body"></div>
+  <div id="panel-tag"></div>
 </div>
 
-<!-- SENTENCE STREAM PANEL -->
-<div id="stream-panel">
-  <div id="sp-header">
-    <div id="sp-domain-bar"></div>
-    <div id="sp-meta">
-      <div id="sp-eyebrow"></div>
-      <div id="sp-title"></div>
-    </div>
-    <button id="sp-close">✕</button>
-  </div>
-  <div id="sp-progress-track"><div id="sp-progress-fill"></div></div>
-  <div id="sp-scroll">
-    <div id="sp-stream"></div>
-    <div id="sp-nav">
-      <button class="sp-nav-btn" id="sp-prev">↑</button>
-      <button class="sp-nav-btn" id="sp-next">↓</button>
-      <div id="sp-counter"></div>
-      <div id="sp-signal-bar"></div>
-    </div>
-  </div>
-</div>
-
-<!-- NODE EXPAND PANEL -->
-<div id="expand-panel">
-  <div id="ep-header">
-    <span id="ep-domain-pill"></span>
-    <div style="flex:1;min-width:0;">
-      <div id="ep-node-title"></div>
-      <div id="ep-role"></div>
-    </div>
-    <button id="ep-close">✕</button>
-  </div>
-  <div id="ep-body">
-    <div id="ep-reading">
-      <div id="ep-era"></div>
-      <div id="ep-text"></div>
-      <div id="ep-connections">
-        <div id="ep-conn-heading">Connections</div>
-        <div id="ep-conn-list"></div>
-      </div>
-    </div>
-    <div id="ep-gallery">
-      <div id="ep-gallery-main">
-        <img id="ep-main-img" alt="">
-        <div id="ep-img-scrim"></div>
-        <div id="ep-img-caption"></div>
-      </div>
-      <div id="ep-gallery-thumbs"></div>
-      <div id="ep-gallery-meta">
-        <div id="ep-node-id"></div>
-      </div>
-    </div>
-  </div>
-</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-let isLight=false;
-const DOMAIN_CFG={
-  statement:{color:0xf0f4ff,lightColor:0x2a2a2e,size:0.36,label:'Statement',hex:'#f0f4ff',lightHex:'#2a2a2e'},
-  formalism:{color:0x4a8adc,lightColor:0x2a2a2e,size:0.14,label:'Formalism',hex:'#4a8adc',lightHex:'#2a2a2e'},
-  history:  {color:0x9a70cc,lightColor:0x2a2a2e,size:0.13,label:'History',  hex:'#9a70cc',lightHex:'#2a2a2e'},
-  analogue: {color:0x50d8b0,lightColor:0x2a2a2e,size:0.13,label:'Analogue', hex:'#50d8b0',lightHex:'#2a2a2e'},
-  cultural: {color:0xd8b050,lightColor:0x2a2a2e,size:0.12,label:'Cultural', hex:'#d8b050',lightHex:'#2a2a2e'},
-};
-const dcfg=d=>DOMAIN_CFG[d]||DOMAIN_CFG.formalism;
-const dhex=d=>isLight?dcfg(d).lightHex:dcfg(d).hex;
+// ══════════════════════════════════════════════════════════
+// NODE DATA — three tiers on concentric ellipses
+// ══════════════════════════════════════════════════════════
+const NODES = [
+  // ── ORIGIN ──
+  {
+    id:'origin', tier:'center', angle:0,
+    type:'intro', era:'Declaration',
+    title:'I think deeply about human-to-human interaction.',
+    role:'',
+    body:'Not about tools. Not about deliverables. About the thing underneath — how we communicate, and what it costs when the interface gets in the way.'
+  },
 
-const NODES=[
-  {id:'problem',tier:'center',angle:0,domain:'statement',title:'Three bodies, no formula',role:'The Problem Statement',era:'Statement',
-   body:'Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge — it is a structural property of the system. Add one body to a solvable problem, and solvability disappears.'},
-  {id:'newton',tier:'inner',angle:0.04,domain:'formalism',title:"Newton's equations of motion",role:'Mathematical Foundation',era:'Ring 1 · Formalism',
-   body:"Each body exerts a gravitational force on every other. F = Gm₁m₂/r². In two bodies, the forces balance into solvable conic sections. In three, the forces interact recursively — each position depends on all others simultaneously."},
-  {id:'hamilton',tier:'inner',angle:0.20,domain:'formalism',title:'Hamiltonian formulation',role:'Phase Space Representation',era:'Ring 1 · Formalism',
-   body:'Reformulates the problem in phase space — position and momentum as conjugate variables. The Hamiltonian H = T + V is conserved but insufficient for a closed-form solution. Energy conservation alone does not constrain the trajectory.'},
-  {id:'jacobi',tier:'inner',angle:0.36,domain:'formalism',title:'The Jacobi integral',role:'Restricted Problem Conserved Quantity',era:'Ring 1 · Formalism',
-   body:'In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is conserved. It defines Hill regions the test particle cannot cross. The only exactly conserved quantity in the general problem.'},
-  {id:'restricted',tier:'inner',angle:0.52,domain:'formalism',title:'The restricted problem',role:'Tractable Simplification',era:'Ring 1 · Formalism',
-   body:'If one body is massless, it cannot affect the two massive bodies. This breaks the full mutual dependency. Most spacecraft trajectory problems use this form — the restricted circular three-body problem (CR3BP).'},
-  {id:'integrals',tier:'inner',angle:0.68,domain:'formalism',title:'Conservation laws',role:"What Is and Isn't Conserved",era:'Ring 1 · Formalism',
-   body:'Total energy, total momentum, and total angular momentum are conserved — ten integrals of motion. But a general solution requires 18. The gap of 8 is exactly what makes the problem unsolvable by classical methods.'},
-  {id:'lagrange-pts',tier:'inner',angle:0.84,domain:'formalism',title:'Lagrange points',role:'Five Equilibrium Solutions',era:'Ring 1 · Formalism',
-   body:'Euler (1767) found three collinear equilibrium points; Lagrange (1772) found two triangular points (L4, L5). These are the only exact analytical solutions to the three-body problem. L4 and L5 are stable — Trojan asteroids occupy them.'},
-  {id:'euler1767',tier:'mid',angle:0.03,domain:'history',title:'Euler · 1767',role:'Collinear Solutions',era:'Ring 2 · History',
-   body:'Found three collinear configurations where all three bodies maintain constant ratios of distance — three bodies in a line, rotating about their common center. All are unstable in the general case.'},
-  {id:'lagrange1772',tier:'mid',angle:0.14,domain:'history',title:'Lagrange · 1772',role:'Equilateral Triangle Solutions',era:'Ring 2 · History',
-   body:'Showed that equilateral triangular configurations rotate stably. Three equal masses at the vertices of an equilateral triangle — all orbiting the common center — are exact periodic solutions. The geometry solves what the calculus cannot.'},
-  {id:'poincare1889',tier:'mid',angle:0.25,domain:'history',title:'Poincaré · 1889',role:'Proof of Non-Integrability',era:'Ring 2 · History',
-   body:"Submitted a prize essay claiming orbital stability, then found his own error before publication. The correction introduced chaos: nearby trajectories diverge exponentially. This is the founding moment of dynamical systems theory — a mistake that became a field."},
-  {id:'sundman1912',tier:'mid',angle:0.36,domain:'history',title:'Sundman · 1912',role:'Convergent Series Solution',era:'Ring 2 · History',
-   body:'Proved the three-body problem has a convergent power series solution — in a new time variable. Technically complete. Practically useless: the series converges so slowly that 10⁸⁰⁰⁰⁰⁰⁰ terms are needed for practical precision.'},
-  {id:'moore1993',tier:'mid',angle:0.47,domain:'history',title:'Moore · 1993',role:'Figure-Eight Orbit',era:'Ring 2 · History',
-   body:'Discovered numerically that three equal masses can chase each other around a figure-eight in a stable periodic orbit. Verified analytically by Chenciner & Montgomery (2000). Symmetry constrains what calculus cannot solve.'},
-  {id:'wang1991',tier:'mid',angle:0.58,domain:'history',title:'Wang · 1991',role:'n-Body Series Extension',era:'Ring 2 · History',
-   body:"Extended Sundman's convergent series method to the general n-body problem. Same result: mathematically complete, physically unusable. The existence of a solution and its computability remain different categories."},
-  {id:'suvakov2013',tier:'mid',angle:0.69,domain:'history',title:'Šuvakov & Dmitrašinović · 2013',role:'13 New Periodic Families',era:'Ring 2 · History',
-   body:'Using high-precision numerical methods, found 13 new families of periodic three-body orbits — the first new families since the figure-eight. Each requires exquisite initial conditions; any perturbation breaks them.'},
-  {id:'hristov2023',tier:'mid',angle:0.80,domain:'history',title:'Hristov et al. · 2023',role:'12,000+ New Periodic Orbits',era:'Ring 2 · History',
-   body:'Machine-precision numerical search found over 12,000 new periodic orbit families. The solution space is far richer than expected — but these are exact solutions only at knife-edge initial conditions. The generic trajectory remains chaotic.'},
-  {id:'nn2019',tier:'mid',angle:0.91,domain:'history',title:'Neural Network Solver · 2019',role:'Deep Learning Approximation',era:'Ring 2 · History',
-   body:'Breen et al. trained a deep neural network to predict three-body trajectories — 100 million times faster than direct integration. Same goal as Sundman, 111 years later.'},
-  {id:'chaos',tier:'outer',angle:0.02,domain:'analogue',title:'Chaos theory',role:'Discovered Here',era:'Ring 3 · Analogue',
-   body:"Poincaré's 1889 correction to his prize essay is the founding document of chaos theory. Sensitive dependence on initial conditions — the butterfly effect — was first observed in the three-body problem. The field was born from a celestial mechanics mistake."},
-  {id:'nbody',tier:'outer',angle:0.16,domain:'analogue',title:'The n-body problem',role:'General Extension',era:'Ring 3 · Analogue',
-   body:'The three-body problem is the n=3 case of the general gravitational n-body problem. Galaxy formation, globular cluster dynamics, and planetary system stability all require n-body simulation. None are analytically solvable.'},
-  {id:'helium',tier:'outer',angle:0.30,domain:'analogue',title:'The helium atom',role:'Same Structure · Different Scale',era:'Ring 3 · Analogue',
-   body:'A nucleus plus two electrons — structurally identical to the three-body gravitational problem, with Coulomb force replacing gravity. The helium atom has no closed-form solution either. Same mathematics, 10³⁰ smaller.'},
-  {id:'efimov',tier:'outer',angle:0.44,domain:'analogue',title:'The Efimov effect',role:'Unexpected Symmetry',era:'Ring 3 · Analogue',
-   body:'Three particles with very weak pairwise attraction can form bound three-body states even when no two-body bound state exists. Predicted 1970, confirmed 2006. The three-body problem reappears in nuclear physics with the same structural surprise.'},
-  {id:'vortex',tier:'outer',angle:0.58,domain:'analogue',title:'Vortex dynamics',role:'Fluid Mechanics Analogue',era:'Ring 3 · Analogue',
-   body:'Three interacting point vortices in a fluid obey equations formally identical to the gravitational three-body problem. The same integrability question arises; the same chaos appears. Weather systems and ocean circulation contain embedded three-body problems.'},
-  {id:'gr',tier:'outer',angle:0.72,domain:'analogue',title:'Post-Newtonian corrections',role:'General Relativity Extension',era:'Ring 3 · Analogue',
-   body:"In general relativity, the three-body problem becomes harder: spacetime curvature means distances are not Euclidean, and gravitational waves carry energy away. Binary pulsars and black hole mergers require post-Newtonian approximations."},
-  {id:'liucixin',tier:'outer2',angle:0.06,domain:'cultural',title:'The Three-Body Problem · Liu Cixin',role:'Novel · 2008',era:'Ring 4 · Cultural',
-   body:"Hugo Award-winning science fiction trilogy. The title refers to the orbital instability of the Trisolaran star system — three suns, unpredictable climate, impossible civilization. The mathematical unsolvability becomes the engine of a civilization's desperation."},
-  {id:'spacecraft',tier:'outer2',angle:0.22,domain:'cultural',title:'Lagrange point missions',role:'Applied Astrodynamics',era:'Ring 4 · Applied',
-   body:'L1, L2, L4, L5 are used as spacecraft parking locations. Webb Space Telescope sits at L2 of the Sun-Earth system. The halo orbits discovered by numerical methods are used for real mission design. The unsolvable problem is navigated, not solved.'},
-  {id:'trojans',tier:'outer2',angle:0.38,domain:'cultural',title:'Trojan asteroids',role:'Natural Laboratory',era:'Ring 4 · Applied',
-   body:"Over 12,000 asteroids occupy Jupiter's L4 and L5 points — the only stable equilibrium in the three-body problem. Named after characters from the Trojan War. The solar system validates Lagrange's 1772 geometry continuously."},
-  {id:'figureeight',tier:'outer2',angle:0.54,domain:'cultural',title:'The figure-eight orbit',role:'Most Recognizable Solution',era:'Ring 4 · Cultural',
-   body:'Three equal masses chasing each other in a stable figure-eight. Zero margin for perturbation. But as an image, it communicates the entire character of the problem: motion that looks simple, is in fact a knife-edge balance that nature never achieves.'},
-  {id:'tvshow',tier:'outer2',angle:0.70,domain:'cultural',title:'3 Body Problem · Netflix 2024',role:'Adaptation',era:'Ring 4 · Cultural',
-   body:"David Benioff, D.B. Weiss, and Alexander Woo adapted Liu Cixin's trilogy. The orbital mechanics appear in visualizations of the Trisolaran system — three suns creating stable and chaotic eras that the civilization must predict and survive."},
+  // ── INNER — case studies ──
+  { id:'gnc-cs',    tier:'inner', angle:0.08, type:'deck',    era:'Case Study · 2021',    title:'GNC · The Rebuild',           role:'Discovery → Delivery · 12 weeks',   body:'Mobile-first Shopify redesign — strategy and execution in the same hands, shipped in 12 weeks, ~$500M in influenced revenue.' },
+  { id:'tiktok-cs', tier:'inner', angle:0.20, type:'deck',    era:'Case Study · 2021–22', title:'TikTok For Business',          role:'DRI · ACD · Code & Theory',          body:'From Senior Designer to ACD to Directly Responsible Individual on one of the fastest-growing advertising platforms in the world.' },
+  { id:'bny-cs',    tier:'inner', angle:0.33, type:'deck',    era:'Case Study · 2022',    title:'BNY Mellon · Wove',           role:'Interim PO · Design Architect',      body:'Three Agile tracks. One design architect. I centralized a sprawling product ecosystem into a modular design system nobody asked me to build.' },
+  { id:'phenom-cs', tier:'inner', angle:0.48, type:'deck',    era:'Case Study · 2025',    title:'Phenom · Web Presence',       role:'UX Strategist',                      body:'Named operational silos nobody else had mapped. Owned the corporate web presence end-to-end across Marketing, Sales, and Product.' },
+  { id:'pfs-cs',    tier:'inner', angle:0.63, type:'deck',    era:'Case Study · 2020–21', title:'PFSWeb LiveArea',             role:'Manager, UX',                        body:'Full-spectrum Salesforce Commerce Cloud builds across B2C and B2B. Ran UX strategy and design function throughout every project lifecycle.' },
+  { id:'workarea-cs',tier:'inner',angle:0.76, type:'deck',    era:'Case Study · 2017–18', title:'Workarea · SaaS Platform',    role:'Senior UX Designer',                 body:'No mockup theater — napkin sketches and real conversations with engineers until the thing was right.' },
+  { id:'160-cs',    tier:'inner', angle:0.90, type:'deck',    era:'Case Study · 2014–16', title:'One Sixty Over Ninety',       role:'Interaction Designer',               body:'ADA-compliant interaction design for Comcast, Kent State, Philadelphia Eagles. This is where I learned what design culture could be.' },
+
+  // ── MIDDLE — career timeline ──
+  { id:'160over90', tier:'mid', angle:0.02, type:'work',   era:'2014–2016', title:'One Sixty Over Ninety',          role:'Interaction Designer',        body:'Full-service interaction design for .EDU clients. This is where I learned what design culture could be.' },
+  { id:'o3',        tier:'mid', angle:0.11, type:'work',   era:'2016–2017', title:'O3 World',                       role:'UX Designer',                 body:'Lean UX for FinTech and iOS products in Fishtown. Whiteboards, wireframes, sprint cycles, shipped. Certified Scrum Master.' },
+  { id:'workarea',  tier:'mid', angle:0.20, type:'work',   era:'2017–2018', title:'Workarea',                       role:'Senior UX Designer',          body:'Shaped a proprietary SaaS e-commerce platform through direct client relationships and data-informed iteration. No mockup theater.' },
+  { id:'pfs',       tier:'mid', angle:0.30, type:'work',   era:'2020–2021', title:'PFSWeb LiveArea',                role:'Manager, UX',                 body:'Ran UX strategy and design function throughout every Salesforce Commerce Cloud project lifecycle.' },
+  { id:'huge',      tier:'mid', angle:0.39, type:'work',   era:'2021',      title:'HUGE Inc.',                      role:'Senior UX Designer',          body:'End-to-end UX and booking flow for Sentral Lifestyle Apartments — delivered under constrained conditions.' },
+  { id:'elva',      tier:'mid', angle:0.47, type:'work',   era:'2021',      title:'Elva · GNC',                     role:'Senior UX Designer',          body:'Owned discovery through delivery for GNC\'s Shopify redesign — mobile-first, component-based, 12 weeks.' },
+  { id:'ct',        tier:'mid', angle:0.56, type:'work',   era:'2021–2022', title:'Code & Theory · TikTok',         role:'Senior Interaction Designer', body:'Led UX for TikTok For Business. Moved from Senior Designer to ACD to DRI in under a year.' },
+  { id:'sapient',   tier:'mid', angle:0.66, type:'work',   era:'2022–2023', title:'Publicis Sapient · BNY Mellon', role:'Senior UX Designer',          body:'Embedded as interim Product Owner and primary client liaison — a role I wasn\'t hired for and became anyway.' },
+  { id:'phenom',    tier:'mid', angle:0.76, type:'work',   era:'2025',      title:'Phenom',                         role:'UX Strategist',               body:'Owned the corporate web presence end-to-end. Named operational silos nobody else had mapped.' },
+  { id:'wolfgang',  tier:'mid', angle:0.88, type:'launch', era:'Current',   title:'Wolfgang & Co.',                 role:'Concept Studio · Founder',    body:'A concept studio focused on craft, language, and human intent — as realized through a bespoke narrative-as-nodes engine. My answer is The Sentence.' },
+
+  // ── OUTER — independent work ──
+  { id:'selfcurriculum', tier:'outer', angle:0.02, type:'reflect', era:'2006–2012', title:'The Self-Curriculum',        role:'Personal',           body:'Six years of reading, building, and breaking things before anyone paid me to. The gaps in my resume come with receipts.' },
+  { id:'flightpath',     tier:'outer', angle:0.12, type:'launch',  era:'2016',      title:'FlightPath · Co-Founded',    role:'Co-Founder',         body:'Co-founded a design studio before I had the language for what I was doing. The independent thinking started here.' },
+  { id:'haiku',          tier:'outer', angle:0.22, type:'story',   era:'2016',      title:'The Clavicle & The Haiku',   role:'Personal',           body:'A broken clavicle, three weeks flat. I wrote a haiku every day. Constraints are a design tool, not a design problem.' },
+  { id:'wolfie-origin',  tier:'outer', angle:0.33, type:'reflect', era:'2020',      title:'wolfie.love · Origin',       role:'Self-directed',       body:'The pandemic year. I started building tools for myself because the ones that existed didn\'t think the way I think.' },
+  { id:'sentence',       tier:'outer', angle:0.44, type:'concept', era:'2023',      title:'The Sentence Engine',        role:'Wolfgang & Co.',     body:'The conviction at the center of everything: a single, complete sentence is the most honest unit of human thought.' },
+  { id:'frank',          tier:'outer', angle:0.54, type:'launch',  era:'2023',      title:'ifimaybefrank.com',           role:'A writing model',    body:'A model for writing that doesn\'t apologize for having a point of view. The name says everything about the intent.' },
+  { id:'reasonably',     tier:'outer', angle:0.63, type:'launch',  era:'2023',      title:'reasonably.cc',              role:'A thinking model',   body:'A structured way to hold a position without becoming it. Reasoning as craft, not as performance.' },
+  { id:'intoview',       tier:'outer', angle:0.72, type:'launch',  era:'2023–',     title:'intoview.pro',               role:'My model',           body:'The one I send instead of a resume when I want to be taken seriously. A living document that thinks back.' },
+  { id:'wolfie-life',    tier:'outer', angle:0.82, type:'launch',  era:'2024',      title:'wolfie.life',                role:'A new category',     body:'Not a blog. Not a portfolio. A spatial record of a life — moments as nodes, mood as infrastructure, memory as navigation.' },
+  { id:'this-map',       tier:'outer', angle:0.92, type:'concept', era:'2024–',     title:'This Map',                   role:'Declaration',        body:'A resume should serve as a declaration, not a statement. This is the declaration. The PDF is the fallback — for bots.' },
 ];
 
-const CONNECTIONS=[
-  {from:'euler1767',   to:'lagrange1772', type:'preceded',       label:'Euler → Lagrange'},
-  {from:'lagrange1772',to:'poincare1889', type:'preceded',       label:'Lagrange → Poincaré'},
-  {from:'poincare1889',to:'moore1993',    type:'preceded',       label:'periodic orbit thread'},
-  {from:'sundman1912', to:'wang1991',     type:'preceded',       label:'series solution method'},
-  {from:'moore1993',   to:'suvakov2013',  type:'preceded',       label:'numerical families'},
-  {from:'suvakov2013', to:'hristov2023',  type:'preceded',       label:'systematic search'},
-  {from:'sundman1912', to:'nn2019',       type:'preceded',       label:'same goal · 111 years apart'},
-  {from:'helium',      to:'lagrange-pts', type:'same-structure', label:'Coulomb ↔ gravity'},
-  {from:'efimov',      to:'lagrange1772', type:'same-structure', label:'unexpected symmetry'},
-  {from:'vortex',      to:'hamilton',     type:'same-structure', label:'identical equations'},
-  {from:'poincare1889',to:'chaos',        type:'enabled',        label:'discovered here'},
-  {from:'jacobi',      to:'spacecraft',   type:'enabled',        label:'Hill regions → orbits'},
-  {from:'lagrange-pts',to:'spacecraft',   type:'enabled',        label:'L-points → missions'},
-  {from:'lagrange-pts',to:'trojans',      type:'enabled',        label:'L4/L5 → asteroids'},
-  {from:'moore1993',   to:'figureeight',  type:'enabled',        label:'numerical → visual'},
-  {from:'chaos',       to:'nbody',        type:'lives-in',       label:'chaos lives in n-body'},
-  {from:'gr',          to:'restricted',   type:'lives-in',       label:'GR extends restricted'},
-  {from:'liucixin',    to:'figureeight',  type:'lives-in',       label:'fiction uses the geometry'},
-];
-
-const CONN_CFG={
-  'preceded':      {dkH:0x4a8adc,lkH:0x8ab0d8,dkO:0.40,lkO:0.35},
-  'same-structure':{dkH:0x9a70cc,lkH:0xb090cc,dkO:0.38,lkO:0.32},
-  'enabled':       {dkH:0x50d8b0,lkH:0x40a888,dkO:0.42,lkO:0.35},
-  'lives-in':      {dkH:0xd8b050,lkH:0xb89040,dkO:0.32,lkO:0.28},
+// ══════════════════════════════════════════════════════════
+// TYPE CONFIG
+// ══════════════════════════════════════════════════════════
+const TYPE_CFG = {
+  intro:   { color:0xf0ece2, size:0.30, label:'Origin'    },
+  work:    { color:0xc8704a, size:0.13, label:'Role'       },
+  launch:  { color:0xd4a84a, size:0.15, label:'Launch'     },
+  story:   { color:0xc87060, size:0.11, label:'Story'      },
+  reflect: { color:0x9a8070, size:0.11, label:'Reflect'    },
+  concept: { color:0x7a8ecc, size:0.13, label:'Concept'    },
+  deck:    { color:0xb07acc, size:0.14, label:'Case Study' },
+  default: { color:0x8a8680, size:0.10, label:''           },
 };
-const cc=t=>CONN_CFG[t]||CONN_CFG['preceded'];
+const tcfg = t => TYPE_CFG[t] || TYPE_CFG.default;
+const tcol = t => tcfg(t).color;
+const thex = t => '#' + tcol(t).toString(16).padStart(6,'0');
 
-const TILT=16*Math.PI/180;
-const ELLIPSES={inner:{rx:7.5,rz:4.5},mid:{rx:15,rz:9},outer:{rx:22,rz:13},outer2:{rx:30,rz:18}};
-const TIER_Y={inner:0.05,mid:0.18,outer:0.38,outer2:0.60};
-function ellipsePos(tier,af){
-  if(tier==='center')return new THREE.Vector3(0,0,0);
-  const e=ELLIPSES[tier],a=(af||0)*Math.PI*2;
-  const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);
-  return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),TIER_Y[tier]||0,lx*Math.sin(TILT)+lz*Math.cos(TILT));
+// ══════════════════════════════════════════════════════════
+// ELLIPSE LAYOUT — 17° tilt off horizontal
+// ══════════════════════════════════════════════════════════
+const TILT = 17 * Math.PI / 180;
+const ELLIPSES = {
+  inner: { rx:9,  rz:5.5 },
+  mid:   { rx:16, rz:9.5 },
+  outer: { rx:23, rz:14  },
+};
+const TIER_Y = { inner:0.05, mid:0.2, outer:0.5 };
+
+function ellipsePos(tier, angleFrac){
+  if(tier === 'center') return new THREE.Vector3(0,0,0);
+  const e  = ELLIPSES[tier];
+  const a  = (angleFrac || 0) * Math.PI * 2;
+  const lx = e.rx * Math.cos(a);
+  const lz = e.rz * Math.sin(a);
+  const x  = lx*Math.cos(TILT) - lz*Math.sin(TILT);
+  const z  = lx*Math.sin(TILT) + lz*Math.cos(TILT);
+  return new THREE.Vector3(x, TIER_Y[tier] || 0, z);
 }
-NODES.forEach(n=>{n._pos=ellipsePos(n.tier,n.angle);});
-const NODE_BY_ID={};NODES.forEach(n=>{NODE_BY_ID[n.id]=n;});
 
-const cvs=document.getElementById('canvas');
-const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
-renderer.setClearColor(0x000000,0);
-const scene=new THREE.Scene();
-scene.fog=new THREE.FogExp2(0x000000,0.012);
-const cam=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,2000);
+NODES.forEach(n => { n._pos = ellipsePos(n.tier, n.angle); });
 
-// ── VIEW SYSTEM ──
-// Two named surface layers: ORRERY and GALAXY
-// Each has a zoom range. Orbit is the default camera motion (auto-theta).
-// +/− step zoom within the current layer's range.
-const LAYER_ORRERY = 'orrery';
-const LAYER_GALAXY = 'galaxy';
-let currentLayer = LAYER_ORRERY;
+// ══════════════════════════════════════════════════════════
+// THREE.JS SETUP
+// ══════════════════════════════════════════════════════════
+const canvas   = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x000000);
 
-const ORRERY_RADIUS_DEFAULT = 58;
-const ORRERY_RADIUS_MIN     = 8;
-const ORRERY_RADIUS_MAX     = 110;
-const GALAXY_RADIUS_DEFAULT = 220;
-const GALAXY_RADIUS_MIN     = 130;
-const GALAXY_RADIUS_MAX     = 280;
-const ZOOM_STEP_ORRERY      = 12;   // units per button press
-const ZOOM_STEP_GALAXY      = 22;
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.0032);
 
-const ORRERY_VIEW = {phi:Math.PI*0.015, theta:0, radius:ORRERY_RADIUS_DEFAULT};
-const GALAXY_VIEW = {phi:Math.PI*0.08,  theta:-Math.PI*0.08, radius:GALAXY_RADIUS_DEFAULT};
+const cam = new THREE.PerspectiveCamera(52, innerWidth/innerHeight, 0.1, 2000);
 
-let camState={...ORRERY_VIEW};
-let camTarget={...ORRERY_VIEW};
+// ── Camera state (spherical, with lerped center) ──
+const VIEWS = {
+  iso:  { phi:Math.PI*0.26,  theta:-Math.PI*0.12, radius:42 },
+  top:  { phi:Math.PI*0.018, theta:0,              radius:52 },
+  side: { phi:Math.PI*0.18,  theta:Math.PI*0.5,   radius:46 },
+};
+let camState  = { ...VIEWS.top };
+let camTarget = { ...VIEWS.top };
 
-const scenePivot=new THREE.Vector3(),scenePivotTgt=new THREE.Vector3();
-function applyCam(){const{phi,theta,radius}=camState,c=scenePivot;cam.position.set(c.x+radius*Math.sin(phi)*Math.sin(theta),c.y+radius*Math.cos(phi),c.z+radius*Math.sin(phi)*Math.cos(theta));cam.lookAt(c);}
+// Scene pivot — smoothly shifts to focused node's world pos
+const scenePivot    = new THREE.Vector3(0,0,0);
+const scenePivotTgt = new THREE.Vector3(0,0,0);
+
+function applyCam(){
+  const { phi, theta, radius } = camState;
+  const c = scenePivot;
+  cam.position.set(
+    c.x + radius * Math.sin(phi) * Math.sin(theta),
+    c.y + radius * Math.cos(phi),
+    c.z + radius * Math.sin(phi) * Math.cos(theta)
+  );
+  cam.lookAt(c);
+}
 applyCam();
 
-// Zoom in/out within the current layer's range
-function stepZoom(dir){
-  // dir: +1 = zoom in (smaller radius), -1 = zoom out (larger radius)
-  const step = currentLayer===LAYER_GALAXY ? ZOOM_STEP_GALAXY : ZOOM_STEP_ORRERY;
-  const mn   = currentLayer===LAYER_GALAXY ? GALAXY_RADIUS_MIN : ORRERY_RADIUS_MIN;
-  const mx   = currentLayer===LAYER_GALAXY ? GALAXY_RADIUS_MAX : ORRERY_RADIUS_MAX;
-  camTarget.radius = Math.max(mn, Math.min(mx, camTarget.radius - dir*step));
-  showZoomFlash(Math.round(camTarget.radius));
-}
+scene.add(new THREE.AmbientLight(0xffffff, 0.1));
+const dLight = new THREE.DirectionalLight(0xf0ece2, 0.25);
+dLight.position.set(10,40,10); scene.add(dLight);
 
-function showZoomFlash(r){
-  document.querySelectorAll('.zoom-flash').forEach(el=>el.remove());
-  const el=document.createElement('div');
-  el.className='zoom-flash';
-  el.textContent='zoom · r '+r;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),900);
-}
+// ══════════════════════════════════════════════════════════
+// BUILD SCENE
+// ══════════════════════════════════════════════════════════
+const nodeObjects = [];
+const raycaster   = new THREE.Raycaster();
 
-function switchLayer(layer){
-  currentLayer = layer;
-  document.querySelectorAll('.hud-btn[data-view]').forEach(b=>b.classList.remove('active'));
-  document.querySelector('[data-view="'+layer+'"]').classList.add('active');
-  if(layer===LAYER_ORRERY){
-    camTarget = {...ORRERY_VIEW, radius: Math.min(ORRERY_RADIUS_MAX, camTarget.radius < ORRERY_RADIUS_MIN ? ORRERY_RADIUS_DEFAULT : camTarget.radius)};
-    if(isFocused) exitFocus();
-  } else {
-    camTarget = {...GALAXY_VIEW};
+function drawEllipse(rx, rz, opacity, color, yOff){
+  const segs = 128;
+  const pts  = [];
+  for(let i=0; i<=segs; i++){
+    const a  = (i/segs)*Math.PI*2;
+    const lx = rx*Math.cos(a), lz = rz*Math.sin(a);
+    const x  = lx*Math.cos(TILT)-lz*Math.sin(TILT);
+    const z  = lx*Math.sin(TILT)+lz*Math.cos(TILT);
+    pts.push(new THREE.Vector3(x, yOff || -0.1, z));
   }
-}
-
-const ambLight=new THREE.AmbientLight(0xffffff,0.15);scene.add(ambLight);
-const dLight=new THREE.DirectionalLight(0xb4d2ff,0.3);dLight.position.set(10,40,10);scene.add(dLight);
-const neonA=new THREE.PointLight(0x4a8adc,6,130);neonA.position.set(-20,8,-20);scene.add(neonA);
-const neonB=new THREE.PointLight(0x50d8b0,5,130);neonB.position.set(20,8,20);scene.add(neonB);
-const neonC=new THREE.PointLight(0x9a70cc,4,90);neonC.position.set(0,14,0);scene.add(neonC);
-const DARK_FOG=0x000000,LIGHT_FOG=0xf0ece4;
-
-const PC=1200;
-const pPos=new Float32Array(PC*3),pPh=new Float32Array(PC),pSp=new Float32Array(PC);
-for(let i=0;i<PC;i++){let x,y,z,a=0;do{const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=12+Math.pow(Math.random(),0.7)*22;x=r*Math.sin(p)*Math.cos(t);y=(Math.random()-0.5)*6;z=r*Math.sin(p)*Math.sin(t);a++;}while(Math.sqrt(x*x+z*z)<6&&a<30);pPos[i*3]=x;pPos[i*3+1]=y;pPos[i*3+2]=z;pPh[i]=Math.random()*Math.PI*2;pSp[i]=0.18+Math.random()*0.28;}
-const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(pPos.slice(),3));const pOrig=pPos.slice();
-const pMat=new THREE.PointsMaterial({color:0x8ab4ff,size:0.06,transparent:true,opacity:0.14,sizeAttenuation:true,fog:true,depthWrite:false});
-scene.add(new THREE.Points(pGeo,pMat));
-
-const nodeObjects=[],allLines=[],connLineObjects=[],allLabels=[],glowSprites=[],spokeLines=[],hitProxies=[],gridLines=[];
-const raycaster=new THREE.Raycaster();
-const isTouchDevice=()=>window.matchMedia("(pointer:coarse)").matches;
-function setRaycasterForInput(){raycaster.params.Mesh={};if(isTouchDevice()){raycaster.near=0;raycaster.far=2000;}}
-
-function drawEllipse(rx,rz,op,col,y,lCol,lOp){
-  const pts=[];for(let i=0;i<=128;i++){const a=i/128*Math.PI*2,lx=rx*Math.cos(a),lz=rz*Math.sin(a);pts.push(new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),y||-0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT)));}
-  const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op});
-  const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),mat);
-  scene.add(line);allLines.push({line,darkColor:col,lightColor:lCol||0x0a0e1e,darkOp:op,lightOp:lOp||op*4});
-}
-
-function drawLabelCanvas(text,color,fs){
-  const c=document.createElement('canvas');c.width=512;c.height=64;
-  const ctx=c.getContext('2d');ctx.fillStyle=color;ctx.font=`${fs*2.4}px "DM Mono",monospace`;ctx.fillText(text.toUpperCase(),10,42);return c;
-}
-function addLabel(text,x,y,z,dkColor,fs,lkColor){
-  const lc=lkColor||'rgba(10,14,30,0.90)';
-  const c=drawLabelCanvas(text,dkColor,fs);
-  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));
-  spr.position.set(x,y,z);spr.scale.set(9,1.15,1);scene.add(spr);
-  allLabels.push({spr,text,darkColor:dkColor,lightColor:lc,fs});return spr;
-}
-function redrawLabels(){allLabels.forEach(({spr,text,darkColor,lightColor,fs})=>{const color=isLight?lightColor:darkColor;const c=drawLabelCanvas(text,color,fs);spr.material.map.dispose();spr.material.map=new THREE.CanvasTexture(c);spr.material.needsUpdate=true;});}
-
-function makeGlowSprite(color,radius){
-  const sz=128,c=document.createElement('canvas');c.width=sz;c.height=sz;
-  const ctx=c.getContext('2d'),cx=sz/2,cy=sz/2;
-  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,sz/2);
-  const r=(color>>16)&255,g=(color>>8)&255,b=color&255;
-  grad.addColorStop(0,`rgba(${r},${g},${b},0.55)`);grad.addColorStop(0.3,`rgba(${r},${g},${b},0.18)`);grad.addColorStop(0.7,`rgba(${r},${g},${b},0.04)`);grad.addColorStop(1,`rgba(${r},${g},${b},0)`);
-  ctx.fillStyle=grad;ctx.fillRect(0,0,sz,sz);
-  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
-  spr.scale.set(radius*6,radius*6,1);return spr;
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  scene.add(new THREE.Line(geo,
+    new THREE.LineBasicMaterial({ color, transparent:true, opacity })));
 }
 
 function buildScene(){
-  drawEllipse(ELLIPSES.inner.rx, ELLIPSES.inner.rz, 0.24,0x4a8adc,0.04, 0x4a8adc,0.22);
-  drawEllipse(ELLIPSES.mid.rx,   ELLIPSES.mid.rz,   0.22,0x9a70cc,0.18, 0x9a70cc,0.20);
-  drawEllipse(ELLIPSES.outer.rx, ELLIPSES.outer.rz,  0.18,0x50d8b0,0.35, 0x50d8b0,0.18);
-  drawEllipse(ELLIPSES.outer2.rx,ELLIPSES.outer2.rz, 0.14,0xd8b050,0.55, 0xd8b050,0.16);
-  const gM=new THREE.LineBasicMaterial({color:0x4a8adc,transparent:true,opacity:0.010});
-  for(let i=-10;i<=10;i++){[new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-50),new THREE.Vector3(i*4,-0.5,50)]),gM.clone()),new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-50,-0.5,i*4),new THREE.Vector3(50,-0.5,i*4)]),gM.clone())].forEach(l=>{scene.add(l);allLines.push({line:l,darkColor:0x4a8adc,lightColor:0x0a0e1e,darkOp:0.010,lightOp:0.055});gridLines.push(l);});}
+  // Ellipse rings
+  drawEllipse(ELLIPSES.inner.rx, ELLIPSES.inner.rz, 0.20, 0xb07acc, 0.04);
+  drawEllipse(ELLIPSES.mid.rx,   ELLIPSES.mid.rz,   0.24, 0xc8704a, 0.18);
+  drawEllipse(ELLIPSES.outer.rx, ELLIPSES.outer.rz, 0.17, 0xd4a84a, 0.45);
 
-  const cN=NODES.find(n=>n.id==='problem');
-  const cM=new THREE.Mesh(new THREE.SphereGeometry(0.36,20,20),new THREE.MeshPhysicalMaterial({color:0xf0f4ff,emissive:0xf0f4ff,emissiveIntensity:2.2,metalness:0,roughness:0.04,clearcoat:1.0}));
-  cM.position.copy(cN._pos);cM.userData={node:cN,origColor:0xf0f4ff,origEI:2.2,lightOrigColor:0x0a0e1e};
-  scene.add(cM);nodeObjects.push({mesh:cM,node:cN});
-  const cHitProxy=new THREE.Mesh(new THREE.SphereGeometry(0.36*4.5,8,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-  cHitProxy.position.copy(cN._pos);cHitProxy.userData={node:cN,isHitProxy:true};scene.add(cHitProxy);hitProxies.push({proxy:cHitProxy,mesh:cM,node:cN});
-  [3.4,2.1,1.2].forEach((sc,i)=>{const gs=makeGlowSprite(0xc0d8ff,0.36);gs.scale.setScalar(sc);gs.position.copy(cN._pos);gs.material.opacity=[0.20,0.36,0.52][i];scene.add(gs);glowSprites.push(gs);});
+  // Subtle grid
+  const gMat = new THREE.LineBasicMaterial({ color:0xf0ece2, transparent:true, opacity:0.013 });
+  for(let i=-7;i<=7;i++){
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(i*4,-0.5,-36), new THREE.Vector3(i*4,-0.5,36)]), gMat));
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-36,-0.5,i*4), new THREE.Vector3(36,-0.5,i*4)]), gMat));
+  }
 
-  NODES.filter(n=>n.id!=='problem').forEach(n=>{
-    const pos=n._pos,cfg=dcfg(n.domain);
-    const spokeM=new THREE.LineBasicMaterial({color:cfg.color,transparent:true,opacity:0.04});
-    const spoke=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),pos.clone()]),spokeM);
-    scene.add(spoke);allLines.push({line:spoke,darkColor:cfg.color,lightColor:cfg.lightColor,darkOp:0.04,lightOp:0.18});spokeLines.push(spoke);
-    const e=ELLIPSES[n.tier]||ELLIPSES.mid,da=0.018;
-    const a1=((n.angle||0)-da)*Math.PI*2,a2=((n.angle||0)+da)*Math.PI*2;
-    function eP(a){const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),pos.y,lx*Math.sin(TILT)+lz*Math.cos(TILT));}
-    const tang=eP(a2).sub(eP(a1)).normalize(),tL=0.36;
-    const tM=new THREE.LineBasicMaterial({color:cfg.color,transparent:true,opacity:0.55});
-    const tLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pos.clone().addScaledVector(tang,-tL),pos.clone().addScaledVector(tang,tL)]),tM);
-    scene.add(tLine);allLines.push({line:tLine,darkColor:cfg.color,lightColor:cfg.lightColor,darkOp:0.55,lightOp:0.90});
-    const mesh=new THREE.Mesh(new THREE.SphereGeometry(cfg.size,16,16),new THREE.MeshPhysicalMaterial({color:cfg.color,emissive:cfg.color,emissiveIntensity:1.4,metalness:0.2,roughness:0.08,clearcoat:1.0,transparent:true,opacity:0.95}));
-    mesh.position.copy(pos);mesh.userData={node:n,origColor:cfg.color,origEI:1.4,lightOrigColor:cfg.lightColor};
-    scene.add(mesh);nodeObjects.push({mesh,node:n});
-    const hitProxy=new THREE.Mesh(new THREE.SphereGeometry(cfg.size*4.5,8,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-    hitProxy.position.copy(pos);hitProxy.userData={node:n,isHitProxy:true};scene.add(hitProxy);hitProxies.push({proxy:hitProxy,mesh,node:n});
-    const gs=makeGlowSprite(cfg.color,cfg.size);gs.position.copy(pos);gs.material.opacity=0.72;scene.add(gs);glowSprites.push(gs);
-    const short=n.title.length>24?n.title.slice(0,22)+'…':n.title;
-    addLabel(short,pos.x+0.5,pos.y+0.45,pos.z,cfg.hex+'cc',7.0,cfg.lightHex+'dd');
+  // Origin
+  const originNode = NODES.find(n=>n.id==='origin');
+  const oMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.32,16,16),
+    new THREE.MeshBasicMaterial({ color:0xf0ece2 })
+  );
+  oMesh.position.copy(originNode._pos);
+  oMesh.userData = { node:originNode, origColor:0xf0ece2, origOpacity:1 };
+  scene.add(oMesh);
+  nodeObjects.push({ mesh:oMesh, node:originNode });
+
+  // Glow ring at origin
+  const grPts = [];
+  for(let i=0;i<=64;i++){
+    const a=(i/64)*Math.PI*2;
+    grPts.push(new THREE.Vector3(Math.cos(a)*1.1, 0, Math.sin(a)*1.1));
+  }
+  scene.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(grPts),
+    new THREE.LineBasicMaterial({ color:0xf0ece2, transparent:true, opacity:0.14 })
+  ));
+
+  // Radial spokes (very faint)
+  NODES.filter(n=>n.id!=='origin').forEach(n => {
+    scene.add(new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), n._pos.clone()]),
+      new THREE.LineBasicMaterial({ color:tcol(n.type), transparent:true, opacity:0.05 })
+    ));
   });
 
-  function rlp(tier,af){const e=ELLIPSES[tier],a=(af||0)*Math.PI*2;const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT)+0.4,0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT));}
-  addLabel('Ring 1 · Formalism',rlp('inner',0.93).x,0.1,rlp('inner',0.93).z,'rgba(74,138,220,0.42)',6.5,'rgba(74,138,220,0.32)');
-  addLabel('Ring 2 · History',  rlp('mid',0.93).x,  0.1,rlp('mid',0.93).z,  'rgba(154,112,204,0.42)',6.5,'rgba(154,112,204,0.32)');
-  addLabel('Ring 3 · Analogues',rlp('outer',0.93).x, 0.1,rlp('outer',0.93).z,'rgba(80,216,176,0.42)',6.5,'rgba(80,200,160,0.32)');
-  addLabel('Ring 4 · Cultural', rlp('outer2',0.93).x,0.1,rlp('outer2',0.93).z,'rgba(216,176,80,0.42)',6.5,'rgba(200,170,60,0.32)');
+  // Per-node geometry
+  NODES.filter(n=>n.id!=='origin').forEach(n => {
+    const pos = n._pos;
+    const cfg = tcfg(n.type);
 
-  CONNECTIONS.forEach(conn=>{
-    const fN=NODE_BY_ID[conn.from],tN=NODE_BY_ID[conn.to];if(!fN||!tN)return;
-    const cf=cc(conn.type),isDash=conn.type==='lives-in';
-    const p1=fN._pos.clone(),p2=tN._pos.clone(),mid=p1.clone().add(p2).multiplyScalar(0.5);
-    mid.y+=2.2+Math.random()*1.5;
-    const pts=new THREE.QuadraticBezierCurve3(p1,mid,p2).getPoints(48);
-    if(isDash){
-      for(let i=0;i<pts.length-1;i+=2){
-        const sg=new THREE.BufferGeometry().setFromPoints([pts[i],pts[Math.min(i+1,pts.length-1)]]);
-        const sm=new THREE.LineBasicMaterial({color:cf.dkH,transparent:true,opacity:cf.dkO});
-        const sl=new THREE.Line(sg,sm);scene.add(sl);
-        connLineObjects.push({line:sl,conn,darkOp:cf.dkO,lightOp:cf.lkO,darkColor:cf.dkH,lightColor:cf.lkH});
-        allLines.push({line:sl,darkColor:cf.dkH,lightColor:cf.lkH,darkOp:cf.dkO,lightOp:cf.lkO});
-      }
-    } else {
-      const geo=new THREE.BufferGeometry().setFromPoints(pts);
-      const mat=new THREE.LineBasicMaterial({color:cf.dkH,transparent:true,opacity:cf.dkO});
-      const line=new THREE.Line(geo,mat);scene.add(line);
-      connLineObjects.push({line,conn,darkOp:cf.dkO,lightOp:cf.lkO,darkColor:cf.dkH,lightColor:cf.lkH});
-      allLines.push({line,darkColor:cf.dkH,lightColor:cf.lkH,darkOp:cf.dkO,lightOp:cf.lkO});
+    // Tangent tick at this node's angle on its ellipse
+    const da   = 0.018;
+    const a1   = ((n.angle||0) - da) * Math.PI*2;
+    const a2   = ((n.angle||0) + da) * Math.PI*2;
+    const e    = ELLIPSES[n.tier] || ELLIPSES.mid;
+    function ePoint(a){
+      const lx=e.rx*Math.cos(a), lz=e.rz*Math.sin(a);
+      return new THREE.Vector3(
+        lx*Math.cos(TILT)-lz*Math.sin(TILT),
+        pos.y,
+        lx*Math.sin(TILT)+lz*Math.cos(TILT)
+      );
     }
+    const tangent = ePoint(a2).sub(ePoint(a1)).normalize();
+    const tLen = 0.36;
+
+    // Main tick
+    scene.add(new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([
+        pos.clone().addScaledVector(tangent,-tLen),
+        pos.clone().addScaledVector(tangent, tLen),
+      ]),
+      new THREE.LineBasicMaterial({ color:cfg.color, transparent:true, opacity:0.55 })
+    ));
+
+    // Sub-ticks
+    ;[-0.55, 0.55].forEach(off => {
+      const mid = pos.clone().addScaledVector(tangent, off*0.18);
+      scene.add(new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([
+          mid.clone().addScaledVector(tangent,-tLen*0.38),
+          mid.clone().addScaledVector(tangent, tLen*0.38),
+        ]),
+        new THREE.LineBasicMaterial({ color:cfg.color, transparent:true, opacity:0.18 })
+      ));
+    });
+
+    // Sphere
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(cfg.size, 12, 12),
+      new THREE.MeshBasicMaterial({ color:cfg.color, transparent:true, opacity:0.82 })
+    );
+    mesh.position.copy(pos);
+    mesh.userData = { node:n, origColor:cfg.color, origOpacity:0.82 };
+    scene.add(mesh);
+    nodeObjects.push({ mesh, node:n });
+
+    // Label
+    addLabel(
+      n.title.length > 26 ? n.title.slice(0,24)+'…' : n.title,
+      pos.x+0.5, pos.y+0.4, pos.z,
+      thex(n.type)+'99', 6.2
+    );
   });
+
+  // Tier labels (at the rightmost point of each ellipse, rotated by tilt)
+  const ilx = ELLIPSES.inner.rx*Math.cos(TILT), ilz = ELLIPSES.inner.rx*Math.sin(TILT);
+  const mlx = ELLIPSES.mid.rx  *Math.cos(TILT), mlz = ELLIPSES.mid.rx  *Math.sin(TILT);
+  const olx = ELLIPSES.outer.rx*Math.cos(TILT), olz = ELLIPSES.outer.rx*Math.sin(TILT);
+  addLabel('Case Studies', ilx+0.4, 0.1, ilz, 'rgba(176,122,204,0.32)', 6);
+  addLabel('Career',       mlx+0.4, 0.1, mlz, 'rgba(200,112,74,0.32)',  6);
+  addLabel('Independent',  olx+0.4, 0.1, olz, 'rgba(212,168,74,0.32)',  6);
 }
+
+function addLabel(text, x, y, z, color, fs){
+  const c = document.createElement('canvas');
+  c.width=512; c.height=64;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle=color;
+  ctx.font=`${fs*2.4}px "DM Mono",monospace`;
+  ctx.fillText(text.toUpperCase(),10,42);
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(c), transparent:true }));
+  spr.position.set(x,y,z);
+  spr.scale.set(9,1.15,1);
+  scene.add(spr);
+}
+
 buildScene();
 
-// ═══════════════════════════════════════════════════════════════
-// GALAXY LAYER
-// ═══════════════════════════════════════════════════════════════
-const GALAXY_THRESHOLD = 110;
-const GALAXY_FULL      = 180;
-
-const CLUSTERS = [
-  {id:'formalism',name:'Classical\nFoundations',sub:'Newton · Hamilton · Jacobi · Lagrange Points',color:0x4a8adc,hex:'#4a8adc',pos:new THREE.Vector3(-55,0,-20),nodeIds:['problem','newton','hamilton','jacobi','restricted','integrals','lagrange-pts'],size:5.2},
-  {id:'history',name:'Solution\nHistory',sub:'Euler · Lagrange · Poincaré · Sundman · Moore',color:0x9a70cc,hex:'#9a70cc',pos:new THREE.Vector3(20,0,-55),nodeIds:['euler1767','lagrange1772','poincare1889','sundman1912','moore1993','wang1991','suvakov2013','hristov2023','nn2019'],size:5.8},
-  {id:'chaos',name:'Chaos &\nDynamics',sub:'Butterfly Effect · n-Body · Vortex · GR',color:0x50d8b0,hex:'#50d8b0',pos:new THREE.Vector3(60,0,10),nodeIds:['chaos','nbody','vortex','gr','helium','efimov'],size:4.8},
-  {id:'physical',name:'Physical\nManifestations',sub:'Lagrange Missions · Trojans · Figure-Eight',color:0xd8b050,hex:'#d8b050',pos:new THREE.Vector3(-15,0,65),nodeIds:['spacecraft','trojans','figureeight'],size:4.0},
-  {id:'cultural',name:'Cultural &\nAnalogues',sub:'Liu Cixin · Netflix · Helium Atom · Efimov',color:0xe07090,hex:'#e07090',pos:new THREE.Vector3(30,0,70),nodeIds:['liucixin','tvshow','helium','efimov'],size:3.6},
-];
-
-const CLUSTER_CONNECTIONS=[
-  {from:'formalism',to:'history',label:'Formal tools → historical attempts'},
-  {from:'history',to:'chaos',label:'Poincaré → chaos theory'},
-  {from:'chaos',to:'physical',label:'Dynamics → real-world systems'},
-  {from:'formalism',to:'physical',label:'Lagrange points → spacecraft'},
-  {from:'history',to:'cultural',label:'Solutions → cultural resonance'},
-  {from:'chaos',to:'cultural',label:'Chaos → fiction & analogy'},
-];
-
-const galaxyObjects=[],galaxyLines=[],galaxyGroup=new THREE.Group();
-scene.add(galaxyGroup);galaxyGroup.visible=false;
-
-function makeClusterCanvas(cluster,forLight){
-  const c=document.createElement('canvas');c.width=512;c.height=256;
-  const ctx=c.getContext('2d');
-  const r=(cluster.color>>16)&255,g=(cluster.color>>8)&255,b=cluster.color&255;
-  const nameColor=forLight?'rgba(10,14,30,0.88)':`rgba(${r},${g},${b},0.95)`;
-  const subColor=forLight?'rgba(10,14,30,0.44)':`rgba(${r},${g},${b},0.50)`;
-  const countColor=forLight?'rgba(10,14,30,0.28)':`rgba(${r},${g},${b},0.30)`;
-  ctx.fillStyle=nameColor;ctx.font='900 38px "DM Serif Display",serif';
-  const lines=cluster.name.split('\n');lines.forEach((ln,i)=>ctx.fillText(ln,12,60+i*48));
-  ctx.fillStyle=subColor;ctx.font='300 18px "DM Mono",monospace';ctx.fillText(cluster.sub,12,60+lines.length*48+24);
-  ctx.fillStyle=countColor;ctx.font='300 15px "DM Mono",monospace';ctx.fillText(cluster.nodeIds.length+' nodes',12,60+lines.length*48+48);
-  return c;
-}
-
-function getClusterDotPositions(cl){
-  const R=cl.size*5.5,DS=cl.size*0.28;
-  if(cl.id==='formalism'){const ring1=[0,1,2,3,4].map(i=>{const a=(i/5)*Math.PI*2;return{x:Math.cos(a)*R*0.55,y:0,z:Math.sin(a)*R*0.55,size:DS};});const ring2=[0,1].map(i=>{const a=(i/2)*Math.PI*2+0.3;return{x:Math.cos(a)*R*0.95,y:0,z:Math.sin(a)*R*0.95,size:DS*1.2};});return[{x:0,y:2,z:0,size:DS*1.6},...ring1,...ring2];}
-  if(cl.id==='history'){const count=9;return Array.from({length:count},(_,i)=>{const t=i/(count-1),a=Math.PI*1.1+t*Math.PI*1.4,r=R*(0.5+t*0.55);return{x:Math.cos(a)*r,y:(t-0.5)*R*0.35,z:Math.sin(a)*r,size:i===2?DS*1.5:DS,chainTo:i>0};});}
-  if(cl.id==='chaos'){return[{x:R*0.85,y:R*0.20,z:R*0.40,size:DS*1.5},{x:-R*0.70,y:-R*0.12,z:R*0.65,size:DS},{x:R*0.20,y:R*0.45,z:-R*0.80,size:DS*0.85},{x:-R*0.45,y:-R*0.38,z:-R*0.60,size:DS*0.85},{x:R*1.05,y:R*0.08,z:-R*0.22,size:DS},{x:-R*0.15,y:R*0.55,z:R*1.10,size:DS}];}
-  if(cl.id==='physical'){return[{x:R*0.80,y:R*0.18,z:R*0.45,size:DS},{x:-R*0.65,y:-R*0.10,z:R*0.75,size:DS},{x:R*0.10,y:0,z:-R*0.95,size:DS*1.4}];}
-  if(cl.id==='cultural'){return[{x:-R*0.55,y:R*0.28,z:R*0.70,size:DS*1.2},{x:R*0.80,y:R*0.15,z:R*0.30,size:DS*0.9},{x:R*0.40,y:-R*0.30,z:-R*0.75,size:DS},{x:-R*0.85,y:-R*0.18,z:-R*0.38,size:DS}];}
-  return cl.nodeIds.map((_,i)=>{const a=(i/cl.nodeIds.length)*Math.PI*2;return{x:Math.cos(a)*R*0.75,y:0,z:Math.sin(a)*R*0.75,size:DS};});
-}
-
-function buildGalaxyLayer(){
-  CLUSTERS.forEach(cl=>{
-    const geo=new THREE.SphereGeometry(cl.size,32,32);
-    const mat=new THREE.MeshPhysicalMaterial({color:cl.color,emissive:cl.color,emissiveIntensity:0.6,metalness:0.1,roughness:0.55,clearcoat:0.4,transparent:true,opacity:0});
-    const mesh=new THREE.Mesh(geo,mat);mesh.position.copy(cl.pos);mesh.userData={cluster:cl};galaxyGroup.add(mesh);
-    const atmGeo=new THREE.SphereGeometry(cl.size*1.55,24,24);
-    const atmMat=new THREE.MeshBasicMaterial({color:cl.color,transparent:true,opacity:0,side:THREE.BackSide,depthWrite:false});
-    const atm=new THREE.Mesh(atmGeo,atmMat);atm.position.copy(cl.pos);galaxyGroup.add(atm);
-    const glowSpr=makeGlowSprite(cl.color,cl.size);glowSpr.scale.setScalar(cl.size*9);glowSpr.position.copy(cl.pos);glowSpr.material.opacity=0;galaxyGroup.add(glowSpr);
-    const lc=makeClusterCanvas(cl,false);
-    const lSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(lc),transparent:true,depthWrite:false}));
-    lSpr.scale.set(28,14,1);lSpr.position.set(cl.pos.x-cl.size*6.5,cl.pos.y+cl.size*3.5,cl.pos.z);lSpr.material.opacity=0;galaxyGroup.add(lSpr);
-    const ringPts=[];for(let i=0;i<=80;i++){const a=i/80*Math.PI*2;ringPts.push(new THREE.Vector3(cl.pos.x+Math.cos(a)*cl.size*1.35,cl.pos.y,cl.pos.z+Math.sin(a)*cl.size*1.35));}
-    const ringMat=new THREE.LineBasicMaterial({color:cl.color,transparent:true,opacity:0});
-    const ringLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts),ringMat);galaxyGroup.add(ringLine);galaxyLines.push({line:ringLine,baseOp:0.35});
-    const dotPositions=getClusterDotPositions(cl);
-    cl.nodeIds.forEach((nid,ni)=>{
-      const node=NODE_BY_ID[nid];if(!node)return;
-      const offset=dotPositions[ni]||dotPositions[ni%dotPositions.length];
-      const dotPos=new THREE.Vector3(cl.pos.x+offset.x,cl.pos.y+offset.y,cl.pos.z+offset.z);
-      const dotSize=offset.size||0.22;
-      const dotGeo=new THREE.SphereGeometry(dotSize,16,16);
-      const dotMat=new THREE.MeshPhysicalMaterial({color:cl.color,emissive:cl.color,emissiveIntensity:0.55,metalness:0.15,roughness:0.18,clearcoat:0.7,transparent:true,opacity:0});
-      const dot=new THREE.Mesh(dotGeo,dotMat);dot.position.copy(dotPos);dot.userData={clusterDot:true,nodeId:nid,cluster:cl};galaxyGroup.add(dot);
-      const dotGlow=makeGlowSprite(cl.color,dotSize);dotGlow.scale.setScalar(dotSize*9);dotGlow.position.copy(dotPos);dotGlow.material.opacity=0;galaxyGroup.add(dotGlow);
-      galaxyObjects.push({type:'dot',mesh:dot,glow:dotGlow,cluster:cl,nodeId:nid});
-      const threadTarget=(offset.chainTo&&ni>0)?new THREE.Vector3(cl.pos.x+dotPositions[ni-1].x,cl.pos.y+dotPositions[ni-1].y,cl.pos.z+dotPositions[ni-1].z):cl.pos;
-      const threadMat=new THREE.LineBasicMaterial({color:cl.color,transparent:true,opacity:0});
-      const threadLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints([dotPos,threadTarget]),threadMat);galaxyGroup.add(threadLine);threadLine.userData={cluster:cl};galaxyLines.push({line:threadLine,baseOp:offset.chainTo?0.22:0.12,clusterId:cl.id});
-    });
-    galaxyObjects.push({type:'cluster',mesh,atm,glow:glowSpr,label:lSpr,ring:ringLine,cluster:cl});
-  });
-  CLUSTER_CONNECTIONS.forEach(cc=>{
-    const fromCl=CLUSTERS.find(c=>c.id===cc.from),toCl=CLUSTERS.find(c=>c.id===cc.to);if(!fromCl||!toCl)return;
-    const p1=fromCl.pos.clone(),p2=toCl.pos.clone(),mid=p1.clone().add(p2).multiplyScalar(0.5);mid.y+=18+Math.random()*12;
-    const pts=new THREE.QuadraticBezierCurve3(p1,mid,p2).getPoints(40);
-    const arcMat=new THREE.LineBasicMaterial({color:0x8ab4e0,transparent:true,opacity:0,depthWrite:false});
-    const arcLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),arcMat);galaxyGroup.add(arcLine);arcLine.userData={clFrom:cc.from,clTo:cc.to};
-    galaxyLines.push({line:arcLine,baseOp:0.28,isArc:true,label:cc.label,clFrom:cc.from,clTo:cc.to});
-  });
-}
-buildGalaxyLayer();
-
-// Galaxy Hub
-const galaxyHubGroup=new THREE.Group();scene.add(galaxyHubGroup);galaxyHubGroup.visible=false;
-(function buildGalaxyHub(){
-  const hubGeo=new THREE.SphereGeometry(3.8,32,32);
-  const hubMat=new THREE.MeshPhysicalMaterial({color:0xc8deff,emissive:0xa0c4ff,emissiveIntensity:0.7,metalness:0.05,roughness:0.45,clearcoat:0.6,transparent:true,opacity:0});
-  const hubMesh=new THREE.Mesh(hubGeo,hubMat);hubMesh.position.set(0,0,0);hubMesh.userData={isGalaxyHub:true};galaxyHubGroup.add(hubMesh);
-  const hubAtmGeo=new THREE.SphereGeometry(3.8*1.6,24,24);
-  const hubAtmMat=new THREE.MeshBasicMaterial({color:0xa0c4ff,transparent:true,opacity:0,side:THREE.BackSide,depthWrite:false});
-  const hubAtm=new THREE.Mesh(hubAtmGeo,hubAtmMat);hubAtm.position.set(0,0,0);galaxyHubGroup.add(hubAtm);
-  const hubGlow=makeGlowSprite(0xa0c4ff,3.8);hubGlow.scale.setScalar(3.8*10);hubGlow.position.set(0,0,0);hubGlow.material.opacity=0;galaxyHubGroup.add(hubGlow);
-  const hubCanvas=document.createElement('canvas');hubCanvas.width=512;hubCanvas.height=128;
-  const hubCtx=hubCanvas.getContext('2d');hubCtx.fillStyle='rgba(200,220,255,0.90)';hubCtx.font='900 32px "DM Serif Display",serif';hubCtx.fillText('Full System',12,52);
-  hubCtx.fillStyle='rgba(180,210,255,0.45)';hubCtx.font='300 16px "DM Mono",monospace';hubCtx.fillText('ALL NODES · ORRERY VIEW',12,84);
-  const hubLabelSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(hubCanvas),transparent:true,depthWrite:false}));
-  hubLabelSpr.scale.set(24,6,1);hubLabelSpr.position.set(-3.8*5,3.8*3.5,0);hubLabelSpr.material.opacity=0;galaxyHubGroup.add(hubLabelSpr);
-  const hubRingPts=[];for(let i=0;i<=80;i++){const a=i/80*Math.PI*2;hubRingPts.push(new THREE.Vector3(Math.cos(a)*3.8*1.4,0,Math.sin(a)*3.8*1.4));}
-  const hubRingMat=new THREE.LineBasicMaterial({color:0xa0c4ff,transparent:true,opacity:0});
-  const hubRingLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints(hubRingPts),hubRingMat);galaxyHubGroup.add(hubRingLine);
-  galaxyHubGroup.userData={mesh:hubMesh,atm:hubAtm,glow:hubGlow,label:hubLabelSpr,ring:hubRingLine};
-})();
-
-const hubMeshList=[galaxyHubGroup.userData.mesh];
-let galaxyAlpha=0,isGalaxyView=false;
-const GALAXY_ENTER_THRESHOLD=115,GALAXY_FADE_SPEED=0.045;
-
-function updateGalaxyAlpha(){
-  const r=camState.radius;
-  let target=0;
-  if(r>GALAXY_ENTER_THRESHOLD)target=Math.min((r-GALAXY_ENTER_THRESHOLD)/(GALAXY_FULL-GALAXY_ENTER_THRESHOLD),1);
-  galaxyAlpha+=(target-galaxyAlpha)*GALAXY_FADE_SPEED;
-  if(galaxyAlpha<0.001)galaxyAlpha=0;if(galaxyAlpha>0.999)galaxyAlpha=1;
-  isGalaxyView=galaxyAlpha>0.01;
-  galaxyGroup.visible=isGalaxyView;galaxyHubGroup.visible=isGalaxyView;
-  const orreryAlpha=1-galaxyAlpha;
-  nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?orreryAlpha*0.88:orreryAlpha*0.95;});
-  glowSprites.forEach(gs=>{gs.material.opacity=isLight?0:orreryAlpha*0.72;});
-  allLabels.forEach(({spr})=>{spr.material.opacity=orreryAlpha;});
-  allLines.forEach(({line,darkOp,lightOp})=>{const isSpoke=spokeLines.includes(line);const isGrid=gridLines.includes(line);const effectiveAlpha=(isSpoke||isGrid)?orreryAlpha*(1-galaxyAlpha*4):orreryAlpha;line.material.opacity=Math.max(0,(isLight?lightOp:darkOp)*effectiveAlpha);});
-  connLineObjects.forEach(({line,darkOp,lightOp})=>{line.material.opacity=(isLight?lightOp:darkOp)*orreryAlpha;});
-  const ga=galaxyAlpha,focCl=activeGalaxyCluster;
-  galaxyObjects.forEach(obj=>{
-    const isFocused=focCl&&obj.cluster===focCl,dimFactor=(focCl&&!isFocused)?0.18:1.0;
-    if(obj.type==='cluster'){
-      const boost=isFocused?1.25:1.0;
-      obj.mesh.material.opacity=ga*0.82*dimFactor*boost;obj.atm.material.opacity=ga*(isFocused?0.32:0.12)*dimFactor;
-      obj.glow.material.opacity=isLight?0:ga*(isFocused?1.1:0.55)*dimFactor;obj.label.material.opacity=ga*dimFactor;
-      obj.ring.material.opacity=ga*(isFocused?0.75:0.35)*dimFactor;
-    } else if(obj.type==='dot'){
-      const isHoveredDot=obj.mesh===hoveredDotMesh,inFocusCluster=focCl&&obj.cluster===focCl,nofocus=!focCl;
-      let tgtOpacity,tgtEI,tgtGlow,tgtScale;
-      if(isHoveredDot){tgtOpacity=ga*0.95;tgtEI=1.8;tgtGlow=isLight?0:ga*0.55;tgtScale=1.55;}
-      else if(inFocusCluster||nofocus){tgtOpacity=ga*0.62;tgtEI=0.55+Math.sin(elapsed*0.6+obj.mesh.position.x*0.25)*0.12;tgtGlow=isLight?0:ga*0.18;tgtScale=1.0;}
-      else{tgtOpacity=ga*0.08;tgtEI=0.1;tgtGlow=0;tgtScale=0.85;}
-      const lk=0.10;
-      obj.mesh.material.opacity=obj.mesh.material.opacity+(tgtOpacity-obj.mesh.material.opacity)*lk;
-      obj.mesh.material.emissiveIntensity=obj.mesh.material.emissiveIntensity+(tgtEI-obj.mesh.material.emissiveIntensity)*lk;
-      const cs=obj.mesh.scale.x;obj.mesh.scale.setScalar(cs+(tgtScale-cs)*lk);
-      if(obj.glow){obj.glow.material.opacity=obj.glow.material.opacity+(tgtGlow-obj.glow.material.opacity)*lk;obj.glow.scale.setScalar(obj.mesh.scale.x*obj.mesh.geometry.parameters.radius*11);}
-    }
-  });
-  galaxyLines.forEach(({line,baseOp,isArc,clFrom,clTo,clusterId})=>{
-    let op=baseOp,dimFactor=1.0;
-    if(focCl){if(isArc){const arcInvolved=clFrom===focCl.id||clTo===focCl.id;dimFactor=arcInvolved?1.0:0.08;if(arcInvolved)op=Math.min(op*2.0,0.80);}else{dimFactor=(!clusterId||clusterId===focCl.id)?1.0:0.08;if(clusterId===focCl.id)op=Math.min(op*1.8,0.55);}}
-    line.material.opacity=ga*op*dimFactor;
-  });
-  if(isGalaxyView&&galaxyHubGroup.userData.mesh){
-    const hub=galaxyHubGroup.userData,hubDim=focCl?0.30:1.0,hubLk=0.10;
-    hub.mesh.material.opacity=hub.mesh.material.opacity+(ga*0.78*hubDim-hub.mesh.material.opacity)*hubLk;
-    hub.atm.material.opacity=hub.atm.material.opacity+(ga*0.14*hubDim-hub.atm.material.opacity)*hubLk;
-    hub.glow.material.opacity=isLight?0:hub.glow.material.opacity+(ga*0.55*hubDim-hub.glow.material.opacity)*hubLk;
-    hub.label.material.opacity=hub.label.material.opacity+(ga*hubDim-hub.label.material.opacity)*hubLk;
-    hub.ring.material.opacity=hub.ring.material.opacity+(ga*0.38*hubDim-hub.ring.material.opacity)*hubLk;
-  }
-}
-
-const clusterMeshes=galaxyObjects.filter(o=>o.type==='cluster').map(o=>o.mesh);
-const dotMeshes=galaxyObjects.filter(o=>o.type==='dot').map(o=>o.mesh);
-let hoveredCluster=null,hoveredDotMesh=null,activeGalaxyCluster=null;
-const DARK_FOG_COLOR=0x000000,LIGHT_FOG_COLOR=0xf0ece4;
-
-function lerpHex(a,b,t){const ar=(a>>16)&255,ag=(a>>8)&255,ab=a&255,br=(b>>16)&255,bg=(b>>8)&255,bb=b&255;return(Math.round(ar+(br-ar)*t)<<16)|(Math.round(ag+(bg-ag)*t)<<8)|Math.round(ab+(bb-ab)*t);}
-
-function setGalaxyFocus(cl){activeGalaxyCluster=cl;}
-function clearGalaxyFocus(){if(!activeGalaxyCluster)return;galaxyObjects.forEach(obj=>{if(obj.type==='dot'){obj.mesh.scale.setScalar(1.0);if(obj.glow)obj.glow.scale.setScalar(obj.mesh.geometry.parameters.radius*14);}});activeGalaxyCluster=null;scene.fog.color.setHex(isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR);}
-
-function checkGalaxyHover(mouseVec){
-  if(!isGalaxyView||galaxyAlpha<0.3)return false;
-  raycaster.setFromCamera(mouseVec,cam);
-  const hubHits=raycaster.intersectObjects(hubMeshList);
-  if(hubHits.length){if(hoveredCluster){hoveredCluster=null;}document.getElementById('tt-ring').textContent='Gateway';document.getElementById('tt-title').textContent='Full System';document.getElementById('tt-title').style.color='#c8deff';document.getElementById('tt-type').textContent='All nodes · Orrery view';tooltip.classList.add('vis');hoveredDotMesh=null;document.body.style.cursor='pointer';return true;}
-  const cHits=raycaster.intersectObjects(clusterMeshes);
-  if(cHits.length){const cl=cHits[0].object.userData.cluster;if(cl!==hoveredCluster){hoveredCluster=cl;document.getElementById('tt-ring').textContent=cl.nodeIds.length+' nodes';document.getElementById('tt-title').textContent=cl.name.replace('\n',' ');document.getElementById('tt-title').style.color=cl.hex;document.getElementById('tt-type').textContent=cl.sub;tooltip.classList.add('vis');}hoveredDotMesh=null;setGalaxyFocus(cl);document.body.style.cursor='pointer';return true;}
-  const dHits=raycaster.intersectObjects(dotMeshes);
-  if(dHits.length){const dot=dHits[0].object,node=NODE_BY_ID[dot.userData.nodeId],cl=dot.userData.cluster;if(node){document.getElementById('tt-ring').textContent=cl.name.replace('\n',' ');document.getElementById('tt-title').textContent=node.title;document.getElementById('tt-title').style.color=cl.hex;document.getElementById('tt-type').textContent=dcfg(node.domain).label;tooltip.classList.add('vis');}hoveredDotMesh=dot;setGalaxyFocus(cl);document.body.style.cursor='pointer';return true;}
-  hoveredDotMesh=null;if(hoveredCluster){hoveredCluster=null;tooltip.classList.remove('vis');}clearGalaxyFocus();return false;
-}
-
-function handleGalaxyClick(mouseVec){
-  if(!isGalaxyView||galaxyAlpha<0.3)return false;
-  raycaster.setFromCamera(mouseVec,cam);
-  const hubHits=raycaster.intersectObjects(hubMeshList);
-  if(hubHits.length){switchLayer(LAYER_ORRERY);clearGalaxyFocus();clearClusterFilter();return true;}
-  const cHits=raycaster.intersectObjects(clusterMeshes);
-  if(cHits.length){const cl=cHits[0].object.userData.cluster;switchLayer(LAYER_ORRERY);clearGalaxyFocus();setTimeout(()=>applyClusterFilter(cl),700);return true;}
-  const dHits=raycaster.intersectObjects(dotMeshes);
-  if(dHits.length){const node=NODE_BY_ID[dHits[0].object.userData.nodeId];if(node){switchLayer(LAYER_ORRERY);setTimeout(()=>{enterFocus(node);},600);}return true;}
-  return false;
-}
-
-let galaxyDrift=0;
-
-// ═══════════════════════════════════════════════════════════════
-// MOON SYSTEM
-// ═══════════════════════════════════════════════════════════════
-let activeMoons=[],moonMeshList=[],hoveredMoon=null,moonBirth=0,orbitPaused=false;
-const MOON_FADEDUR=0.55,MOON_R=0.055;
-
-function makeMoonLabel(text,hexColor,forLight){
-  const c=document.createElement('canvas');c.width=320;c.height=40;
-  const ctx=c.getContext('2d');ctx.fillStyle=forLight?'rgba(10,14,30,0.72)':hexColor+'cc';ctx.font='bold 13px "DM Mono",monospace';ctx.fillText(text.toUpperCase(),6,26);
-  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));spr.scale.set(2.6,0.32,1);return spr;
-}
-
-function spawnMoons(node){
-  moonBirth=elapsed;
-  const conns=CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id);if(!conns.length)return;
-  const orbitR=node.tier==='center'?2.2:node.tier==='inner'?2.6:3.0;
-  conns.forEach((conn,i)=>{
-    const otherId=conn.from===node.id?conn.to:conn.from,other=NODE_BY_ID[otherId];if(!other)return;
-    const cfg=cc(conn.type),col=isLight?cfg.lkH:cfg.dkH,hexCol='#'+col.toString(16).padStart(6,'0');
-    const startAngle=(i/conns.length)*Math.PI*2,speed=0.20+i*0.04;
-    const mesh=new THREE.Mesh(new THREE.SphereGeometry(MOON_R,8,8),new THREE.MeshPhysicalMaterial({color:col,emissive:col,emissiveIntensity:isLight?0:1.8,metalness:0,roughness:0.1,transparent:true,opacity:0,depthWrite:false}));
-    mesh.userData={isMoon:true,targetNode:other,connType:conn.type};scene.add(mesh);
-    const glowSpr=makeGlowSprite(col,MOON_R);glowSpr.material.opacity=0;glowSpr.scale.setScalar(MOON_R*9);scene.add(glowSpr);
-    const short=other.title.length>20?other.title.slice(0,18)+'…':other.title;
-    const labelText=`${CONN_TYPE_LABELS[conn.type]||conn.type} · ${short}`;
-    const labelSpr=makeMoonLabel(labelText,hexCol,isLight);labelSpr.material.opacity=0;scene.add(labelSpr);
-    const cGeo=new THREE.BufferGeometry().setFromPoints([node._pos.clone(),node._pos.clone()]);
-    const cMat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false});
-    const connLine=new THREE.Line(cGeo,cMat);scene.add(connLine);
-    const parentObj=nodeObjects.find(o=>o.node.id===node.id);
-    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node,parentMesh:parentObj?parentObj.mesh:null,parentNodeObj:parentObj});
-    moonMeshList.push(mesh);
-  });
-}
-
-function clearMoons(){activeMoons.forEach(m=>{scene.remove(m.mesh);scene.remove(m.glowSpr);scene.remove(m.labelSpr);scene.remove(m.connLine);m.mesh.geometry.dispose();m.mesh.material.dispose();m.glowSpr.material.map.dispose();m.glowSpr.material.dispose();m.labelSpr.material.map.dispose();m.labelSpr.material.dispose();m.connLine.geometry.dispose();m.connLine.material.dispose();});activeMoons=[];moonMeshList=[];hoveredMoon=null;hideMoonTip();}
-
-function tickMoons(elapsed,dt){
-  if(!activeMoons.length)return;
-  const age=elapsed-moonBirth,fadeT=Math.min(age/MOON_FADEDUR,1),eased=fadeT*fadeT*(3-2*fadeT);
-  activeMoons.forEach(m=>{
-    if(!orbitPaused)m.orbitAngle+=m.orbitSpeed*dt;
-    const pp=m.parentMesh?m.parentMesh.position:m.parentNode._pos;
-    const ox=pp.x+Math.cos(m.orbitAngle)*m.orbitRadius,oy=pp.y+Math.sin(m.orbitAngle*0.5)*0.3,oz=pp.z+Math.sin(m.orbitAngle)*m.orbitRadius*0.52;
-    m.mesh.position.set(ox,oy,oz);m.glowSpr.position.set(ox,oy,oz);m.labelSpr.position.set(ox+0.2,oy+0.18,oz);
-    const isHov=hoveredMoon===m,tOp=isHov?1.0:0.75,tSc=isHov?2.2:1.0;
-    m.mesh.material.opacity=eased*tOp;m.glowSpr.material.opacity=eased*(isHov?0.85:0.50);
-    m.connLine.material.opacity=eased*0.18;m.labelSpr.material.opacity=eased*(isHov?0.95:0.48);
-    if(m.mesh.material.emissiveIntensity>0&&isLight)m.mesh.material.emissiveIntensity=0;
-    const cs=m.mesh.scale.x;m.mesh.scale.setScalar(cs+(tSc-cs)*0.14);
-    const pa=m.connLine.geometry.attributes.position.array;pa[0]=pp.x;pa[1]=pp.y;pa[2]=pp.z;pa[3]=ox;pa[4]=oy;pa[5]=oz;m.connLine.geometry.attributes.position.needsUpdate=true;
-  });
-}
-
-function showMoonTip(m,cx,cy){const tt=document.getElementById('tooltip'),cfg=cc(m.connType),col=isLight?'#'+cfg.lkH.toString(16).padStart(6,'0'):'#'+cfg.dkH.toString(16).padStart(6,'0');document.getElementById('tt-ring').textContent=CONN_TYPE_LABELS[m.connType]||m.connType;document.getElementById('tt-title').textContent=m.targetNode.title;document.getElementById('tt-title').style.color=col;document.getElementById('tt-type').textContent='Click to navigate';posTooltip(cx,cy);tt.classList.add('vis');}
-function hideMoonTip(){document.getElementById('tooltip').classList.remove('vis');hoveredMoon=null;}
-
-function applyTheme(){
-  document.body.classList.toggle('light',isLight);
-  document.getElementById('theme-toggle').textContent=isLight?'Dark':'Light';
-  allLines.forEach(({line,darkColor,lightColor,darkOp,lightOp})=>{line.material.color.setHex(isLight?lightColor:darkColor);line.material.opacity=isLight?lightOp:darkOp;});
-  nodeObjects.forEach(({mesh})=>{const ud=mesh.userData;if(isLight){mesh.material.color.setHex(0x1a1a20);mesh.material.emissive.setHex(0x000000);mesh.material.emissiveIntensity=0;mesh.material.metalness=0;mesh.material.roughness=0.65;mesh.material.clearcoat=0;mesh.material.opacity=0.88;}else{mesh.material.color.setHex(ud.origColor);mesh.material.emissive.setHex(ud.origColor);mesh.material.emissiveIntensity=ud.origEI||1.4;mesh.material.metalness=0.2;mesh.material.roughness=0.08;mesh.material.clearcoat=1.0;mesh.material.opacity=0.95;}});
-  glowSprites.forEach(gs=>{gs.visible=!isLight;});
-  neonA.intensity=isLight?0:6;neonB.intensity=isLight?0:5;neonC.intensity=isLight?0:4;
-  ambLight.intensity=isLight?1.2:0.15;pMat.opacity=isLight?0:0.14;
-  galaxyObjects.forEach(obj=>{
-    if(obj.type==='cluster'){obj.glow.material.opacity=isLight?0:obj.glow.material.opacity;if(isLight){obj.mesh.material.opacity=0.92;obj.atm.material.opacity=0.08;}const newLc=makeClusterCanvas(obj.cluster,isLight);obj.label.material.map.dispose();obj.label.material.map=new THREE.CanvasTexture(newLc);obj.label.material.needsUpdate=true;}
-    if(obj.type==='dot'&&isLight)obj.mesh.material.color.setHex(0x1a1a20);
-    else if(obj.type==='dot'&&!isLight)obj.mesh.material.color.setHex(obj.cluster.color);
-  });
-  scene.fog.color.setHex(isLight?LIGHT_FOG:DARK_FOG);renderer.setClearColor(isLight?LIGHT_FOG:0x000000,0);
-  redrawLabels();drawMesh();
-}
-document.getElementById('theme-toggle').addEventListener('click',()=>{isLight=!isLight;applyTheme();});
-
-const bgCanvas=document.getElementById('bg-mesh'),bgCtx=bgCanvas.getContext('2d');
-function resizeBg(){bgCanvas.width=innerWidth;bgCanvas.height=innerHeight;}resizeBg();
-const BD=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[10,28,74]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[42,18,72]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[6,58,50]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[68,30,14]}];
-const BL=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[190,210,240]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[210,195,235]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[185,230,220]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[235,215,185]}];
-function drawMesh(){const w=bgCanvas.width,h=bgCanvas.height;bgCtx.clearRect(0,0,w,h);const blobs=isLight?BL:BD;bgCtx.fillStyle=isLight?'#f0ece4':'#030308';bgCtx.fillRect(0,0,w,h);blobs.forEach(b=>{const cx=b.x*w,cy=b.y*h,rad=Math.max(w,h)*b.r;const grd=bgCtx.createRadialGradient(cx,cy,0,cx,cy,rad);const[r,g,bl]=b.col;grd.addColorStop(0,`rgba(${r},${g},${bl},${isLight?0.45:0.55})`);grd.addColorStop(0.5,`rgba(${r},${g},${bl},${isLight?0.14:0.16})`);grd.addColorStop(1,`rgba(${r},${g},${bl},0)`);bgCtx.fillStyle=grd;bgCtx.fillRect(0,0,w,h);});const vig=bgCtx.createRadialGradient(w/2,h/2,h*0.3,w/2,h/2,isLight?h*0.88:h*0.92);vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,isLight?'rgba(10,14,30,0.08)':'rgba(0,0,0,0.75)');bgCtx.fillStyle=vig;bgCtx.fillRect(0,0,w,h);}
-let meshT=0;
-function tickMesh(){meshT++;[...BD,...BL].forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>1)b.vx*=-1;if(b.y<0||b.y>1)b.vy*=-1;});if(meshT%3===0)drawMesh();requestAnimationFrame(tickMesh);}
-drawMesh();tickMesh();
-
-const RING_NAMES={center:'Center',inner:'Ring 1 · Formalism',mid:'Ring 2 · History',outer:'Ring 3 · Analogues',outer2:'Ring 4 · Cultural'};
-const CONN_TYPE_LABELS={'preceded':'Preceded','same-structure':'Same Structure','enabled':'Enabled','lives-in':'Lives In'};
-const CONN_TYPE_CSS_DK={'preceded':'rgba(74,138,220,0.82)','same-structure':'rgba(154,112,204,0.82)','enabled':'rgba(80,216,176,0.82)','lives-in':'rgba(216,176,80,0.82)'};
-const CONN_TYPE_CSS_LK={'preceded':'rgba(60,110,190,0.55)','same-structure':'rgba(120,80,180,0.55)','enabled':'rgba(30,130,100,0.55)','lives-in':'rgba(160,120,30,0.55)'};
-
-function openPanel(node){
-  const cfg=dcfg(node.domain);
-  const accentMap={statement:'rgba(120,130,160,0.45)',formalism:'rgba(74,138,220,0.40)',history:'rgba(154,112,204,0.40)',analogue:'rgba(80,200,160,0.40)',cultural:'rgba(200,170,60,0.40)'};
-  const col=isLight?(accentMap[node.domain]||'rgba(120,120,140,0.40)'):cfg.hex;
-  document.getElementById('gc-bar').style.background=col;document.getElementById('gc-ring').textContent=node.era||RING_NAMES[node.tier];document.getElementById('gc-title').textContent=node.title||'';document.getElementById('gc-role').textContent=node.role||'';document.getElementById('gc-body').textContent=node.body||'';document.getElementById('gc-ring-v').textContent=RING_NAMES[node.tier]||node.tier;document.getElementById('gc-domain').textContent=cfg.label;
-  const gcTag=document.getElementById('gc-tag');gcTag.textContent=cfg.label;gcTag.style.color=col;
-  const conns=CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id);
-  const gcConn=document.getElementById('gc-connections');
-  if(conns.length){gcConn.style.display='';const cssDef=isLight?CONN_TYPE_CSS_LK:CONN_TYPE_CSS_DK;let html='<div class="gc-conn-label">Connections</div>';conns.forEach(c=>{const otherId=c.from===node.id?c.to:c.from,other=NODE_BY_ID[otherId];if(!other)return;html+=`<div class="gc-conn-item" data-ct="${other.id}"><span class="gc-conn-type" style="color:${cssDef[c.type]||cssDef['preceded']}">${CONN_TYPE_LABELS[c.type]||c.type}</span><span class="gc-conn-target">${other.title}</span></div>`;});gcConn.innerHTML=html;gcConn.querySelectorAll('.gc-conn-item').forEach(item=>{item.addEventListener('click',()=>{const t=NODE_BY_ID[item.dataset.ct];if(t)enterFocus(t);});});}else{gcConn.style.display='none';}
-  document.getElementById('ghost').classList.add('on');document.getElementById('ms-bar').style.background=col;document.getElementById('ms-ring').textContent=node.era||RING_NAMES[node.tier];document.getElementById('ms-title').textContent=node.title||'';document.getElementById('ms-body').textContent=node.body||'';
-  const msTag=document.getElementById('ms-tag');msTag.textContent=cfg.label;msTag.style.color=col;document.getElementById('msheet').classList.add('on');
-}
-
-let isFocused=false,focusNode=null;
-let activeClusterFilter=null;
-
-nodeObjects.forEach(({mesh,node})=>{mesh.userData._morphTarget=node._pos.clone();mesh.userData._morphing=false;});
-
-function tickNodeMorph(dt){nodeObjects.forEach(({mesh})=>{if(!mesh.userData._morphing)return;mesh.position.lerp(mesh.userData._morphTarget,0.075);if(mesh.position.distanceTo(mesh.userData._morphTarget)<0.005){mesh.position.copy(mesh.userData._morphTarget);mesh.userData._morphing=false;}});hitProxies.forEach(({proxy,mesh})=>{proxy.position.copy(mesh.position);});}
-
-function applyClusterFilter(cl){
-  activeClusterFilter=cl;const memberIds=new Set(cl.nodeIds);const MORPH_SCALE=0.38;const dotPositions=getClusterDotPositions(cl);let memberIdx=0;
-  nodeObjects.forEach(({mesh,node})=>{const isMember=memberIds.has(node.id);if(isMember){const offset=dotPositions[memberIdx%dotPositions.length];memberIdx++;const tgt=new THREE.Vector3(offset.x*MORPH_SCALE,offset.y*MORPH_SCALE,offset.z*MORPH_SCALE);mesh.userData._morphTarget=tgt;mesh.userData._morphing=true;}else{mesh.userData._morphTarget=node._pos.clone();mesh.userData._morphing=false;mesh.position.copy(node._pos);}mesh.material.opacity=isMember?0.98:0.04;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isMember?(isLight?0:mesh.userData.origEI*1.4):0;const tgtScale=isMember?1.5:0.6;mesh.scale.setScalar(tgtScale);});
-  connLineObjects.forEach(obj=>{const rel=memberIds.has(obj.conn.from)||memberIds.has(obj.conn.to);const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*3.0,0.95):bOp*0.04;});allLines.forEach(({line,darkOp,lightOp})=>{line.material.opacity=(isLight?lightOp:darkOp)*0.04;});glowSprites.forEach((gs)=>{gs.material.opacity=isLight?0:0.35;});showClusterBadge(cl);
-}
-
-function clearClusterFilter(){
-  activeClusterFilter=null;
-  nodeObjects.forEach(({mesh,node})=>{mesh.userData._morphTarget=node._pos.clone();mesh.userData._morphing=true;mesh.material.opacity=isLight?0.88:0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;mesh.scale.setScalar(1.0);});
-  // Immediately sync hitProxies so they don't lag behind during reverse-morph
-  hitProxies.forEach(({proxy,mesh})=>{proxy.position.copy(mesh.position);});
-  resetConnectionHighlights();hideClusterBadge();
-}
-
-function showClusterBadge(cl){
-  let badge=document.getElementById('cluster-badge');
-  if(!badge){badge=document.createElement('div');badge.id='cluster-badge';badge.style.cssText='position:fixed;bottom:72px;left:50%;transform:translateX(-50%);font-family:"DM Mono",monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;z-index:100;pointer-events:all;display:flex;align-items:center;gap:8px;border-radius:3px;padding:6px 14px;backdrop-filter:blur(8px);transition:opacity 0.3s;';document.body.appendChild(badge);}
-  badge.style.background=isLight?'rgba(248,245,240,0.95)':'rgba(4,6,18,0.85)';badge.style.border=isLight?'1px solid rgba(10,14,30,0.08)':'1px solid rgba(180,210,255,0.10)';
-  const nameSpan='<span style="color:'+cl.hex+';opacity:0.9">'+cl.name.replace('\n',' ')+'</span>';
-  const muted=isLight?'rgba(10,14,30,0.30)':'rgba(180,210,255,0.28)',label=isLight?'rgba(10,14,30,0.50)':'rgba(180,210,255,0.40)',close=isLight?'rgba(10,14,30,0.25)':'rgba(180,210,255,0.22)';
-  badge.innerHTML=nameSpan+'<span style="color:'+muted+'">·</span><span style="color:'+label+'">CLUSTER VIEW</span><span style="color:'+close+';cursor:pointer;margin-left:4px" onclick="clearClusterFilter()">✕</span>';
-  badge.style.opacity='1';badge.style.display='flex';
-}
-function hideClusterBadge(){const badge=document.getElementById('cluster-badge');if(badge){badge.style.opacity='0';setTimeout(()=>badge.style.display='none',300);}}
-window.clearClusterFilter=clearClusterFilter;
-
-function highlightConnections(node){const rIds=new Set(CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id).flatMap(c=>[c.from,c.to]));connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});nodeObjects.forEach(({mesh,node:n})=>{mesh.material.opacity=rIds.has(n.id)||n.id===node.id?0.95:0.20;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=rIds.has(n.id)||n.id===node.id?(isLight?0:mesh.userData.origEI*1.8):0.15;});}
-function resetConnectionHighlights(){connLineObjects.forEach(obj=>{obj.line.material.opacity=isLight?obj.lightOp:obj.darkOp;});allLines.forEach(({line,darkOp,lightOp})=>{line.material.opacity=isLight?lightOp:darkOp;});nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?0.88:0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;});}
+// ══════════════════════════════════════════════════════════
+// CAMERA FOCUS
+// ══════════════════════════════════════════════════════════
+let isFocused   = false;
+let focusNode   = null;
+let focusOrbit  = 0;
 
 function enterFocus(node){
-  if(activeClusterFilter&&!activeClusterFilter.nodeIds.includes(node.id))return;
-  const wasAlreadyFocused=isFocused;
-  isFocused=true;focusNode=node;
-  // Use actual mesh position (may be morphed in cluster filter) not original _pos
-  const nodeObj=nodeObjects.find(o=>o.node.id===node.id);
-  const livePos=nodeObj?nodeObj.mesh.position.clone():node._pos.clone();
-  // If jumping from one focused node to another, snap the pivot instantly
-  // so the camera doesn't drift through open space before arriving
-  if(wasAlreadyFocused){scenePivot.copy(livePos);}
-  scenePivotTgt.copy(livePos);
-  const zm={center:5,inner:8,mid:10,outer:13,outer2:16};
-  camTarget.radius=zm[node.tier]||10;camTarget.phi=Math.PI*0.22;
-  document.getElementById('focus-hint').classList.add('vis');document.getElementById('hint').style.opacity='0';
-  openPanel(node);highlightConnections(node);clearMoons();spawnMoons(node);
-  // Ensure ghost dismiss backdrop exists
-  if(!document.getElementById('ghost-dismiss')){
-    const bd=document.createElement('div');bd.id='ghost-dismiss';
-    bd.style.cssText='position:fixed;inset:0;z-index:699;background:transparent;';
-    bd.addEventListener('click',()=>exitFocus());
-    document.body.appendChild(bd);
-  } else {
-    document.getElementById('ghost-dismiss').style.display='block';
-  }
+  isFocused  = true;
+  focusNode  = node;
+  focusOrbit = camTarget.theta;
+  scenePivotTgt.copy(node._pos);
+  camTarget.radius = node.tier==='center' ? 5 : node.tier==='inner' ? 8 : node.tier==='mid' ? 10 : 12;
+  camTarget.phi    = Math.PI * 0.22;
+  document.getElementById('focus-hint').classList.add('vis');
+  document.getElementById('hint').style.opacity = '0';
+  openPanel(node);
 }
+
 function exitFocus(){
-  isFocused=false;focusNode=null;scenePivotTgt.set(0,0,0);
-  camTarget.radius=ORRERY_VIEW.radius;camTarget.phi=ORRERY_VIEW.phi;
-  document.getElementById('focus-hint').classList.remove('vis');document.getElementById('hint').style.opacity='1';
-  const ghost=document.getElementById('ghost');ghost.classList.remove('on');ghost.classList.remove('pinned');const bd=document.getElementById('ghost-dismiss');if(bd)bd.style.display='none';
-  document.getElementById('msheet').classList.remove('on');
-  clearMoons();clearClusterFilter();
+  isFocused = false;
+  focusNode = null;
+  scenePivotTgt.set(0,0,0);
+  camTarget.radius = VIEWS.top.radius;
+  camTarget.phi    = VIEWS.top.phi;
+  document.getElementById('focus-hint').classList.remove('vis');
+  document.getElementById('panel').classList.remove('open');
 }
-window.closePanel=function(){exitFocus();};
 
-// Ghost: allow mouse to enter the panel without it closing, but release on explicit close
-(function(){
-  const ghost=document.getElementById('ghost');
-  ghost.addEventListener('mouseenter',()=>{if(ghost.classList.contains('on'))ghost.classList.add('pinned');});
-  ghost.addEventListener('mouseleave',()=>{ghost.classList.remove('pinned');});
-  const gcclose=ghost.querySelector('.gcclose');
-  if(gcclose)gcclose.addEventListener('click',()=>{exitFocus();});
-})();
+// ══════════════════════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════════════════════
+function openPanel(node){
+  document.getElementById('panel-era').textContent   = node.era   || '';
+  document.getElementById('panel-title').textContent  = node.title || '';
+  document.getElementById('panel-role').textContent   = node.role  || '';
+  document.getElementById('panel-body').textContent   = node.body  || '';
+  const tag = document.getElementById('panel-tag');
+  tag.textContent = tcfg(node.type).label;
+  tag.style.color = thex(node.type);
+  document.getElementById('panel').classList.add('open');
+}
 
-const tooltip=document.getElementById('tooltip');
-let hoveredMesh=null,mouse=new THREE.Vector2(),drag=false,lastDragX=0,lastDragY=0,isDragging=false,hintFaded=false;
-let lastXY={x:0,y:0};
-function posTooltip(cx,cy){tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;}
+window.closePanel = function(){ exitFocus(); };
+
+// ══════════════════════════════════════════════════════════
+// INTERACTION
+// ══════════════════════════════════════════════════════════
+const tooltip   = document.getElementById('tooltip');
+let hoveredMesh = null;
+let mouse       = new THREE.Vector2();
+let drag        = false;
+let pointerStart= { x:0, y:0 };
+let lastMouse   = { x:0, y:0 };
+let autoRotate  = false;
+let autoTimer   = null;
+let hintFaded   = false;
+
+function posTooltip(cx,cy){
+  tooltip.style.transform=`translate(${cx+18}px,${cy-10}px)`;
+}
 
 function checkHover(){
-  raycaster.setFromCamera(mouse,cam);
-  if(isGalaxyView&&galaxyAlpha>0.3){if(checkGalaxyHover(mouse))return;}
-  if(isFocused&&moonMeshList.length){const mHits=raycaster.intersectObjects(moonMeshList);if(mHits.length){const hit=mHits[0].object,mo=activeMoons.find(m=>m.mesh===hit);if(mo&&mo!==hoveredMoon){hoveredMoon=mo;showMoonTip(mo,lastXY.x,lastXY.y);}document.body.style.cursor='pointer';if(hoveredMesh){hoveredMesh=null;}return;}}
-  if(hoveredMoon){hideMoonTip();}
-  const hitTargets=isTouchDevice()?hitProxies.map(h=>h.proxy):nodeObjects.map(o=>o.mesh);
-  const hits=raycaster.intersectObjects(hitTargets);
-  if(hits.length){const hit=hits[0].object;const proxyEntry=hitProxies.find(h=>h.proxy===hit);const obj=proxyEntry?nodeObjects.find(o=>o.node===proxyEntry.node):nodeObjects.find(o=>o.mesh===hit);const resolvedMesh=obj?obj.mesh:null;if(obj&&hoveredMesh!==resolvedMesh){hoveredMesh=resolvedMesh;const n=obj.node,cfg=dcfg(n.domain);document.getElementById('tt-ring').textContent=n.era||RING_NAMES[n.tier];document.getElementById('tt-title').textContent=n.title;document.getElementById('tt-title').style.color=isLight?cfg.lightHex:cfg.hex;document.getElementById('tt-type').textContent=cfg.label;tooltip.classList.add('vis');}document.body.style.cursor='pointer';}else{if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
+  raycaster.setFromCamera(mouse, cam);
+  const hits = raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+  if(hits.length){
+    const obj = nodeObjects.find(o=>o.mesh===hits[0].object);
+    if(obj && obj.mesh!==hoveredMesh){
+      if(hoveredMesh){
+        hoveredMesh.material.color.setHex(hoveredMesh.userData.origColor);
+        hoveredMesh.material.opacity=hoveredMesh.userData.origOpacity;
+        hoveredMesh.scale.setScalar(1);
+      }
+      hoveredMesh=obj.mesh;
+      hoveredMesh.material.color.setHex(0xffffff);
+      hoveredMesh.material.opacity=1;
+      hoveredMesh.scale.setScalar(2.6);
+      const n=obj.node;
+      document.getElementById('tt-era').textContent   = n.era||'';
+      document.getElementById('tt-title').textContent  = n.title;
+      document.getElementById('tt-type').style.color   = thex(n.type);
+      document.getElementById('tt-type').textContent   = tcfg(n.type).label;
+      tooltip.classList.add('vis');
+      canvas.style.cursor='pointer';
+    }
+  } else {
+    if(hoveredMesh){
+      hoveredMesh.material.color.setHex(hoveredMesh.userData.origColor);
+      hoveredMesh.material.opacity=hoveredMesh.userData.origOpacity;
+      hoveredMesh.scale.setScalar(1);
+      hoveredMesh=null;
+    }
+    tooltip.classList.remove('vis');
+    canvas.style.cursor='default';
+  }
 }
 
-// ── Pointer / touch event handling ──
-// dragDist tracks total movement so tiny touch jitter won't eat taps
-let pointerDownX=0,pointerDownY=0,dragDist=0;
-const DRAG_THRESHOLD=8; // px — below this = tap, above = drag
-
-cvs.addEventListener('pointerdown',e=>{
-  if(e.button===2)return;
-  isDragging=false;drag=false;
-  pointerDownX=e.clientX;pointerDownY=e.clientY;dragDist=0;
-  lastDragX=e.clientX;lastDragY=e.clientY;
-  try{cvs.setPointerCapture(e.pointerId);}catch(_){}
+canvas.addEventListener('pointerdown', e => {
+  drag=true;
+  pointerStart={x:e.clientX,y:e.clientY};
+  lastMouse={x:e.clientX,y:e.clientY};
+  if(!hintFaded){ document.getElementById('hint').style.opacity='0'; hintFaded=true; }
 });
 
-cvs.addEventListener('pointermove',e=>{
-  const rect=cvs.getBoundingClientRect();
-  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
-  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
-  lastXY={x:e.clientX,y:e.clientY};
+window.addEventListener('pointerup', e => {
+  const dx=Math.abs(e.clientX-pointerStart.x);
+  const dy=Math.abs(e.clientY-pointerStart.y);
+  if(drag && dx<5 && dy<5){
+    if(hoveredMesh){
+      const node=hoveredMesh.userData.node;
+      if(isFocused && focusNode===node){ exitFocus(); }
+      else { enterFocus(node); }
+    } else if(isFocused){
+      exitFocus();
+    }
+  }
+  drag=false;
+  if(!isFocused){
+    clearTimeout(autoTimer);
+    autoTimer=setTimeout(()=>{ autoRotate=true; },9000);
+  }
+});
+
+window.addEventListener('pointermove', e => {
+  mouse.set((e.clientX/innerWidth)*2-1, -(e.clientY/innerHeight)*2+1);
   posTooltip(e.clientX,e.clientY);
-  if(e.buttons){
-    const dx=e.clientX-lastDragX,dy=e.clientY-lastDragY;
-    dragDist+=Math.sqrt(dx*dx+dy*dy);
-    if(dragDist>DRAG_THRESHOLD){
-      isDragging=true;drag=true;
-      camTarget.theta-=dx*0.005;
-      camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+dy*0.005));
-    }
-    lastDragX=e.clientX;lastDragY=e.clientY;
-  } else {
-    checkHover();
-  }
+  if(!drag||isFocused) return;
+  const dx=e.clientX-lastMouse.x, dy=e.clientY-lastMouse.y;
+  lastMouse={x:e.clientX,y:e.clientY};
+  autoRotate=false; clearTimeout(autoTimer);
+  camTarget.theta -= dx*0.006;
+  camTarget.phi    = Math.max(0.01,Math.min(Math.PI*0.48, camTarget.phi+dy*0.005));
 });
 
-cvs.addEventListener('pointerup',e=>{
-  if(e.button===2)return;
-  // Refresh mouse coords to the up-position for accurate raycasting on mobile
-  const rect=cvs.getBoundingClientRect();
-  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
-  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  camTarget.radius=Math.max(5,Math.min(150,camTarget.radius+e.deltaY*0.06));
+  if(!isFocused){ autoRotate=false; clearTimeout(autoTimer); autoTimer=setTimeout(()=>{ autoRotate=true; },5000); }
+},{passive:false});
 
-  if(!drag){
-    if(handleGalaxyClick(mouse)){if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}return;}
-    raycaster.setFromCamera(mouse,cam);
-    if(isFocused&&moonMeshList.length){
-      const mHits=raycaster.intersectObjects(moonMeshList);
-      if(mHits.length){const mo=activeMoons.find(m=>m.mesh===mHits[0].object);if(mo){enterFocus(mo.targetNode);return;}}
-    }
-    const hitTargets=isTouchDevice()?hitProxies.map(h=>h.proxy):nodeObjects.map(o=>o.mesh);
-    const hits=raycaster.intersectObjects(hitTargets);
-    if(hits.length){
-      const hit=hits[0].object;
-      const proxyEntry=hitProxies.find(h=>h.proxy===hit);
-      const obj=proxyEntry?nodeObjects.find(o=>o.node===proxyEntry.node):nodeObjects.find(o=>o.mesh===hit);
-      if(obj)enterFocus(obj.node);
-    } else if(isFocused)exitFocus();
-  }
-  if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
-});
+let lastPinch=null;
+canvas.addEventListener('touchstart',e=>{ if(e.touches.length===2){ const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY; lastPinch=Math.sqrt(dx*dx+dy*dy); } },{passive:true});
+canvas.addEventListener('touchmove',e=>{ if(e.touches.length===2&&lastPinch){ const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY,d=Math.sqrt(dx*dx+dy*dy); camTarget.radius=Math.max(5,Math.min(150,camTarget.radius*(lastPinch/d))); lastPinch=d; } },{passive:true});
 
-cvs.addEventListener('wheel',e=>{
-  if(isFocused&&focusNode){
-    const allRing=[...NODES.filter(n=>n.tier===focusNode.tier)].sort((a,b)=>a.angle-b.angle);
-    if(allRing.length>0){const curIdx=allRing.findIndex(n=>n.id===focusNode.id),dir=e.deltaY>0?1:-1,nextIdx=(curIdx+dir+allRing.length)%allRing.length;enterFocus(allRing[nextIdx]);}
-    return;
-  }
-  // Free scroll — clamp to combined orrery+galaxy range
-  camTarget.radius=Math.max(ORRERY_RADIUS_MIN,Math.min(GALAXY_RADIUS_MAX,camTarget.radius+e.deltaY*0.06));
-  // Sync currentLayer label when scroll crosses boundary
-  if(camTarget.radius>GALAXY_ENTER_THRESHOLD&&currentLayer===LAYER_ORRERY){
-    currentLayer=LAYER_GALAXY;
-    document.querySelectorAll('.hud-btn[data-view]').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-view="galaxy"]').classList.add('active');
-  } else if(camTarget.radius<=GALAXY_ENTER_THRESHOLD&&currentLayer===LAYER_GALAXY){
-    currentLayer=LAYER_ORRERY;
-    document.querySelectorAll('.hud-btn[data-view]').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-view="orrery"]').classList.add('active');
-  }
-},{passive:true});
-
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){exitFocus();return;}
-  if(e.code==='Space'){e.preventDefault();orbitPaused=!orbitPaused;}
-});
-cvs.addEventListener('contextmenu',e=>{e.preventDefault();orbitPaused=!orbitPaused;});
-
-// HUD layer buttons
-document.querySelectorAll('.hud-btn[data-view]').forEach(btn=>{
+document.querySelectorAll('.hud-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    switchLayer(btn.dataset.view);
+    const v=btn.dataset.view;
+    if(!VIEWS[v]) return;
+    if(isFocused) exitFocus();
+    camTarget={...VIEWS[v]};
+    document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    autoRotate=false; clearTimeout(autoTimer);
+    autoTimer=setTimeout(()=>{ autoRotate=true; },9000);
   });
 });
 
-// HUD zoom buttons
-document.getElementById('hud-zoom-in').addEventListener('click', ()=>stepZoom(1));
-document.getElementById('hud-zoom-out').addEventListener('click',()=>stepZoom(-1));
+// ══════════════════════════════════════════════════════════
+// RENDER LOOP
+// ══════════════════════════════════════════════════════════
+const LERP=0.065, PIVOT_LERP=0.055;
+let lt=0;
 
-let lastTime=0,elapsed=0;
-function animate(ts){
-  requestAnimationFrame(animate);
-  const dt=Math.min((ts-lastTime)/1000,0.05);lastTime=ts;elapsed+=dt;
-  camState.phi+=(camTarget.phi-camState.phi)*0.08;camState.theta+=(camTarget.theta-camState.theta)*0.08;camState.radius+=(camTarget.radius-camState.radius)*0.08;
-  scenePivot.lerp(scenePivotTgt,0.08);
-  if(!isFocused&&!isDragging&&!orbitPaused)camTarget.theta+=dt*0.018;
-  updateGalaxyAlpha();
-  if(isGalaxyView){
-    galaxyDrift+=dt*0.004;galaxyGroup.rotation.y=galaxyDrift;
-    if(galaxyHubGroup.userData.mesh){const hub=galaxyHubGroup.userData,hpulse=0.65+Math.sin(elapsed*1.1)*0.20;hub.mesh.material.emissiveIntensity=hpulse*galaxyAlpha;if(!isLight)hub.glow.material.opacity=Math.min(hub.glow.material.opacity,hpulse*0.60*galaxyAlpha);}
-    galaxyObjects.forEach(obj=>{if(obj.type==='cluster'){const pulse=0.55+Math.sin(elapsed*0.7+obj.cluster.pos.x*0.02)*0.18;obj.mesh.material.emissiveIntensity=pulse*galaxyAlpha;obj.glow.material.opacity=isLight?0:pulse*0.55*galaxyAlpha;}});
-    scene.fog.density=0.012*(1-galaxyAlpha*0.75);
-    if(activeGalaxyCluster){const baseFog=isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR;const tintStr=isLight?0.10:0.22;scene.fog.color.setHex(lerpHex(baseFog,activeGalaxyCluster.color,tintStr*galaxyAlpha));}else{scene.fog.color.setHex(isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR);}
-  }else{scene.fog.density=0.012;if(!activeGalaxyCluster)scene.fog.color.setHex(isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR);}
-  const pa=pGeo.attributes.position.array;for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;pGeo.attributes.position.needsUpdate=true;
-  if(galaxyAlpha<0.95&&!activeClusterFilter)nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
-  tickMoons(elapsed,dt);tickNodeMorph(dt);applyCam();renderer.render(scene,cam);isDragging=false;
+function tick(t){
+  requestAnimationFrame(tick);
+  const dt=Math.min((t-lt)/1000,0.05); lt=t;
+
+  if(isFocused){
+    focusOrbit += dt * 0.30;
+    camTarget.theta = focusOrbit;
+  } else if(autoRotate){
+    camTarget.theta += dt*0.032;
+  }
+
+  camState.phi    +=(camTarget.phi    -camState.phi)   *LERP;
+  camState.theta  +=(camTarget.theta  -camState.theta) *LERP;
+  camState.radius +=(camTarget.radius -camState.radius)*LERP;
+
+  // Lerp scene pivot toward target
+  scenePivot.lerp(scenePivotTgt, PIVOT_LERP);
+
+  applyCam();
+  checkHover();
+  renderer.render(scene,cam);
 }
-requestAnimationFrame(animate);
-window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);resizeBg();drawMesh();});
+requestAnimationFrame(tick);
 
-// ═══════════════════════════════════════════════════════════════
-// NODE EXPAND PANEL
-// ═══════════════════════════════════════════════════════════════
-const NODE_IMAGES={
-  problem:[{url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85',cap:'Three bodies in gravitational dance'},{url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85',cap:'The night sky — where the problem lives'}],
-  newton:[{url:'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&q=85',cap:'Orbital mechanics — Newtonian gravity'},{url:'https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=1200&q=85',cap:'Force fields and attraction'}],
-  hamilton:[{url:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=85',cap:'Phase space — position and momentum'},{url:'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1200&q=85',cap:'Energy conservation visualized'}],
-  poincare1889:[{url:'https://images.unsplash.com/photo-1530973428-5bf2db2e4d71?w=1200&q=85',cap:'Chaos — the butterfly effect origin'},{url:'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=85',cap:"Poincaré's homoclinic tangle"}],
-  sundman1912:[{url:'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=1200&q=85',cap:'Series convergence — technically complete'},{url:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=85',cap:'Mathematics that cannot be computed'}],
-  moore1993:[{url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85',cap:'The figure-eight — symmetry as solution'},{url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85',cap:'Three equal masses in choreography'}],
-  chaos:[{url:'https://images.unsplash.com/photo-1530973428-5bf2db2e4d71?w=1200&q=85',cap:'Sensitive dependence on initial conditions'},{url:'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&q=85',cap:'Chaos theory — born from celestial mechanics'}],
-  spacecraft:[{url:'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=1200&q=85',cap:'Webb Space Telescope at L2'},{url:'https://images.unsplash.com/photo-1541185933-ef5d1a71547c?w=1200&q=85',cap:'Lagrange point missions — navigating the unsolvable'}],
-  liucixin:[{url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85',cap:'The Trisolaran sky — three suns, no pattern'},{url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85',cap:'Liu Cixin — mathematics as civilization'}],
-  helium:[{url:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=85',cap:'The helium atom — same structure, 10³⁰ smaller'},{url:'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1200&q=85',cap:'Quantum analogue of gravitational three-body'}],
-};
-const DEFAULT_IMAGES=[{url:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1200&q=85',cap:'Three-body problem'},{url:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1200&q=85',cap:'Spatial knowledge surface'}];
-let epActiveImg=0,epNode=null,epOpen=false;
-const CONN_TYPE_CSS_DK_EP={'preceded':'rgba(74,138,220,0.80)','same-structure':'rgba(154,112,204,0.80)','enabled':'rgba(80,216,176,0.80)','lives-in':'rgba(216,176,80,0.80)'};
-const CONN_TYPE_CSS_LK_EP={'preceded':'rgba(40,90,170,0.75)','same-structure':'rgba(100,55,160,0.75)','enabled':'rgba(20,110,80,0.75)','lives-in':'rgba(140,100,15,0.75)'};
-
-function openExpand(node){
-  epNode=node;epOpen=true;epActiveImg=0;
-  const cfg=dcfg(node.domain),col=isLight?cfg.lightHex:cfg.hex,imgs=NODE_IMAGES[node.id]||DEFAULT_IMAGES;
-  const pill=document.getElementById('ep-domain-pill');pill.textContent=cfg.label;pill.style.color=col;
-  document.getElementById('ep-node-title').textContent=node.title||'';document.getElementById('ep-role').textContent=node.role||'';document.getElementById('ep-era').textContent=node.era||'';document.getElementById('ep-text').textContent=node.body||'';document.getElementById('ep-node-id').textContent='node · '+node.id;
-  const connList=document.getElementById('ep-conn-list'),conns=CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id),cssDef=isLight?CONN_TYPE_CSS_LK_EP:CONN_TYPE_CSS_DK_EP;
-  connList.innerHTML=conns.map(c=>{const otherId=c.from===node.id?c.to:c.from,other=NODE_BY_ID[otherId];if(!other)return'';const bColor=cssDef[c.type]||cssDef['preceded'];return`<div class="ep-conn-row" data-nid="${other.id}"><span class="ep-conn-badge" style="color:${bColor}">${CONN_TYPE_LABELS[c.type]||c.type}</span><span class="ep-conn-title">${other.title}</span><span class="ep-conn-arrow">→</span></div>`;}).join('');
-  connList.querySelectorAll('.ep-conn-row').forEach(row=>{row.addEventListener('click',()=>{const target=NODE_BY_ID[row.dataset.nid];if(target){closeExpand();setTimeout(()=>{enterFocus(target);openExpand(target);},400);}});});
-  document.getElementById('ep-connections').style.display=conns.length?'':'none';
-  const mainImg=document.getElementById('ep-main-img');mainImg.classList.remove('ep-img-vis');mainImg.src=imgs[0].url;mainImg.onload=()=>{mainImg.classList.add('ep-img-vis');};document.getElementById('ep-img-caption').textContent=imgs[0].cap||'';
-  const thumbs=document.getElementById('ep-gallery-thumbs');thumbs.innerHTML=imgs.map((img,i)=>`<img class="ep-thumb${i===0?' active':''}" src="${img.url}" data-idx="${i}" alt="${img.cap||''}">`).join('');
-  thumbs.querySelectorAll('.ep-thumb').forEach(th=>{th.addEventListener('click',()=>{const idx=parseInt(th.dataset.idx);epActiveImg=idx;mainImg.classList.remove('ep-img-vis');mainImg.src=imgs[idx].url;mainImg.onload=()=>mainImg.classList.add('ep-img-vis');document.getElementById('ep-img-caption').textContent=imgs[idx].cap||'';thumbs.querySelectorAll('.ep-thumb').forEach(t=>t.classList.toggle('active',t===th));});});
-  document.getElementById('expand-panel').classList.add('open');
-}
-function closeExpand(){epOpen=false;epNode=null;document.getElementById('expand-panel').classList.remove('open');}
-document.getElementById('ep-close').addEventListener('click',closeExpand);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&epOpen){closeExpand();return;}});
-document.getElementById('gc-expand-btn').addEventListener('click',()=>{if(focusNode)openExpand(focusNode);});
-const _origOpenPanel2=openPanel;
-openPanel=function(node){_origOpenPanel2(node);document.getElementById('gc-expand-btn').style.display='block';};
-
-// ═══════════════════════════════════════════════════════════════
-// SENTENCE ENGINE
-// ═══════════════════════════════════════════════════════════════
-const SP_ACCENT={statement:'#8ab4e0',formalism:'#6a9bdc',history:'#9a7acc',analogue:'#50c8a0',cultural:'#c8a840'};
-const SP_ACCENT_LK={statement:'#3a6090',formalism:'#2a5a9a',history:'#5a2888',analogue:'#0a7058',cultural:'#8a6018'};
-
-const NODE_NARRATIVES={
-  problem:`
-[label] The Problem Statement · Center Node
-[poster] Three bodies, **no formula.**
-[body] Three gravitating bodies produce motion that cannot be predicted analytically. This is not a gap in human knowledge.
-[body] It is a structural property of the system. Add one body to a solvable problem, and solvability disappears entirely.
-[pull] The two-body problem has a closed-form solution. The three-body problem does not — and never will.
-[body] This is not a failure of mathematics. It is mathematics telling us something true about the universe: that interaction above a certain complexity produces irreducible behavior.
-[spec] Two bodies :: Closed-form solution exists
-[spec] Three bodies :: No closed-form solution · provably
-[spec] n bodies :: Numerical integration only
-[break]
-[body] The result is a problem that has occupied mathematicians and astronomers for over 350 years — and that still has no general analytical answer.
-`,
-  newton:`
-[label] Ring 1 · Formalism
-[poster] **F = Gm₁m₂/r².**
-[body] Each body exerts a gravitational force on every other. The magnitude is the product of the masses divided by the square of the distance, scaled by Newton's gravitational constant.
-[body] In two bodies, the forces balance into solvable conic sections — ellipses, parabolas, hyperbolas. The solution is exact.
-[pull] In three bodies, each position depends on all others *simultaneously.* The equations are coupled and nonlinear.
-[body] This coupling is the core difficulty. You cannot solve for one body's position without already knowing the others — and vice versa. There is no way in.
-[spec] Two-body solution :: Kepler's laws · exact
-[spec] Three-body equations :: Coupled ODEs · no closed form
-`,
-  hamilton:`
-[label] Ring 1 · Formalism
-[poster] Position and momentum. **Phase space.**
-[body] The Hamiltonian formulation reformulates Newtonian mechanics in phase space — a 6N-dimensional space where each dimension is a position or momentum coordinate.
-[body] H = T + V. Kinetic plus potential energy. The Hamiltonian is conserved — but conservation of the Hamiltonian alone does not determine the trajectory.
-[pull] Energy conservation is one constraint. A general solution requires eighteen. The gap of seventeen is the problem.
-[body] Hamilton's equations are beautiful. They expose the geometry of mechanics — but they do not make the three-body problem integrable.
-[spec] Dimensions :: 18 for three-body (6 per body)
-[spec] Conservation laws :: 10 of 18 required
-[spec] Gap :: 8 missing integrals
-`,
-  jacobi:`
-[label] Ring 1 · Formalism
-[poster] The **one** conserved quantity.
-[body] In the restricted three-body problem — two massive bodies, one massless test particle — the Jacobi integral is the only exactly conserved quantity.
-[body] It defines Hill regions: volumes of space the test particle cannot escape from or enter without crossing a specific energy boundary.
-[pull] Every spacecraft mission that uses Lagrange points or halo orbits exploits Hill regions. The Jacobi integral is why those missions are possible.
-[body] The restricted problem is tractable. The general problem — three bodies with nonzero mass — has no such conserved quantity beyond the ten classical integrals.
-[spec] Valid for :: Restricted circular 3BP only
-[spec] Practical use :: Spacecraft trajectory design
-`,
-  poincare1889:`
-[label] Ring 2 · History
-[poster] A mistake that became **a field.**
-[body] In 1889, Henri Poincaré submitted a prize essay to King Oscar II of Sweden claiming he had proved the stability of the solar system.
-[body] Before publication, he found an error. The correction introduced something no one had seen before: sensitive dependence on initial conditions.
-[pull] Nearby trajectories in phase space do not stay nearby. They diverge — exponentially, and without bound. This is chaos.
-[body] Poincaré paid to suppress the printed version and rewrote the essay. The rewritten version, *Les méthodes nouvelles de la mécanique céleste*, became the founding text of dynamical systems theory.
-[body] A mistake that cost him personally launched the mathematics that now explains weather, ecology, turbulence, and the limits of prediction.
-[spec] Original claim :: Orbital stability proved
-[spec] Error found :: Homoclinic tangles · chaos
-[spec] Legacy :: Dynamical systems · chaos theory
-`,
-  sundman1912:`
-[label] Ring 2 · History
-[poster] Technically complete. **Practically useless.**
-[body] In 1912, Finnish mathematician Karl Fritiof Sundman proved that the three-body problem has a complete solution — a power series that converges for all time.
-[body] The catch: the series requires a change of time variable, and converges so slowly that an astronomical number of terms is needed for any practical precision.
-[pull] The number of terms required for useful accuracy has been estimated at 10⁸⁰⁰⁰⁰⁰⁰. The observable universe contains roughly 10⁸⁰ atoms.
-[body] Sundman's result is mathematically rigorous and physically irrelevant. It establishes the existence of a solution without providing a means to compute it.
-[body] The distinction between *existence* and *computability* is one the three-body problem makes sharper than almost anything else in physics.
-[spec] Series type :: Convergent power series in t^(1/3)
-[spec] Terms needed :: ~10⁸⁰⁰⁰⁰⁰⁰ for practical use
-[spec] Mathematical status :: Complete · exact
-[spec] Physical status :: Not computable in practice
-`,
-  moore1993:`
-[label] Ring 2 · History
-[poster] Three bodies. **One figure-eight.**
-[body] In 1993, Cris Moore discovered numerically that three equal masses could chase each other around a figure-eight curve in a stable periodic orbit.
-[body] The solution requires exact mass equality and precise initial conditions. It was verified analytically by Alain Chenciner and Richard Montgomery in 2000.
-[pull] Symmetry is doing the work that calculus cannot. The figure-eight's choreographic symmetry constrains the orbit into existence.
-[body] This was the first genuinely new family of periodic solutions in over two centuries — found not by analysis but by numerical search.
-[spec] Orbit type :: Choreography · figure-eight
-[spec] Stability :: Linearly stable · small perturbations decay
-[spec] Masses :: Must be exactly equal
-`,
-  chaos:`
-[label] Ring 3 · Analogue
-[poster] The butterfly effect **was born here.**
-[body] Chaos theory — the study of systems where small differences in initial conditions produce exponentially different outcomes — was discovered in the three-body problem.
-[body] Poincaré's 1889 correction to his prize essay is the founding document. The homoclinic tangle he found in the restricted three-body problem is the first rigorous demonstration of what we now call chaos.
-[pull] The field that explains why weather is unpredictable beyond two weeks, why populations oscillate unpredictably, why turbulence resists description — it was born from a celestial mechanics error.
-[body] The three-body problem is not just an application of chaos theory. It is the origin of chaos theory.
-[spec] First described :: Poincaré · 1889 · prize essay correction
-[spec] Applications :: Weather · ecology · turbulence · finance
-[spec] Key concept :: Sensitive dependence on initial conditions
-`,
-  helium:`
-[label] Ring 3 · Analogue
-[poster] Same mathematics. **Thirty orders smaller.**
-[body] The helium atom — one nucleus, two electrons — is structurally identical to the three-body gravitational problem.
-[body] Replace gravitational attraction with Coulomb attraction, and the equations of motion are formally the same. Two bodies attracted to a third, interacting with each other.
-[pull] The helium atom has no closed-form solution. Quantum mechanics provides approximation methods — variational, perturbative — but not an exact answer.
-[body] This is not a coincidence. It is the same mathematical structure expressing itself at a scale 10³⁰ times smaller. The unsolvability is structural, not incidental.
-[spec] Scale :: ~10⁻¹⁰ meters vs ~10¹¹ meters
-[spec] Force :: Coulomb vs gravitational
-[spec] Solution status :: No closed form · same reason
-`,
-  liucixin:`
-[label] Ring 4 · Cultural
-[poster] The problem as **civilization.**
-[body] Liu Cixin's *The Three-Body Problem* (2008) is a Hugo Award-winning science fiction trilogy in which the mathematical unsolvability of the three-body problem becomes the engine of an alien civilization's desperation.
-[body] The Trisolaran star system has three suns. Their orbits are chaotic — producing stable eras of predictable climate and chaotic eras of catastrophic instability. The civilization cannot predict which era is coming.
-[pull] The entire premise — a civilization driven to seek a new home by an unsolvable physics problem — makes the mathematics load-bearing in a work of fiction. The title is not metaphor.
-[body] The novel was translated into English by Ken Liu and published in 2014. It remains one of the few works of fiction where a mathematical result is not backdrop but plot.
-[spec] Author :: Liu Cixin · published 2008
-[spec] Translation :: Ken Liu · English 2014
-[spec] Hugo Award :: Best Novel · 2015
-`,
-  spacecraft:`
-[label] Ring 4 · Applied
-[poster] The unsolvable problem, **navigated.**
-[body] Lagrange points — the five equilibrium solutions Euler and Lagrange found in the restricted three-body problem — are used as parking locations for spacecraft.
-[body] The James Webb Space Telescope sits at L2 of the Sun-Earth system, 1.5 million kilometers from Earth in the anti-Sun direction.
-[pull] The problem has no general solution, but it has specific solutions. And those specific solutions are stable enough to park observatories in.
-[body] Halo orbits around the Lagrange points — discovered numerically, not analytically — are used for real mission design. The unsolvable problem is navigated, not solved.
-[spec] Webb Space Telescope :: L2 · Sun-Earth
-[spec] SOHO :: L1 · Sun-Earth
-[spec] LISA Pathfinder :: L1 · Sun-Earth
-`,
-};
-
-function spMd(text){return text.replace(/\*\*(.*?)\*\*/g,'<span class="ac">$1</span>').replace(/\*(.*?)\*/g,'<em>$1</em>');}
-
-function spParse(src){const parts=[];src.split('\n').forEach(raw=>{const line=raw.trim();if(!line)return;const m=line.match(/^\[([a-z-]+)\]\s*(.*)/s);if(!m)return;const type=m[1],content=m[2].trim();if(type==='break')parts.push({type:'break'});else if(type==='spec'){const sep=content.indexOf('::');if(sep>-1)parts.push({type:'spec',key:content.slice(0,sep).trim(),val:content.slice(sep+2).trim()});}else parts.push({type,content});});return parts;}
-
-function spRender(parts,container){container.innerHTML='';parts.forEach((p,i)=>{const el=document.createElement('span');el.dataset.si=i;if(p.type==='break'){el.className='sp-sent s-break';el.style.pointerEvents='none';}else if(p.type==='spec'){el.className='sp-sent s-spec';el.innerHTML=`<span class="sp-spec-key">${p.key}</span><span class="sp-spec-val">${spMd(p.val)}</span>`;}else{el.className=`sp-sent s-${p.type}`;if(p.type==='poster'||p.type==='body'||p.type==='pull')el.innerHTML=spMd(p.content);else el.textContent=p.content;}el.addEventListener('click',()=>{if(p.type!=='break')spGoTo(parseInt(el.dataset.si));});container.appendChild(el);});}
-
-let spActive=false,spNode=null,spParts=[],spCurrent=0,spDwellStart=0;
-const spDwell={},spReads={},SP_DWELL_THRESHOLD=1800;
-
-function spGoTo(idx){
-  if(idx<0||idx>=spParts.length)return;
-  if(spActive&&spDwellStart>0){const ms=performance.now()-spDwellStart;spDwell[spCurrent]=(spDwell[spCurrent]||0)+ms;spReads[spCurrent]=(spReads[spCurrent]||0)+1;}
-  const part=spParts[idx];if(!part||part.type==='break'||part.type==='label'){if(idx>spCurrent)spGoTo(idx+1);else spGoTo(idx-1);return;}
-  spCurrent=idx;spDwellStart=performance.now();
-  const sents=document.querySelectorAll('#sp-stream .sp-sent');sents.forEach((el,i)=>{el.classList.remove('active','past','revealed');if(i<idx)el.classList.add('past','revealed');else if(i===idx)el.classList.add('active','revealed');else if(i<=idx+3)el.classList.add('revealed');});
-  const active=document.querySelector('#sp-stream .sp-sent.active');if(active)active.scrollIntoView({behavior:'smooth',block:'center'});
-  const navParts=spParts.filter(p=>p.type!=='break'&&p.type!=='label'),navIdx=navParts.indexOf(spParts[idx]),pct=navParts.length>1?Math.round((navIdx/(navParts.length-1))*100):100;
-  document.getElementById('sp-progress-fill').style.width=pct+'%';document.getElementById('sp-counter').textContent=(navIdx+1)+' / '+navParts.length;
-  const totalDwell=Object.values(spDwell).reduce((a,b)=>a+b,0),signalMs=Object.entries(spDwell).filter(([si,ms])=>ms>SP_DWELL_THRESHOLD).reduce((a,[,ms])=>a+ms,0),signalPct=totalDwell>0?Math.round((signalMs/totalDwell)*100):0;
-  document.getElementById('sp-signal-bar').textContent=signalPct>10?signalPct+'% signal':'';
-}
-function spNext(){let n=spCurrent+1;while(n<spParts.length&&(spParts[n].type==='break'||spParts[n].type==='label'))n++;if(n<spParts.length)spGoTo(n);}
-function spPrev(){let n=spCurrent-1;while(n>=0&&(spParts[n].type==='break'||spParts[n].type==='label'))n--;if(n>=0)spGoTo(n);}
-
-function openStream(node){
-  const src=NODE_NARRATIVES[node.id];if(!src)return;
-  spNode=node;spActive=true;spCurrent=0;spDwellStart=0;Object.keys(spDwell).forEach(k=>delete spDwell[k]);Object.keys(spReads).forEach(k=>delete spReads[k]);
-  spParts=spParse(src);
-  const accentColor=isLight?(SP_ACCENT_LK[node.domain]||'#2a5a9a'):(SP_ACCENT[node.domain]||'#6a9bdc');
-  document.getElementById('stream-panel').style.setProperty('--sp-accent',accentColor);document.getElementById('sp-domain-bar').style.background=accentColor;document.getElementById('sp-eyebrow').textContent=node.era||'';document.getElementById('sp-title').textContent=node.title||'';document.getElementById('sp-progress-fill').style.background=accentColor;document.getElementById('sp-progress-fill').style.width='0%';
-  const stream=document.getElementById('sp-stream');spRender(spParts,stream);
-  document.getElementById('stream-panel').classList.add('open');document.body.classList.add('stream-open');
-  let first=0;while(first<spParts.length&&(spParts[first].type==='break'||spParts[first].type==='label'))first++;spGoTo(first);
-}
-
-function closeStream(){
-  if(!spActive)return;
-  if(spDwellStart>0){const ms=performance.now()-spDwellStart;spDwell[spCurrent]=(spDwell[spCurrent]||0)+ms;spReads[spCurrent]=(spReads[spCurrent]||0)+1;}
-  if(spNode){const totalDwell=Object.values(spDwell).reduce((a,b)=>a+b,0),highSignalCount=Object.values(spDwell).filter(ms=>ms>SP_DWELL_THRESHOLD).length,signalScore=Math.min(highSignalCount/Math.max(spParts.length,1),1);const obj=nodeObjects.find(o=>o.node.id===spNode.id);if(obj){obj.node._signalScore=(obj.node._signalScore||0)+signalScore;obj.mesh.userData.signalBoost=Math.min((obj.mesh.userData.signalBoost||0)+signalScore*0.8,2.4);}}
-  spActive=false;spNode=null;document.getElementById('stream-panel').classList.remove('open');document.body.classList.remove('stream-open');
-}
-
-document.getElementById('sp-close').addEventListener('click',closeStream);
-document.getElementById('sp-prev').addEventListener('click',spPrev);
-document.getElementById('sp-next').addEventListener('click',spNext);
-
-document.addEventListener('keydown',e=>{
-  if(!spActive)return;
-  if(e.key==='ArrowDown'||e.key==='j'||(e.key===' '&&spActive)){e.preventDefault();spNext();}
-  else if(e.key==='ArrowUp'||e.key==='k'){e.preventDefault();spPrev();}
-  else if(e.key==='Escape'){closeStream();}
-},{capture:false});
-
-document.getElementById('gc-read-btn').addEventListener('click',()=>{if(focusNode)openStream(focusNode);});
-const _origOpenPanel=openPanel;
-openPanel=function(node){_origOpenPanel(node);const btn=document.getElementById('gc-read-btn');if(NODE_NARRATIVES[node.id]){btn.style.display='block';const score=node._signalScore||0;btn.className=score>0.1?'has-signal':'';btn.textContent=score>0.1?'Read node · signal recorded →':'Read node →';}else{btn.style.display='none';}};
-
-const spSignalPulse=()=>{nodeObjects.forEach(({mesh,node:n})=>{const boost=mesh.userData.signalBoost||0;if(boost>0&&!isLight){const pulse=1+Math.sin(elapsed*1.8)*0.06;mesh.material.emissiveIntensity=Math.min((mesh.userData.origEI||1.4)+boost*pulse,3.8);}});};
-(function pulseTick(){requestAnimationFrame(pulseTick);spSignalPulse();})();
+window.addEventListener('resize',()=>{
+  cam.aspect=innerWidth/innerHeight;
+  cam.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+});
 </script>
 </body>
 </html>
