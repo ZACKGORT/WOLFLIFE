@@ -11,7 +11,7 @@
 html,body{width:100%;height:100%;overflow:hidden;background:#030308;transition:background 0.6s;}
 body.light{background:#f0ece4;}
 #bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;}
-canvas{display:block;width:100vw;height:100vh;position:relative;z-index:1;touch-action:none;}
+canvas{display:block;width:100vw;height:100vh;position:relative;z-index:1;}
 #brand{position:fixed;top:24px;left:28px;z-index:100;pointer-events:none;font-family:'DM Mono',monospace;}
 #brand-name{font-size:10px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(180,210,255,0.65);transition:color 0.5s;}
 #brand-sub{font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(180,210,255,0.24);margin-top:5px;transition:color 0.5s;}
@@ -31,16 +31,17 @@ body.light #brand-sub{color:rgba(10,14,30,0.50);font-size:8.5px;}
   background:none;border:none;cursor:pointer;
   color:rgba(180,210,255,0.32);
   font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;
-  text-transform:uppercase;padding:12px 18px;
+  text-transform:uppercase;padding:9px 18px;
   border-right:1px solid rgba(180,210,255,0.08);
   transition:color 0.2s,background 0.2s;
-  -webkit-tap-highlight-color:transparent;
 }
 .hud-btn:last-child{border-right:none;}
 .hud-btn:hover{color:rgba(180,210,255,0.75);background:rgba(180,210,255,0.05);}
 .hud-btn.active{color:#b4d2ff;background:rgba(180,210,255,0.08);}
-.hud-zoom{padding:12px 14px;font-size:13px;letter-spacing:0;color:rgba(180,210,255,0.28);min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;}
+/* zoom buttons — tighter, no letter-spacing */
+.hud-zoom{padding:9px 14px;font-size:13px;letter-spacing:0;color:rgba(180,210,255,0.28);}
 .hud-zoom:hover{color:rgba(180,210,255,0.80);}
+/* separator rule between layer pills and zoom controls */
 .hud-sep{width:1px;background:rgba(180,210,255,0.14);align-self:stretch;flex-shrink:0;margin:6px 0;}
 
 body.light #hud{background:rgba(10,14,30,0.04);border-color:rgba(10,14,30,0.18);}
@@ -70,8 +71,7 @@ body.light .tt-ring{color:rgba(10,14,30,0.55);font-size:8px;}
 body.light .tt-title{color:rgba(10,14,30,0.92);font-size:16px;}
 body.light .tt-type{color:rgba(10,14,30,0.55);font-size:7.5px;}
 #ghost{position:fixed;z-index:700;width:320px;pointer-events:none;opacity:0;right:28px;top:50%;transform:translateY(-50%) translateX(18px) scale(0.97);transition:opacity 0.30s,transform 0.30s;}
-#ghost.on{opacity:1;transform:translateY(-50%) translateX(0) scale(1);}
-#ghost.on .gc{pointer-events:all;}
+#ghost.on{opacity:1;transform:translateY(-50%) translateX(0) scale(1);pointer-events:all;}
 .gc{background:rgba(4,6,18,0.97);border:1px solid rgba(180,210,255,0.10);border-radius:6px;box-shadow:0 18px 62px rgba(0,0,0,0.9),0 0 0 1px rgba(180,210,255,0.03);backdrop-filter:blur(26px);overflow:hidden;}
 .gcscroll{max-height:82vh;overflow-y:auto;scrollbar-width:none;}
 .gcscroll::-webkit-scrollbar{display:none;}
@@ -119,7 +119,7 @@ body.light .leg-label{color:rgba(10,14,30,0.65);font-size:8px;}
 #msheet{display:none;position:fixed;bottom:0;left:0;right:0;z-index:700;background:rgba(4,6,18,0.98);border-top:1px solid rgba(180,210,255,0.08);border-radius:14px 14px 0 0;max-height:72vh;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);backdrop-filter:blur(28px);}
 #msheet::-webkit-scrollbar{display:none;}
 #msheet.on{transform:translateY(0);}
-.mshandle{width:48px;height:5px;background:rgba(255,255,255,0.18);border-radius:3px;margin:14px auto 8px;cursor:pointer;}
+.mshandle{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:12px auto 6px;}
 .msbar{height:2px;width:100%;transition:background 0.4s;}
 .mshead{padding:16px 20px 12px;border-bottom:1px solid rgba(180,210,255,0.06);}
 .msring{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(180,210,255,0.28);margin-bottom:6px;}
@@ -301,11 +301,10 @@ body.light .zoom-flash{color:rgba(10,14,30,0.45);}
   <div class="leg-item"><div class="leg-line" style="border-top:1px dashed rgba(216,176,80,0.70);height:0;"></div><div class="leg-label" style="color:rgba(216,176,80,0.75);">Lives In</div></div>
 </div>
 
+<!-- HUD: ORRERY · GALAXY | − zoom + -->
 <div id="hud">
   <button class="hud-btn active" data-view="orrery">ORRERY</button>
   <button class="hud-btn" data-view="galaxy">GALAXY</button>
-  <div class="hud-sep"></div>
-  <button class="hud-btn hud-zoom" id="hud-orbit-toggle" title="Pause/resume orbit">⏸</button>
   <div class="hud-sep"></div>
   <button class="hud-btn hud-zoom" id="hud-zoom-out">−</button>
   <button class="hud-btn hud-zoom" id="hud-zoom-in">+</button>
@@ -336,7 +335,7 @@ body.light .zoom-flash{color:rgba(10,14,30,0.45);}
     <button id="gc-read-btn">Read node →</button>
     <div class="gcft">
       <span class="gctag" id="gc-tag"></span>
-      <button class="gcclose">✕</button>
+      <button class="gcclose" onclick="closePanel()">✕</button>
     </div>
   </div>
 </div></div>
@@ -350,11 +349,7 @@ body.light .zoom-flash{color:rgba(10,14,30,0.45);}
   <div class="msbody" id="ms-body"></div>
   <div class="msft">
     <span class="mstag" id="ms-tag"></span>
-    <div style="display:flex;gap:6px;align-items:center;">
-      <button class="msclose" id="ms-prev" title="Previous node">←</button>
-      <button class="msclose" id="ms-next" title="Next node">→</button>
-      <button class="msclose" onclick="closePanel()">✕</button>
-    </div>
+    <button class="msclose" onclick="closePanel()">✕</button>
   </div>
 </div>
 
@@ -532,6 +527,10 @@ const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0x000000,0.012);
 const cam=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,2000);
 
+// ── VIEW SYSTEM ──
+// Two named surface layers: ORRERY and GALAXY
+// Each has a zoom range. Orbit is the default camera motion (auto-theta).
+// +/− step zoom within the current layer's range.
 const LAYER_ORRERY = 'orrery';
 const LAYER_GALAXY = 'galaxy';
 let currentLayer = LAYER_ORRERY;
@@ -542,7 +541,7 @@ const ORRERY_RADIUS_MAX     = 110;
 const GALAXY_RADIUS_DEFAULT = 220;
 const GALAXY_RADIUS_MIN     = 130;
 const GALAXY_RADIUS_MAX     = 280;
-const ZOOM_STEP_ORRERY      = 12;
+const ZOOM_STEP_ORRERY      = 12;   // units per button press
 const ZOOM_STEP_GALAXY      = 22;
 
 const ORRERY_VIEW = {phi:Math.PI*0.015, theta:0, radius:ORRERY_RADIUS_DEFAULT};
@@ -555,7 +554,9 @@ const scenePivot=new THREE.Vector3(),scenePivotTgt=new THREE.Vector3();
 function applyCam(){const{phi,theta,radius}=camState,c=scenePivot;cam.position.set(c.x+radius*Math.sin(phi)*Math.sin(theta),c.y+radius*Math.cos(phi),c.z+radius*Math.sin(phi)*Math.cos(theta));cam.lookAt(c);}
 applyCam();
 
+// Zoom in/out within the current layer's range
 function stepZoom(dir){
+  // dir: +1 = zoom in (smaller radius), -1 = zoom out (larger radius)
   const step = currentLayer===LAYER_GALAXY ? ZOOM_STEP_GALAXY : ZOOM_STEP_ORRERY;
   const mn   = currentLayer===LAYER_GALAXY ? GALAXY_RADIUS_MIN : ORRERY_RADIUS_MIN;
   const mx   = currentLayer===LAYER_GALAXY ? GALAXY_RADIUS_MAX : ORRERY_RADIUS_MAX;
@@ -598,10 +599,8 @@ const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.Buf
 const pMat=new THREE.PointsMaterial({color:0x8ab4ff,size:0.06,transparent:true,opacity:0.14,sizeAttenuation:true,fog:true,depthWrite:false});
 scene.add(new THREE.Points(pGeo,pMat));
 
-const nodeObjects=[],allLines=[],connLineObjects=[],allLabels=[],glowSprites=[],spokeLines=[],hitProxies=[],gridLines=[];
+const nodeObjects=[],allLines=[],connLineObjects=[],allLabels=[],glowSprites=[];
 const raycaster=new THREE.Raycaster();
-const isTouchDevice=()=>window.matchMedia("(pointer:coarse)").matches;
-function setRaycasterForInput(){raycaster.params.Mesh={};if(isTouchDevice()){raycaster.near=0;raycaster.far=2000;}}
 
 function drawEllipse(rx,rz,op,col,y,lCol,lOp){
   const pts=[];for(let i=0;i<=128;i++){const a=i/128*Math.PI*2,lx=rx*Math.cos(a),lz=rz*Math.sin(a);pts.push(new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),y||-0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT)));}
@@ -640,21 +639,19 @@ function buildScene(){
   drawEllipse(ELLIPSES.outer.rx, ELLIPSES.outer.rz,  0.18,0x50d8b0,0.35, 0x50d8b0,0.18);
   drawEllipse(ELLIPSES.outer2.rx,ELLIPSES.outer2.rz, 0.14,0xd8b050,0.55, 0xd8b050,0.16);
   const gM=new THREE.LineBasicMaterial({color:0x4a8adc,transparent:true,opacity:0.010});
-  for(let i=-10;i<=10;i++){[new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-50),new THREE.Vector3(i*4,-0.5,50)]),gM.clone()),new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-50,-0.5,i*4),new THREE.Vector3(50,-0.5,i*4)]),gM.clone())].forEach(l=>{scene.add(l);allLines.push({line:l,darkColor:0x4a8adc,lightColor:0x0a0e1e,darkOp:0.010,lightOp:0.055});gridLines.push(l);});}
+  for(let i=-10;i<=10;i++){[new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-50),new THREE.Vector3(i*4,-0.5,50)]),gM.clone()),new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-50,-0.5,i*4),new THREE.Vector3(50,-0.5,i*4)]),gM.clone())].forEach(l=>{scene.add(l);allLines.push({line:l,darkColor:0x4a8adc,lightColor:0x0a0e1e,darkOp:0.010,lightOp:0.055});});}
 
   const cN=NODES.find(n=>n.id==='problem');
   const cM=new THREE.Mesh(new THREE.SphereGeometry(0.36,20,20),new THREE.MeshPhysicalMaterial({color:0xf0f4ff,emissive:0xf0f4ff,emissiveIntensity:2.2,metalness:0,roughness:0.04,clearcoat:1.0}));
   cM.position.copy(cN._pos);cM.userData={node:cN,origColor:0xf0f4ff,origEI:2.2,lightOrigColor:0x0a0e1e};
   scene.add(cM);nodeObjects.push({mesh:cM,node:cN});
-  const cHitProxy=new THREE.Mesh(new THREE.SphereGeometry(0.36*4.5,8,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-  cHitProxy.position.copy(cN._pos);cHitProxy.userData={node:cN,isHitProxy:true};scene.add(cHitProxy);hitProxies.push({proxy:cHitProxy,mesh:cM,node:cN});
   [3.4,2.1,1.2].forEach((sc,i)=>{const gs=makeGlowSprite(0xc0d8ff,0.36);gs.scale.setScalar(sc);gs.position.copy(cN._pos);gs.material.opacity=[0.20,0.36,0.52][i];scene.add(gs);glowSprites.push(gs);});
 
   NODES.filter(n=>n.id!=='problem').forEach(n=>{
     const pos=n._pos,cfg=dcfg(n.domain);
     const spokeM=new THREE.LineBasicMaterial({color:cfg.color,transparent:true,opacity:0.04});
     const spoke=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),pos.clone()]),spokeM);
-    scene.add(spoke);allLines.push({line:spoke,darkColor:cfg.color,lightColor:cfg.lightColor,darkOp:0.04,lightOp:0.18});spokeLines.push(spoke);
+    scene.add(spoke);allLines.push({line:spoke,darkColor:cfg.color,lightColor:cfg.lightColor,darkOp:0.04,lightOp:0.18});
     const e=ELLIPSES[n.tier]||ELLIPSES.mid,da=0.018;
     const a1=((n.angle||0)-da)*Math.PI*2,a2=((n.angle||0)+da)*Math.PI*2;
     function eP(a){const lx=e.rx*Math.cos(a),lz=e.rz*Math.sin(a);return new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),pos.y,lx*Math.sin(TILT)+lz*Math.cos(TILT));}
@@ -665,8 +662,6 @@ function buildScene(){
     const mesh=new THREE.Mesh(new THREE.SphereGeometry(cfg.size,16,16),new THREE.MeshPhysicalMaterial({color:cfg.color,emissive:cfg.color,emissiveIntensity:1.4,metalness:0.2,roughness:0.08,clearcoat:1.0,transparent:true,opacity:0.95}));
     mesh.position.copy(pos);mesh.userData={node:n,origColor:cfg.color,origEI:1.4,lightOrigColor:cfg.lightColor};
     scene.add(mesh);nodeObjects.push({mesh,node:n});
-    const hitProxy=new THREE.Mesh(new THREE.SphereGeometry(cfg.size*4.5,8,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-    hitProxy.position.copy(pos);hitProxy.userData={node:n,isHitProxy:true};scene.add(hitProxy);hitProxies.push({proxy:hitProxy,mesh,node:n});
     const gs=makeGlowSprite(cfg.color,cfg.size);gs.position.copy(pos);gs.material.opacity=0.72;scene.add(gs);glowSprites.push(gs);
     const short=n.title.length>24?n.title.slice(0,22)+'…':n.title;
     addLabel(short,pos.x+0.5,pos.y+0.45,pos.z,cfg.hex+'cc',7.0,cfg.lightHex+'dd');
@@ -796,6 +791,7 @@ function buildGalaxyLayer(){
 }
 buildGalaxyLayer();
 
+// Galaxy Hub
 const galaxyHubGroup=new THREE.Group();scene.add(galaxyHubGroup);galaxyHubGroup.visible=false;
 (function buildGalaxyHub(){
   const hubGeo=new THREE.SphereGeometry(3.8,32,32);
@@ -832,7 +828,7 @@ function updateGalaxyAlpha(){
   nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?orreryAlpha*0.88:orreryAlpha*0.95;});
   glowSprites.forEach(gs=>{gs.material.opacity=isLight?0:orreryAlpha*0.72;});
   allLabels.forEach(({spr})=>{spr.material.opacity=orreryAlpha;});
-  allLines.forEach(({line,darkOp,lightOp})=>{const isSpoke=spokeLines.includes(line);const isGrid=gridLines.includes(line);if(isGrid||isSpoke){line.visible=galaxyAlpha<0.05;line.material.opacity=Math.max(0,(isLight?lightOp:darkOp)*(1-galaxyAlpha));}else{line.visible=true;line.material.opacity=Math.max(0,(isLight?lightOp:darkOp)*orreryAlpha);}});
+  allLines.forEach(({line,darkOp,lightOp})=>{line.material.opacity=(isLight?lightOp:darkOp)*orreryAlpha;});
   connLineObjects.forEach(({line,darkOp,lightOp})=>{line.material.opacity=(isLight?lightOp:darkOp)*orreryAlpha;});
   const ga=galaxyAlpha,focCl=activeGalaxyCluster;
   galaxyObjects.forEach(obj=>{
@@ -910,8 +906,6 @@ let galaxyDrift=0;
 // MOON SYSTEM
 // ═══════════════════════════════════════════════════════════════
 let activeMoons=[],moonMeshList=[],hoveredMoon=null,moonBirth=0,orbitPaused=false;
-// ── PATCH 1: lastFocusTime prevents ghost-dismiss from firing immediately after node focus ──
-let lastFocusTime=0;
 const MOON_FADEDUR=0.55,MOON_R=0.055;
 
 function makeMoonLabel(text,hexColor,forLight){
@@ -938,7 +932,7 @@ function spawnMoons(node){
     const cMat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false});
     const connLine=new THREE.Line(cGeo,cMat);scene.add(connLine);
     const parentObj=nodeObjects.find(o=>o.node.id===node.id);
-    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node,parentMesh:parentObj?parentObj.mesh:null,parentNodeObj:parentObj});
+    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node,parentMesh:parentObj?parentObj.mesh:null});
     moonMeshList.push(mesh);
   });
 }
@@ -1015,7 +1009,7 @@ let activeClusterFilter=null;
 
 nodeObjects.forEach(({mesh,node})=>{mesh.userData._morphTarget=node._pos.clone();mesh.userData._morphing=false;});
 
-function tickNodeMorph(dt){nodeObjects.forEach(({mesh})=>{if(!mesh.userData._morphing)return;mesh.position.lerp(mesh.userData._morphTarget,0.075);if(mesh.position.distanceTo(mesh.userData._morphTarget)<0.005){mesh.position.copy(mesh.userData._morphTarget);mesh.userData._morphing=false;}});hitProxies.forEach(({proxy,mesh})=>{proxy.position.copy(mesh.position);});}
+function tickNodeMorph(dt){nodeObjects.forEach(({mesh})=>{if(!mesh.userData._morphing)return;mesh.position.lerp(mesh.userData._morphTarget,0.075);if(mesh.position.distanceTo(mesh.userData._morphTarget)<0.005){mesh.position.copy(mesh.userData._morphTarget);mesh.userData._morphing=false;}});}
 
 function applyClusterFilter(cl){
   activeClusterFilter=cl;const memberIds=new Set(cl.nodeIds);const MORPH_SCALE=0.38;const dotPositions=getClusterDotPositions(cl);let memberIdx=0;
@@ -1026,7 +1020,6 @@ function applyClusterFilter(cl){
 function clearClusterFilter(){
   activeClusterFilter=null;
   nodeObjects.forEach(({mesh,node})=>{mesh.userData._morphTarget=node._pos.clone();mesh.userData._morphing=true;mesh.material.opacity=isLight?0.88:0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;mesh.scale.setScalar(1.0);});
-  hitProxies.forEach(({proxy,mesh})=>{proxy.position.copy(mesh.position);});
   resetConnectionHighlights();hideClusterBadge();
 }
 
@@ -1042,73 +1035,25 @@ function showClusterBadge(cl){
 function hideClusterBadge(){const badge=document.getElementById('cluster-badge');if(badge){badge.style.opacity='0';setTimeout(()=>badge.style.display='none',300);}}
 window.clearClusterFilter=clearClusterFilter;
 
-function highlightConnections(node){
-  const rIds=new Set(CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id).flatMap(c=>[c.from,c.to]));
-  connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});
-  const filterIds=activeClusterFilter?new Set(activeClusterFilter.nodeIds):null;
-  nodeObjects.forEach(({mesh,node:n})=>{
-    if(filterIds&&!filterIds.has(n.id)){mesh.material.opacity=0.04;return;}
-    const isRelated=rIds.has(n.id)||n.id===node.id;
-    mesh.material.opacity=isRelated?0.95:(filterIds?0.28:0.20);
-    if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isRelated?(isLight?0:mesh.userData.origEI*1.8):0.15;
-  });
-}
+function highlightConnections(node){const rIds=new Set(CONNECTIONS.filter(c=>c.from===node.id||c.to===node.id).flatMap(c=>[c.from,c.to]));connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});nodeObjects.forEach(({mesh,node:n})=>{mesh.material.opacity=rIds.has(n.id)||n.id===node.id?0.95:0.20;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=rIds.has(n.id)||n.id===node.id?(isLight?0:mesh.userData.origEI*1.8):0.15;});}
 function resetConnectionHighlights(){connLineObjects.forEach(obj=>{obj.line.material.opacity=isLight?obj.lightOp:obj.darkOp;});allLines.forEach(({line,darkOp,lightOp})=>{line.material.opacity=isLight?lightOp:darkOp;});nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?0.88:0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;});}
 
 function enterFocus(node){
   if(activeClusterFilter&&!activeClusterFilter.nodeIds.includes(node.id))return;
-  const wasAlreadyFocused=isFocused;
-  isFocused=true;focusNode=node;
-  // ── PATCH 2: stamp the time so ghost-dismiss guard works ──
-  lastFocusTime=Date.now();
-  // Use actual mesh position (may be morphed in cluster filter) not original _pos
-  const nodeObj=nodeObjects.find(o=>o.node.id===node.id);
-  const livePos=nodeObj?nodeObj.mesh.position.clone():node._pos.clone();
-  // If jumping from one focused node to another, snap the pivot instantly
-  if(wasAlreadyFocused){scenePivot.copy(livePos);}
-  scenePivotTgt.copy(livePos);
+  isFocused=true;focusNode=node;scenePivotTgt.copy(node._pos);
   const zm={center:5,inner:8,mid:10,outer:13,outer2:16};
-  // ── PATCH 3: preserve zoom when transitioning between focused nodes ──
-  // Only zoom to node-tier target on first focus; when already focused keep
-  // current radius (just move pivot). Only force zoom if way too far out.
-  if(!wasAlreadyFocused){
-    camTarget.radius=zm[node.tier]||10;
-  } else {
-    const wantR=zm[node.tier]||10;
-    if(camTarget.radius>wantR*1.6)camTarget.radius=wantR;
-  }
-  camTarget.phi=Math.PI*0.22;
+  camTarget.radius=zm[node.tier]||10;camTarget.phi=Math.PI*0.22;
   document.getElementById('focus-hint').classList.add('vis');document.getElementById('hint').style.opacity='0';
   openPanel(node);highlightConnections(node);clearMoons();spawnMoons(node);
-  // Ensure ghost dismiss backdrop exists
-  if(!document.getElementById('ghost-dismiss')){
-    const bd=document.createElement('div');bd.id='ghost-dismiss';
-    bd.style.cssText='position:fixed;inset:0;z-index:699;background:transparent;';
-    // ── PATCH 4: guard against immediate dismiss right after focusing a node ──
-    bd.addEventListener('click',()=>{if(Date.now()-lastFocusTime<200)return;exitFocus();});
-    bd.addEventListener('wheel',e=>{cvs.dispatchEvent(new WheelEvent('wheel',{deltaY:e.deltaY,deltaX:e.deltaX,deltaMode:e.deltaMode,bubbles:true}));},{passive:true});
-    document.body.appendChild(bd);
-  } else {
-    document.getElementById('ghost-dismiss').style.display='block';
-  }
 }
 function exitFocus(){
   isFocused=false;focusNode=null;scenePivotTgt.set(0,0,0);
   camTarget.radius=ORRERY_VIEW.radius;camTarget.phi=ORRERY_VIEW.phi;
   document.getElementById('focus-hint').classList.remove('vis');document.getElementById('hint').style.opacity='1';
-  const ghost=document.getElementById('ghost');ghost.classList.remove('on');ghost.classList.remove('pinned');const bd=document.getElementById('ghost-dismiss');if(bd)bd.style.display='none';
-  document.getElementById('msheet').classList.remove('on');
+  document.getElementById('ghost').classList.remove('on');document.getElementById('msheet').classList.remove('on');
   clearMoons();clearClusterFilter();
 }
 window.closePanel=function(){exitFocus();};
-
-(function(){
-  const ghost=document.getElementById('ghost');
-  ghost.addEventListener('mouseenter',()=>{if(ghost.classList.contains('on'))ghost.classList.add('pinned');});
-  ghost.addEventListener('mouseleave',()=>{ghost.classList.remove('pinned');});
-  const gcclose=ghost.querySelector('.gcclose');
-  if(gcclose)gcclose.addEventListener('click',()=>{exitFocus();});
-})();
 
 const tooltip=document.getElementById('tooltip');
 let hoveredMesh=null,mouse=new THREE.Vector2(),drag=false,lastDragX=0,lastDragY=0,isDragging=false,hintFaded=false;
@@ -1120,68 +1065,25 @@ function checkHover(){
   if(isGalaxyView&&galaxyAlpha>0.3){if(checkGalaxyHover(mouse))return;}
   if(isFocused&&moonMeshList.length){const mHits=raycaster.intersectObjects(moonMeshList);if(mHits.length){const hit=mHits[0].object,mo=activeMoons.find(m=>m.mesh===hit);if(mo&&mo!==hoveredMoon){hoveredMoon=mo;showMoonTip(mo,lastXY.x,lastXY.y);}document.body.style.cursor='pointer';if(hoveredMesh){hoveredMesh=null;}return;}}
   if(hoveredMoon){hideMoonTip();}
-  const hits=raycaster.intersectObjects(hitProxies.map(h=>h.proxy));
-  if(hits.length){const hit=hits[0].object;const proxyEntry=hitProxies.find(h=>h.proxy===hit);const obj=proxyEntry?nodeObjects.find(o=>o.node===proxyEntry.node):nodeObjects.find(o=>o.mesh===hit);const resolvedMesh=obj?obj.mesh:null;if(obj&&hoveredMesh!==resolvedMesh){hoveredMesh=resolvedMesh;const n=obj.node,cfg=dcfg(n.domain);document.getElementById('tt-ring').textContent=n.era||RING_NAMES[n.tier];document.getElementById('tt-title').textContent=n.title;document.getElementById('tt-title').style.color=isLight?cfg.lightHex:cfg.hex;document.getElementById('tt-type').textContent=cfg.label;tooltip.classList.add('vis');}document.body.style.cursor='pointer';}else{if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
+  const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+  if(hits.length){const hit=hits[0].object,obj=nodeObjects.find(o=>o.mesh===hit);if(obj&&hoveredMesh!==hit){hoveredMesh=hit;const n=obj.node,cfg=dcfg(n.domain);document.getElementById('tt-ring').textContent=n.era||RING_NAMES[n.tier];document.getElementById('tt-title').textContent=n.title;document.getElementById('tt-title').style.color=isLight?cfg.lightHex:cfg.hex;document.getElementById('tt-type').textContent=cfg.label;tooltip.classList.add('vis');}document.body.style.cursor='pointer';}else{if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
 }
 
-let pointerDownX=0,pointerDownY=0,dragDist=0;
-const DRAG_THRESHOLD=8;
-
-cvs.addEventListener('pointerdown',e=>{
-  if(e.button===2)return;
-  isDragging=false;drag=false;
-  pointerDownX=e.clientX;pointerDownY=e.clientY;dragDist=0;
-  lastDragX=e.clientX;lastDragY=e.clientY;
-  try{cvs.setPointerCapture(e.pointerId);}catch(_){}
-});
-
+cvs.addEventListener('pointerdown',e=>{if(e.button===2)return;isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);});
 cvs.addEventListener('pointermove',e=>{
   const rect=cvs.getBoundingClientRect();
-  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
-  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
-  lastXY={x:e.clientX,y:e.clientY};
-  posTooltip(e.clientX,e.clientY);
-  if(e.buttons){
-    const dx=e.clientX-lastDragX,dy=e.clientY-lastDragY;
-    dragDist+=Math.sqrt(dx*dx+dy*dy);
-    if(dragDist>DRAG_THRESHOLD){
-      isDragging=true;drag=true;
-      camTarget.theta-=dx*0.005;
-      camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+dy*0.005));
-    }
-    lastDragX=e.clientX;lastDragY=e.clientY;
-  } else {
-    checkHover();
-  }
+  mouse.x=(e.clientX-rect.left)/rect.width*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;lastXY={x:e.clientX,y:e.clientY};posTooltip(e.clientX,e.clientY);
+  if(e.buttons&&e.button!==2){isDragging=true;drag=true;camTarget.theta-=(e.clientX-lastDragX)*0.005;camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));lastDragX=e.clientX;lastDragY=e.clientY;}else{checkHover();}
 });
-
 cvs.addEventListener('pointerup',e=>{
   if(e.button===2)return;
-  const rect=cvs.getBoundingClientRect();
-  mouse.x=(e.clientX-rect.left)/rect.width*2-1;
-  mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
-
   if(!drag){
     if(handleGalaxyClick(mouse)){if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}return;}
     raycaster.setFromCamera(mouse,cam);
-    if(isFocused&&moonMeshList.length){
-      const mHits=raycaster.intersectObjects(moonMeshList);
-      if(mHits.length){const mo=activeMoons.find(m=>m.mesh===mHits[0].object);if(mo){enterFocus(mo.targetNode);return;}}
-    }
-    const hits=raycaster.intersectObjects(hitProxies.map(h=>h.proxy));
-    if(hits.length){
-      const hit=hits[0].object;
-      const proxyEntry=hitProxies.find(h=>h.proxy===hit);
-      const obj=proxyEntry?nodeObjects.find(o=>o.node===proxyEntry.node):nodeObjects.find(o=>o.mesh===hit);
-      if(obj){
-        // ── Mark focus time BEFORE enterFocus so the dismiss guard is ready ──
-        lastFocusTime=Date.now();
-        enterFocus(obj.node);
-      }
-    } else if(isFocused){
-      // Only exit if we didn't just focus (i.e. this was truly a miss)
-      if(Date.now()-lastFocusTime>150)exitFocus();
-    }
+    if(isFocused&&moonMeshList.length){const mHits=raycaster.intersectObjects(moonMeshList);if(mHits.length){const mo=activeMoons.find(m=>m.mesh===mHits[0].object);if(mo){enterFocus(mo.targetNode);return;}}}
+    const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+    if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}
+    else if(isFocused)exitFocus();
   }
   if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
 });
@@ -1192,7 +1094,9 @@ cvs.addEventListener('wheel',e=>{
     if(allRing.length>0){const curIdx=allRing.findIndex(n=>n.id===focusNode.id),dir=e.deltaY>0?1:-1,nextIdx=(curIdx+dir+allRing.length)%allRing.length;enterFocus(allRing[nextIdx]);}
     return;
   }
+  // Free scroll — clamp to combined orrery+galaxy range
   camTarget.radius=Math.max(ORRERY_RADIUS_MIN,Math.min(GALAXY_RADIUS_MAX,camTarget.radius+e.deltaY*0.06));
+  // Sync currentLayer label when scroll crosses boundary
   if(camTarget.radius>GALAXY_ENTER_THRESHOLD&&currentLayer===LAYER_ORRERY){
     currentLayer=LAYER_GALAXY;
     document.querySelectorAll('.hud-btn[data-view]').forEach(b=>b.classList.remove('active'));
@@ -1210,23 +1114,23 @@ document.addEventListener('keydown',e=>{
 });
 cvs.addEventListener('contextmenu',e=>{e.preventDefault();orbitPaused=!orbitPaused;});
 
+// HUD layer buttons
 document.querySelectorAll('.hud-btn[data-view]').forEach(btn=>{
   btn.addEventListener('click',()=>{
     switchLayer(btn.dataset.view);
   });
 });
 
+// HUD zoom buttons
 document.getElementById('hud-zoom-in').addEventListener('click', ()=>stepZoom(1));
 document.getElementById('hud-zoom-out').addEventListener('click',()=>stepZoom(-1));
-document.getElementById('hud-orbit-toggle').addEventListener('click',()=>{orbitPaused=!orbitPaused;document.getElementById('hud-orbit-toggle').textContent=orbitPaused?'▶':'⏸';document.getElementById('hud-orbit-toggle').classList.toggle('active',orbitPaused);});
 
 let lastTime=0,elapsed=0;
 function animate(ts){
   requestAnimationFrame(animate);
   const dt=Math.min((ts-lastTime)/1000,0.05);lastTime=ts;elapsed+=dt;
   camState.phi+=(camTarget.phi-camState.phi)*0.08;camState.theta+=(camTarget.theta-camState.theta)*0.08;camState.radius+=(camTarget.radius-camState.radius)*0.08;
-  // ── PATCH 5: faster pivot lerp when focused (node-to-node transitions feel instant) ──
-  scenePivot.lerp(scenePivotTgt,isFocused?0.14:0.08);
+  scenePivot.lerp(scenePivotTgt,0.08);
   if(!isFocused&&!isDragging&&!orbitPaused)camTarget.theta+=dt*0.018;
   updateGalaxyAlpha();
   if(isGalaxyView){
@@ -1471,17 +1375,6 @@ document.addEventListener('keydown',e=>{
 },{capture:false});
 
 document.getElementById('gc-read-btn').addEventListener('click',()=>{if(focusNode)openStream(focusNode);});
-
-function msNavigate(dir){
-  if(!focusNode)return;
-  const allRing=[...NODES.filter(n=>n.tier===focusNode.tier)].sort((a,b)=>a.angle-b.angle);
-  if(!allRing.length)return;
-  const curIdx=allRing.findIndex(n=>n.id===focusNode.id);
-  const nextIdx=(curIdx+dir+allRing.length)%allRing.length;
-  enterFocus(allRing[nextIdx]);
-}
-document.getElementById('ms-prev').addEventListener('click',()=>msNavigate(-1));
-document.getElementById('ms-next').addEventListener('click',()=>msNavigate(1));
 const _origOpenPanel=openPanel;
 openPanel=function(node){_origOpenPanel(node);const btn=document.getElementById('gc-read-btn');if(NODE_NARRATIVES[node.id]){btn.style.display='block';const score=node._signalScore||0;btn.className=score>0.1?'has-signal':'';btn.textContent=score>0.1?'Read node · signal recorded →':'Read node →';}else{btn.style.display='none';}};
 
