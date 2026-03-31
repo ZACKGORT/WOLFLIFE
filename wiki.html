@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>Three-Body Problem · Spatial Knowledge Surface</title>
+<title>Wiki · Spatial Knowledge Surface · by Zack Gort</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -694,14 +694,6 @@ function makeClusterCanvas(cluster, forLight){
   c.width = 512; c.height = 256;
   const ctx = c.getContext('2d');
 
-  // Dark backing to eliminate WebGL blending fringe
-  if(!forLight){
-    ctx.fillStyle = 'rgba(4,6,18,0.72)';
-    ctx.beginPath();
-    ctx.roundRect(0, 0, 512, 256, 8);
-    ctx.fill();
-  }
-
   const r=(cluster.color>>16)&255, g=(cluster.color>>8)&255, b=cluster.color&255;
   const nameColor  = forLight ? `rgba(10,14,30,0.88)` : `rgba(${r},${g},${b},0.95)`;
   const subColor   = forLight ? `rgba(10,14,30,0.44)` : `rgba(${r},${g},${b},0.50)`;
@@ -724,6 +716,86 @@ function makeClusterCanvas(cluster, forLight){
   ctx.fillText(cluster.nodeIds.length + ' nodes', 12, 60 + lines.length * 48 + 48);
 
   return c;
+}
+
+// Returns an array of {x,y,z,size,chainTo?} offsets for each node in a cluster,
+// shaped to reflect the cluster's conceptual structure.
+function getClusterDotPositions(cl) {
+  // R = spread radius, DS = dot size — scaled to be legible at galaxy camera distance (~220)
+  const R = cl.size * 5.5;  // spread relative to cluster core size
+  const DS = cl.size * 0.28; // dot size visible at zoom-out
+
+  if (cl.id === 'formalism') {
+    // Concentric rings — ordered structure, like the orrery itself
+    // nodes: problem, newton, hamilton, jacobi, restricted, integrals, lagrange-pts
+    const ring1 = [0,1,2,3,4].map(i => {
+      const a = (i / 5) * Math.PI * 2;
+      return { x: Math.cos(a)*R*0.55, y: 0, z: Math.sin(a)*R*0.55, size: DS };
+    });
+    const ring2 = [0,1].map(i => {
+      const a = (i / 2) * Math.PI * 2 + 0.3;
+      return { x: Math.cos(a)*R*0.95, y: 0, z: Math.sin(a)*R*0.95, size: DS * 1.2 };
+    });
+    return [
+      { x: 0, y: 2, z: 0, size: DS * 1.6 }, // problem — elevated center
+      ...ring1,
+      ...ring2,
+    ];
+  }
+
+  if (cl.id === 'history') {
+    // Chronological chain arc — Euler to NN2019, dots linked sequentially
+    const count = 9;
+    return Array.from({length: count}, (_, i) => {
+      const t = i / (count - 1);
+      const a = Math.PI * 1.1 + t * Math.PI * 1.4;   // sweeping arc
+      const r = R * (0.5 + t * 0.55);                  // spiral outward through time
+      return {
+        x: Math.cos(a) * r,
+        y: (t - 0.5) * R * 0.35,
+        z: Math.sin(a) * r,
+        size: i === 2 ? DS * 1.5 : DS,  // Poincaré larger — pivot moment
+        chainTo: i > 0,
+      };
+    });
+  }
+
+  if (cl.id === 'chaos') {
+    // Deliberately irregular — no radial symmetry, varied depths, the layout IS the argument
+    return [
+      { x:  R*0.85,  y:  R*0.20,  z:  R*0.40,  size: DS*1.5 }, // chaos — biggest
+      { x: -R*0.70,  y: -R*0.12,  z:  R*0.65,  size: DS },
+      { x:  R*0.20,  y:  R*0.45,  z: -R*0.80,  size: DS*0.85 },
+      { x: -R*0.45,  y: -R*0.38,  z: -R*0.60,  size: DS*0.85 },
+      { x:  R*1.05,  y:  R*0.08,  z: -R*0.22,  size: DS },
+      { x: -R*0.15,  y:  R*0.55,  z:  R*1.10,  size: DS },
+    ];
+  }
+
+  if (cl.id === 'physical') {
+    // Three nodes — wide triangle, each occupying its own zone
+    return [
+      { x:  R*0.80,  y:  R*0.18,  z:  R*0.45,  size: DS },       // spacecraft
+      { x: -R*0.65,  y: -R*0.10,  z:  R*0.75,  size: DS },       // trojans
+      { x:  R*0.10,  y:  0,        z: -R*0.95,  size: DS*1.4 },  // figure-eight — most iconic
+    ];
+  }
+
+  if (cl.id === 'cultural') {
+    // Loose irregular drift — cultural objects, no strict geometry
+    return [
+      { x: -R*0.55,  y:  R*0.28,  z:  R*0.70,  size: DS*1.2 }, // liu cixin
+      { x:  R*0.80,  y:  R*0.15,  z:  R*0.30,  size: DS*0.9 }, // tv show
+      { x:  R*0.40,  y: -R*0.30,  z: -R*0.75,  size: DS },     // helium
+      { x: -R*0.85,  y: -R*0.18,  z: -R*0.38,  size: DS },     // efimov
+    ];
+  }
+
+  // Fallback
+  return cl.nodeIds.map((_, i) => {
+    const a = (i / cl.nodeIds.length) * Math.PI * 2;
+    return { x: Math.cos(a)*R*0.75, y: 0, z: Math.sin(a)*R*0.75, size: DS };
+  });
 }
 
 function buildGalaxyLayer(){
@@ -763,7 +835,7 @@ function buildGalaxyLayer(){
       map: new THREE.CanvasTexture(lc), transparent: true, depthWrite: false,
     }));
     lSpr.scale.set(28, 14, 1);
-    lSpr.position.set(cl.pos.x + cl.size * 1.1, cl.pos.y + cl.size * 1.3, cl.pos.z);
+    lSpr.position.set(cl.pos.x - cl.size * 6.5, cl.pos.y + cl.size * 3.5, cl.pos.z);
     lSpr.material.opacity = 0;
     galaxyGroup.add(lSpr);
 
@@ -782,18 +854,19 @@ function buildGalaxyLayer(){
     galaxyGroup.add(ringLine);
     galaxyLines.push({line: ringLine, baseOp: 0.35});
 
-    // Scatter mini-dots representing member nodes
+    // Cluster-specific dot layouts
+    const dotPositions = getClusterDotPositions(cl);
     cl.nodeIds.forEach((nid, ni) => {
       const node = NODE_BY_ID[nid];
       if(!node) return;
-      const angle = (ni / cl.nodeIds.length) * Math.PI * 2;
-      const dist  = cl.size * (1.6 + Math.random() * 0.8);
+      const offset = dotPositions[ni] || dotPositions[ni % dotPositions.length];
       const dotPos = new THREE.Vector3(
-        cl.pos.x + Math.cos(angle) * dist,
-        cl.pos.y + (Math.random() - 0.5) * 2,
-        cl.pos.z + Math.sin(angle) * dist
+        cl.pos.x + offset.x,
+        cl.pos.y + offset.y,
+        cl.pos.z + offset.z
       );
-      const dotGeo = new THREE.SphereGeometry(0.22, 8, 8);
+      const dotSize = offset.size || 0.22;
+      const dotGeo = new THREE.SphereGeometry(dotSize, 8, 8);
       const dotMat = new THREE.MeshBasicMaterial({color: cl.color, transparent: true, opacity: 0});
       const dot = new THREE.Mesh(dotGeo, dotMat);
       dot.position.copy(dotPos);
@@ -801,14 +874,17 @@ function buildGalaxyLayer(){
       galaxyGroup.add(dot);
       galaxyObjects.push({type:'dot', mesh:dot, cluster:cl, nodeId:nid});
 
-      // Thread from dot to cluster core
+      // Thread: chain layouts link dot-to-dot; radial layouts link to core
+      const threadTarget = (offset.chainTo && ni > 0)
+        ? new THREE.Vector3(cl.pos.x + dotPositions[ni-1].x, cl.pos.y + dotPositions[ni-1].y, cl.pos.z + dotPositions[ni-1].z)
+        : cl.pos;
       const threadMat = new THREE.LineBasicMaterial({color: cl.color, transparent: true, opacity: 0});
       const threadLine = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints([dotPos, cl.pos]),
+        new THREE.BufferGeometry().setFromPoints([dotPos, threadTarget]),
         threadMat
       );
       galaxyGroup.add(threadLine);
-      galaxyLines.push({line: threadLine, baseOp: 0.12});
+      galaxyLines.push({line: threadLine, baseOp: offset.chainTo ? 0.22 : 0.12});
     });
 
     galaxyObjects.push({type:'cluster', mesh, atm, glow:glowSpr, label:lSpr, ring:ringLine, cluster:cl});
@@ -984,10 +1060,10 @@ let orbitPaused=false;
 const MOON_FADEDUR=0.55;
 const MOON_R=0.055;
 
-function makeMoonLabel(text,hexColor){
+function makeMoonLabel(text,hexColor,forLight){
   const c=document.createElement('canvas');c.width=320;c.height=40;
   const ctx=c.getContext('2d');
-  ctx.fillStyle=hexColor+'cc';
+  ctx.fillStyle=forLight?'rgba(10,14,30,0.72)':hexColor+'cc';
   ctx.font='bold 13px "DM Mono",monospace';
   ctx.fillText(text.toUpperCase(),6,26);
   const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
@@ -1030,7 +1106,7 @@ function spawnMoons(node){
     // Label: connection type + truncated target title
     const short=other.title.length>20?other.title.slice(0,18)+'…':other.title;
     const labelText=`${CONN_TYPE_LABELS[conn.type]||conn.type} · ${short}`;
-    const labelSpr=makeMoonLabel(labelText,hexCol);
+    const labelSpr=makeMoonLabel(labelText,hexCol,isLight);
     labelSpr.material.opacity=0;
     scene.add(labelSpr);
 
