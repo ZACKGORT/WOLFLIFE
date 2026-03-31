@@ -1039,7 +1039,7 @@ function highlightConnections(node){const rIds=new Set(CONNECTIONS.filter(c=>c.f
 function resetConnectionHighlights(){connLineObjects.forEach(obj=>{obj.line.material.opacity=isLight?obj.lightOp:obj.darkOp;});allLines.forEach(({line,darkOp,lightOp})=>{line.material.opacity=isLight?lightOp:darkOp;});nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?0.88:0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;});}
 
 function enterFocus(node){
-  if(activeClusterFilter&&!activeClusterFilter.nodeIds.includes(node.id))return;
+  if(activeClusterFilter&&!activeClusterFilter.nodeIds.includes(node.id))clearClusterFilter();
   isFocused=true;focusNode=node;scenePivotTgt.copy(node._pos);
   const zm={center:5,inner:8,mid:10,outer:13,outer2:16};
   camTarget.radius=zm[node.tier]||10;camTarget.phi=Math.PI*0.22;
@@ -1081,7 +1081,9 @@ cvs.addEventListener('pointerup',e=>{
     if(handleGalaxyClick(mouse)){if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}return;}
     raycaster.setFromCamera(mouse,cam);
     if(isFocused&&moonMeshList.length){const mHits=raycaster.intersectObjects(moonMeshList);if(mHits.length){const mo=activeMoons.find(m=>m.mesh===mHits[0].object);if(mo){enterFocus(mo.targetNode);return;}}}
-    const hits=raycaster.intersectObjects(nodeObjects.map(o=>o.mesh));
+    const meshList=nodeObjects.map(o=>o.mesh);
+    let hits=raycaster.intersectObjects(meshList);
+    if(!hits.length&&isFocused){const origNear=cam.near;cam.near=0.01;cam.updateProjectionMatrix();raycaster.setFromCamera(mouse,cam);hits=raycaster.intersectObjects(meshList);cam.near=origNear;cam.updateProjectionMatrix();}
     if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}
     else if(isFocused)exitFocus();
   }
