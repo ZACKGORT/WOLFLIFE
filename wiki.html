@@ -922,6 +922,80 @@ function buildGalaxyLayer(){
 
 buildGalaxyLayer();
 
+// ── Galaxy Hub — central orb that returns to full orrery ──
+// Sits at origin (0,0,0) in galaxy space, always visible in galaxy view.
+// Clicking it zooms back to orrery with no cluster filter.
+const galaxyHubGroup = new THREE.Group();
+scene.add(galaxyHubGroup);
+galaxyHubGroup.visible = false;
+
+(function buildGalaxyHub(){
+  // Core orb — soft white/blue, slightly smaller than cluster orbs
+  const hubGeo = new THREE.SphereGeometry(3.8, 32, 32);
+  const hubMat = new THREE.MeshPhysicalMaterial({
+    color: 0xc8deff, emissive: 0xa0c4ff, emissiveIntensity: 0.7,
+    metalness: 0.05, roughness: 0.45, clearcoat: 0.6,
+    transparent: true, opacity: 0,
+  });
+  const hubMesh = new THREE.Mesh(hubGeo, hubMat);
+  hubMesh.position.set(0, 0, 0);
+  hubMesh.userData = {isGalaxyHub: true};
+  galaxyHubGroup.add(hubMesh);
+
+  // Atmosphere shell
+  const hubAtmGeo = new THREE.SphereGeometry(3.8 * 1.6, 24, 24);
+  const hubAtmMat = new THREE.MeshBasicMaterial({
+    color: 0xa0c4ff, transparent: true, opacity: 0,
+    side: THREE.BackSide, depthWrite: false,
+  });
+  const hubAtm = new THREE.Mesh(hubAtmGeo, hubAtmMat);
+  hubAtm.position.set(0, 0, 0);
+  galaxyHubGroup.add(hubAtm);
+
+  // Glow sprite
+  const hubGlow = makeGlowSprite(0xa0c4ff, 3.8);
+  hubGlow.scale.setScalar(3.8 * 10);
+  hubGlow.position.set(0, 0, 0);
+  hubGlow.material.opacity = 0;
+  galaxyHubGroup.add(hubGlow);
+
+  // Label canvas
+  const hubCanvas = document.createElement('canvas');
+  hubCanvas.width = 512; hubCanvas.height = 128;
+  const hubCtx = hubCanvas.getContext('2d');
+  hubCtx.fillStyle = 'rgba(200,220,255,0.90)';
+  hubCtx.font = '900 32px "DM Serif Display", serif';
+  hubCtx.fillText('Full System', 12, 52);
+  hubCtx.fillStyle = 'rgba(180,210,255,0.45)';
+  hubCtx.font = '300 16px "DM Mono", monospace';
+  hubCtx.fillText('ALL NODES · ORRERY VIEW', 12, 84);
+  const hubLabelSpr = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: new THREE.CanvasTexture(hubCanvas), transparent: true, depthWrite: false,
+  }));
+  hubLabelSpr.scale.set(24, 6, 1);
+  hubLabelSpr.position.set(-3.8 * 5, 3.8 * 3.5, 0);
+  hubLabelSpr.material.opacity = 0;
+  galaxyHubGroup.add(hubLabelSpr);
+
+  // Orbit ring
+  const hubRingPts = [];
+  for(let i = 0; i <= 80; i++){
+    const a = i / 80 * Math.PI * 2;
+    hubRingPts.push(new THREE.Vector3(Math.cos(a) * 3.8 * 1.4, 0, Math.sin(a) * 3.8 * 1.4));
+  }
+  const hubRingMat = new THREE.LineBasicMaterial({color: 0xa0c4ff, transparent: true, opacity: 0});
+  const hubRingLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(hubRingPts), hubRingMat);
+  galaxyHubGroup.add(hubRingLine);
+
+  // Store refs on userData of group for animate loop
+  galaxyHubGroup.userData = {
+    mesh: hubMesh, atm: hubAtm, glow: hubGlow, label: hubLabelSpr, ring: hubRingLine,
+  };
+})();
+
+// Hub mesh list for raycasting
+const hubMeshList = [galaxyHubGroup.userData.mesh];
+
 // ── Crossfade state ──
 let galaxyAlpha     = 0;   // 0 = orrery fully visible, 1 = galaxy fully visible
 let isGalaxyView    = false;
@@ -941,6 +1015,7 @@ function updateGalaxyAlpha(){
   const wasGalaxy = isGalaxyView;
   isGalaxyView = galaxyAlpha > 0.01;
   galaxyGroup.visible = isGalaxyView;
+  galaxyHubGroup.visible = isGalaxyView;
 
   const orreryAlpha = 1 - galaxyAlpha;
 
@@ -1030,6 +1105,18 @@ function updateGalaxyAlpha(){
     }
     line.material.opacity = ga * op * dimFactor;
   });
+
+  // Hub orb fade — always fully visible in galaxy view (unfocused=bright, focused=dim)
+  if(isGalaxyView && galaxyHubGroup.userData.mesh){
+    const hub = galaxyHubGroup.userData;
+    const hubDim = focCl ? 0.30 : 1.0;
+    const hubLk = 0.10;
+    hub.mesh.material.opacity  = hub.mesh.material.opacity  + (ga * 0.78 * hubDim - hub.mesh.material.opacity) * hubLk;
+    hub.atm.material.opacity   = hub.atm.material.opacity   + (ga * 0.14 * hubDim - hub.atm.material.opacity)  * hubLk;
+    hub.glow.material.opacity  = isLight ? 0 : hub.glow.material.opacity + (ga * 0.55 * hubDim - hub.glow.material.opacity) * hubLk;
+    hub.label.material.opacity = hub.label.material.opacity + (ga * hubDim - hub.label.material.opacity) * hubLk;
+    hub.ring.material.opacity  = hub.ring.material.opacity  + (ga * 0.38 * hubDim - hub.ring.material.opacity) * hubLk;
+  }
 }
 
 // ── Cluster hover tooltip ──
@@ -1068,7 +1155,19 @@ function checkGalaxyHover(mouseVec){
   if(!isGalaxyView || galaxyAlpha < 0.3) return false;
   raycaster.setFromCamera(mouseVec, cam);
 
-  // Check cluster cores
+  // Check hub first
+  const hubHits = raycaster.intersectObjects(hubMeshList);
+  if(hubHits.length){
+    if(hoveredCluster){ hoveredCluster = null; }
+    document.getElementById('tt-ring').textContent  = 'Gateway';
+    document.getElementById('tt-title').textContent = 'Full System';
+    document.getElementById('tt-title').style.color = '#c8deff';
+    document.getElementById('tt-type').textContent  = 'All nodes · Orrery view';
+    tooltip.classList.add('vis');
+    hoveredDotMesh = null;
+    document.body.style.cursor = 'pointer';
+    return true;
+  }
   const cHits = raycaster.intersectObjects(clusterMeshes);
   if(cHits.length){
     const cl = cHits[0].object.userData.cluster;
@@ -1115,6 +1214,17 @@ function checkGalaxyHover(mouseVec){
 function handleGalaxyClick(mouseVec){
   if(!isGalaxyView || galaxyAlpha < 0.3) return false;
   raycaster.setFromCamera(mouseVec, cam);
+
+  // Click hub → full orrery, no filter
+  const hubHits = raycaster.intersectObjects(hubMeshList);
+  if(hubHits.length){
+    document.querySelectorAll('.hud-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('[data-view="top"]').classList.add('active');
+    camTarget = {...VIEWS.top};
+    clearGalaxyFocus();
+    clearClusterFilter();
+    return true;
+  }
 
   // Click cluster core → drop into SKY view with cluster filter applied
   const cHits = raycaster.intersectObjects(clusterMeshes);
@@ -1214,12 +1324,13 @@ function spawnMoons(node){
     scene.add(labelSpr);
 
     // Connector line from parent node to moon
+    const parentObj = nodeObjects.find(o=>o.node.id===node.id);
     const cGeo=new THREE.BufferGeometry().setFromPoints([node._pos.clone(),node._pos.clone()]);
     const cMat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0,depthWrite:false});
     const connLine=new THREE.Line(cGeo,cMat);
     scene.add(connLine);
 
-    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node});
+    activeMoons.push({mesh,glowSpr,labelSpr,connLine,targetNode:other,connType:conn.type,orbitAngle:startAngle,orbitRadius:orbitR,orbitSpeed:speed,parentNode:node,parentMesh:parentObj?parentObj.mesh:null});
     moonMeshList.push(mesh);
   });
 }
@@ -1244,7 +1355,7 @@ function tickMoons(elapsed,dt){
 
   activeMoons.forEach(m=>{
     if(!orbitPaused) m.orbitAngle+=m.orbitSpeed*dt;
-    const pp=m.parentNode._pos;
+    const pp = m.parentMesh ? m.parentMesh.position : m.parentNode._pos;
     const ox=pp.x+Math.cos(m.orbitAngle)*m.orbitRadius;
     const oy=pp.y+Math.sin(m.orbitAngle*0.5)*0.3;
     const oz=pp.z+Math.sin(m.orbitAngle)*m.orbitRadius*0.52;
@@ -1349,8 +1460,21 @@ document.getElementById('theme-toggle').addEventListener('click',()=>{isLight=!i
 
 const bgCanvas=document.getElementById('bg-mesh'),bgCtx=bgCanvas.getContext('2d');
 function resizeBg(){bgCanvas.width=innerWidth;bgCanvas.height=innerHeight;}resizeBg();
-const BD=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[8,18,44]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[14,28,52]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[6,20,36]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[4,24,42]}];
-const BL=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[215,208,195]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[225,218,205]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[208,202,192]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[218,210,198]}];
+// Nebula blobs — colors pulled from the five cluster hues, kept deep so they read as nebula
+// Dark: formalism-blue, history-purple, chaos-teal, physical-gold  (cultural-rose bleeds in via overlap)
+// Light: same hues, very pale washes
+const BD=[
+  {x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[10,28,74]},   // formalism — deep blue
+  {x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[42,18,72]},   // history — deep violet-purple
+  {x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[6,58,50]},   // chaos — deep teal
+  {x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[68,30,14]},   // physical/cultural — deep amber-rose
+];
+const BL=[
+  {x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[190,210,240]}, // formalism — pale blue
+  {x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[210,195,235]}, // history — pale lavender
+  {x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[185,230,220]}, // chaos — pale aqua
+  {x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[235,215,185]}, // physical — pale gold
+];
 function drawMesh(){
   const w=bgCanvas.width,h=bgCanvas.height;bgCtx.clearRect(0,0,w,h);
   const blobs=isLight?BL:BD;
@@ -1402,20 +1526,64 @@ function openPanel(node){
 let isFocused=false,focusNode=null;
 let activeClusterFilter = null; // cluster whose nodes are highlighted in orrery
 
+// ── Node morph state ──
+// Each nodeObject gets a _targetPos; animate loop lerps mesh.position → _targetPos
+// Default target = node._pos (orrery ring position)
+nodeObjects.forEach(({mesh, node}) => {
+  mesh.userData._morphTarget = node._pos.clone();
+  mesh.userData._morphing = false;
+});
+
+function tickNodeMorph(dt){
+  nodeObjects.forEach(({mesh}) => {
+    if(!mesh.userData._morphing) return;
+    mesh.position.lerp(mesh.userData._morphTarget, 0.075);
+    // Stop morphing when close enough
+    if(mesh.position.distanceTo(mesh.userData._morphTarget) < 0.005){
+      mesh.position.copy(mesh.userData._morphTarget);
+      mesh.userData._morphing = false;
+    }
+  });
+}
+
 function applyClusterFilter(cl){
   activeClusterFilter = cl;
   const memberIds = new Set(cl.nodeIds);
-  // Dim non-member nodes, boost members
+
+  // Compute cluster layout positions, scaled/centered for orrery view
+  // getClusterDotPositions returns offsets relative to cl.pos; we center at origin
+  // and scale down by ~0.38 so they fit inside the orrery camera distance
+  const MORPH_SCALE = 0.38;
+  const dotPositions = getClusterDotPositions(cl);
+
+  let memberIdx = 0;
   nodeObjects.forEach(({mesh, node}) => {
     const isMember = memberIds.has(node.id);
-    mesh.material.opacity = isMember ? 0.98 : 0.06;
+    if(isMember){
+      const offset = dotPositions[memberIdx % dotPositions.length];
+      memberIdx++;
+      const tgt = new THREE.Vector3(
+        offset.x * MORPH_SCALE,
+        offset.y * MORPH_SCALE,
+        offset.z * MORPH_SCALE
+      );
+      mesh.userData._morphTarget = tgt;
+      mesh.userData._morphing = true;
+    } else {
+      // Non-members stay at orrery pos but shrink+dim
+      mesh.userData._morphTarget = node._pos.clone();
+      mesh.userData._morphing = false;
+      mesh.position.copy(node._pos);
+    }
+
+    mesh.material.opacity = isMember ? 0.98 : 0.04;
     if(mesh.userData.origEI !== undefined){
       mesh.material.emissiveIntensity = isMember ? (isLight ? 0 : mesh.userData.origEI * 1.4) : 0;
     }
-    // Scale member nodes up
-    const tgtScale = isMember ? 1.5 : 0.7;
+    const tgtScale = isMember ? 1.5 : 0.6;
     mesh.scale.setScalar(tgtScale);
   });
+
   // Dim non-member lines, boost member connections
   connLineObjects.forEach(obj => {
     const rel = memberIds.has(obj.conn.from) || memberIds.has(obj.conn.to);
@@ -1425,8 +1593,7 @@ function applyClusterFilter(cl){
   allLines.forEach(({line, darkOp, lightOp}) => {
     line.material.opacity = (isLight ? lightOp : darkOp) * 0.04;
   });
-  glowSprites.forEach((gs, i) => {
-    // Find which node this glow belongs to — glowSprites mirrors nodeObjects roughly
+  glowSprites.forEach((gs) => {
     gs.material.opacity = isLight ? 0 : 0.35;
   });
   // Show cluster filter badge
@@ -1434,9 +1601,10 @@ function applyClusterFilter(cl){
 }
 
 function clearClusterFilter(){
-  if(!activeClusterFilter) return;
   activeClusterFilter = null;
-  nodeObjects.forEach(({mesh}) => {
+  nodeObjects.forEach(({mesh, node}) => {
+    mesh.userData._morphTarget = node._pos.clone();
+    mesh.userData._morphing = true;
     mesh.material.opacity = isLight ? 0.88 : 0.95;
     if(mesh.userData.origEI !== undefined){
       mesh.material.emissiveIntensity = isLight ? 0 : mesh.userData.origEI;
@@ -1495,9 +1663,15 @@ function highlightConnections(node){
   connLineObjects.forEach(obj=>{const rel=obj.conn.from===node.id||obj.conn.to===node.id;const bOp=isLight?obj.lightOp:obj.darkOp;obj.line.material.opacity=rel?Math.min(bOp*2.8,0.95):bOp*0.18;});
   nodeObjects.forEach(({mesh,node:n})=>{mesh.material.opacity=rIds.has(n.id)||n.id===node.id?0.95:0.20;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=rIds.has(n.id)||n.id===node.id?(isLight?0:mesh.userData.origEI*1.8):0.15;});
 }
-function resetConnectionHighlights(){connLineObjects.forEach(obj=>{obj.line.material.opacity=isLight?obj.lightOp:obj.darkOp;});nodeObjects.forEach(({mesh})=>{mesh.material.opacity=0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;});}
+function resetConnectionHighlights(){
+  connLineObjects.forEach(obj=>{obj.line.material.opacity=isLight?obj.lightOp:obj.darkOp;});
+  allLines.forEach(({line,darkOp,lightOp})=>{line.material.opacity=isLight?lightOp:darkOp;});
+  nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?0.88:0.95;if(mesh.userData.origEI!==undefined)mesh.material.emissiveIntensity=isLight?0:mesh.userData.origEI;});
+}
 
 function enterFocus(node){
+  // Don't focus a dimmed non-member node during cluster filter
+  if(activeClusterFilter && !activeClusterFilter.nodeIds.includes(node.id)) return;
   isFocused=true;focusNode=node;scenePivotTgt.copy(node._pos);
   const zm={center:5,inner:8,mid:10,outer:13,outer2:16};
   camTarget.radius=zm[node.tier]||10;camTarget.phi=Math.PI*0.22;
@@ -1513,9 +1687,8 @@ function exitFocus(){
   document.getElementById('hint').style.opacity='1';
   document.getElementById('ghost').classList.remove('on');
   document.getElementById('msheet').classList.remove('on');
-  resetConnectionHighlights();
   clearMoons();
-  clearClusterFilter();
+  clearClusterFilter(); // also calls resetConnectionHighlights
 }
 window.closePanel=function(){exitFocus();};
 
@@ -1648,6 +1821,14 @@ function animate(ts){
   if(isGalaxyView){
     galaxyDrift += dt * 0.004;
     galaxyGroup.rotation.y = galaxyDrift;
+    // Hub does NOT drift (it stays at origin, acts as anchor)
+    // But pulse it
+    if(galaxyHubGroup.userData.mesh){
+      const hub = galaxyHubGroup.userData;
+      const hpulse = 0.65 + Math.sin(elapsed * 1.1) * 0.20;
+      hub.mesh.material.emissiveIntensity = hpulse * galaxyAlpha;
+      if(!isLight) hub.glow.material.opacity = Math.min(hub.glow.material.opacity, hpulse * 0.60 * galaxyAlpha);
+    }
     // Pulsing cluster cores
     galaxyObjects.forEach(obj=>{
       if(obj.type==='cluster'){
@@ -1676,11 +1857,12 @@ function animate(ts){
   const pa=pGeo.attributes.position.array;
   for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;
   pGeo.attributes.position.needsUpdate=true;
-  // Only pulse node scales when orrery is visible
-  if(galaxyAlpha < 0.95){
+  // Only pulse node scales when orrery is visible and no cluster filter is active
+  if(galaxyAlpha < 0.95 && !activeClusterFilter){
     nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
   }
   tickMoons(elapsed,dt);
+  tickNodeMorph(dt);
   applyCam();renderer.render(scene,cam);isDragging=false;
 }
 requestAnimationFrame(animate);
