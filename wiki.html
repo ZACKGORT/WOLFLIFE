@@ -137,7 +137,7 @@ body.light .msbody{color:rgba(10,14,30,0.72);font-size:12.5px;}
 body.light .msclose{border-color:rgba(10,14,30,0.20);color:rgba(10,14,30,0.55);}
 body.light .msclose:hover{color:rgba(10,14,30,0.90);border-color:rgba(10,14,30,0.50);}
 body.light .mshead{border-bottom-color:rgba(10,14,30,0.10);}
-@media(max-width:768px){#ghost{display:none;}#legend{display:none;}#msheet{display:block;}.hud-btn{padding:13px 20px;font-size:9px;}.hud-zoom{padding:13px 16px;font-size:16px;}#hud{border-radius:6px;}}
+@media(max-width:768px){#ghost{display:none;}#legend{display:none;}#msheet{display:block;}}
 
 /* ── SENTENCE STREAM PANEL ── */
 #stream-panel{position:fixed;top:0;right:0;width:42vw;max-width:560px;min-width:320px;height:100vh;z-index:800;display:flex;flex-direction:column;background:rgba(4,6,18,0.98);border-left:1px solid rgba(180,210,255,0.07);backdrop-filter:blur(32px);transform:translateX(100%);transition:transform 0.45s cubic-bezier(0.22,1,0.36,1);pointer-events:none;}
@@ -410,14 +410,12 @@ body.light .zoom-flash{color:rgba(10,14,30,0.45);}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 let isLight=false;
-const isMobile=('ontouchstart' in window)||navigator.maxTouchPoints>0;
-const NODE_SCALE=isMobile?2.2:1.0;
 const DOMAIN_CFG={
-  statement:{color:0xf0f4ff,lightColor:0x2a2a2e,size:0.36*NODE_SCALE,label:'Statement',hex:'#f0f4ff',lightHex:'#2a2a2e'},
-  formalism:{color:0x4a8adc,lightColor:0x2a2a2e,size:0.14*NODE_SCALE,label:'Formalism',hex:'#4a8adc',lightHex:'#2a2a2e'},
-  history:  {color:0x9a70cc,lightColor:0x2a2a2e,size:0.13*NODE_SCALE,label:'History',  hex:'#9a70cc',lightHex:'#2a2a2e'},
-  analogue: {color:0x50d8b0,lightColor:0x2a2a2e,size:0.13*NODE_SCALE,label:'Analogue', hex:'#50d8b0',lightHex:'#2a2a2e'},
-  cultural: {color:0xd8b050,lightColor:0x2a2a2e,size:0.12*NODE_SCALE,label:'Cultural', hex:'#d8b050',lightHex:'#2a2a2e'},
+  statement:{color:0xf0f4ff,lightColor:0x2a2a2e,size:0.36,label:'Statement',hex:'#f0f4ff',lightHex:'#2a2a2e'},
+  formalism:{color:0x4a8adc,lightColor:0x2a2a2e,size:0.14,label:'Formalism',hex:'#4a8adc',lightHex:'#2a2a2e'},
+  history:  {color:0x9a70cc,lightColor:0x2a2a2e,size:0.13,label:'History',  hex:'#9a70cc',lightHex:'#2a2a2e'},
+  analogue: {color:0x50d8b0,lightColor:0x2a2a2e,size:0.13,label:'Analogue', hex:'#50d8b0',lightHex:'#2a2a2e'},
+  cultural: {color:0xd8b050,lightColor:0x2a2a2e,size:0.12,label:'Cultural', hex:'#d8b050',lightHex:'#2a2a2e'},
 };
 const dcfg=d=>DOMAIN_CFG[d]||DOMAIN_CFG.formalism;
 const dhex=d=>isLight?dcfg(d).lightHex:dcfg(d).hex;
@@ -522,7 +520,7 @@ const NODE_BY_ID={};NODES.forEach(n=>{NODE_BY_ID[n.id]=n;});
 
 const cvs=document.getElementById('canvas');
 const renderer=new THREE.WebGLRenderer({canvas:cvs,antialias:true,alpha:true});
-renderer.setPixelRatio(isMobile?1:Math.min(devicePixelRatio,2));
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.setSize(innerWidth,innerHeight);
 renderer.setClearColor(0x000000,0);
 const scene=new THREE.Scene();
@@ -537,7 +535,7 @@ const LAYER_ORRERY = 'orrery';
 const LAYER_GALAXY = 'galaxy';
 let currentLayer = LAYER_ORRERY;
 
-const ORRERY_RADIUS_DEFAULT = isMobile ? 72 : 58;
+const ORRERY_RADIUS_DEFAULT = 58;
 const ORRERY_RADIUS_MIN     = 8;
 const ORRERY_RADIUS_MAX     = 110;
 const GALAXY_RADIUS_DEFAULT = 220;
@@ -594,7 +592,7 @@ const neonB=new THREE.PointLight(0x50d8b0,5,130);neonB.position.set(20,8,20);sce
 const neonC=new THREE.PointLight(0x9a70cc,4,90);neonC.position.set(0,14,0);scene.add(neonC);
 const DARK_FOG=0x000000,LIGHT_FOG=0xf0ece4;
 
-const PC=isMobile?300:1200;
+const PC=1200;
 const pPos=new Float32Array(PC*3),pPh=new Float32Array(PC),pSp=new Float32Array(PC);
 for(let i=0;i<PC;i++){let x,y,z,a=0;do{const t=Math.random()*Math.PI*2,p=Math.acos(2*Math.random()-1),r=12+Math.pow(Math.random(),0.7)*22;x=r*Math.sin(p)*Math.cos(t);y=(Math.random()-0.5)*6;z=r*Math.sin(p)*Math.sin(t);a++;}while(Math.sqrt(x*x+z*z)<6&&a<30);pPos[i*3]=x;pPos[i*3+1]=y;pPos[i*3+2]=z;pPh[i]=Math.random()*Math.PI*2;pSp[i]=0.18+Math.random()*0.28;}
 const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(pPos.slice(),3));const pOrig=pPos.slice();
@@ -603,7 +601,6 @@ scene.add(new THREE.Points(pGeo,pMat));
 
 const nodeObjects=[],allLines=[],connLineObjects=[],allLabels=[],glowSprites=[];
 const raycaster=new THREE.Raycaster();
-if(isMobile){raycaster.params.Mesh={threshold:0.4};}
 
 function drawEllipse(rx,rz,op,col,y,lCol,lOp){
   const pts=[];for(let i=0;i<=128;i++){const a=i/128*Math.PI*2,lx=rx*Math.cos(a),lz=rz*Math.sin(a);pts.push(new THREE.Vector3(lx*Math.cos(TILT)-lz*Math.sin(TILT),y||-0.1,lx*Math.sin(TILT)+lz*Math.cos(TILT)));}
@@ -642,13 +639,13 @@ function buildScene(){
   drawEllipse(ELLIPSES.outer.rx, ELLIPSES.outer.rz,  0.18,0x50d8b0,0.35, 0x50d8b0,0.18);
   drawEllipse(ELLIPSES.outer2.rx,ELLIPSES.outer2.rz, 0.14,0xd8b050,0.55, 0xd8b050,0.16);
   const gM=new THREE.LineBasicMaterial({color:0x4a8adc,transparent:true,opacity:0.010});
-  for(let i=-10;i<=10;i++){[new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-50),new THREE.Vector3(i*4,-0.5,50)]),gM.clone()),new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-50,-0.5,i*4),new THREE.Vector3(50,-0.5,i*4)]),gM.clone())].forEach(l=>{scene.add(l);allLines.push({line:l,darkColor:0x4a8adc,lightColor:0x0a0e1e,darkOp:0.010,lightOp:0.055,isGrid:true});});}
+  for(let i=-10;i<=10;i++){[new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i*4,-0.5,-50),new THREE.Vector3(i*4,-0.5,50)]),gM.clone()),new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-50,-0.5,i*4),new THREE.Vector3(50,-0.5,i*4)]),gM.clone())].forEach(l=>{scene.add(l);allLines.push({line:l,darkColor:0x4a8adc,lightColor:0x0a0e1e,darkOp:0.010,lightOp:0.055});});}
 
   const cN=NODES.find(n=>n.id==='problem');
   const cM=new THREE.Mesh(new THREE.SphereGeometry(0.36,20,20),new THREE.MeshPhysicalMaterial({color:0xf0f4ff,emissive:0xf0f4ff,emissiveIntensity:2.2,metalness:0,roughness:0.04,clearcoat:1.0}));
   cM.position.copy(cN._pos);cM.userData={node:cN,origColor:0xf0f4ff,origEI:2.2,lightOrigColor:0x0a0e1e};
   scene.add(cM);nodeObjects.push({mesh:cM,node:cN});
-  [3.4,2.1,1.2].map(s=>s*NODE_SCALE).forEach((sc,i)=>{const gs=makeGlowSprite(0xc0d8ff,0.36*NODE_SCALE);gs.scale.setScalar(sc);gs.position.copy(cN._pos);gs.material.opacity=[0.20,0.36,0.52][i];scene.add(gs);glowSprites.push(gs);});
+  [3.4,2.1,1.2].forEach((sc,i)=>{const gs=makeGlowSprite(0xc0d8ff,0.36);gs.scale.setScalar(sc);gs.position.copy(cN._pos);gs.material.opacity=[0.20,0.36,0.52][i];scene.add(gs);glowSprites.push(gs);});
 
   NODES.filter(n=>n.id!=='problem').forEach(n=>{
     const pos=n._pos,cfg=dcfg(n.domain);
@@ -819,11 +816,7 @@ const hubMeshList=[galaxyHubGroup.userData.mesh];
 let galaxyAlpha=0,isGalaxyView=false;
 const GALAXY_ENTER_THRESHOLD=115,GALAXY_FADE_SPEED=0.045;
 
-let _gaFrame=0;
 function updateGalaxyAlpha(){
-  _gaFrame++;
-  // On mobile skip material update every other frame — camera still updates every frame
-  const skipMaterials=isMobile&&(_gaFrame%2===0);
   const r=camState.radius;
   let target=0;
   if(r>GALAXY_ENTER_THRESHOLD)target=Math.min((r-GALAXY_ENTER_THRESHOLD)/(GALAXY_FULL-GALAXY_ENTER_THRESHOLD),1);
@@ -832,15 +825,13 @@ function updateGalaxyAlpha(){
   isGalaxyView=galaxyAlpha>0.01;
   galaxyGroup.visible=isGalaxyView;galaxyHubGroup.visible=isGalaxyView;
   const orreryAlpha=1-galaxyAlpha;
-  if(!skipMaterials){
   nodeObjects.forEach(({mesh})=>{mesh.material.opacity=isLight?orreryAlpha*0.88:orreryAlpha*0.95;});
   glowSprites.forEach(gs=>{gs.material.opacity=isLight?0:orreryAlpha*0.72;});
   allLabels.forEach(({spr})=>{spr.material.opacity=orreryAlpha;});
-  allLines.forEach(({line,darkOp,lightOp,isGrid})=>{const baseOp=isLight?lightOp:darkOp;line.material.opacity=isGrid?baseOp*(orreryAlpha*(1-galaxyAlpha)):baseOp*orreryAlpha;});
+  allLines.forEach(({line,darkOp,lightOp})=>{line.material.opacity=(isLight?lightOp:darkOp)*orreryAlpha;});
   connLineObjects.forEach(({line,darkOp,lightOp})=>{line.material.opacity=(isLight?lightOp:darkOp)*orreryAlpha;});
-  }
   const ga=galaxyAlpha,focCl=activeGalaxyCluster;
-  if(ga>0.001)galaxyObjects.forEach(obj=>{
+  galaxyObjects.forEach(obj=>{
     const isFocused=focCl&&obj.cluster===focCl,dimFactor=(focCl&&!isFocused)?0.18:1.0;
     if(obj.type==='cluster'){
       const boost=isFocused?1.25:1.0;
@@ -860,7 +851,7 @@ function updateGalaxyAlpha(){
       if(obj.glow){obj.glow.material.opacity=obj.glow.material.opacity+(tgtGlow-obj.glow.material.opacity)*lk;obj.glow.scale.setScalar(obj.mesh.scale.x*obj.mesh.geometry.parameters.radius*11);}
     }
   });
-  if(ga>0.001)galaxyLines.forEach(({line,baseOp,isArc,clFrom,clTo,clusterId})=>{
+  galaxyLines.forEach(({line,baseOp,isArc,clFrom,clTo,clusterId})=>{
     let op=baseOp,dimFactor=1.0;
     if(focCl){if(isArc){const arcInvolved=clFrom===focCl.id||clTo===focCl.id;dimFactor=arcInvolved?1.0:0.08;if(arcInvolved)op=Math.min(op*2.0,0.80);}else{dimFactor=(!clusterId||clusterId===focCl.id)?1.0:0.08;if(clusterId===focCl.id)op=Math.min(op*1.8,0.55);}}
     line.material.opacity=ga*op*dimFactor;
@@ -992,7 +983,7 @@ const BD=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[10,28,74]},{x:0.72,y:
 const BL=[{x:0.15,y:0.20,vx:0.00008,vy:0.00006,r:0.60,col:[190,210,240]},{x:0.72,y:0.68,vx:-0.00006,vy:0.00008,r:0.52,col:[210,195,235]},{x:0.80,y:0.12,vx:-0.00005,vy:-0.00007,r:0.46,col:[185,230,220]},{x:0.22,y:0.80,vx:0.00007,vy:-0.00006,r:0.48,col:[235,215,185]}];
 function drawMesh(){const w=bgCanvas.width,h=bgCanvas.height;bgCtx.clearRect(0,0,w,h);const blobs=isLight?BL:BD;bgCtx.fillStyle=isLight?'#f0ece4':'#030308';bgCtx.fillRect(0,0,w,h);blobs.forEach(b=>{const cx=b.x*w,cy=b.y*h,rad=Math.max(w,h)*b.r;const grd=bgCtx.createRadialGradient(cx,cy,0,cx,cy,rad);const[r,g,bl]=b.col;grd.addColorStop(0,`rgba(${r},${g},${bl},${isLight?0.45:0.55})`);grd.addColorStop(0.5,`rgba(${r},${g},${bl},${isLight?0.14:0.16})`);grd.addColorStop(1,`rgba(${r},${g},${bl},0)`);bgCtx.fillStyle=grd;bgCtx.fillRect(0,0,w,h);});const vig=bgCtx.createRadialGradient(w/2,h/2,h*0.3,w/2,h/2,isLight?h*0.88:h*0.92);vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,isLight?'rgba(10,14,30,0.08)':'rgba(0,0,0,0.75)');bgCtx.fillStyle=vig;bgCtx.fillRect(0,0,w,h);}
 let meshT=0;
-function tickMesh(){meshT++;[...BD,...BL].forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>1)b.vx*=-1;if(b.y<0||b.y>1)b.vy*=-1;});const rate=isMobile?18:3;if(meshT%rate===0)drawMesh();requestAnimationFrame(tickMesh);}
+function tickMesh(){meshT++;[...BD,...BL].forEach(b=>{b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>1)b.vx*=-1;if(b.y<0||b.y>1)b.vy*=-1;});if(meshT%3===0)drawMesh();requestAnimationFrame(tickMesh);}
 drawMesh();tickMesh();
 
 const RING_NAMES={center:'Center',inner:'Ring 1 · Formalism',mid:'Ring 2 · History',outer:'Ring 3 · Analogues',outer2:'Ring 4 · Cultural'};
@@ -1078,121 +1069,26 @@ function checkHover(){
   if(hits.length){const hit=hits[0].object,obj=nodeObjects.find(o=>o.mesh===hit);if(obj&&hoveredMesh!==hit){hoveredMesh=hit;const n=obj.node,cfg=dcfg(n.domain);document.getElementById('tt-ring').textContent=n.era||RING_NAMES[n.tier];document.getElementById('tt-title').textContent=n.title;document.getElementById('tt-title').style.color=isLight?cfg.lightHex:cfg.hex;document.getElementById('tt-type').textContent=cfg.label;tooltip.classList.add('vis');}document.body.style.cursor='pointer';}else{if(hoveredMesh){hoveredMesh=null;tooltip.classList.remove('vis');}document.body.style.cursor='default';}
 }
 
-// ── Shared hit-test on tap/click ──
-function updateMouseFromClient(cx,cy){
+cvs.addEventListener('pointerdown',e=>{if(e.button===2)return;isDragging=false;drag=false;lastDragX=e.clientX;lastDragY=e.clientY;cvs.setPointerCapture(e.pointerId);});
+cvs.addEventListener('pointermove',e=>{
   const rect=cvs.getBoundingClientRect();
-  mouse.x=(cx-rect.left)/rect.width*2-1;
-  mouse.y=-((cy-rect.top)/rect.height)*2+1;
-  lastXY={x:cx,y:cy};
-}
-
-function doHitTest(){
-  if(handleGalaxyClick(mouse)){if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}return;}
-  raycaster.setFromCamera(mouse,cam);
-  if(isFocused&&moonMeshList.length){
-    const mHits=raycaster.intersectObjects(moonMeshList);
-    if(mHits.length){const mo=activeMoons.find(m=>m.mesh===mHits[0].object);if(mo){enterFocus(mo.targetNode);return;}}
-  }
-  const meshList=nodeObjects.map(o=>o.mesh);
-  let hits=raycaster.intersectObjects(meshList);
-  if(!hits.length){
-    // Widen near plane in case node is close to camera
-    const origNear=cam.near;cam.near=0.01;cam.updateProjectionMatrix();
+  mouse.x=(e.clientX-rect.left)/rect.width*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;lastXY={x:e.clientX,y:e.clientY};posTooltip(e.clientX,e.clientY);
+  if(e.buttons&&e.button!==2){isDragging=true;drag=true;camTarget.theta-=(e.clientX-lastDragX)*0.005;camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+(e.clientY-lastDragY)*0.005));lastDragX=e.clientX;lastDragY=e.clientY;}else{checkHover();}
+});
+cvs.addEventListener('pointerup',e=>{
+  if(e.button===2)return;
+  if(!drag){
+    if(handleGalaxyClick(mouse)){if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}return;}
     raycaster.setFromCamera(mouse,cam);
-    hits=raycaster.intersectObjects(meshList);
-    cam.near=origNear;cam.updateProjectionMatrix();
+    if(isFocused&&moonMeshList.length){const mHits=raycaster.intersectObjects(moonMeshList);if(mHits.length){const mo=activeMoons.find(m=>m.mesh===mHits[0].object);if(mo){enterFocus(mo.targetNode);return;}}}
+    const meshList=nodeObjects.map(o=>o.mesh);
+    let hits=raycaster.intersectObjects(meshList);
+    if(!hits.length&&isFocused){const origNear=cam.near;cam.near=0.01;cam.updateProjectionMatrix();raycaster.setFromCamera(mouse,cam);hits=raycaster.intersectObjects(meshList);cam.near=origNear;cam.updateProjectionMatrix();}
+    if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}
+    else if(isFocused)exitFocus();
   }
-  if(hits.length){const obj=nodeObjects.find(o=>o.mesh===hits[0].object);if(obj)enterFocus(obj.node);}
-  else if(isFocused)exitFocus();
   if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
-}
-
-if(isMobile){
-  // ── TOUCH EVENTS — bypass pointer events entirely on mobile ──
-  let _t0x=0,_t0y=0,_tMoved=false,_tDragActive=false;
-  const TOUCH_DRAG_THRESH=10;
-
-  let _pinchDist=null;
-
-  cvs.addEventListener('touchstart',e=>{
-    if(e.touches.length===1){
-      const t=e.touches[0];
-      _t0x=t.clientX;_t0y=t.clientY;_tMoved=false;_tDragActive=false;
-      updateMouseFromClient(t.clientX,t.clientY);
-    } else if(e.touches.length===2){
-      const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;
-      _pinchDist=Math.hypot(dx,dy);_tDragActive=false;
-    }
-  },{passive:true});
-
-  cvs.addEventListener('touchmove',e=>{
-    if(e.touches.length===2&&_pinchDist!==null){
-      // Pinch zoom
-      const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;
-      const d=Math.hypot(dx,dy),delta=_pinchDist-d;_pinchDist=d;
-      camTarget.radius=Math.max(ORRERY_RADIUS_MIN,Math.min(GALAXY_RADIUS_MAX,camTarget.radius+delta*0.18));
-      if(camTarget.radius>GALAXY_ENTER_THRESHOLD&&currentLayer===LAYER_ORRERY){currentLayer=LAYER_GALAXY;document.querySelectorAll('.hud-btn[data-view]').forEach(b=>b.classList.remove('active'));document.querySelector('[data-view="galaxy"]').classList.add('active');}
-      else if(camTarget.radius<=GALAXY_ENTER_THRESHOLD&&currentLayer===LAYER_GALAXY){currentLayer=LAYER_ORRERY;document.querySelectorAll('.hud-btn[data-view]').forEach(b=>b.classList.remove('active'));document.querySelector('[data-view="orrery"]').classList.add('active');}
-    } else if(e.touches.length===1){
-      const t=e.touches[0];
-      const dx=t.clientX-_t0x,dy=t.clientY-_t0y;
-      if(!_tMoved&&(Math.abs(dx)>TOUCH_DRAG_THRESH||Math.abs(dy)>TOUCH_DRAG_THRESH)){
-        _tMoved=true;_tDragActive=true;
-      }
-      if(_tDragActive){
-        isDragging=true;
-        camTarget.theta-=dx*0.007;
-        camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+dy*0.007));
-      }
-      _t0x=t.clientX;_t0y=t.clientY;
-      updateMouseFromClient(t.clientX,t.clientY);
-    }
-  },{passive:true});
-
-  cvs.addEventListener('touchend',e=>{
-    if(e.touches.length===0){
-      if(!_tMoved&&e.changedTouches.length){
-        const t=e.changedTouches[0];
-        updateMouseFromClient(t.clientX,t.clientY);
-        doHitTest();
-      }
-      _tDragActive=false;isDragging=false;_pinchDist=null;
-    }
-  },{passive:true});
-
-} else {
-  // ── POINTER EVENTS — desktop only ──
-  cvs.addEventListener('pointerleave',()=>{
-    if(hoveredMesh){hoveredMesh=null;document.getElementById('tooltip').classList.remove('vis');}
-    if(hoveredMoon){hideMoonTip();}
-    if(hoveredCluster){hoveredCluster=null;document.getElementById('tooltip').classList.remove('vis');}
-    document.body.style.cursor='default';
-  });
-  cvs.addEventListener('pointerdown',e=>{
-    if(e.button===2)return;
-    isDragging=false;drag=false;
-    lastDragX=e.clientX;lastDragY=e.clientY;
-    updateMouseFromClient(e.clientX,e.clientY);
-    cvs.setPointerCapture(e.pointerId);
-  });
-  cvs.addEventListener('pointermove',e=>{
-    updateMouseFromClient(e.clientX,e.clientY);
-    posTooltip(e.clientX,e.clientY);
-    if(e.buttons===1){
-      const dx=e.clientX-lastDragX,dy=e.clientY-lastDragY;
-      if(!drag&&(Math.abs(dx)>1||Math.abs(dy)>1))drag=true;
-      isDragging=true;
-      camTarget.theta-=dx*0.005;
-      camTarget.phi=Math.max(0.02,Math.min(Math.PI*0.48,camTarget.phi+dy*0.005));
-      lastDragX=e.clientX;lastDragY=e.clientY;
-    }else{checkHover();}
-  });
-  cvs.addEventListener('pointerup',e=>{
-    if(e.button===2)return;
-    if(!drag)doHitTest();
-    if(!hintFaded){document.getElementById('hint').style.opacity='0.06';hintFaded=true;}
-  });
-}
+});
 
 cvs.addEventListener('wheel',e=>{
   if(isFocused&&focusNode){
@@ -1213,8 +1109,6 @@ cvs.addEventListener('wheel',e=>{
     document.querySelector('[data-view="orrery"]').classList.add('active');
   }
 },{passive:true});
-
-
 
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){exitFocus();return;}
@@ -1237,22 +1131,19 @@ let lastTime=0,elapsed=0;
 function animate(ts){
   requestAnimationFrame(animate);
   const dt=Math.min((ts-lastTime)/1000,0.05);lastTime=ts;elapsed+=dt;
-  const camLk=isMobile?0.22:0.08;
-  camState.phi+=(camTarget.phi-camState.phi)*camLk;camState.theta+=(camTarget.theta-camState.theta)*camLk;camState.radius+=(camTarget.radius-camState.radius)*camLk;
-  scenePivot.lerp(scenePivotTgt,camLk);
+  camState.phi+=(camTarget.phi-camState.phi)*0.08;camState.theta+=(camTarget.theta-camState.theta)*0.08;camState.radius+=(camTarget.radius-camState.radius)*0.08;
+  scenePivot.lerp(scenePivotTgt,0.08);
   if(!isFocused&&!isDragging&&!orbitPaused)camTarget.theta+=dt*0.018;
   updateGalaxyAlpha();
   if(isGalaxyView){
     galaxyDrift+=dt*0.004;galaxyGroup.rotation.y=galaxyDrift;
-    if(!isMobile||!isDragging){
-      if(galaxyHubGroup.userData.mesh){const hub=galaxyHubGroup.userData,hpulse=0.65+Math.sin(elapsed*1.1)*0.20;hub.mesh.material.emissiveIntensity=hpulse*galaxyAlpha;if(!isLight)hub.glow.material.opacity=Math.min(hub.glow.material.opacity,hpulse*0.60*galaxyAlpha);}
-      galaxyObjects.forEach(obj=>{if(obj.type==='cluster'){const pulse=0.55+Math.sin(elapsed*0.7+obj.cluster.pos.x*0.02)*0.18;obj.mesh.material.emissiveIntensity=pulse*galaxyAlpha;obj.glow.material.opacity=isLight?0:pulse*0.55*galaxyAlpha;}});
-    }
+    if(galaxyHubGroup.userData.mesh){const hub=galaxyHubGroup.userData,hpulse=0.65+Math.sin(elapsed*1.1)*0.20;hub.mesh.material.emissiveIntensity=hpulse*galaxyAlpha;if(!isLight)hub.glow.material.opacity=Math.min(hub.glow.material.opacity,hpulse*0.60*galaxyAlpha);}
+    galaxyObjects.forEach(obj=>{if(obj.type==='cluster'){const pulse=0.55+Math.sin(elapsed*0.7+obj.cluster.pos.x*0.02)*0.18;obj.mesh.material.emissiveIntensity=pulse*galaxyAlpha;obj.glow.material.opacity=isLight?0:pulse*0.55*galaxyAlpha;}});
     scene.fog.density=0.012*(1-galaxyAlpha*0.75);
     if(activeGalaxyCluster){const baseFog=isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR;const tintStr=isLight?0.10:0.22;scene.fog.color.setHex(lerpHex(baseFog,activeGalaxyCluster.color,tintStr*galaxyAlpha));}else{scene.fog.color.setHex(isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR);}
   }else{scene.fog.density=0.012;if(!activeGalaxyCluster)scene.fog.color.setHex(isLight?LIGHT_FOG_COLOR:DARK_FOG_COLOR);}
-  if(!isMobile){const pa=pGeo.attributes.position.array;for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;pGeo.attributes.position.needsUpdate=true;}
-  if(!isMobile&&galaxyAlpha<0.95&&!activeClusterFilter)nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
+  const pa=pGeo.attributes.position.array;for(let i=0;i<PC;i++)pa[i*3+1]=pOrig[i*3+1]+Math.sin(elapsed*pSp[i]+pPh[i])*0.4;pGeo.attributes.position.needsUpdate=true;
+  if(galaxyAlpha<0.95&&!activeClusterFilter)nodeObjects.forEach(({mesh,node:n})=>{mesh.scale.setScalar(1+Math.sin(elapsed*(n.id==='problem'?1.2:0.7+n.angle)*0.5)*(n.id==='problem'?0.04:0.022));});
   tickMoons(elapsed,dt);tickNodeMorph(dt);applyCam();renderer.render(scene,cam);isDragging=false;
 }
 requestAnimationFrame(animate);
