@@ -56,7 +56,7 @@
 
     .nav-section      { grid-column: 1 / span 3; }
     .values-section   { grid-column: 5 / span 2; }
-    .location-section { grid-column: 7 / span 2; }
+    .location-section { grid-column: 7 / span 3; }
     .contact-section  { grid-column: 9 / span 2; }
     .social-section   { grid-column: 11 / span 2; text-align: right; }
     .info-section     { grid-column: 9 / span 4; text-align: right; }
@@ -224,6 +224,102 @@
       .description-line { font-size: 14px; }
     }
 
+    /* ═══════════════════════════════════════════
+       MOBILE  ≤ 768px
+    ═══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+
+      /* ── Prevent overscroll bounce ── */
+      html, body { overscroll-behavior: none; touch-action: none; }
+
+      /* ── Header: single row — logo left, filter pills right ── */
+      .header {
+        display: flex; align-items: flex-start; justify-content: space-between;
+        padding: 1rem; gap: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, transparent 100%);
+      }
+      .nav-section      { display: flex; align-items: center; }
+      .logo-container   { margin-bottom: 0; width: 1.75rem; height: 1.75rem; }
+
+      /* hide location / contact / social on mobile */
+      .location-section,
+      .contact-section,
+      .social-section   { display: none; }
+
+      /* filter pills inline */
+      .values-section {
+        display: flex; align-items: center; gap: 0.5rem;
+      }
+      .values-section h3 { display: none; }
+      .values-section ul { display: flex; flex-direction: row; gap: 0.5rem; list-style: none; }
+      .values-section ul li a {
+        font-size: 11px; padding: 0.3rem 0.65rem;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 2rem; display: block;
+        background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+        transition: background 0.2s, border-color 0.2s;
+      }
+      /* override the underline fill animation for pill style */
+      .values-section ul li a::after { display: none; }
+      .values-section ul li a:hover,
+      .values-section ul li a.filter-active {
+        background: rgba(255,255,255,0.9);
+        color: #000; mix-blend-mode: normal; border-color: transparent;
+      }
+
+      /* ── Footer: bottom safe area ── */
+      .footer { padding: 0.75rem 1rem; padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+      .info-section { grid-column: 1 / -1; text-align: left; }
+      .footer p { font-size: 10px; }
+
+      /* ── Controls: compact pill, centered ── */
+      .controls-container {
+        bottom: max(1rem, env(safe-area-inset-bottom));
+        gap: 0.4rem;
+      }
+      .controls-container.split-mode { left: 50%; }
+      .percentage-indicator { padding: 0.5em 0.75em; font-size: 0.65em; min-width: 3.5em; }
+      .switch { gap: 0; padding: 0.5em 0.5em; }
+      .switch-button { font-size: 0.6em; padding: 4px 6px; }
+      .sound-toggle  { padding: 0.4em 0.6em; min-width: 3em; }
+      .sound-wave-canvas { width: 1.5em; height: 0.875em; }
+
+      /* ── Split screen: stack vertically on mobile ── */
+      .split-screen-container { flex-direction: column; }
+      .split-left  { width: 100vw; height: 65vh; }
+      .split-right { width: 100vw; height: 35vh; background: rgba(0,0,0,0.85); }
+
+      /* ── Title overlay: inside left panel, safe inset ── */
+      .image-title-overlay {
+        bottom: 35vh; /* sit above the right panel */
+        left: 1rem;
+      }
+      .image-slide-number  { width: calc(100vw - 2rem); height: 16px; }
+      .image-slide-number span { font-size: 9px; }
+      .image-slide-title   { width: calc(100vw - 2rem); height: 44px; }
+      .image-slide-title h1 { font-size: 28px; }
+      .image-slide-description { width: calc(100vw - 2rem); }
+      .description-line { font-size: 12px; }
+
+      /* ── Close button: top-right, generous tap target ── */
+      .close-button {
+        top: 1rem; right: 1rem;
+        width: 48px; height: 48px;
+        transform: translate(0, 0) !important; /* override the translateY(-50%) */
+        background: rgba(0,0,0,0.45); backdrop-filter: blur(6px);
+        border-radius: 50%;
+      }
+      .close-button svg { width: 22px; height: 22px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       VERY SMALL  ≤ 430px  (iPhone SE / 12 mini)
+    ═══════════════════════════════════════════ */
+    @media (max-width: 430px) {
+      .switch-button[onclick*="setZoom(0.3"],
+      .switch-button[onclick*="setZoom(1.0"] { display: none; }
+    }
+
     /* ── Controls ── */
     .controls-container {
       position: fixed; bottom: 1.25em; left: 50%;
@@ -330,31 +426,29 @@
         <img src="https://raw.githubusercontent.com/ZACKGORT/ZACKGORT/main/favicon.webp" alt="Wolfgang & Co." />
       </div>
     </div>
-      <!-- 
     <div class="values-section">
       <h3>+Filter</h3>
       <ul>
-        <li><a href="#" class="filter-link filter-active" data-filter="all"  onclick="gallery.setFilter('all',this);return false;">All</a></li>
-        <li><a href="#" class="filter-link"               data-filter="image" onclick="gallery.setFilter('image',this);return false;">Photos</a></li>
-        <li><a href="#" class="filter-link"               data-filter="video" onclick="gallery.setFilter('video',this);return false;">Video</a></li>
+        <li><a href="#" class="filter-link filter-active" data-filter="all"  onclick="gallery.setFilter('all',this);return false;">a day</a></li>
+        <li><a href="#" class="filter-link"               data-filter="image" onclick="gallery.setFilter('image',this);return false;">in the life</a></li>
+        <li><a href="#" class="filter-link"               data-filter="video" onclick="gallery.setFilter('video',this);return false;">of Wolfgang</a></li>
       </ul>
     </div>
-  -->
     <div class="location-section">
-      <h3>Sweet Wolfgang</h3>
-      <p>Rest In Peace</p>
-      <p>~2023-2026</p>
-
+      <h3>Good times, bad times</h3>
+      <p>I know what it means to be alone<br>
+      I sure do wish I was at home<br>
+      I don't care what the neighbors say<br>
+      I'm gonna love you each and every day</p>
+      <p>You can feel the beat within my heart<br>
+      Realize, sweet babe, we ain't never gonna part<br>
+      I feel good when I look into your eyes</p>
     </div>
-    <div class="contact-section">
-      <h3>Wolfie's Story</h3>
-      <li><a href="https://wolfie.love">wolfie.love</a></li>
 
-    </div>
     <div class="social-section">
       <h3>+Follow</h3>
       <ul>
-        <li><a href="https://www.instagram.com/whereiswolfgang/">Instagram</a></li>
+        <li><a href="#">Instagram</a></li>
         <li><a href="https://linkedin.com/in/zackgort" target="_blank" rel="noopener">LinkedIn</a></li>
       </ul>
     </div>
@@ -563,7 +657,6 @@ const IMAGES = [
   "https://i.ibb.co/ZRH2xfpx/vet-trip.webp",
   "https://i.ibb.co/twNdHLNd/vera2.webp",
   "https://i.ibb.co/7Nb3kzfB/vera1.webp",
-  "https://i.ibb.co/8Wbt6Jw/uhmtotallyfellasleepwithselfiemodereadyohlookathispawsomg.webp",
   "https://i.ibb.co/KjCG862F/traininghumanonmyfavoritethingtodoperiod.webp",
   "https://i.ibb.co/GvH63fQ8/thisthisisthevalidationiseek.webp",
   "https://i.ibb.co/83SsR99/thislittledudeexudedsomuchconfidence.webp",
