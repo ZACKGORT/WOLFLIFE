@@ -279,6 +279,14 @@
   .list-row-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s cubic-bezier(.65,0,.35,1);}
   .list-row-body-inner{overflow:hidden;}
   .list-row.expanded .list-row-body{grid-template-rows:1fr;}
+  /* touch devices get a real, native horizontal swipe on the strip instead of
+     the desktop's vertical-scroll-driven carousel (which touch can't trigger
+     the way a mouse wheel does) */
+  @media (hover:none) and (pointer:coarse){
+    .list-row-body-inner{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .list-row-body-inner::-webkit-scrollbar{display:none;}
+    .list-strip{touch-action:pan-x;}
+  }
   .list-strip{display:flex;gap:.9rem;padding:.2rem .2rem 1.6rem;will-change:transform;}
   .list-card{flex:0 0 auto;width:150px;cursor:pointer;position:relative;z-index:1;}
   .list-card:hover{z-index:30;}
@@ -658,6 +666,7 @@ const RAW = [
 const ITEMS = RAW.map((r,i)=>Object.assign({idx:i+1}, r));
 
 /* ─────────────────────────── STATE ─────────────────────────── */
+const IS_TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 let view = 'timeline';
 let category = null;
 let expandedGroup = 0; // January open by default, matches reference
@@ -1451,7 +1460,7 @@ function listTick(){
   if(f && f.m !== focusedGroup) setFocused(f.m, false);
 
   const row = listRows.find(r=>r.m===focusedGroup);
-  if(row && row.stripEl){
+  if(row && row.stripEl && !IS_TOUCH){
     const wrapWidth = row.innerEl.clientWidth;
     const maxCarousel = Math.max(0, row.stripEl.scrollWidth - wrapWidth);
     const raw = (listWrap.scrollTop - lockScrollTop) * 1.7;
