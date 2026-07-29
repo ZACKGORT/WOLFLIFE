@@ -130,6 +130,27 @@
   .modal-actions button.primary:hover{opacity:.85;}
   .modal-status{font-size:.7rem;color:var(--accent2);min-height:1em;}
 
+  /* ── right-click context menu for moving a card to another category ── */
+  #ctx-menu{
+    position:fixed;z-index:800;
+    background:var(--card);border:1px solid var(--line);
+    min-width:170px;max-height:60vh;overflow-y:auto;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transform:scale(.97);
+    transition:opacity .12s,transform .12s;
+    padding:.35rem;
+  }
+  #ctx-menu.show{opacity:1;pointer-events:all;transform:scale(1);}
+  .ctx-menu-label{
+    font-family:"Inter",sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);padding:.4rem .6rem .3rem;
+  }
+  .ctx-menu-item{
+    font-family:"Inter",sans-serif;font-size:.78rem;color:var(--fg);
+    padding:.45rem .6rem;border-radius:3px;cursor:pointer;white-space:nowrap;
+  }
+  .ctx-menu-item:hover{background:rgba(var(--fg-rgb),.08);}
+
   /* ── Nav pills ── */
   #nav{
     position:fixed;top:var(--pad);left:50%;transform:translateX(-50%);
@@ -289,15 +310,7 @@
   .list-row-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s cubic-bezier(.65,0,.35,1);}
   .list-row-body-inner{overflow:hidden;}
   .list-row.expanded .list-row-body{grid-template-rows:1fr;}
-  /* touch devices get a real, native horizontal swipe on the strip instead of
-     the desktop's vertical-scroll-driven carousel (which touch can't trigger
-     the way a mouse wheel does) */
-  @media (hover:none) and (pointer:coarse){
-    .list-row-body-inner{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-    .list-row-body-inner::-webkit-scrollbar{display:none;}
-    .list-strip{touch-action:pan-x;}
-  }
-  .list-strip{display:flex;gap:.9rem;padding:.2rem .2rem 1.6rem;will-change:transform;}
+  .list-strip{display:flex;flex-wrap:wrap;gap:.9rem;padding:.2rem .2rem 1.6rem;}
   .list-card{flex:0 0 auto;width:150px;cursor:pointer;position:relative;z-index:1;}
   .list-card:hover{z-index:30;}
   .list-card .thumb{width:100%;aspect-ratio:4/5;background:var(--card);border:1px solid rgba(var(--fg-rgb),.10);perspective:450px;}
@@ -519,6 +532,8 @@ https://example.com/photo-two.jpg"></textarea>
   </div>
 </div>
 
+<div id="ctx-menu"></div>
+
 <script>
 (function(){
 'use strict';
@@ -556,7 +571,6 @@ const RAW = [
   {t:'Floating', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/JwdP8xFc/floating.webp'},
   {t:'Likereallyhatedtherain', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/mCy62tkg/likereallyhatedtherain.webp'},
   {t:'Intothevoid', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/4RkM3rHt/intothevoid.webp'},
-  {t:'slyd', c:'King from Queens', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/sleepspiral.mp4'},
   {t:'caught in a landslide', c:'King from Queens', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/sleepspiral.mp4'},
 
   // ── Lost & Found ──
@@ -642,16 +656,16 @@ const RAW = [
   {t:'Walks Into Elevators', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksintoelevators_v1%20(1080p).mp4'},
   {t:'Walks Out of Elevators', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksoutofelevators_v1%20(720p).mp4'},
   {t:'Windy 2', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/windy2_v1%20(720p).mp4'},
-  {t:'New lease — no leash', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Leashlesslove.mp4'},
-  {t:'You decide', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/wolfgangfearlessbridgecrosser.mp4'},
-  {t:'true New Yorker', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Earlydayswalkpostsurgeryneverneededaleash.mp4'},
+  {t:'found home', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Latenightstroll.mp4'},
+  {t:'you have complete agency', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4'},
+  {t:'amongst', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/longislandwalks.mp4'},
   {t:'happy walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4'},
   {t:'loathe a lazy walk', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/lazywalkieswithwolfgang.mp4'},
   {t:'while windy walks were wild', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/windyboy.mp4'},
   {t:'best walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/anesthesia.mp4'},
 
   // ── WFH ──
-  {t:'There\\\\\\\'s Food at Home, Wolfgang', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/theresfoodathomewolfgang_v1%20(1080p).mp4'},
+  {t:'There\'s Food at Home, Wolfgang', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/theresfoodathomewolfgang_v1%20(1080p).mp4'},
   {t:'Comfort1', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/qfBwLrD/comfort1.webp'},
   {t:'Comfort2', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/kV6CzpWS/comfort2.webp'},
   {t:'Homemademeals', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/M5Pcy9f9/homemademeals.webp'},
@@ -660,10 +674,10 @@ const RAW = [
   {t:'new dad', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/JjGbm5rh/heydaddy.webp'},
   {t:'belong', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/stinkyboy.mp4'},
   {t:'know without notice', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/welcomehomebuddy.mp4'},
-  {t:'found home', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Latenightstroll.mp4'},
   {t:'you got your mojo back', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Cityboi.mp4'},
-  {t:'you have complete agency', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4'},
-  {t:'amongst', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/longislandwalks.mp4'},
+  {t:'New lease — no leash', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Leashlesslove.mp4'},
+  {t:'You decide', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/wolfgangfearlessbridgecrosser.mp4'},
+  {t:'true New Yorker', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Earlydayswalkpostsurgeryneverneededaleash.mp4'},
   {t:'Lastsleepies', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/0RM9H4bs/lastsleepies.webp'},
   {t:'Curbyourdog', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/HTqtChHv/curbyourdog.webp'},
   {t:'Flower', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/B5hk87fv/flower.webp'},
@@ -697,7 +711,8 @@ const ITEMS = RAW.map((r,i)=>Object.assign({idx:i+1}, r));
 const IS_TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 let view = 'timeline';
 let category = null;
-let expandedGroup = 0; // January open by default, matches reference
+let openGroups = new Set([0]); // Adventures open by default
+let hoveredGroup = null;       // hover-preview only — doesn't touch openGroups
 let transitioning = false;
 
 /* ─────────────────────────── HELPERS ─────────────────────────── */
@@ -783,6 +798,67 @@ function wireEditableTitle(containerEl, i){
   ttl.addEventListener('blur', ()=>{
     ttl.textContent = updateItemTitle(i, ttl.textContent);
     if(containerEl.hasAttribute('draggable')) containerEl.setAttribute('draggable','true');
+  });
+}
+
+/* ── right-click "move to category" — available anywhere a card is
+   editable (List, Grid, and the Detail popover when opened from either).
+   Timeline stays read-only, so it never wires this up. ── */
+function moveItemToCategory(item, newM){
+  if(item.m === newM) return;
+  item.m = newM;
+  item.c = GROUPS[newM];
+  renderList();
+  renderGrid();
+  renderTimeline();
+  buildGridCats();
+  if(detailItem === item){
+    const idxLine = document.getElementById('detail-idx-line');
+    if(idxLine) idxLine.textContent = `${fmtIdx(item.idx)} / ${ITEMS.length} — ${GROUPS[item.m]}`;
+  }
+}
+
+const ctxMenuEl = document.getElementById('ctx-menu');
+function hideContextMenu(){ ctxMenuEl.classList.remove('show'); }
+function showCategoryContextMenu(x, y, item){
+  ctxMenuEl.innerHTML = '';
+  const label = document.createElement('div');
+  label.className = 'ctx-menu-label';
+  label.textContent = 'Move to…';
+  ctxMenuEl.appendChild(label);
+  GROUPS.forEach((name, m)=>{
+    if(m === item.m) return;
+    const opt = document.createElement('div');
+    opt.className = 'ctx-menu-item';
+    opt.textContent = name;
+    opt.addEventListener('click', ()=>{
+      moveItemToCategory(item, m);
+      hideContextMenu();
+    });
+    ctxMenuEl.appendChild(opt);
+  });
+  ctxMenuEl.style.left = '0px';
+  ctxMenuEl.style.top = '0px';
+  ctxMenuEl.classList.add('show');
+  const rect = ctxMenuEl.getBoundingClientRect();
+  const clampedX = Math.min(x, window.innerWidth - rect.width - 8);
+  const clampedY = Math.min(y, window.innerHeight - rect.height - 8);
+  ctxMenuEl.style.left = Math.max(8, clampedX) + 'px';
+  ctxMenuEl.style.top = Math.max(8, clampedY) + 'px';
+}
+document.addEventListener('click', hideContextMenu);
+document.addEventListener('contextmenu', e=>{
+  if(!e.target.closest('.list-card, .g-item, #detail-frame')) hideContextMenu();
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') hideContextMenu(); });
+window.addEventListener('scroll', hideContextMenu, true);
+window.addEventListener('resize', hideContextMenu);
+
+function wireContextMenu(containerEl, item){
+  containerEl.addEventListener('contextmenu', e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    showCategoryContextMenu(e.clientX, e.clientY, item);
   });
 }
 
@@ -913,10 +989,14 @@ function refreshDim(){
 const detailEl = document.getElementById('detail');
 document.getElementById('detail-close').addEventListener('click', closeDetail);
 detailEl.addEventListener('click', e=>{ if(e.target===detailEl) closeDetail(); });
+let detailItem = null, detailEditableFlag = false;
+
 function openDetail(item, opts){
   opts = opts || {};
   const editable = !!opts.editable; // only List/Grid pass this — Timeline opens read-only
   const i = ITEMS.indexOf(item);
+  detailItem = item;
+  detailEditableFlag = editable;
 
   const frame = document.getElementById('detail-frame');
   const old = frame.querySelector('.thumb');
@@ -927,7 +1007,7 @@ function openDetail(item, opts){
 
   const capEl = document.getElementById('detail-caption');
   capEl.innerHTML =
-    `<span class="idx mono">${fmtIdx(item.idx)} / ${ITEMS.length} — ${escapeHtml(GROUPS[item.m])}</span>` +
+    `<span class="idx mono" id="detail-idx-line">${fmtIdx(item.idx)} / ${ITEMS.length} — ${escapeHtml(GROUPS[item.m])}</span>` +
     `<span id="detail-caption-text" data-i="${i}"${editable ? ' contenteditable="true" spellcheck="false"' : ''}>${escapeHtml(item.t)}</span>`;
 
   if(editable){
@@ -943,6 +1023,13 @@ function openDetail(item, opts){
 }
 function closeDetail(){ detailEl.classList.remove('show'); }
 
+document.getElementById('detail-frame').addEventListener('contextmenu', e=>{
+  if(!detailEditableFlag || !detailItem) return;
+  e.preventDefault();
+  e.stopPropagation();
+  showCategoryContextMenu(e.clientX, e.clientY, detailItem);
+});
+
 /* ─────────────────────────── CATEGORY MANAGEMENT (List view only) ─────────────────────────── */
 function commitCategoryName(m, newName){
   const oldName = GROUPS[m];
@@ -956,15 +1043,21 @@ function commitCategoryName(m, newName){
   buildGridCats();
 }
 
+function getOpenNames(){
+  return Array.from(openGroups).map(m => GROUPS[m]).filter(n => n != null);
+}
+function restoreOpenFromNames(names){
+  openGroups = new Set(names.map(n => GROUPS.indexOf(n)).filter(i => i >= 0));
+}
+
 function addCategory(){
-  const focusedName = (focusedGroup!=null && GROUPS[focusedGroup]!=null) ? GROUPS[focusedGroup] : null;
-  const expandedName = (expandedGroup!=null && GROUPS[expandedGroup]!=null) ? GROUPS[expandedGroup] : null;
+  const openNames = getOpenNames();
 
   GROUPS.unshift('New Category');
   const m = 0;
   ITEMS.forEach(it=>{ it.m = GROUPS.indexOf(it.c); });
-  if(focusedName!=null) focusedGroup = GROUPS.indexOf(focusedName);
-  if(expandedName!=null) expandedGroup = GROUPS.indexOf(expandedName);
+  restoreOpenFromNames(openNames);
+  openGroups.add(m);
 
   renderList();
   renderGrid();
@@ -973,7 +1066,6 @@ function addCategory(){
   requestAnimationFrame(()=>{
     const row = listRows.find(r=>r.m===m);
     if(!row) return;
-    setFocused(m, true);
     const nameEl = row.headEl.querySelector('.list-month');
     if(nameEl){
       nameEl.focus();
@@ -997,12 +1089,13 @@ function deleteCategoryPrompt(m){
     : `Delete "${name}"?`;
   if(!confirm(msg)) return;
 
+  const openNames = getOpenNames();
+
   affected.forEach(it=>{ it.m = fallback; it.c = fallbackName; });
   GROUPS.splice(m,1);
   ITEMS.forEach(it=>{ if(it.m > m) it.m -= 1; });
   if(category === name) category = null;
-  if(focusedGroup === m) focusedGroup = 0; else if(focusedGroup > m) focusedGroup -= 1;
-  if(expandedGroup === m) expandedGroup = 0; else if(expandedGroup > m) expandedGroup -= 1;
+  restoreOpenFromNames(openNames);
 
   renderList();
   renderGrid();
@@ -1014,8 +1107,7 @@ function reorderCategory(fromM, toM){
   if(fromM === toM || fromM==null || toM==null) return;
   if(fromM < 0 || fromM >= GROUPS.length || toM < 0 || toM >= GROUPS.length) return;
 
-  const focusedName = (focusedGroup!=null && GROUPS[focusedGroup]!=null) ? GROUPS[focusedGroup] : null;
-  const expandedName = (expandedGroup!=null && GROUPS[expandedGroup]!=null) ? GROUPS[expandedGroup] : null;
+  const openNames = getOpenNames();
 
   const [name] = GROUPS.splice(fromM, 1);
   let insertAt = toM;
@@ -1026,8 +1118,7 @@ function reorderCategory(fromM, toM){
   // the category name it's already tagged with.
   ITEMS.forEach(it=>{ it.m = GROUPS.indexOf(it.c); });
 
-  if(focusedName!=null) focusedGroup = GROUPS.indexOf(focusedName);
-  if(expandedName!=null) expandedGroup = GROUPS.indexOf(expandedName);
+  restoreOpenFromNames(openNames);
 
   renderList();
   renderGrid();
@@ -1403,19 +1494,15 @@ requestAnimationFrame(tlTick);
 const listWrap = document.getElementById('list-wrap');
 const listRows = [];
 
-// ── cursor-driven focus — whichever row your pointer is over (or nearest
-// to) is the one that expands. Falls back to a fixed reference line when
-// the pointer hasn't touched the list yet (first paint, touch devices). ──
+// cursor position is kept only for the ambient parallax drift on row
+// headers — it no longer decides which row is "focused".
 const FOCUS_OFFSET = 54;
 let cursorY = null;
 listWrap.addEventListener('mousemove', e=>{ cursorY = e.clientY; });
 listWrap.addEventListener('mouseleave', ()=>{ cursorY = null; });
 
-let focusedGroup = expandedGroup;
-let lockScrollTop = 0;
-let carouselTarget = 0, carouselCurrent = 0;
-
 function renderList(){
+  hoveredGroup = null;
   listWrap.innerHTML = '';
   listRows.length = 0;
 
@@ -1424,7 +1511,7 @@ function renderList(){
   GROUPS.forEach((name, m)=>{
     const items = byCategory[m];
     const row = document.createElement('div');
-    row.className = 'list-row' + (m===focusedGroup ? ' expanded' : '');
+    row.className = 'list-row' + (openGroups.has(m) ? ' expanded' : '');
     row.dataset.m = m;
 
     const head = document.createElement('div');
@@ -1439,13 +1526,19 @@ function renderList(){
         <button class="list-cat-del" type="button" title="Delete this category">Delete ✕</button>
       </div>`;
     head.addEventListener('click', ()=>{
-      // clicking brings this row to focus explicitly (in addition to cursor-driven focus)
-      setFocused(m, true);
+      toggleOpen(m);
+    });
+    row.addEventListener('mouseenter', ()=>{
+      hoveredGroup = m;
+      row.classList.add('expanded');
+    });
+    row.addEventListener('mouseleave', ()=>{
+      if(hoveredGroup === m) hoveredGroup = null;
+      if(!openGroups.has(m)) row.classList.remove('expanded');
     });
 
     const nameEl = head.querySelector('.list-month');
     nameEl.addEventListener('mousedown', e=> e.stopPropagation());
-    nameEl.addEventListener('click', e=> e.stopPropagation());
     nameEl.addEventListener('keydown', e=>{
       if(e.key==='Enter'){ e.preventDefault(); nameEl.blur(); }
     });
@@ -1510,6 +1603,7 @@ function renderList(){
         initTilt(card.querySelector('.thumb'));
         wireEditableTitle(card, i);
         wireVideoPlayback(card);
+        wireContextMenu(card, item);
         card.addEventListener('click', ()=>openDetail(item, {editable:true}));
         strip.appendChild(card);
       });
@@ -1533,38 +1627,42 @@ function renderList(){
   addRow.textContent = '+ New Category';
   addRow.addEventListener('click', addCategory);
   listWrap.appendChild(addRow);
-
-  lockScrollTop = listWrap.scrollTop;
 }
 
 renderList();
 
-function nearestRowToCursor(){
-  const line = (cursorY !== null) ? cursorY : (listWrap.getBoundingClientRect().top + FOCUS_OFFSET);
-  let chosen = listRows[0];
-  for(const r of listRows){
-    const top = r.headEl.getBoundingClientRect().top;
-    if(top <= line) chosen = r; else break;
-  }
-  return chosen;
+function updateRowExpandedClasses(){
+  listRows.forEach(r=> r.rowEl.classList.toggle('expanded', openGroups.has(r.m) || hoveredGroup===r.m));
 }
 
-function setFocused(m, scrollIntoPlace){
-  if(scrollIntoPlace){
-    const target = listRows.find(r=>r.m===m);
-    if(target){
-      const contTop = listWrap.getBoundingClientRect().top;
-      const hr = target.headEl.getBoundingClientRect();
-      const delta = hr.top - (contTop + FOCUS_OFFSET);
-      listWrap.scrollTo({ top: listWrap.scrollTop + delta, behavior:'smooth' });
-    }
-  }
-  if(focusedGroup === m) return;
-  focusedGroup = m;
-  lockScrollTop = listWrap.scrollTop;         // baseline resets — carousel starts at 0
-  carouselTarget = 0; carouselCurrent = 0;
-  listRows.forEach(r=> r.rowEl.classList.toggle('expanded', r.m === m));
+function scrollRowIntoView(m){
+  const target = listRows.find(r=>r.m===m);
+  if(!target) return;
+  const contTop = listWrap.getBoundingClientRect().top;
+  const hr = target.headEl.getBoundingClientRect();
+  const delta = hr.top - (contTop + FOCUS_OFFSET);
+  listWrap.scrollTo({ top: listWrap.scrollTop + delta, behavior:'smooth' });
 }
+
+function toggleOpen(m){
+  if(openGroups.has(m)){
+    openGroups.delete(m);
+  } else {
+    openGroups.add(m);
+    scrollRowIntoView(m);
+  }
+  updateRowExpandedClasses();
+}
+
+// Esc closes every open row at once — the "exit focus" hatch, since rows
+// otherwise stay open (multiple at a time) until explicitly clicked shut.
+document.addEventListener('keydown', e=>{
+  if(e.key !== 'Escape' || view !== 'list') return;
+  if(document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
+  openGroups.clear();
+  hoveredGroup = null;
+  updateRowExpandedClasses();
+});
 
 const listScrollbarThumb = document.getElementById('list-scrollbar-thumb');
 function updateListScrollbar(){
@@ -1580,19 +1678,6 @@ function updateListScrollbar(){
 }
 
 function listTick(){
-  const f = nearestRowToCursor();
-  if(f && f.m !== focusedGroup) setFocused(f.m, false);
-
-  const row = listRows.find(r=>r.m===focusedGroup);
-  if(row && row.stripEl && !IS_TOUCH){
-    const wrapWidth = row.innerEl.clientWidth;
-    const maxCarousel = Math.max(0, row.stripEl.scrollWidth - wrapWidth);
-    const raw = (listWrap.scrollTop - lockScrollTop) * 1.7;
-    carouselTarget = Math.max(0, Math.min(maxCarousel, raw));
-    carouselCurrent += (carouselTarget - carouselCurrent) * 0.12;
-    row.stripEl.style.transform = `translate3d(${-carouselCurrent.toFixed(1)}px,0,0)`;
-  }
-
   // ambient parallax: rows counter-drift gently relative to the cursor line
   const line = (cursorY !== null) ? cursorY : (listWrap.getBoundingClientRect().top + FOCUS_OFFSET);
   listRows.forEach(r=>{
@@ -1626,6 +1711,7 @@ function renderGrid(){
     initTilt(el.querySelector('.thumb'));
     wireEditableTitle(el, i);
     wireVideoPlayback(el);
+    wireContextMenu(el, item);
     el.addEventListener('click', ()=>openDetail(item, {editable:true}));
     el.addEventListener('dragstart', e=>{
       e.dataTransfer.effectAllowed = 'move';
