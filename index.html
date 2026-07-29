@@ -247,11 +247,11 @@
   #list-wrap::-webkit-scrollbar{width:0;}
   .list-row{border-bottom:1px solid rgba(var(--fg-rgb),.14);}
   .list-row-head{
-    display:flex;align-items:baseline;justify-content:space-between;
+    display:flex;align-items:center;gap:.9rem;
     padding:1.1rem .2rem;cursor:pointer;user-select:none;
   }
   .list-month{
-    font-family:"Space Grotesk",sans-serif;font-weight:300;
+    font-family:"Space Grotesk",sans-serif;font-weight:300;flex:1;min-width:0;
     font-size:clamp(1.7rem,4.4vw,3rem);color:var(--faint);
     transition:color .3s,font-weight .3s;
     border-radius:4px;
@@ -261,6 +261,16 @@
   .list-row.expanded .list-month{color:var(--fg);font-weight:600;}
   .list-row-head-right{display:flex;align-items:center;gap:.7rem;flex-shrink:0;}
   .list-idx{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--muted);white-space:nowrap;}
+  .list-drag-handle{
+    flex-shrink:0;background:transparent;border:none;padding:.3rem;margin-right:.1rem;
+    cursor:grab;opacity:.4;transition:opacity .2s;display:flex;align-items:center;
+  }
+  .list-drag-handle svg{width:14px;height:14px;fill:var(--muted);}
+  .list-row-head:hover .list-drag-handle{opacity:.85;}
+  .list-drag-handle:hover svg{fill:var(--fg);}
+  .list-drag-handle:active{cursor:grabbing;}
+  .list-row.dragging-row{opacity:.4;}
+  .list-row.drag-over-row .list-row-head{background:rgba(var(--fg-rgb),.07);border-radius:4px;}
   .list-cat-del{
     flex-shrink:0;background:transparent;border:1px solid rgba(var(--fg-rgb),.24);color:var(--muted);
     font-family:"Inter",sans-serif;font-weight:500;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
@@ -518,149 +528,183 @@ https://example.com/photo-two.jpg"></textarea>
    (flow & list views) and the filter pills. Order = sequence: left-to-right
    in the flow view, top-to-bottom in list view. Reorder freely — nothing
    downstream assumes these are calendar months. */
-let GROUPS = ['Type','Portrait','Motion','Brand','Product','Fashion','Opening','The Sweetest','Chronicles of Wolfgang','Lost & Found','Welcome Home','Found on the Road','The King From Queens','Good Day, Now Good Night','Unsorted'];
+let GROUPS = ['Adventures','Type','Portrait','Motion','Brand','Product','Fashion','Opening','The Sweetest','Chronicles of Wolfgang','Lost & Found','Welcome Home','Found on the Road','The King From Queens','Good Day, Now Good Night','Unsorted'];
 
 const RAW = [
-  {t:'Night Signal', c:'Motion', m:2, k:'photo', img:'https://i.ibb.co/0RLXVg2g/hidaddy.webp'},
+  // ── Adventures ──
+  {t:'Boardwalks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boardwalks_v1%20(720p).mp4'},
+  {t:'Boop', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boop_v1%20(2160p).mp4'},
+  {t:'Exciting Things', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/excitingthings_v1%20(1080p).mp4'},
+  {t:'Favorite Fairmount', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/favoritefairmount_v1%20(720p).mp4'},
+  {t:'Fubar', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/fubar_v1%20(1080p).mp4'},
+  {t:'Goated', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/goated_v1%20(1080p).mp4'},
+  {t:'Grassy Paths', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/grassypaths_v1%20(720p).mp4'},
+  {t:'Gravel Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/gravelwalks_v1%20(1080p).mp4'},
+  {t:'Hallow Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/hallowwalks_v1%20(720p).mp4'},
+  {t:'Inline Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inlinewalks_v1%20(1080p).mp4'},
+  {t:'In Need of an Upgrade', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inneedofanupgrade_v1%20(1080p).mp4'},
+  {t:'Looking for Me', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingforme_v1%20(1080p).mp4'},
+  {t:'Looking Fresh', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingfresh_v1%20(1080p).mp4'},
+  {t:'Massacre', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/massacre_v1%20(1080p).mp4'},
+  {t:'Meats to Eat 2', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/meatstoeat2_v1%20(720p).mp4'},
+  {t:'Ominous Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/ominouswalks_v1%20(1080p).mp4'},
+  {t:'Precarious Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/precariouswalks_v1%20(720p).mp4'},
+  {t:'Reality', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reality_v1%20(720p).mp4'},
+  {t:'Really Interesting Branches', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyinterestingbranches_v1%20(720p).mp4'},
+  {t:'Really Rocky Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyrockywalks_v1%20(1440p).mp4'},
+  {t:'Reverse Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reversewalks_v1%20(720p)%20(1).mp4'},
+  {t:'Say That You Love Me', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/saythatyouloveme_v1%20(1080p).mp4'},
+  {t:'Sidewalks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/sidewalks_v1%20(720p).mp4'},
+  {t:'Skateboard Walks', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/skateboardwalks_v1%20(720p).mp4'},
+  {t:'Standing Not Walking', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/standingnotwalking_v1%20(1440p).mp4'},
+  {t:'Storms', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/storms_v1%20(720p).mp4'},
+  {t:'Suburban Boy', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/suburbanboy_v1%20(1080p).mp4'},
+  {t:'There\\\'s Food at Home, Wolfgang', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/theresfoodathomewolfgang_v1%20(1080p).mp4'},
+  {t:'Upgrade', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/upgrade_v1%20(720p).mp4'},
+  {t:'Walks Into Elevators', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksintoelevators_v1%20(1080p).mp4'},
+  {t:'Walks Out of Elevators', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksoutofelevators_v1%20(720p).mp4'},
+  {t:'Wherever Whatever', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/whereverwhatever_v1%20(720p).mp4'},
+  {t:'Windy 2', c:'Adventures', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/windy2_v1%20(720p).mp4'},
 
-  {t:'Sunglasses', c:'Product', m:4, k:'photo', img:'https://i.ibb.co/3YQQ7hBK/drivethru.webp'},
-  {t:'Panther', c:'Fashion', m:5, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
-  {t:'Faces', c:'Portrait', m:1, k:'photo', img:'https://i.ibb.co/7tm2QB7X/whereiswolfgang.webp'},
-  {t:'Urban', c:'Fashion', m:5, k:'photo', img:'https://i.ibb.co/8n5gkh5v/classicwolfgang65.webp'},
+  // ── Type ──
+  {t:'Texture', c:'Type', m:1, k:'photo', img:'https://i.ibb.co/HfC0qCGB/shitsupervisor.webp'},
 
-  {t:'Kiss Kiss', c:'Portrait', m:1, k:'photo', img:'https://i.ibb.co/BKFKrbpj/instantlyourfavoritepasttime.webp'},
+  // ── Portrait ──
+  {t:'Faces', c:'Portrait', m:2, k:'photo', img:'https://i.ibb.co/7tm2QB7X/whereiswolfgang.webp'},
+  {t:'Kiss Kiss', c:'Portrait', m:2, k:'photo', img:'https://i.ibb.co/BKFKrbpj/instantlyourfavoritepasttime.webp'},
+  {t:'Couple', c:'Portrait', m:2, k:'photo', img:'https://i.ibb.co/Kcfy2q4h/classic6543.webp'},
+  {t:'Artistic Portrait', c:'Portrait', m:2, k:'photo', img:'https://i.ibb.co/Ldmrtb7t/hislittleblacklips.webp'},
+  {t:'Hard Light', c:'Portrait', m:2, k:'photo', img:'https://i.ibb.co/NDk7kcW/drivethruluxurysuite.webp'},
+  {t:'Player', c:'Portrait', m:2, k:'photo', img:'https://i.ibb.co/kV6CzpWS/comfort2.webp'},
+  {t:'Relax', c:'Portrait', m:2, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
 
-  {t:'Lummi', c:'Product', m:4, k:'photo', img:'https://i.ibb.co/DHFBm7HM/hisfavoritecafe.webp'},
-  {t:'Texture', c:'Type', m:0, k:'photo', img:'https://i.ibb.co/HfC0qCGB/shitsupervisor.webp'},
+  // ── Motion ──
+  {t:'Night Signal', c:'Motion', m:3, k:'photo', img:'https://i.ibb.co/0RLXVg2g/hidaddy.webp'},
+  {t:'Video', c:'Motion', m:3, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/soferocious.mp4'},
+  {t:'Jitter', c:'Motion', m:3, k:'photo', img:'https://i.ibb.co/d4H86rR9/classic005.webp'},
+  {t:'Blurred', c:'Motion', m:3, k:'photo', img:'https://i.ibb.co/nsp6BwTS/socks1.jpg'},
 
-  {t:'Couple', c:'Portrait', m:1, k:'photo', img:'https://i.ibb.co/Kcfy2q4h/classic6543.webp'},
+  // ── Brand ──
+  {t:'Template', c:'Brand', m:4, k:'photo', img:'https://i.ibb.co/ZpbYqMZg/superhero.webp'},
 
-  {t:'Artistic Portrait', c:'Portrait', m:1, k:'photo', img:'https://i.ibb.co/Ldmrtb7t/hislittleblacklips.webp'},
-  {t:'Hard Light', c:'Portrait', m:1, k:'photo', img:'https://i.ibb.co/NDk7kcW/drivethruluxurysuite.webp'},
+  // ── Product ──
+  {t:'Sunglasses', c:'Product', m:5, k:'photo', img:'https://i.ibb.co/3YQQ7hBK/drivethru.webp'},
+  {t:'Lummi', c:'Product', m:5, k:'photo', img:'https://i.ibb.co/DHFBm7HM/hisfavoritecafe.webp'},
+  {t:'Fabric', c:'Product', m:5, k:'photo', img:'https://i.ibb.co/TMxmFknH/fallinginlove1.jpg'},
+  {t:'Hill', c:'Product', m:5, k:'photo', img:'https://i.ibb.co/XxZ9sYZc/fivehundredmileroadtripfromwestvirginia.webp'},
+  {t:'Tech', c:'Product', m:5, k:'photo', img:'https://i.ibb.co/twNdHLNd/vera2.webp'},
 
-  {t:'Fashion Ed.', c:'Fashion', m:5, k:'photo', img:'https://i.ibb.co/S45KWTfz/firstsnow.webp'},
-  {t:'Fabric', c:'Product', m:4, k:'photo', img:'https://i.ibb.co/TMxmFknH/fallinginlove1.jpg'},
+  // ── Fashion ──
+  {t:'Panther', c:'Fashion', m:6, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
+  {t:'Urban', c:'Fashion', m:6, k:'photo', img:'https://i.ibb.co/8n5gkh5v/classicwolfgang65.webp'},
+  {t:'Fashion Ed.', c:'Fashion', m:6, k:'photo', img:'https://i.ibb.co/S45KWTfz/firstsnow.webp'},
+  {t:'Hoodie', c:'Fashion', m:6, k:'photo', img:'https://i.ibb.co/gMfpCbRW/owl.jpg'},
+  {t:'Restart Loop', c:'Fashion', m:6, k:'photo', img:'https://i.ibb.co/x8DxKNgy/someoneissnoring.jpg'},
 
-  {t:'Hill', c:'Product', m:4, k:'photo', img:'https://i.ibb.co/XxZ9sYZc/fivehundredmileroadtripfromwestvirginia.webp'},
-  {t:'Video', c:'Motion', m:2, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/soferocious.mp4'},
-  {t:'Template', c:'Brand', m:3, k:'photo', img:'https://i.ibb.co/ZpbYqMZg/superhero.webp'},
-
-  {t:'Jitter', c:'Motion', m:2, k:'photo', img:'https://i.ibb.co/d4H86rR9/classic005.webp'},
-  {t:'Hoodie', c:'Fashion', m:5, k:'photo', img:'https://i.ibb.co/gMfpCbRW/owl.jpg'},
-  {t:'Player', c:'Portrait', m:1, k:'photo', img:'https://i.ibb.co/kV6CzpWS/comfort2.webp'},
-
-  {t:'Blurred', c:'Motion', m:2, k:'photo', img:'https://i.ibb.co/nsp6BwTS/socks1.jpg'},
-  {t:'Relax', c:'Portrait', m:1, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
-
-  {t:'Tech', c:'Product', m:4, k:'photo', img:'https://i.ibb.co/twNdHLNd/vera2.webp'},
-
-  {t:'Restart Loop', c:'Fashion', m:5, k:'photo', img:'https://i.ibb.co/x8DxKNgy/someoneissnoring.jpg'},
   // ── Opening ──
-  {t:"Elephantbywolfgang", c:'Opening', m:6, k:'photo', img:"https://i.ibb.co/8g0HH5XG/elephantbywolfgang.webp"},
+  {t:'Elephantbywolfgang', c:'Opening', m:7, k:'photo', img:'https://i.ibb.co/8g0HH5XG/elephantbywolfgang.webp'},
 
   // ── The Sweetest ──
-  {t:"Icecream45678", c:'The Sweetest', m:7, k:'photo', img:"https://i.ibb.co/d4SkHwfB/icecream45678.webp"},
-  {t:"Thislittledudeexudedsomuchconfidence", c:'The Sweetest', m:7, k:'photo', img:"https://i.ibb.co/83SsR99/thislittledudeexudedsomuchconfidence.webp"},
-  {t:"Wolfgang00", c:'The Sweetest', m:7, k:'photo', img:"https://i.ibb.co/MxGzxSVk/wolfgang00.webp"},
-  {t:"Whereiswolfgang", c:'The Sweetest', m:7, k:'photo', img:"https://i.ibb.co/mrsF2PP2/whereiswolfgang.webp"},
-  {t:"Delicious", c:'The Sweetest', m:7, k:'photo', img:"https://i.ibb.co/d0MxCR6m/delicious.webp"},
-  {t:"Wolfgang000", c:'The Sweetest', m:7, k:'photo', img:"https://i.ibb.co/Swk4v5Tv/wolfgang000.webp"},
+  {t:'Icecream45678', c:'The Sweetest', m:8, k:'photo', img:'https://i.ibb.co/d4SkHwfB/icecream45678.webp'},
+  {t:'Thislittledudeexudedsomuchconfidence', c:'The Sweetest', m:8, k:'photo', img:'https://i.ibb.co/83SsR99/thislittledudeexudedsomuchconfidence.webp'},
+  {t:'Wolfgang00', c:'The Sweetest', m:8, k:'photo', img:'https://i.ibb.co/MxGzxSVk/wolfgang00.webp'},
+  {t:'Whereiswolfgang', c:'The Sweetest', m:8, k:'photo', img:'https://i.ibb.co/mrsF2PP2/whereiswolfgang.webp'},
+  {t:'Delicious', c:'The Sweetest', m:8, k:'photo', img:'https://i.ibb.co/d0MxCR6m/delicious.webp'},
+  {t:'Wolfgang000', c:'The Sweetest', m:8, k:'photo', img:'https://i.ibb.co/Swk4v5Tv/wolfgang000.webp'},
 
   // ── Chronicles of Wolfgang ──
-  {t:"Batman", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/YBqRmT0f/batman.webp"},
-  {t:"Braveboy", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/3yYzQLjP/braveboy.webp"},
-  {t:"Buildingburgerking", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/twP8m5wP/buildingburgerking.webp"},
-  {t:"Happierinnewyork", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/CknqHpK/happierinnewyork.webp"},
-  {t:"Surviorandthriverfullcolor", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/G4qDyqZH/surviorandthriverfullcolor.webp"},
-  {t:"Oneofwolfgangsfavoriteplaces", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp"},
-  {t:"Fallinginlove1", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/TMxmFknH/fallinginlove1.jpg"},
-  {t:"Fellinlove1", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/YBQ5pvfW/fellinlove1.jpg"},
-  {t:"Sweetestwolfgang", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/rKbH2FFx/sweetestwolfgang.webp"},
-  {t:"Xlnexttimeplease", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/gQPNJXc/xlnexttimeplease.webp"},
-  {t:"Sowolfiehatedtherain", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/KJ9pcSh/sowolfiehatedtherain.webp"},
-  {t:"Itshisworld", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/BKymJdYK/itshisworld.webp"},
-  {t:"Happyboy", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/rRfMt4Fj/happyboy.webp"},
-  {t:"Assorgrasslass", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp"},
-  {t:"Wolfgangsfinestwork", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/LXBkfzbw/wolfgangsfinestwork.webp"},
-  {t:"Wolfgangsfinestworkmoment", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/0Rt0KW93/wolfgangsfinestworkmoment.webp"},
-  {t:"Loveinastoria", c:'Chronicles of Wolfgang', m:8, k:'photo', img:"https://i.ibb.co/KxhDw7nS/loveinastoria.webp"},
+  {t:'Batman', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/YBqRmT0f/batman.webp'},
+  {t:'Braveboy', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/3yYzQLjP/braveboy.webp'},
+  {t:'Buildingburgerking', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/twP8m5wP/buildingburgerking.webp'},
+  {t:'Happierinnewyork', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/CknqHpK/happierinnewyork.webp'},
+  {t:'Surviorandthriverfullcolor', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/G4qDyqZH/surviorandthriverfullcolor.webp'},
+  {t:'Oneofwolfgangsfavoriteplaces', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
+  {t:'Fallinginlove1', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/TMxmFknH/fallinginlove1.jpg'},
+  {t:'Fellinlove1', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/YBQ5pvfW/fellinlove1.jpg'},
+  {t:'Sweetestwolfgang', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/rKbH2FFx/sweetestwolfgang.webp'},
+  {t:'Xlnexttimeplease', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/gQPNJXc/xlnexttimeplease.webp'},
+  {t:'Sowolfiehatedtherain', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/KJ9pcSh/sowolfiehatedtherain.webp'},
+  {t:'Itshisworld', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/BKymJdYK/itshisworld.webp'},
+  {t:'Happyboy', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/rRfMt4Fj/happyboy.webp'},
+  {t:'Assorgrasslass', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
+  {t:'Wolfgangsfinestwork', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/LXBkfzbw/wolfgangsfinestwork.webp'},
+  {t:'Wolfgangsfinestworkmoment', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/0Rt0KW93/wolfgangsfinestworkmoment.webp'},
+  {t:'Loveinastoria', c:'Chronicles of Wolfgang', m:9, k:'photo', img:'https://i.ibb.co/KxhDw7nS/loveinastoria.webp'},
 
   // ── Lost & Found ──
-  {t:"Nownamedgivenanappropriatemohawk", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/5gPCWkDf/nownamedgivenanappropriatemohawk.webp"},
-  {t:"Atthismomentidecidedhewasmine", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/Q7qvD3p8/atthismomentidecidedhewasmine.webp"},
-  {t:"Lostinqueens", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/DsT5Ppk/lostinqueens.webp"},
-  {t:"Wolfgangownsallofmyhoodies", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/BX5RVPg/wolfgangownsallofmyhoodies.webp"},
-  {t:"Newtothis", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/93bMTmpY/newtothis.webp"},
-  {t:"Whenyouletastrangerintoyourhomeandtheygoforyourfridge", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/BV4C58zX/whenyouletastrangerintoyourhomeandtheygoforyourfridge.jpg"},
-  {t:"Theveryfirstofclassicwolfgang", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/rfKXyv3q/theveryfirstofclassicwolfgang.jpg"},
-  {t:"Socks1", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/nsp6BwTS/socks1.jpg"},
-  {t:"Socks2", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/hJRKrSTv/socks2.jpg"},
-  {t:"Newtothis", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/93bMTmpY/newtothis.webp"},
-  {t:"Mysweetpumpkin", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/gqbRRr5/mysweetpumpkin.jpg"},
-  {t:"Allstitchedup", c:'Lost & Found', m:9, k:'photo', img:"https://i.ibb.co/27c34fPD/allstitchedup.jpg"},
+  {t:'Nownamedgivenanappropriatemohawk', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/5gPCWkDf/nownamedgivenanappropriatemohawk.webp'},
+  {t:'Atthismomentidecidedhewasmine', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/Q7qvD3p8/atthismomentidecidedhewasmine.webp'},
+  {t:'Lostinqueens', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/DsT5Ppk/lostinqueens.webp'},
+  {t:'Wolfgangownsallofmyhoodies', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/BX5RVPg/wolfgangownsallofmyhoodies.webp'},
+  {t:'Newtothis', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/93bMTmpY/newtothis.webp'},
+  {t:'Whenyouletastrangerintoyourhomeandtheygoforyourfridge', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/BV4C58zX/whenyouletastrangerintoyourhomeandtheygoforyourfridge.jpg'},
+  {t:'Theveryfirstofclassicwolfgang', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/rfKXyv3q/theveryfirstofclassicwolfgang.jpg'},
+  {t:'Socks1', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/nsp6BwTS/socks1.jpg'},
+  {t:'Socks2', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/hJRKrSTv/socks2.jpg'},
+  {t:'Newtothis', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/93bMTmpY/newtothis.webp'},
+  {t:'Mysweetpumpkin', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/gqbRRr5/mysweetpumpkin.jpg'},
+  {t:'Allstitchedup', c:'Lost & Found', m:10, k:'photo', img:'https://i.ibb.co/27c34fPD/allstitchedup.jpg'},
 
   // ── Welcome Home ──
-  {t:"Comfort1", c:'Welcome Home', m:10, k:'photo', img:"https://i.ibb.co/qfBwLrD/comfort1.webp"},
-  {t:"Comfort2", c:'Welcome Home', m:10, k:'photo', img:"https://i.ibb.co/kV6CzpWS/comfort2.webp"},
-  {t:"Homemademeals", c:'Welcome Home', m:10, k:'photo', img:"https://i.ibb.co/M5Pcy9f9/homemademeals.webp"},
-  {t:"Whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese", c:'Welcome Home', m:10, k:'photo', img:"https://i.ibb.co/WvSsz44X/whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese.webp"},
+  {t:'Comfort1', c:'Welcome Home', m:11, k:'photo', img:'https://i.ibb.co/qfBwLrD/comfort1.webp'},
+  {t:'Comfort2', c:'Welcome Home', m:11, k:'photo', img:'https://i.ibb.co/kV6CzpWS/comfort2.webp'},
+  {t:'Homemademeals', c:'Welcome Home', m:11, k:'photo', img:'https://i.ibb.co/M5Pcy9f9/homemademeals.webp'},
+  {t:'Whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese', c:'Welcome Home', m:11, k:'photo', img:'https://i.ibb.co/WvSsz44X/whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese.webp'},
 
   // ── Found on the Road ──
-  {t:"Hisfavoritecafe", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/DHFBm7HM/hisfavoritecafe.webp"},
-  {t:"Metallicafanprobably", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/d0bT8TBD/metallicafanprobably.webp"},
-  {t:"Mydreamwastoownacafejustforwolfietohangoutin", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/bjK8FYHX/mydreamwastoownacafejustforwolfietohangoutin.webp"},
-  {t:"Closer", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/Z1FrMWch/closer.webp"},
-  {t:"Lookiftheysayanythingiamheretokeepyouontask", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/vCYxMRbG/lookiftheysayanythingiamheretokeepyouontask.webp"},
-  {t:"Owl", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/gMfpCbRW/owl.jpg"},
-  {t:"Traininghumanonmyfavoritethingtodoperiod", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/8gdCLfSx/traininghumanonmyfavoritethingtodoperiod.webp"},
-  {t:"Laplife", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/4gF252NS/laplife.jpg"},
-  {t:"Mylittledonut", c:'Found on the Road', m:11, k:'photo', img:"https://i.ibb.co/qFVszwVN/mylittledonut.webp"},
+  {t:'Hisfavoritecafe', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/DHFBm7HM/hisfavoritecafe.webp'},
+  {t:'Metallicafanprobably', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/d0bT8TBD/metallicafanprobably.webp'},
+  {t:'Mydreamwastoownacafejustforwolfietohangoutin', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/bjK8FYHX/mydreamwastoownacafejustforwolfietohangoutin.webp'},
+  {t:'Closer', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/Z1FrMWch/closer.webp'},
+  {t:'Lookiftheysayanythingiamheretokeepyouontask', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/vCYxMRbG/lookiftheysayanythingiamheretokeepyouontask.webp'},
+  {t:'Owl', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/gMfpCbRW/owl.jpg'},
+  {t:'Traininghumanonmyfavoritethingtodoperiod', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/8gdCLfSx/traininghumanonmyfavoritethingtodoperiod.webp'},
+  {t:'Laplife', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/4gF252NS/laplife.jpg'},
+  {t:'Mylittledonut', c:'Found on the Road', m:12, k:'photo', img:'https://i.ibb.co/qFVszwVN/mylittledonut.webp'},
 
   // ── The King From Queens ──
-  {t:"Sowhatareyouupto", c:'The King From Queens', m:12, k:'photo', img:"https://i.ibb.co/nsKMYrDs/sowhatareyouupto.webp"},
-  {t:"Floating", c:'The King From Queens', m:12, k:'photo', img:"https://i.ibb.co/JwdP8xFc/floating.webp"},
-  {t:"Likereallyhatedtherain", c:'The King From Queens', m:12, k:'photo', img:"https://i.ibb.co/mCy62tkg/likereallyhatedtherain.webp"},
-  {t:"Intothevoid", c:'The King From Queens', m:12, k:'photo', img:"https://i.ibb.co/4RkM3rHt/intothevoid.webp"},
+  {t:'Sowhatareyouupto', c:'The King From Queens', m:13, k:'photo', img:'https://i.ibb.co/nsKMYrDs/sowhatareyouupto.webp'},
+  {t:'Floating', c:'The King From Queens', m:13, k:'photo', img:'https://i.ibb.co/JwdP8xFc/floating.webp'},
+  {t:'Likereallyhatedtherain', c:'The King From Queens', m:13, k:'photo', img:'https://i.ibb.co/mCy62tkg/likereallyhatedtherain.webp'},
+  {t:'Intothevoid', c:'The King From Queens', m:13, k:'photo', img:'https://i.ibb.co/4RkM3rHt/intothevoid.webp'},
 
   // ── Good Day, Now Good Night ──
-  {t:"Lastsleepies", c:'Good Day, Now Good Night', m:13, k:'photo', img:"https://i.ibb.co/0RM9H4bs/lastsleepies.webp"},
-  {t:"Curbyourdog", c:'Good Day, Now Good Night', m:13, k:'photo', img:"https://i.ibb.co/HTqtChHv/curbyourdog.webp"},
-  {t:"Flower", c:'Good Day, Now Good Night', m:13, k:'photo', img:"https://i.ibb.co/B5hk87fv/flower.webp"},
+  {t:'Lastsleepies', c:'Good Day, Now Good Night', m:14, k:'photo', img:'https://i.ibb.co/0RM9H4bs/lastsleepies.webp'},
+  {t:'Curbyourdog', c:'Good Day, Now Good Night', m:14, k:'photo', img:'https://i.ibb.co/HTqtChHv/curbyourdog.webp'},
+  {t:'Flower', c:'Good Day, Now Good Night', m:14, k:'photo', img:'https://i.ibb.co/B5hk87fv/flower.webp'},
 
-  // ── Unsorted — batch-imported clips, ready to re-file ──
-  {t:'Boardwalks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boardwalks_v1%20(720p).mp4'},
-  {t:'Boop', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boop_v1%20(2160p).mp4'},
-  {t:'Exciting Things', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/excitingthings_v1%20(1080p).mp4'},
-  {t:'Favorite Fairmount', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/favoritefairmount_v1%20(720p).mp4'},
-  {t:'Fubar', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/fubar_v1%20(1080p).mp4'},
-  {t:'Goated', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/goated_v1%20(1080p).mp4'},
-  {t:'Grassy Paths', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/grassypaths_v1%20(720p).mp4'},
-  {t:'Gravel Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/gravelwalks_v1%20(1080p).mp4'},
-  {t:'Hallow Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/hallowwalks_v1%20(720p).mp4'},
-  {t:'Inline Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inlinewalks_v1%20(1080p).mp4'},
-  {t:'In Need of an Upgrade', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inneedofanupgrade_v1%20(1080p).mp4'},
-  {t:'Looking for Me', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingforme_v1%20(1080p).mp4'},
-  {t:'Looking Fresh', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingfresh_v1%20(1080p).mp4'},
-  {t:'Massacre', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/massacre_v1%20(1080p).mp4'},
-  {t:'Meats to Eat 2', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/meatstoeat2_v1%20(720p).mp4'},
-  {t:'Ominous Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/ominouswalks_v1%20(1080p).mp4'},
-  {t:'Precarious Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/precariouswalks_v1%20(720p).mp4'},
-  {t:'Reality', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reality_v1%20(720p).mp4'},
-  {t:'Really Interesting Branches', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyinterestingbranches_v1%20(720p).mp4'},
-  {t:'Really Rocky Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyrockywalks_v1%20(1440p).mp4'},
-  {t:'Reverse Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reversewalks_v1%20(720p)%20(1).mp4'},
-  {t:'Say That You Love Me', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/saythatyouloveme_v1%20(1080p).mp4'},
-  {t:'Sidewalks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/sidewalks_v1%20(720p).mp4'},
-  {t:'Skateboard Walks', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/skateboardwalks_v1%20(720p).mp4'},
-  {t:'Standing Not Walking', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/standingnotwalking_v1%20(1440p).mp4'},
-  {t:'Storms', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/storms_v1%20(720p).mp4'},
-  {t:'Suburban Boy', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/suburbanboy_v1%20(1080p).mp4'},
-  {t:'There\'s Food at Home, Wolfgang', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/theresfoodathomewolfgang_v1%20(1080p).mp4'},
-  {t:'Upgrade', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/upgrade_v1%20(720p).mp4'},
-  {t:'Walks Into Elevators', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksintoelevators_v1%20(1080p).mp4'},
-  {t:'Walks Out of Elevators', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksoutofelevators_v1%20(720p).mp4'},
-  {t:'Wherever Whatever', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/whereverwhatever_v1%20(720p).mp4'},
-  {t:'Windy 2', c:'Unsorted', m:14, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/windy2_v1%20(720p).mp4'},
+  // ── Unsorted ──
+  {t:'haircuts', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/xqv72y7c/mohawk.webp'},
+  {t:'icecream1', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/Jj1Pc7bs/theabsolutecutestthingihaveeverseen.webp'},
+  {t:'roadworth', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/wF05mLW2/joyful.webp'},
+  {t:'slyd', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/sleepspiral.mp4'},
+  {t:'Reald', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/SDBHyLHB/park123.jpg'},
+  {t:'REALD', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/6J8QRGXg/sothisiswolfgang.webp'},
+  {t:'Meet Wolfgang', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Ohmmmm.mp4'},
+  {t:'as his name', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/zWbFdGF8/sowolfgangdiscoveredpupcupsatprettymucheverysheetz.webp'},
+  {t:'Wanderlust', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Worldviewwalkieswithwolfgang.mp4'},
+  {t:'You longingly looked for a lap', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/KjCG862F/traininghumanonmyfavoritethingtodoperiod.webp'},
+  {t:'hand', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/leglift001.mp4'},
+  {t:'new dad', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/JjGbm5rh/heydaddy.webp'},
+  {t:'belong', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/stinkyboy.mp4'},
+  {t:'know without notice', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/welcomehomebuddy.mp4'},
+  {t:'found home', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Latenightstroll.mp4'},
+  {t:'you got your mojo back', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Cityboi.mp4'},
+  {t:'you have complete agency', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4'},
+  {t:'amongst', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/longislandwalks.mp4'},
+  {t:'New lease — no leash', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Leashlesslove.mp4'},
+  {t:'You decide', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/wolfgangfearlessbridgecrosser.mp4'},
+  {t:'true New Yorker', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Earlydayswalkpostsurgeryneverneededaleash.mp4'},
+  {t:'happy walks', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4'},
+  {t:'loathe a lazy walk', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/lazywalkieswithwolfgang.mp4'},
+  {t:'while windy walks were wild', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/windyboy.mp4'},
+  {t:'best walks', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/anesthesia.mp4'},
+  {t:'Bag-buddy', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Newlife.mp4'},
+  {t:'caught in a landslide', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/sleepspiral.mp4'},
+  {t:'So, this is new', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/gb3mMDBt/wolfgangsfirsttimeinthejeep.webp'},
+  {t:'moved my bed', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/QjqjMtpN/mamaweremovingout.webp'},
+  {t:'Dad moved my bed', c:'Unsorted', m:15, k:'photo', img:'https://i.ibb.co/QjqjMtpN/mamaweremovingout.webp'},
+  {t:'we go sleepy', c:'Unsorted', m:15, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Sleepingbeauty.mp4'},
 ];
 
 const ITEMS = RAW.map((r,i)=>Object.assign({idx:i+1}, r));
@@ -687,7 +731,7 @@ function thumbHTML(item, opts){
     return `<div class="thumb" style="background:${item.bg}"><div class="cardlabel" style="color:${item.fg}">${escapeHtml(item.label)}</div></div>`;
   }
   const media = item.k==='video'
-    ? `<video class="thumb-media" src="${item.src}" autoplay muted loop playsinline disablepictureinpicture></video>`
+    ? `<video class="thumb-media" src="${item.src}" muted loop playsinline preload="metadata" disablepictureinpicture></video>`
     : `<img class="thumb-media" loading="lazy" draggable="false" src="${item.img}" alt="">`;
   const overlay = showOverlay ? `
     <div class="thumb-overlay">
@@ -695,6 +739,34 @@ function thumbHTML(item, opts){
       <span class="thumb-ttl"${editableTitle ? ' contenteditable="true" spellcheck="false"' : ''}>${escapeHtml(item.t)}</span>
     </div>` : '';
   return `<div class="thumb"><div class="thumb-inner">${media}${overlay}</div></div>`;
+}
+
+/* ── video playback — clips stay paused at rest; they only play on hover
+   (desktop) or while actually in view (touch), so having dozens of clips on
+   screen at once doesn't mean dozens of clips decoding at once. The Detail
+   popover counts as "in focus" and autoplays regardless. ── */
+function wireVideoPlayback(containerEl, opts){
+  opts = opts || {};
+  const video = containerEl.querySelector('video.thumb-media');
+  if(!video) return;
+
+  if(opts.autoplay){
+    video.play().catch(()=>{});
+    return;
+  }
+
+  if(IS_TOUCH){
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting && entry.intersectionRatio >= 0.6) video.play().catch(()=>{});
+        else video.pause();
+      });
+    }, {threshold:[0,.6,1]});
+    io.observe(containerEl);
+  } else {
+    containerEl.addEventListener('mouseenter', ()=>{ video.play().catch(()=>{}); });
+    containerEl.addEventListener('mouseleave', ()=>{ video.pause(); video.currentTime = 0; });
+  }
 }
 
 /* ── live caption/title editing (List + Grid only — Timeline stays read-only) ──
@@ -867,6 +939,7 @@ function openDetail(item, opts){
   if(old) old.remove();
   frame.insertAdjacentHTML('afterbegin', thumbHTML(item, {overlay:false}));
   initTilt(frame.querySelector('.thumb'));
+  wireVideoPlayback(frame, {autoplay:true});
 
   const capEl = document.getElementById('detail-caption');
   capEl.innerHTML =
@@ -900,8 +973,15 @@ function commitCategoryName(m, newName){
 }
 
 function addCategory(){
-  GROUPS.push('New Category');
-  const m = GROUPS.length - 1;
+  const focusedName = (focusedGroup!=null && GROUPS[focusedGroup]!=null) ? GROUPS[focusedGroup] : null;
+  const expandedName = (expandedGroup!=null && GROUPS[expandedGroup]!=null) ? GROUPS[expandedGroup] : null;
+
+  GROUPS.unshift('New Category');
+  const m = 0;
+  ITEMS.forEach(it=>{ it.m = GROUPS.indexOf(it.c); });
+  if(focusedName!=null) focusedGroup = GROUPS.indexOf(focusedName);
+  if(expandedName!=null) expandedGroup = GROUPS.indexOf(expandedName);
+
   renderList();
   renderGrid();
   renderTimeline();
@@ -939,6 +1019,31 @@ function deleteCategoryPrompt(m){
   if(category === name) category = null;
   if(focusedGroup === m) focusedGroup = 0; else if(focusedGroup > m) focusedGroup -= 1;
   if(expandedGroup === m) expandedGroup = 0; else if(expandedGroup > m) expandedGroup -= 1;
+
+  renderList();
+  renderGrid();
+  renderTimeline();
+  buildGridCats();
+}
+
+function reorderCategory(fromM, toM){
+  if(fromM === toM || fromM==null || toM==null) return;
+  if(fromM < 0 || fromM >= GROUPS.length || toM < 0 || toM >= GROUPS.length) return;
+
+  const focusedName = (focusedGroup!=null && GROUPS[focusedGroup]!=null) ? GROUPS[focusedGroup] : null;
+  const expandedName = (expandedGroup!=null && GROUPS[expandedGroup]!=null) ? GROUPS[expandedGroup] : null;
+
+  const [name] = GROUPS.splice(fromM, 1);
+  let insertAt = toM;
+  if(fromM < toM) insertAt -= 1;
+  GROUPS.splice(insertAt, 0, name);
+
+  // positions moved, not names — every item just needs its m re-derived from
+  // the category name it's already tagged with.
+  ITEMS.forEach(it=>{ it.m = GROUPS.indexOf(it.c); });
+
+  if(focusedName!=null) focusedGroup = GROUPS.indexOf(focusedName);
+  if(expandedName!=null) expandedGroup = GROUPS.indexOf(expandedName);
 
   renderList();
   renderGrid();
@@ -1207,6 +1312,7 @@ function renderTimeline(){
       el.setAttribute('draggable','true');
       el.innerHTML = thumbHTML(item);
       initTilt(el.querySelector('.thumb'));
+      wireVideoPlayback(el);
       el.addEventListener('click', ()=>openDetail(item));
       el.addEventListener('dragstart', e=>{
         e.dataTransfer.effectAllowed = 'move';
@@ -1340,6 +1446,9 @@ function renderList(){
     const head = document.createElement('div');
     head.className = 'list-row-head';
     head.innerHTML = `
+      <button type="button" class="list-drag-handle" draggable="true" title="Drag to reorder">
+        <svg viewBox="0 0 20 20"><circle cx="6" cy="5" r="1.4"></circle><circle cx="14" cy="5" r="1.4"></circle><circle cx="6" cy="10" r="1.4"></circle><circle cx="14" cy="10" r="1.4"></circle><circle cx="6" cy="15" r="1.4"></circle><circle cx="14" cy="15" r="1.4"></circle></svg>
+      </button>
       <div class="list-month disp" contenteditable="true" spellcheck="false">${escapeHtml(name)}</div>
       <div class="list-row-head-right">
         <div class="list-idx">(${fmtIdx(m+1)} / ${fmtIdx(GROUPS.length)})</div>
@@ -1367,6 +1476,36 @@ function renderList(){
       deleteCategoryPrompt(m);
     });
 
+    // drag-to-reorder — grab the handle, drop on any row to move it there
+    const dragHandle = head.querySelector('.list-drag-handle');
+    dragHandle.addEventListener('click', e=> e.stopPropagation());
+    dragHandle.addEventListener('mousedown', e=> e.stopPropagation());
+    dragHandle.addEventListener('dragstart', e=>{
+      e.stopPropagation();
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(m));
+      try{ e.dataTransfer.setDragImage(row, 20, 20); }catch(err){}
+      row.classList.add('dragging-row');
+    });
+    dragHandle.addEventListener('dragend', ()=>{
+      row.classList.remove('dragging-row');
+      document.querySelectorAll('.list-row.drag-over-row').forEach(r=>r.classList.remove('drag-over-row'));
+    });
+    row.addEventListener('dragover', e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      row.classList.add('drag-over-row');
+    });
+    row.addEventListener('dragleave', e=>{
+      if(!row.contains(e.relatedTarget)) row.classList.remove('drag-over-row');
+    });
+    row.addEventListener('drop', e=>{
+      e.preventDefault();
+      row.classList.remove('drag-over-row');
+      const fromM = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      if(!isNaN(fromM)) reorderCategory(fromM, m);
+    });
+
     row.appendChild(head);
 
     const body = document.createElement('div');
@@ -1386,6 +1525,7 @@ function renderList(){
         card.innerHTML = thumbHTML(item, {editableTitle:true});
         initTilt(card.querySelector('.thumb'));
         wireEditableTitle(card, i);
+        wireVideoPlayback(card);
         card.addEventListener('click', ()=>openDetail(item, {editable:true}));
         strip.appendChild(card);
       });
@@ -1501,6 +1641,7 @@ function renderGrid(){
     el.innerHTML = thumbHTML(item, {editableTitle:true});
     initTilt(el.querySelector('.thumb'));
     wireEditableTitle(el, i);
+    wireVideoPlayback(el);
     el.addEventListener('click', ()=>openDetail(item, {editable:true}));
     el.addEventListener('dragstart', e=>{
       e.dataTransfer.effectAllowed = 'move';
