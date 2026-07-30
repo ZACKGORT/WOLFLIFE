@@ -545,33 +545,51 @@ https://example.com/photo-two.jpg"></textarea>
 let GROUPS = ['King from Queens','Lost & Found','Grassroots','World Star','Of Wolf & Man','Walkies','WFH','Wherever, Whatever'];
 
 const RAW = [
+  // ── Of Wolf & Man ──
+  {t:'Elephantbywolfgang', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/8g0HH5XG/elephantbywolfgang.webp'},
+  // ── Grassroots ──
+  {t:'Meet Wolfgang', c:'Grassroots', m:2, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Ohmmmm.mp4'},
   // ── King from Queens ──
-  {t:'Elephantbywolfgang', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/8g0HH5XG/elephantbywolfgang.webp'},
-  {t:'Meet Wolfgang', c:'King from Queens', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Ohmmmm.mp4'},
   {t:'Batman', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/YBqRmT0f/batman.webp'},
-  {t:'Braveboy', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/3yYzQLjP/braveboy.webp'},
-  {t:'Buildingburgerking', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/twP8m5wP/buildingburgerking.webp'},
+  // ── Lost & Found ──
+  {t:'Braveboy', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/3yYzQLjP/braveboy.webp'},
+  // ── Wherever, Whatever ──
+  {t:'Buildingburgerking', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/twP8m5wP/buildingburgerking.webp'},
+  // ── King from Queens ──
   {t:'Happierinnewyork', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/CknqHpK/happierinnewyork.webp'},
-  {t:'Surviorandthriverfullcolor', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/G4qDyqZH/surviorandthriverfullcolor.webp'},
-  {t:'Oneofwolfgangsfavoriteplaces', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
+  // ── Of Wolf & Man ──
+  {t:'Surviorandthriverfullcolor', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/G4qDyqZH/surviorandthriverfullcolor.webp'},
+  // ── Wherever, Whatever ──
+  {t:'Oneofwolfgangsfavoriteplaces', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
+  // ── King from Queens ──
   {t:'Fallinginlove1', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/TMxmFknH/fallinginlove1.jpg'},
   {t:'Fellinlove1', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/YBQ5pvfW/fellinlove1.jpg'},
-  {t:'Sweetestwolfgang', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/rKbH2FFx/sweetestwolfgang.webp'},
-  {t:'Xlnexttimeplease', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/gQPNJXc/xlnexttimeplease.webp'},
-  {t:'Sowolfiehatedtherain', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/KJ9pcSh/sowolfiehatedtherain.webp'},
-  {t:'Itshisworld', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/BKymJdYK/itshisworld.webp'},
-  {t:'Happyboy', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/rRfMt4Fj/happyboy.webp'},
+  // ── Grassroots ──
+  {t:'Sweetestwolfgang', c:'Grassroots', m:2, k:'photo', img:'https://i.ibb.co/rKbH2FFx/sweetestwolfgang.webp'},
+  // ── Of Wolf & Man ──
+  {t:'Xlnexttimeplease', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/gQPNJXc/xlnexttimeplease.webp'},
+  // ── Lost & Found ──
+  {t:'Sowolfiehatedtherain', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/KJ9pcSh/sowolfiehatedtherain.webp'},
+  // ── World Star ──
+  {t:'Itshisworld', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/BKymJdYK/itshisworld.webp'},
+  {t:'Happyboy', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/rRfMt4Fj/happyboy.webp'},
+  // ── King from Queens ──
   {t:'Assorgrasslass', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
   {t:'Wolfgangsfinestwork', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/LXBkfzbw/wolfgangsfinestwork.webp'},
-  {t:'Wolfgangsfinestworkmoment', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/0Rt0KW93/wolfgangsfinestworkmoment.webp'},
+  // ── Walkies ──
+  {t:'Wolfgangsfinestworkmoment', c:'Walkies', m:5, k:'photo', img:'https://i.ibb.co/0Rt0KW93/wolfgangsfinestworkmoment.webp'},
+  // ── King from Queens ──
   {t:'Loveinastoria', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/KxhDw7nS/loveinastoria.webp'},
-  {t:'Wanderlust', c:'King from Queens', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Worldviewwalkieswithwolfgang.mp4'},
+  // ── Walkies ──
+  {t:'Wanderlust', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Worldviewwalkieswithwolfgang.mp4'},
+  // ── King from Queens ──
   {t:'Sowhatareyouupto', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/nsKMYrDs/sowhatareyouupto.webp'},
-  {t:'Floating', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/JwdP8xFc/floating.webp'},
+  // ── World Star ──
+  {t:'Floating', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/JwdP8xFc/floating.webp'},
+  // ── King from Queens ──
   {t:'Likereallyhatedtherain', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/mCy62tkg/likereallyhatedtherain.webp'},
   {t:'Intothevoid', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/4RkM3rHt/intothevoid.webp'},
   {t:'caught in a landslide', c:'King from Queens', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/sleepspiral.mp4'},
-
   // ── Lost & Found ──
   {t:'Nownamedgivenanappropriatemohawk', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/5gPCWkDf/nownamedgivenanappropriatemohawk.webp'},
   {t:'Atthismomentidecidedhewasmine', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/Q7qvD3p8/atthismomentidecidedhewasmine.webp'},
@@ -585,30 +603,34 @@ const RAW = [
   {t:'Newtothis', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/93bMTmpY/newtothis.webp'},
   {t:'Mysweetpumpkin', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/gqbRRr5/mysweetpumpkin.jpg'},
   {t:'Allstitchedup', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/27c34fPD/allstitchedup.jpg'},
-  {t:'Reald', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/SDBHyLHB/park123.jpg'},
-  {t:'REALD', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/6J8QRGXg/sothisiswolfgang.webp'},
-  {t:'You longingly looked for a lap', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/KjCG862F/traininghumanonmyfavoritethingtodoperiod.webp'},
-
+  // ── King from Queens ──
+  {t:'Reald', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/SDBHyLHB/park123.jpg'},
+  {t:'REALD', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/6J8QRGXg/sothisiswolfgang.webp'},
+  {t:'You longingly looked for a lap', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/KjCG862F/traininghumanonmyfavoritethingtodoperiod.webp'},
   // ── Grassroots ──
   {t:'Texture', c:'Grassroots', m:2, k:'photo', img:'https://i.ibb.co/HfC0qCGB/shitsupervisor.webp'},
-
   // ── World Star ──
   {t:'Night Signal', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/0RLXVg2g/hidaddy.webp'},
   {t:'Video', c:'World Star', m:3, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/soferocious.mp4'},
   {t:'Jitter', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/d4H86rR9/classic005.webp'},
-  {t:'Blurred', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/nsp6BwTS/socks1.jpg'},
+  // ── Lost & Found ──
+  {t:'Blurred', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/nsp6BwTS/socks1.jpg'},
+  // ── World Star ──
   {t:'Template', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/ZpbYqMZg/superhero.webp'},
-  {t:'Panther', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
+  // ── King from Queens ──
+  {t:'Panther', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
+  // ── World Star ──
   {t:'Urban', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/8n5gkh5v/classicwolfgang65.webp'},
   {t:'Fashion Ed.', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/S45KWTfz/firstsnow.webp'},
   {t:'Hoodie', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/gMfpCbRW/owl.jpg'},
   {t:'Restart Loop', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/x8DxKNgy/someoneissnoring.jpg'},
-
   // ── Of Wolf & Man ──
   {t:'Faces', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/7tm2QB7X/whereiswolfgang.webp'},
   {t:'Kiss Kiss', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/BKFKrbpj/instantlyourfavoritepasttime.webp'},
   {t:'Couple', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/Kcfy2q4h/classic6543.webp'},
-  {t:'Artistic Portrait', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/Ldmrtb7t/hislittleblacklips.webp'},
+  // ── World Star ──
+  {t:'Artistic Portrait', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/Ldmrtb7t/hislittleblacklips.webp'},
+  // ── Of Wolf & Man ──
   {t:'Hard Light', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/NDk7kcW/drivethruluxurysuite.webp'},
   {t:'Player', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/kV6CzpWS/comfort2.webp'},
   {t:'Relax', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
@@ -622,7 +644,6 @@ const RAW = [
   {t:'icecream1', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/Jj1Pc7bs/theabsolutecutestthingihaveeverseen.webp'},
   {t:'roadworth', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/wF05mLW2/joyful.webp'},
   {t:'as his name', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/zWbFdGF8/sowolfgangdiscoveredpupcupsatprettymucheverysheetz.webp'},
-
   // ── Walkies ──
   {t:'Boardwalks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boardwalks_v1%20(720p).mp4'},
   {t:'Boop', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boop_v1%20(2160p).mp4'},
@@ -662,7 +683,6 @@ const RAW = [
   {t:'loathe a lazy walk', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/lazywalkieswithwolfgang.mp4'},
   {t:'while windy walks were wild', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/windyboy.mp4'},
   {t:'best walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/anesthesia.mp4'},
-
   // ── WFH ──
   {t:'There\'s Food at Home, Wolfgang', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/theresfoodathomewolfgang_v1%20(1080p).mp4'},
   {t:'Comfort1', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/qfBwLrD/comfort1.webp'},
@@ -683,7 +703,6 @@ const RAW = [
   {t:'moved my bed', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/QjqjMtpN/mamaweremovingout.webp'},
   {t:'Dad moved my bed', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/QjqjMtpN/mamaweremovingout.webp'},
   {t:'we go sleepy', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Sleepingbeauty.mp4'},
-
   // ── Wherever, Whatever ──
   {t:'Wherever Whatever', c:'Wherever, Whatever', m:7, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/whereverwhatever_v1%20(720p).mp4'},
   {t:'Sunglasses', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/3YQQ7hBK/drivethru.webp'},
