@@ -457,6 +457,32 @@
     #export-btn, #import-btn, #filter-badge{display:none;}
     .list-card{width:120px;}
 
+    /* ── header row: shrink HUD pills, keep them out of the nav's way ── */
+    #hud{gap:.3rem;}
+    .hud-pill{padding:.34rem .55rem;font-size:.56rem;letter-spacing:.06em;}
+    .hud-popover{
+      position:fixed;left:var(--pad);right:var(--pad);top:calc(var(--pad) + 2.7rem);
+      width:auto !important;max-width:none;
+    }
+    #hud-wolfielove-panel iframe{height:150px;}
+    #hud-support-panel{max-height:60vh;}
+
+    /* ── pill nav: drop below the header row instead of sharing its line,
+       shrink to fit, and allow horizontal scroll as a safety net ── */
+    #nav{
+      top:calc(var(--pad) + 2.6rem);
+      max-width:calc(100vw - 2*var(--pad));
+      overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    #nav::-webkit-scrollbar{display:none;}
+    .pill{padding:.36rem .8rem;font-size:.62rem;white-space:nowrap;}
+
+    /* list/grid content start lower to clear the stacked header+nav */
+    #list-wrap{top:6.6rem;}
+    #grid-scroll{padding-top:6.6rem;}
+    .scrollbar-v{top:6.6rem !important;}
+
     #detail-card{gap:.9rem;}
     #detail-frame{width:min(340px,84vw);}
     #detail-caption{
