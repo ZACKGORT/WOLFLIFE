@@ -87,13 +87,6 @@
     border-radius:2px;cursor:pointer;opacity:.75;transition:opacity .2s,background .2s;
   }
   #export-btn:hover, #import-btn:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
-  #support-btn{
-    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
-    font-family:"Inter",sans-serif;font-weight:500;font-size:.66rem;
-    letter-spacing:.1em;text-transform:uppercase;padding:.45rem .7rem;
-    border-radius:2px;cursor:pointer;opacity:.75;transition:opacity .2s,background .2s;
-  }
-  #support-btn:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
   #theme-toggle{
     background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
     width:2.05rem;height:2.05rem;border-radius:2px;cursor:pointer;
@@ -137,24 +130,34 @@
   .modal-actions button.primary:hover{opacity:.85;}
   .modal-status{font-size:.7rem;color:var(--accent2);min-height:1em;}
 
-  /* ── modal variant for iframe content (GoFundMe / wolfie.love) ── */
-  .modal-card.iframe-card{
-    width:min(1100px,94vw);height:82vh;max-height:82vh;padding:1rem;
-  }
-  .modal-card.iframe-card.small{width:min(420px,92vw);height:auto;max-height:90vh;}
-  .modal-card.iframe-card iframe{
-    width:100%;flex:1;border:none;background:var(--card);
-  }
-  .modal-card.iframe-card .modal-card-head{
-    display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  }
-  .modal-card.iframe-card .modal-card-head button{
+  /* ── top-left HUD: wolfie.love + Support, small popovers ── */
+  #hud{display:flex;gap:.4rem;position:relative;}
+  .hud-item{position:relative;}
+  .hud-pill{
     background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
-    font-family:"Inter",sans-serif;font-weight:500;font-size:.66rem;
-    letter-spacing:.1em;text-transform:uppercase;padding:.4rem .7rem;
-    border-radius:2px;cursor:pointer;opacity:.8;
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.62rem;
+    letter-spacing:.08em;text-transform:uppercase;padding:.4rem .65rem;
+    border-radius:2px;cursor:pointer;opacity:.7;transition:opacity .2s,background .2s;
   }
-  .modal-card.iframe-card .modal-card-head button:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
+  .hud-pill:hover, .hud-pill.open{opacity:1;background:rgba(var(--fg-rgb),.08);}
+  .hud-popover{
+    position:absolute;top:calc(100% + 8px);left:0;z-index:400;
+    background:var(--card);border:1px solid var(--line);
+    padding:.7rem;border-radius:4px;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transform:translateY(-4px);
+    transition:opacity .15s,transform .15s;
+  }
+  .hud-popover.show{opacity:1;pointer-events:all;transform:translateY(0);}
+  .hud-popover h4{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:.76rem;margin-bottom:.55rem;}
+  #hud-wolfielove-panel{width:min(300px,80vw);}
+  #hud-wolfielove-panel iframe{width:100%;height:190px;border:none;background:var(--bg);border-radius:2px;pointer-events:none;}
+  #hud-support-panel{width:min(340px,86vw);max-height:70vh;overflow:auto;}
+  .hud-open-link{
+    display:inline-block;margin-top:.55rem;font-family:"JetBrains Mono",monospace;font-size:.6rem;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--accent2);text-decoration:none;
+  }
+  .hud-open-link:hover{text-decoration:underline;}
 
   /* ── right-click context menu for moving a card to another category ── */
   #ctx-menu{
@@ -196,9 +199,6 @@
   }
   .pill:hover{opacity:.85;}
   .pill.active{background:var(--fg);color:var(--bg);opacity:1;}
-  .nav-sep{width:1px;align-self:stretch;background:rgba(var(--fg-rgb),.14);margin:.15rem .05rem;}
-  .pill-external{opacity:.6;}
-  .pill-external:hover{opacity:1;}
 
   /* ── Views ── */
   .view{
@@ -476,7 +476,23 @@
 
   <header id="hdr">
     <div id="hdr-left">
-
+      <div id="hud">
+        <div class="hud-item">
+          <button class="hud-pill" id="hud-wolfielove-btn" type="button">wolfie.love</button>
+          <div class="hud-popover" id="hud-wolfielove-panel">
+            <h4>wolfie.love</h4>
+            <iframe id="wolfielove-frame" src="" title="wolfie.love preview" loading="lazy"></iframe>
+            <a class="hud-open-link" href="https://wolfie.love" target="_blank" rel="noopener noreferrer">Open in new tab ↗</a>
+          </div>
+        </div>
+        <div class="hud-item">
+          <button class="hud-pill" id="hud-support-btn" type="button">Support</button>
+          <div class="hud-popover" id="hud-support-panel">
+            <h4>Help for Zack</h4>
+            <div class="gfm-embed" data-url="https://www.gofundme.com/f/help-for-zack-g-broke-not-broken-builder-rebuilding/widget/large?attribution_id=sl%3A52989da0-f722-479c-9b28-1819da57eac5"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="hdr-right">
       <div id="filter-badge"><span id="filter-label"></span><span class="x">✕</span></div>
@@ -486,7 +502,6 @@
       </button>
       <button id="import-btn" title="Batch-add image URLs into Unsorted">+ Add</button>
       <button id="export-btn" title="Download the current arrangement so you can hand it back to Claude">Export</button>
-      <button id="support-btn" title="Support">Support</button>
     </div>
   </header>
 
@@ -558,26 +573,6 @@ https://example.com/photo-two.jpg"></textarea>
       <button id="import-submit" class="primary">Add to Unsorted</button>
       <button id="import-close">Close</button>
     </div>
-  </div>
-</div>
-
-<div id="support-modal" class="modal-overlay">
-  <div id="support-card" class="modal-card iframe-card small">
-    <div class="modal-card-head">
-      <h3>Help for Zack</h3>
-      <button id="support-close">Close</button>
-    </div>
-    <div class="gfm-embed" data-url="https://www.gofundme.com/f/help-for-zack-g-broke-not-broken-builder-rebuilding/widget/large?attribution_id=sl%3A52989da0-f722-479c-9b28-1819da57eac5"></div>
-  </div>
-</div>
-
-<div id="wolfielove-modal" class="modal-overlay">
-  <div id="wolfielove-card" class="modal-card iframe-card">
-    <div class="modal-card-head">
-      <h3>wolfie.love</h3>
-      <button id="wolfielove-close">Close</button>
-    </div>
-    <iframe id="wolfielove-frame" src="" title="wolfie.love" loading="lazy"></iframe>
   </div>
 </div>
 
@@ -1004,19 +999,6 @@ VIEWS.forEach(([id,label])=>{
   navEl.appendChild(b);
 });
 
-const navSep=document.createElement('div');
-navSep.className='nav-sep';
-navEl.appendChild(navSep);
-
-const wolfieLoveBtn=document.createElement('button');
-wolfieLoveBtn.className='pill pill-external';
-wolfieLoveBtn.textContent='wolfie.love';
-wolfieLoveBtn.title='Open wolfie.love';
-wolfieLoveBtn.addEventListener('click',()=>{
-  openWolfieLove();
-});
-navEl.appendChild(wolfieLoveBtn);
-
 function switchView(id){
   if(id===view || transitioning) return;
   transitioning=true;
@@ -1207,23 +1189,34 @@ function reorderCategory(fromM, toM){
   buildGridCats();
 }
 
-/* ─────────────────────────── SUPPORT (GoFundMe) ─────────────────────────── */
-const supportBtn = document.getElementById('support-btn');
-const supportModal = document.getElementById('support-modal');
-supportBtn.addEventListener('click', ()=> supportModal.classList.add('show'));
-document.getElementById('support-close').addEventListener('click', ()=> supportModal.classList.remove('show'));
-supportModal.addEventListener('click', e=>{ if(e.target===supportModal) supportModal.classList.remove('show'); });
-
-/* ─────────────────────────── WOLFIE.LOVE ─────────────────────────── */
-const wolfieLoveModal = document.getElementById('wolfielove-modal');
+/* ─────────────────────────── HUD — wolfie.love + Support ─────────────────────────── */
+const hudWolfieBtn = document.getElementById('hud-wolfielove-btn');
+const hudWolfiePanel = document.getElementById('hud-wolfielove-panel');
+const hudSupportBtn = document.getElementById('hud-support-btn');
+const hudSupportPanel = document.getElementById('hud-support-panel');
 const wolfieLoveFrame = document.getElementById('wolfielove-frame');
-function closeWolfieLove(){ wolfieLoveModal.classList.remove('show'); }
-function openWolfieLove(){
-  if(!wolfieLoveFrame.src) wolfieLoveFrame.src = 'https://wolfie.love';
-  wolfieLoveModal.classList.add('show');
+
+function closeHudPanels(except){
+  [[hudWolfieBtn,hudWolfiePanel],[hudSupportBtn,hudSupportPanel]].forEach(([btn,panel])=>{
+    if(panel===except) return;
+    panel.classList.remove('show');
+    btn.classList.remove('open');
+  });
 }
-document.getElementById('wolfielove-close').addEventListener('click', closeWolfieLove);
-wolfieLoveModal.addEventListener('click', e=>{ if(e.target===wolfieLoveModal) closeWolfieLove(); });
+function toggleHudPanel(btn,panel){
+  const willOpen = !panel.classList.contains('show');
+  closeHudPanels(willOpen ? panel : null);
+  panel.classList.toggle('show', willOpen);
+  btn.classList.toggle('open', willOpen);
+  if(willOpen && panel===hudWolfiePanel && !wolfieLoveFrame.src){
+    wolfieLoveFrame.src = 'https://wolfie.love';
+  }
+}
+hudWolfieBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleHudPanel(hudWolfieBtn,hudWolfiePanel); });
+hudSupportBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleHudPanel(hudSupportBtn,hudSupportPanel); });
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#hud')) closeHudPanels(null);
+});
 
 /* ─────────────────────────── EXPORT ─────────────────────────── */
 const exportBtn = document.getElementById('export-btn');
