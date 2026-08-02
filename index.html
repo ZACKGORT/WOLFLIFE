@@ -151,7 +151,8 @@
   .hud-popover.show{opacity:1;pointer-events:all;transform:translateY(0);}
   .hud-popover h4{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:.76rem;margin-bottom:.55rem;}
   #hud-wolfielove-panel{width:min(300px,80vw);}
-  #hud-wolfielove-panel iframe{width:100%;height:190px;border:none;background:var(--bg);border-radius:2px;pointer-events:none;}
+  #hud-wolfielove-panel .hud-preview-link{display:block;}
+  #hud-wolfielove-panel img{width:100%;height:190px;object-fit:cover;display:block;border-radius:2px;background:var(--bg);}
   #hud-support-panel{width:min(340px,86vw);max-height:70vh;overflow:auto;}
   .hud-open-link{
     display:inline-block;margin-top:.55rem;font-family:"JetBrains Mono",monospace;font-size:.6rem;
@@ -464,7 +465,7 @@
       position:fixed;left:var(--pad);right:var(--pad);top:calc(var(--pad) + 2.7rem);
       width:auto !important;max-width:none;
     }
-    #hud-wolfielove-panel iframe{height:150px;}
+    #hud-wolfielove-panel img{height:150px;}
     #hud-support-panel{max-height:60vh;}
 
     /* ── pill nav: drop below the header row instead of sharing its line,
@@ -507,7 +508,9 @@
           <button class="hud-pill" id="hud-wolfielove-btn" type="button">wolfie.love</button>
           <div class="hud-popover" id="hud-wolfielove-panel">
             <h4>wolfie.love</h4>
-            <iframe id="wolfielove-frame" src="" title="wolfie.love preview" loading="lazy"></iframe>
+            <a class="hud-preview-link" href="https://wolfie.love" target="_blank" rel="noopener noreferrer">
+              <img src="https://ifimaybefrank.com/og-image.jpg" alt="wolfie.love preview" loading="lazy">
+            </a>
             <a class="hud-open-link" href="https://wolfie.love" target="_blank" rel="noopener noreferrer">Open in new tab ↗</a>
           </div>
         </div>
@@ -1220,7 +1223,6 @@ const hudWolfieBtn = document.getElementById('hud-wolfielove-btn');
 const hudWolfiePanel = document.getElementById('hud-wolfielove-panel');
 const hudSupportBtn = document.getElementById('hud-support-btn');
 const hudSupportPanel = document.getElementById('hud-support-panel');
-const wolfieLoveFrame = document.getElementById('wolfielove-frame');
 
 function closeHudPanels(except){
   [[hudWolfieBtn,hudWolfiePanel],[hudSupportBtn,hudSupportPanel]].forEach(([btn,panel])=>{
@@ -1234,9 +1236,6 @@ function toggleHudPanel(btn,panel){
   closeHudPanels(willOpen ? panel : null);
   panel.classList.toggle('show', willOpen);
   btn.classList.toggle('open', willOpen);
-  if(willOpen && panel===hudWolfiePanel && !wolfieLoveFrame.src){
-    wolfieLoveFrame.src = 'https://wolfie.love';
-  }
 }
 hudWolfieBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleHudPanel(hudWolfieBtn,hudWolfiePanel); });
 hudSupportBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleHudPanel(hudSupportBtn,hudSupportPanel); });
