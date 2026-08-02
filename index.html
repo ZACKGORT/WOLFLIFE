@@ -130,6 +130,35 @@
   .modal-actions button.primary:hover{opacity:.85;}
   .modal-status{font-size:.7rem;color:var(--accent2);min-height:1em;}
 
+  /* ── top-left HUD: wolfie.love + Support, small popovers ── */
+  #hud{display:flex;gap:.4rem;position:relative;}
+  .hud-item{position:relative;}
+  .hud-pill{
+    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.62rem;
+    letter-spacing:.08em;text-transform:uppercase;padding:.4rem .65rem;
+    border-radius:2px;cursor:pointer;opacity:.7;transition:opacity .2s,background .2s;
+  }
+  .hud-pill:hover, .hud-pill.open{opacity:1;background:rgba(var(--fg-rgb),.08);}
+  .hud-popover{
+    position:absolute;top:calc(100% + 8px);left:0;z-index:400;
+    background:var(--card);border:1px solid var(--line);
+    padding:.7rem;border-radius:4px;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transform:translateY(-4px);
+    transition:opacity .15s,transform .15s;
+  }
+  .hud-popover.show{opacity:1;pointer-events:all;transform:translateY(0);}
+  .hud-popover h4{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:.76rem;margin-bottom:.55rem;}
+  #hud-wolfielove-panel{width:min(300px,80vw);}
+  #hud-wolfielove-panel iframe{width:100%;height:190px;border:none;background:var(--bg);border-radius:2px;pointer-events:none;}
+  #hud-support-panel{width:min(340px,86vw);max-height:70vh;overflow:auto;}
+  .hud-open-link{
+    display:inline-block;margin-top:.55rem;font-family:"JetBrains Mono",monospace;font-size:.6rem;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--accent2);text-decoration:none;
+  }
+  .hud-open-link:hover{text-decoration:underline;}
+
   /* ── right-click context menu for moving a card to another category ── */
   #ctx-menu{
     position:fixed;z-index:800;
@@ -428,6 +457,32 @@
     #export-btn, #import-btn, #filter-badge{display:none;}
     .list-card{width:120px;}
 
+    /* ── header row: shrink HUD pills, keep them out of the nav's way ── */
+    #hud{gap:.3rem;}
+    .hud-pill{padding:.34rem .55rem;font-size:.56rem;letter-spacing:.06em;}
+    .hud-popover{
+      position:fixed;left:var(--pad);right:var(--pad);top:calc(var(--pad) + 2.7rem);
+      width:auto !important;max-width:none;
+    }
+    #hud-wolfielove-panel iframe{height:150px;}
+    #hud-support-panel{max-height:60vh;}
+
+    /* ── pill nav: drop below the header row instead of sharing its line,
+       shrink to fit, and allow horizontal scroll as a safety net ── */
+    #nav{
+      top:calc(var(--pad) + 2.6rem);
+      max-width:calc(100vw - 2*var(--pad));
+      overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+    #nav::-webkit-scrollbar{display:none;}
+    .pill{padding:.36rem .8rem;font-size:.62rem;white-space:nowrap;}
+
+    /* list/grid content start lower to clear the stacked header+nav */
+    #list-wrap{top:6.6rem;}
+    #grid-scroll{padding-top:6.6rem;}
+    .scrollbar-v{top:6.6rem !important;}
+
     #detail-card{gap:.9rem;}
     #detail-frame{width:min(340px,84vw);}
     #detail-caption{
@@ -439,89 +494,31 @@
     }
     #detail-caption .idx{color:var(--muted);}
   }
-
-  /* ═══ BOOT SCREEN ═══ */
-  #boot-screen{
-    position:fixed;inset:0;z-index:9999;
-    display:flex;align-items:center;justify-content:center;
-    background:#0a0a0a;
-    transition:opacity .7s ease;
-  }
-  #boot-screen.hide{opacity:0;pointer-events:none;}
-  #boot-screen video{
-    position:absolute;inset:0;width:100%;height:100%;
-    object-fit:cover;opacity:.5;
-  }
-  .boot-overlay{
-    position:relative;z-index:2;
-    display:flex;flex-direction:column;align-items:center;gap:1.1rem;
-    pointer-events:none;user-select:none;
-  }
-  .boot-paw{
-    font-size:2rem;
-    animation:bootPawPulse 1.4s ease-in-out infinite;
-  }
-  @keyframes bootPawPulse{
-    0%,100%{transform:scale(1);opacity:.85;}
-    50%{transform:scale(1.16);opacity:1;}
-  }
-  .boot-wordmark{
-    font-family:"Space Grotesk",sans-serif;font-weight:300;
-    font-size:1.6rem;letter-spacing:.01em;color:var(--fg);
-  }
-  .boot-bar-track{
-    width:130px;height:2px;background:rgba(242,239,233,.14);overflow:hidden;
-  }
-  .boot-bar-fill{
-    height:100%;width:0%;background:var(--accent);
-    animation:bootBarSweep 1.8s ease-in-out forwards;
-  }
-  @keyframes bootBarSweep{
-    0%{width:0%;} 60%{width:75%;} 85%{width:90%;} 100%{width:100%;}
-  }
 </style>
 </head>
 <body>
-
-<div id="boot-screen">
-  <video id="boot-video" muted autoplay loop playsinline preload="auto" aria-hidden="true">
-    <source src="https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Ohmmmm.mp4" type="video/mp4">
-  </video>
-  <div class="boot-overlay">
-    <span class="boot-paw">🐾</span>
-    <span class="boot-wordmark">wolfie.life</span>
-    <div class="boot-bar-track"><div class="boot-bar-fill"></div></div>
-  </div>
-</div>
-<script>
-(function(){
-  var screen = document.getElementById('boot-screen');
-  var video = document.getElementById('boot-video');
-  var MIN_DISPLAY = 2200;
-  var start = Date.now();
-  function dismiss(){
-    screen.classList.add('hide');
-    setTimeout(function(){ screen.remove(); }, 700);
-  }
-  function tryDismiss(){
-    var remaining = Math.max(0, MIN_DISPLAY - (Date.now() - start));
-    setTimeout(dismiss, remaining);
-  }
-  if(document.readyState === 'complete'){
-    tryDismiss();
-  } else {
-    window.addEventListener('load', tryDismiss, { once:true });
-    setTimeout(dismiss, 5000);
-  }
-  video.addEventListener('error', dismiss);
-})();
-</script>
 
 <div id="app">
 
   <header id="hdr">
     <div id="hdr-left">
-
+      <div id="hud">
+        <div class="hud-item">
+          <button class="hud-pill" id="hud-wolfielove-btn" type="button">wolfie.love</button>
+          <div class="hud-popover" id="hud-wolfielove-panel">
+            <h4>wolfie.love</h4>
+            <iframe id="wolfielove-frame" src="" title="wolfie.love preview" loading="lazy"></iframe>
+            <a class="hud-open-link" href="https://wolfie.love" target="_blank" rel="noopener noreferrer">Open in new tab ↗</a>
+          </div>
+        </div>
+        <div class="hud-item">
+          <button class="hud-pill" id="hud-support-btn" type="button">Support</button>
+          <div class="hud-popover" id="hud-support-panel">
+            <h4>Help for Zack</h4>
+            <div class="gfm-embed" data-url="https://www.gofundme.com/f/help-for-zack-g-broke-not-broken-builder-rebuilding/widget/large?attribution_id=sl%3A52989da0-f722-479c-9b28-1819da57eac5"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="hdr-right">
       <div id="filter-badge"><span id="filter-label"></span><span class="x">✕</span></div>
@@ -1218,6 +1215,35 @@ function reorderCategory(fromM, toM){
   buildGridCats();
 }
 
+/* ─────────────────────────── HUD — wolfie.love + Support ─────────────────────────── */
+const hudWolfieBtn = document.getElementById('hud-wolfielove-btn');
+const hudWolfiePanel = document.getElementById('hud-wolfielove-panel');
+const hudSupportBtn = document.getElementById('hud-support-btn');
+const hudSupportPanel = document.getElementById('hud-support-panel');
+const wolfieLoveFrame = document.getElementById('wolfielove-frame');
+
+function closeHudPanels(except){
+  [[hudWolfieBtn,hudWolfiePanel],[hudSupportBtn,hudSupportPanel]].forEach(([btn,panel])=>{
+    if(panel===except) return;
+    panel.classList.remove('show');
+    btn.classList.remove('open');
+  });
+}
+function toggleHudPanel(btn,panel){
+  const willOpen = !panel.classList.contains('show');
+  closeHudPanels(willOpen ? panel : null);
+  panel.classList.toggle('show', willOpen);
+  btn.classList.toggle('open', willOpen);
+  if(willOpen && panel===hudWolfiePanel && !wolfieLoveFrame.src){
+    wolfieLoveFrame.src = 'https://wolfie.love';
+  }
+}
+hudWolfieBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleHudPanel(hudWolfieBtn,hudWolfiePanel); });
+hudSupportBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleHudPanel(hudSupportBtn,hudSupportPanel); });
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#hud')) closeHudPanels(null);
+});
+
 /* ─────────────────────────── EXPORT ─────────────────────────── */
 const exportBtn = document.getElementById('export-btn');
 const exportModal = document.getElementById('export-modal');
@@ -1868,5 +1894,6 @@ buildGridCats();
 })();
 
 </script>
+<script defer src="https://www.gofundme.com/static/js/embed.js"></script>
 </body>
 </html>
