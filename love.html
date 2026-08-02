@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>wolfie.life</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjc2IiBoZWlnaHQ9IjMyNyIgdmlld0JveD0iMCAwIDI3NiAzMjciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik04Ljc4MzQ2IDk3LjY1NzhDNS44MjUzNiAxMTQuMDkxIDguNzgzNDYgMTMyIDguNzgzNDYgMTQ0LjE5N1YyMTYuMDkxQzguNzgzNDYgMjMwLjIxMyA4Ljc4MzQ2IDIzNS42NjkgMTMuNDg5NyAyNDEuMTI2QzE4LjE5NTkgMjQ2LjU4MiAzNi4wMTE1IDI2OC40MDcgNjIuMjMxIDI4OC4zMDdDODguNDUwNSAzMDguMjA2IDEwNS41OTQgMzE5LjQzOSAxMjIuMDY1IDMxOS40MzlDMTM1LjI0MiAzMTkuNDM5IDE1NC42NzIgMzA4LjUyNyAxNjAuNzIyIDMwMy4wNzFDMTc2Ljk2OSAyODkuMDU1IDIxMS44MTcgMjU3Ljg4IDIyMS4yMjkgMjQ1LjI5OEMyMzAuNjQxIDIzMi43MTcgMjMwLjk3NyAyMjAuNTg1IDIyOS45NjggMjE2LjA5MVYxNjYuMDIyQzI2Ny4yODEgMTM0LjI0NyAyNjkuMjk4IDEyOS43NTQgMjY4LjI4OSAxMjAuNzY3QzI2Ny4yODEgMTExLjc4IDIzOC43MDggMTExLjEzOCAyMjEuMjI5IDExMS4xMzhDMjMyLjk5NCA5My40ODUzIDI0NS43NjcgODQuODE5NSAyMzguNzA4IDc1LjUxMTdDMjMxLjY0OSA2Ni4yMDQgMjEzLjgzMyA3Mi42MjMxIDE4Ny42MTQgODEuMjg5QzIwNS40MyA1Ni44OTYyIDIxNS44NSAzNy42Mzg4IDIwNS4wOTQgMzAuMjU2N0MxOTQuMzM3IDIyLjg3NDcgMTYzLjc0NyAzOC42MDE2IDEzNS44NDcgNTQuNjQ5NUMxMzcuODY0IDE4LjA2MDMgMTM4Ljg3MyA3LjQ2ODc1IDEyMy40MSA3LjQ2ODc1QzEwNy45NDcgNy40Njg3NSA4Ni43Njk4IDUxLjc2MDkgNzAuOTcwOCA3Mi42MjMxQzU0LjQ5OTYgMjcuNjg5MSA0NS40MjM3IDI1LjEyMTQgMzYuMDExNSAyNi40MDUzQzI2LjU5OTQgMjcuNjg5MSAxMi40ODExIDc3LjExNjUgOC43ODM0NiA5Ny42NTc4WiIgZmlsbD0iI0Y0RjRGNCIvPgo8cGF0aCBkPSJNMTIzLjQxMiAwQzEyNy45NTMgMy43NDE2MWUtMDUgMTMyLjc0NSAwLjc0Mjg5MyAxMzYuNjk2IDMuNzYwNzRDMTQwLjc2NCA2Ljg2ODQyIDE0Mi42MTYgMTEuMzU3MyAxNDMuNTEyIDE1Ljg4OTZDMTQ0LjM5NCAyMC4zNDc4IDE0NC41MzcgMjUuNzkwMiAxNDQuMzk5IDMyLjAwODhDMTQ0LjMzNSAzNC44NzIyIDE0NC4yMDUgMzguMDIzMiAxNDQuMDM3IDQxLjQ2MTlDMTU0LjM0NSAzNS43OTMzIDE2NC43NTEgMzAuNTAwNiAxNzQuMTE2IDI2LjczNzNDMTgwLjYgMjQuMTMxNiAxODYuOTM3IDIyLjExMTQgMTkyLjYwNiAyMS4zMDI3QzE5OC4wNDUgMjAuNTI3IDIwNC4zMDMgMjAuNjU0NiAyMDkuMzIyIDI0LjA5ODZDMjE0LjAzMyAyNy4zMzE3IDIxNi40MzMgMzIuMDU4MiAyMTYuODUzIDM3LjMyMTNDMjE3LjI0MSA0Mi4xODY2IDIxNS45NDMgNDcuMjg3NiAyMTQuMDEzIDUyLjE1MDRDMjEyLjEzMyA1Ni44ODY5IDIwOS4zNzcgNjIuMDU0NSAyMDYuMDE4IDY3LjUxODZDMjEwLjcyNyA2Ni4xMzA0IDIxNS4xMDIgNjUuMDAzOCAyMTkuMDQ3IDY0LjMwNTdDMjI3LjkxOSA2Mi43MzU0IDIzOC4zMTcgNjIuNjMzNiAyNDQuNjYyIDcwLjk5OUMyNDcuNTg3IDc0Ljg1NjEgMjQ4LjcyIDc5LjE4NTggMjQ3Ljk4NSA4My43MTg4QzI0Ny4zMjggODcuNzczNSAyNDUuMjYgOTEuMzg4NyAyNDMuMTk3IDk0LjQwOTJDMjQxLjE0NCA5Ny40MTQ0IDIzOC40ODEgMTAwLjY3OCAyMzUuOTA0IDEwMy45MDhDMjQxLjMwMyAxMDQuMTE1IDI0Ni44NzQgMTA0LjQ5MyAyNTEuOTQyIDEwNS4xODJDMjU2Ljg4OCAxMDUuODUzIDI2MS44ODggMTA2Ljg4NCAyNjUuOTA5IDEwOC42MDRDMjY5LjM2OSAxMTAuMDg1IDI3NC42MzkgMTEzLjE5NiAyNzUuNjMyIDExOS4zMzFMMjc1LjcxNSAxMTkuOTM1TDI3NS44MTYgMTIwLjkzM0MyNzYuMDMyIDEyMy4zMTggMjc2LjA1OCAxMjYuMDk5IDI3NS4xNTIgMTI5LjIzNUMyNzQuMTQxIDEzMi43MzMgMjcyLjE2OCAxMzYuMDIxIDI2OS4zMDIgMTM5LjU1NUMyNjQuMDEyIDE0Ni4wNzkgMjU0LjMzNCAxNTUuMDE3IDIzNy40NCAxNjkuNDY2VjIxNS4zODVDMjM4LjY2IDIyMi40MDMgMjM3LjQyNCAyMzYuMTIxIDIyNy4yMTIgMjQ5Ljc3M0MyMjIuMDMyIDI1Ni42OTcgMjEwLjQ0MSAyNjguMDk4IDE5OC42MzUgMjc5LjExQzE4Ni42MzEgMjkwLjMwOSAxNzMuNzgzIDMwMS42NzIgMTY1LjYwMyAzMDguNzI4QzE2MS44MDEgMzEyLjExNSAxNTQuNzg3IDMxNi41MiAxNDcuMjQzIDMyMC4wNjNDMTM5LjY5MyAzMjMuNjA5IDEzMC4zMyAzMjYuOTEgMTIyLjA2NyAzMjYuOTFDMTEyLjA4IDMyNi45MSAxMDIuMzk4IDMyMy40OTEgOTIuMjAzOCAzMTcuODhDODIuMDUyMyAzMTIuMjkzIDcwLjgyNDUgMzA0LjIwNiA1Ny43MTY1IDI5NC4yNThDMzAuNzc5MyAyNzMuODE0IDEyLjQ4NDUgMjUxLjM5NyA3LjgzNDYyIDI0Ni4wMDZDMC45NDM2OTQgMjM4LjAxNyAxLjMxNTA4IDIyOS4yOCAxLjMxNTA4IDIxNi4wOTJWMTQ0LjE5N0MxLjMxNTA2IDEzOC4yNjIgMC42MTI1ODkgMTMxLjU1NCAwLjIxMzUyMiAxMjIuODU5Qy0wLjE2NDQ2OSAxMTQuNjI0IC0wLjE5NDYzMiAxMDUuMzc4IDEuNDMzMjUgOTYuMzM1QzMuMzU1OTggODUuNjUzOSA3LjkxMjI2IDY3Ljc5NDMgMTMuMTkwMSA1Mi4zODk2QzE1LjgyMjkgNDQuNzA1IDE4LjczMDcgMzcuMzQ2MSAyMS42OTg5IDMxLjcxMDlDMjMuMTcwOSAyOC45MTYzIDI0LjgwNzkgMjYuMjU1MyAyNi42MTM5IDI0LjE0MTZDMjguMTk0MyAyMi4yOTIgMzAuOTkgMTkuNTUyNCAzNS4wMDM2IDE5LjAwNDlDMzcuODI4MiAxOC42MTk2IDQxLjQxOTQgMTguNDAzMyA0NS4zNjM5IDE5LjYzOTZDNDkuMzUzMSAyMC44OTAxIDUyLjk2NyAyMy4zODYyIDU2LjM5MDMgMjcuMTc4N0M2MS41MjcxIDMyLjg2OTcgNjYuODA3OSA0Mi4xNDYxIDcyLjgzMDcgNTYuNzQ5Qzc0LjI4NzggNTQuNDkzOSA3NS43OTAzIDUyLjEyNDYgNzcuMzMwNyA0OS42NzA5QzgxLjcyNjUgNDIuNjY5MSA4Ni40MzI4IDM1LjAyMjggOTEuMTE5OCAyOC4wNTQ3Qzk1Ljc4MzMgMjEuMTIxMyAxMDAuNjg0IDE0LjQ2NDQgMTA1LjU5MSA5LjQ3NzU0QzExMC4xMzkgNC44NTY0NyAxMTYuMjY4IDAgMTIzLjQxMiAwWk0xNi4yNTQ1IDIxNi4wOTJDMTYuMjU0NSAyMzEuMTQ4IDE2LjYyNjYgMjMzLjMyNSAxOS4xNDgxIDIzNi4yNDhDMjMuOTExIDI0MS43NyA0MS4yNDc0IDI2My4wMDMgNjYuNzQ4NyAyODIuMzU3Qzc5Ljg1OTkgMjkyLjMwOCA5MC4zMTQgMjk5Ljc4NyA5OS40MDY5IDMwNC43OTJDMTA4LjQ1NyAzMDkuNzczIDExNS41ODMgMzExLjk3MSAxMjIuMDY3IDMxMS45NzFDMTI2Ljk4MSAzMTEuOTcxIDEzMy45MiAzMDkuODE1IDE0MC44OTIgMzA2LjU0MUMxNDcuNzg4IDMwMy4zMDIgMTUzLjQ0MyAyOTkuNTc5IDE1NS43MjEgMjk3LjUyNEwxNTUuNzgzIDI5Ny40NjlMMTU1Ljg0NCAyOTcuNDE1QzE2My45MTIgMjkwLjQ1NiAxNzYuNjExIDI3OS4yMjQgMTg4LjQ0NSAyNjguMTg2QzIwMC40NzggMjU2Ljk2MSAyMTEuMDE2IDI0Ni40ODIgMjE1LjI0OSAyNDAuODI0QzIyMy4zODkgMjI5Ljk0MyAyMjMuMTk5IDIyMC4wMzQgMjIyLjY4MSAyMTcuNzI4TDIyMi41MDEgMjE2LjkyVjE2Mi41NzJMMjI1LjEyNyAxNjAuMzM2QzI0My45MSAxNDQuMzQgMjUzLjE3MyAxMzUuNzI3IDI1Ny42OTkgMTMwLjE0NkMyNTkuODc1IDEyNy40NjEgMjYwLjU0OSAxMjUuOTU0IDI2MC43OTkgMTI1LjA4OUMyNjAuOTcxIDEyNC40OTcgMjYxLjA0MiAxMjMuODg2IDI2MC45NzQgMTIyLjc5M0MyNjAuNzQ4IDEyMi42NjggMjYwLjQ0MSAxMjIuNTE0IDI2MC4wMzEgMTIyLjMzOUMyNTcuODY1IDEyMS40MTIgMjU0LjQ0IDEyMC41OTggMjQ5LjkzMiAxMTkuOTg1QzI0MS4wMzQgMTE4Ljc3NyAyMjkuOTc5IDExOC42MDggMjIxLjIzIDExOC42MDhIMjA3LjI3NUwyMTUuMDE0IDEwNi45OTZDMjE4LjEzOCAxMDIuMzA5IDIyMS4zMDUgOTguMjU1NyAyMjQuMDc2IDk0Ljc3ODNDMjI2LjkzOCA5MS4xODcgMjI5LjE3IDg4LjQ1ODQgMjMwLjg2MSA4NS45ODM0QzIzMi41OCA4My40Njc0IDIzMy4xMTggODIuMDY3NiAyMzMuMjM4IDgxLjMyODFDMjMzLjI4IDgxLjA2NyAyMzMuMzYzIDgwLjgyMyAyMzIuNzU4IDgwLjAyNjRDMjMyLjA0NCA3OS4wODQyIDIzMC4wMDUgNzcuNTM4IDIyMS42NSA3OS4wMTY2QzIxMy43MTEgODAuNDIxNyAyMDMuMzY4IDgzLjk1MDIgMTg5Ljk2IDg4LjM4MThMMTY3Ljg0OCA5NS42OTA0TDE4MS41ODQgNzYuODgzOEMxOTAuNDc1IDY0LjcwOTggMTk3LjAyMiA1NC40NjI4IDIwMC4xMjggNDYuNjM4N0MyMDEuNjg1IDQyLjcxNTYgMjAyLjA4OCA0MC4wOTM1IDIwMS45NjIgMzguNTA5OEMyMDEuODY3IDM3LjMyMzkgMjAxLjUzNiAzNi44NzQ4IDIwMC44NjkgMzYuNDE3QzIwMC41MDkgMzYuMTcgMTk4LjkxIDM1LjQ5NDUgMTk0LjcxNSAzNi4wOTI4QzE5MC43NTIgMzYuNjU4MiAxODUuNjgxIDM4LjE4OTUgMTc5LjY4NiA0MC41OTg2QzE2Ny43MzMgNDUuNDAyMiAxNTMuNTAxIDUzLjExNDUgMTM5LjU3MyA2MS4xMjZMMTI3LjYzMiA2Ny45OTQxTDEyOC4zOSA1NC4yMzkzQzEyOC44OTkgNDUuMDE5IDEyOS4zMjkgMzcuNjU4OCAxMjkuNDYzIDMxLjY3NjhDMTI5LjU5NyAyNS42MTg5IDEyOS40MDQgMjEuNTUyNSAxMjguODU3IDE4Ljc4OTFDMTI4LjMyNyAxNi4xMDcxIDEyNy42NTkgMTUuNjU2NyAxMjcuNjI4IDE1LjYzMjhDMTI3LjQ4MiAxNS41MjE0IDEyNi42MDIgMTQuOTM5NSAxMjMuNDEyIDE0LjkzOTVDMTIyLjgyNCAxNC45Mzk1IDEyMC41MDcgMTUuNjE5OCAxMTYuMjQxIDE5Ljk1NTFDMTEyLjMzNSAyMy45MjQ5IDEwOC4wNTUgMjkuNjQ1NCAxMDMuNTE2IDM2LjM5MjZDOTkuMDAxMiA0My4xMDUyIDk0LjQ4NDcgNTAuNDQzOCA4OS45ODMxIDU3LjYxNDNDODUuNTQ5NCA2NC42NzY0IDgxLjEwMTkgNzEuNjIxNCA3Ni45Mjc0IDc3LjEzMzhMNjguNjY3NiA4OC4wNEw2My45NTg2IDc1LjE5NTNDNTUuNzQ2IDUyLjc5MDkgNDkuNzU4NiA0Mi4xMjc1IDQ1LjMwMDQgMzcuMTg4NUM0My4yMTk3IDM0Ljg4MzMgNDEuNzcwNiAzNC4xNjk3IDQwLjg5NjEgMzMuODk1NUM0MC4xNzE3IDMzLjY2ODQgMzkuMzUxNCAzMy41ODY3IDM4LjExNDkgMzMuNjg3NUMzOC4wNzEyIDMzLjczNjIgMzguMDIxNSAzMy43ODc5IDM3Ljk3MTMgMzMuODQ2N0MzNy4xODkzIDM0Ljc2MiAzNi4xNDk0IDM2LjMzMzUgMzQuOTE2NiAzOC42NzM4QzMyLjQ3NTEgNDMuMzA5MiAyOS44NTgzIDQ5LjgzMjMgMjcuMzIyOSA1Ny4yMzI0QzIyLjI2NDIgNzEuOTk3NSAxNy45MTEzIDg5LjEyMjMgMTYuMTM2NCA5OC45ODI0QzE0LjgwNjIgMTA2LjM3MiAxNC43NzU4IDExNC4yOTggMTUuMTM3NCAxMjIuMTc1QzE1LjQ3NzggMTI5LjU5MiAxNi4yNTQ1IDEzNy45MzYgMTYuMjU0NSAxNDQuMTk3VjIxNi4wOTJaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMTU3Ljg5NCAxODguODI5QzE1My42ODQgMTg3LjQ4OCAxNDkuMTg0IDE4OS44MTQgMTQ3Ljg0MyAxOTQuMDI0TDE0NS42MTQgMjAxLjAyNEMxNDQuMjczIDIwNS4yMzQgMTQ2LjU5OSAyMDkuNzM0IDE1MC44MDkgMjExLjA3NUMxNTUuMDE5IDIxMi40MTUgMTU5LjUxOCAyMTAuMDg5IDE2MC44NTkgMjA1Ljg3OUwxNjMuMDg5IDE5OC44NzlDMTY0LjQzIDE5NC42NyAxNjIuMTA0IDE5MC4xNjkgMTU3Ljg5NCAxODguODI5Wk05NC45ODIgMTk1LjQ1OUM5NC40MzQgMTkxLjA3NSA5MC40MzYzIDE4Ny45NjUgODYuMDUyMyAxODguNTEzQzgxLjY2ODIgMTg5LjA2MSA3OC41NTggMTkzLjA2IDc5LjEwNiAxOTcuNDQ0TDc5Ljk4MSAyMDQuNDQ0QzgwLjUyOSAyMDguODI4IDg0LjUyNzUgMjExLjkzOCA4OC45MTE3IDIxMS4zOUM5My4yOTU3IDIxMC44NDIgOTYuNDA1IDIwNi44NDMgOTUuODU3IDIwMi40NTlMOTQuOTgyIDE5NS40NTlaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMTQ3LjA1MSAyNjUuOTFDMTU2LjE0IDI1OC40MTIgMTU3LjQyOSAyNDQuOTY2IDE0OS45MzEgMjM1Ljg3OEMxNDIuNzI0IDIyNy4xNDIgMTMwLjAyMSAyMjUuNjEzIDEyMC45NzUgMjMyLjE2OEMxMTEuNyAyMjUuNDUyIDk4LjcwMTEgMjI3LjI1NyA5MS42MjQ3IDIzNi4zN0M4NC4zOTg4IDI0NS42NzYgODYuMDg1MiAyNTkuMDc5IDk1LjM5MTMgMjY2LjMwNUwxMjEuNzU5IDI4Ni43NzdMMTQ3LjA1MSAyNjUuOTFaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNOTQuNzc2NiAyNDEuODE0Qzk1LjUyODMgMjQyLjYyMyA5Ni43OTQ1IDI0Mi42NyA5Ny42MDM4IDI0MS45MTlMMTAwLjgzMyAyMzguOTE5QzEwMS42NDMgMjM4LjE2NyAxMDEuNjg5IDIzNi45MDEgMTAwLjkzOCAyMzYuMDkyQzEwMC4xODYgMjM1LjI4MiA5OC45MTk5IDIzNS4yMzUgOTguMTEwNiAyMzUuOTg3TDk0Ljg4MTEgMjM4Ljk4N0M5NC4wNzE5IDIzOS43MzkgOTQuMDI1IDI0MS4wMDUgOTQuNzc2NiAyNDEuODE0WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{
+    box-sizing:border-box;margin:0;padding:0;
+    -webkit-user-select:none; -moz-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
+  }
+  img,video{ -webkit-user-drag:none; user-drag:none; pointer-events:none; }
+  :root{
+    --bg:#0a0a0a;
+    --dot: rgba(255,255,255,.07);
+    --fg:#f2efe9;
+    --fg-rgb: 242,239,233;
+    --muted: rgba(var(--fg-rgb),.4);
+    --faint: rgba(var(--fg-rgb),.16);
+    --line: rgba(var(--fg-rgb),.12);
+    --card:#161616;
+    --accent:#ff3d1a;
+    --accent2:#4fa596;
+    --yellow:#f4c531;
+    --pad:1.4rem;
+    font-size:16px;
+  }
+  /* ── light theme — everything else is built on the variables above, so
+     this is the only palette swap needed; toggled via a class on <html>. ── */
+  html.light-theme{
+    --bg:#f3f1ec;
+    --dot: rgba(23,20,15,.07);
+    --fg:#17140f;
+    --fg-rgb: 23,20,15;
+    --card:#ffffff;
+    --accent:#e5380f;
+    --accent2:#2c7a6d;
+    --yellow:#b8860b;
+  }
+  html.light-theme .thumb-media{filter:grayscale(.85) contrast(1.05) brightness(1.02);}
+  html,body{
+    width:100%;height:100%;
+    background:var(--bg);
+    background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
+    background-size:22px 22px;
+    color:var(--fg);
+    font-family:"Inter",sans-serif;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"JetBrains Mono",monospace;}
+  .disp{font-family:"Space Grotesk",sans-serif;}
+
+  /* ── App shell ── */
+  #app{position:fixed;inset:0;}
+
+  /* ── Header ── */
+  #hdr{
+    position:fixed;top:0;left:0;width:100%;z-index:300;
+    padding:var(--pad) var(--pad) 0;
+    display:flex;align-items:flex-start;justify-content:space-between;
+    pointer-events:none;
+  }
+  #hdr-left{display:flex;flex-direction:column;gap:.15rem;pointer-events:all;}
+  #brand{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:1.05rem;letter-spacing:.01em;}
+  #brand span{color:var(--accent);}
+  #sub{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+  #hdr-right{display:flex;align-items:flex-start;gap:.6rem;pointer-events:all;}
+  #filter-badge{
+    display:none;align-items:center;gap:.45rem;
+    background:var(--fg);color:var(--bg);
+    font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+    padding:.45rem .7rem;border-radius:2px;cursor:pointer;user-select:none;
+  }
+  #filter-badge.show{display:flex;}
+  #filter-badge .x{opacity:.6;font-family:"JetBrains Mono",monospace;}
+  #filter-badge:hover .x{opacity:1;}
+  #export-btn, #import-btn{
+    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;padding:.45rem .7rem;
+    border-radius:2px;cursor:pointer;opacity:.75;transition:opacity .2s,background .2s;
+  }
+  #export-btn:hover, #import-btn:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
+  #support-btn{
+    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;padding:.45rem .7rem;
+    border-radius:2px;cursor:pointer;opacity:.75;transition:opacity .2s,background .2s;
+  }
+  #support-btn:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
+  #theme-toggle{
+    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
+    width:2.05rem;height:2.05rem;border-radius:2px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    opacity:.75;transition:opacity .2s,background .2s;
+  }
+  #theme-toggle:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
+  #theme-toggle svg{width:.95rem;height:.95rem;stroke:var(--fg);fill:none;stroke-width:1.6;}
+  #theme-toggle .icon-moon{display:none;}
+  html.light-theme #theme-toggle .icon-sun{display:none;}
+  html.light-theme #theme-toggle .icon-moon{display:block;}
+
+  .modal-overlay{
+    position:fixed;inset:0;z-index:600;
+    background:rgba(0,0,0,.78);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  .modal-overlay.show{opacity:1;pointer-events:all;}
+  .modal-card{
+    background:var(--card);width:min(620px,90vw);padding:1.6rem;
+    border:1px solid var(--line);display:flex;flex-direction:column;gap:.8rem;
+    max-height:86vh;overflow:auto;
+  }
+  .modal-card h3{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.05rem;}
+  .modal-card p{font-size:.74rem;color:var(--muted);line-height:1.5;}
+  .modal-textarea{
+    width:100%;height:220px;resize:vertical;background:var(--bg);color:var(--fg);
+    border:1px solid var(--line);padding:.7rem;font-family:"JetBrains Mono",monospace;
+    font-size:.68rem;line-height:1.4;
+  }
+  .modal-actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;}
+  .modal-actions button{
+    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;padding:.5rem .85rem;
+    border-radius:2px;cursor:pointer;opacity:.8;transition:opacity .2s,background .2s;
+  }
+  .modal-actions button:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
+  .modal-actions button.primary{background:var(--fg);color:var(--bg);opacity:1;}
+  .modal-actions button.primary:hover{opacity:.85;}
+  .modal-status{font-size:.7rem;color:var(--accent2);min-height:1em;}
+
+  /* ── modal variant for iframe content (GoFundMe / wolfie.love) ── */
+  .modal-card.iframe-card{
+    width:min(1100px,94vw);height:82vh;max-height:82vh;padding:1rem;
+  }
+  .modal-card.iframe-card.small{width:min(420px,92vw);height:auto;max-height:90vh;}
+  .modal-card.iframe-card iframe{
+    width:100%;flex:1;border:none;background:var(--card);
+  }
+  .modal-card.iframe-card .modal-card-head{
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  }
+  .modal-card.iframe-card .modal-card-head button{
+    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;padding:.4rem .7rem;
+    border-radius:2px;cursor:pointer;opacity:.8;
+  }
+  .modal-card.iframe-card .modal-card-head button:hover{opacity:1;background:rgba(var(--fg-rgb),.08);}
+
+  /* ── right-click context menu for moving a card to another category ── */
+  #ctx-menu{
+    position:fixed;z-index:800;
+    background:var(--card);border:1px solid var(--line);
+    min-width:170px;max-height:60vh;overflow-y:auto;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transform:scale(.97);
+    transition:opacity .12s,transform .12s;
+    padding:.35rem;
+  }
+  #ctx-menu.show{opacity:1;pointer-events:all;transform:scale(1);}
+  .ctx-menu-label{
+    font-family:"Inter",sans-serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);padding:.4rem .6rem .3rem;
+  }
+  .ctx-menu-item{
+    font-family:"Inter",sans-serif;font-size:.78rem;color:var(--fg);
+    padding:.45rem .6rem;border-radius:3px;cursor:pointer;white-space:nowrap;
+  }
+  .ctx-menu-item:hover{background:rgba(var(--fg-rgb),.08);}
+
+  /* ── Nav pills ── */
+  #nav{
+    position:fixed;top:var(--pad);left:50%;transform:translateX(-50%);
+    z-index:300;display:flex;gap:.3rem;
+    background:rgba(10,10,10,.6);
+    backdrop-filter:blur(10px) saturate(1.3);
+    -webkit-backdrop-filter:blur(10px) saturate(1.3);
+    border:1px solid rgba(var(--fg-rgb),.14);
+    border-radius:100px;padding:.28rem;
+  }
+  .pill{
+    display:flex;align-items:center;gap:.4rem;
+    padding:.42rem 1rem;border-radius:100px;border:none;background:transparent;
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.68rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--fg);opacity:.5;
+    cursor:pointer;transition:opacity .2s,background .2s,color .2s;
+  }
+  .pill:hover{opacity:.85;}
+  .pill.active{background:var(--fg);color:var(--bg);opacity:1;}
+  .nav-sep{width:1px;align-self:stretch;background:rgba(var(--fg-rgb),.14);margin:.15rem .05rem;}
+  .pill-external{opacity:.6;}
+  .pill-external:hover{opacity:1;}
+
+  /* ── Views ── */
+  .view{
+    position:absolute;inset:0;
+    opacity:0;pointer-events:none;
+    transition:opacity .4s ease;
+  }
+  .view.active{opacity:1;pointer-events:all;}
+
+  /* ================= TIMELINE VIEW ================= */
+  #tl-viewport{position:absolute;inset:0;overflow:hidden;cursor:grab;}
+  #tl-viewport.grabbing{cursor:grabbing;}
+  #tl-bgtext{
+    position:absolute;top:50%;left:0;white-space:nowrap;
+    font-family:"Space Grotesk",sans-serif;font-weight:700;
+    font-size:15vw;line-height:1;color:rgba(var(--fg-rgb),.055);
+    transform:translateY(-50%);will-change:transform;user-select:none;
+  }
+  #tl-track{position:absolute;top:0;left:0;height:100%;will-change:transform;}
+  #tl-items-layer{position:absolute;top:0;left:0;height:100%;will-change:transform;}
+  .tl-col-items{will-change:transform;}
+  .tl-col-items.drag-over-col{background:rgba(var(--fg-rgb),.05);}
+  .tl-col-line{position:absolute;top:12%;bottom:14%;width:1px;background:rgba(var(--fg-rgb),.16);}
+  .tl-col-label{
+    position:absolute;bottom:2.4rem;
+    font-family:"Space Grotesk",sans-serif;font-weight:500;
+    font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+    writing-mode:vertical-rl;transform:rotate(180deg);
+  }
+  .tl-item{
+    position:absolute;cursor:pointer;
+    transition:filter .3s, opacity .3s;
+    will-change:transform;
+  }
+  /* ── image-card overlay — title sits on the photo itself, gradient-lifted,
+     same treatment as the Tilted Card reference (minus its cursor-follow
+     tooltip, since the title is always visible here). The clip/radius/shadow
+     live on .thumb-inner (not .thumb) so that scaling .thumb-inner up on
+     hover — like the reference's hover-enlarge — actually pops the whole
+     card outward past its grid slot, instead of just zooming the photo
+     inside a fixed-size crop. ── */
+  .thumb{position:relative;}
+  .thumb-inner{
+    position:relative;width:100%;height:100%;
+    transform-style:preserve-3d;will-change:transform;
+    overflow:hidden;
+  }
+  .thumb-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:grayscale(.85) contrast(1.05);transition:filter .35s;transform:translateZ(0);}
+  .thumb:hover .thumb-media{filter:grayscale(0) contrast(1.02);}
+  .thumb-overlay{
+    position:absolute;inset:0;z-index:2;
+    display:flex;align-items:flex-end;gap:.45rem;
+    padding:.6rem .65rem;
+    transform:translateZ(46px);
+    background:linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,0) 58%);
+    pointer-events:none;
+  }
+  .thumb-idx{font-family:"JetBrains Mono",monospace;font-size:.6rem;color:rgba(242,239,233,.62);flex-shrink:0;}
+  .thumb-ttl{font-family:"Inter",sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.01em;color:#fff;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .thumb-ttl[contenteditable="true"]{pointer-events:auto;border-radius:3px;}
+  .thumb-ttl[contenteditable="true"]:empty:before{content:'Untitled';opacity:.5;}
+
+  /* ── inline editing (List + Grid) — Timeline never gets contenteditable,
+     so this only ever lights up where editing is actually allowed ── */
+  [contenteditable="true"]{-webkit-user-select:text;user-select:text;cursor:text;}
+  [contenteditable="true"]:focus{outline:none;box-shadow:0 0 0 1px rgba(var(--fg-rgb),.4);}
+
+  .tl-item{z-index:1;}
+  .tl-item:hover{z-index:30;}
+  .tl-item .thumb{
+    width:100%;aspect-ratio:4/5;background:var(--card);
+    border:1px solid rgba(var(--fg-rgb),.10);perspective:450px;
+  }
+  .tl-item .thumb-inner{border-radius:13px;box-shadow:0 16px 40px rgba(0,0,0,.42);}
+  .tl-item.is-card .thumb{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;}
+  .tl-item .cardlabel{font-family:"Space Grotesk",sans-serif;font-weight:600;text-align:center;padding:0 .5rem;line-height:1.1;}
+  .tl-item.dim{opacity:.18;}
+  .tl-item.dragging{opacity:.32;}
+  .tl-item.drag-over{outline:2px dashed var(--fg);outline-offset:6px;}
+  .tl-hero{
+    position:absolute;left:var(--pad);bottom:var(--pad);z-index:50;
+    font-family:"Space Grotesk",sans-serif;font-weight:300;font-size:clamp(2.2rem,7vw,5rem);
+    line-height:.92;letter-spacing:-.01em;pointer-events:none;
+  }
+  #tl-hint{
+    position:fixed;bottom:var(--pad);right:var(--pad);z-index:100;
+    font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    text-align:right;line-height:1.7;pointer-events:none;
+  }
+
+  /* ================= LIST VIEW ================= */
+  #view-list{overflow:hidden;}
+  #list-wrap{position:absolute;inset:0;top:5.6rem;bottom:0;overflow-y:auto;padding:0 var(--pad) 3rem;}
+  #list-wrap::-webkit-scrollbar{width:0;}
+  .list-row{border-bottom:1px solid rgba(var(--fg-rgb),.14);}
+  .list-row-head{
+    display:flex;align-items:center;gap:.9rem;
+    padding:1.1rem .2rem;cursor:pointer;user-select:none;
+  }
+  .list-month{
+    font-family:"Space Grotesk",sans-serif;font-weight:300;flex:1;min-width:0;
+    font-size:clamp(1.7rem,4.4vw,3rem);color:var(--faint);
+    transition:color .3s,font-weight .3s;
+    border-radius:4px;
+  }
+  .list-month[contenteditable="true"]{cursor:text;}
+  .list-month[contenteditable="true"]:empty:before{content:'Untitled category';opacity:.4;}
+  .list-row.expanded .list-month{color:var(--fg);font-weight:600;}
+  .list-row-head-right{display:flex;align-items:center;gap:.7rem;flex-shrink:0;}
+  .list-idx{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--muted);white-space:nowrap;}
+  .list-drag-handle{
+    flex-shrink:0;background:transparent;border:none;padding:.3rem;margin-right:.1rem;
+    cursor:grab;opacity:.4;transition:opacity .2s;display:flex;align-items:center;
+  }
+  .list-drag-handle svg{width:14px;height:14px;fill:var(--muted);}
+  .list-row-head:hover .list-drag-handle{opacity:.85;}
+  .list-drag-handle:hover svg{fill:var(--fg);}
+  .list-drag-handle:active{cursor:grabbing;}
+  .list-row.dragging-row{opacity:.4;}
+  .list-row.drag-over-row .list-row-head{background:rgba(var(--fg-rgb),.07);border-radius:4px;}
+  .list-cat-del{
+    flex-shrink:0;background:transparent;border:1px solid rgba(var(--fg-rgb),.24);color:var(--muted);
+    font-family:"Inter",sans-serif;font-weight:500;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+    padding:.32rem .55rem;border-radius:2px;cursor:pointer;
+    opacity:0;transition:opacity .2s,color .2s,border-color .2s;
+  }
+  .list-row-head:hover .list-cat-del{opacity:.65;}
+  .list-cat-del:hover{opacity:1 !important;color:var(--accent);border-color:var(--accent);}
+  #list-add-row{
+    padding:1.1rem .2rem;cursor:pointer;user-select:none;text-align:center;
+    font-family:"Space Grotesk",sans-serif;font-weight:500;font-size:.95rem;
+    color:var(--muted);border:1px dashed rgba(var(--fg-rgb),.2);border-radius:6px;
+    margin-top:1rem;transition:color .2s,border-color .2s;
+  }
+  #list-add-row:hover{color:var(--fg);border-color:rgba(var(--fg-rgb),.4);}
+  .list-row-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s cubic-bezier(.65,0,.35,1);}
+  .list-row-body-inner{overflow:hidden;}
+  .list-row.expanded .list-row-body{grid-template-rows:1fr;}
+  .list-strip{display:flex;flex-wrap:wrap;gap:.9rem;padding:.2rem .2rem 1.6rem;}
+  .list-card{flex:0 0 auto;width:150px;cursor:pointer;position:relative;z-index:1;}
+  .list-card:hover{z-index:30;}
+  .list-card .thumb{width:100%;aspect-ratio:4/5;background:var(--card);border:1px solid rgba(var(--fg-rgb),.10);perspective:450px;}
+  .list-card .thumb-inner{border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.4);}
+  .list-card.is-card .thumb{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;}
+  .list-card .cardlabel{font-family:"Space Grotesk",sans-serif;font-weight:600;text-align:center;font-size:.85rem;}
+  .list-card.dim{opacity:.2;}
+  .list-empty{padding:0 .2rem 1.6rem;font-size:.72rem;color:var(--muted);letter-spacing:.04em;}
+
+  /* ================= GRID VIEW ================= */
+  #view-grid{display:flex;flex-direction:column;}
+  #grid-scroll{flex:1;overflow-y:auto;padding:5.6rem var(--pad) 6.5rem;}
+  #grid-scroll::-webkit-scrollbar{width:0;}
+  #grid-topline{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-bottom:1.1rem;margin-bottom:1.1rem;border-bottom:1px solid rgba(var(--fg-rgb),.16);
+  }
+  #grid-title{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1rem;letter-spacing:.02em;}
+  #grid-count{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--muted);}
+  #grid-items{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:1.6rem 1rem;
+  }
+  .g-item{cursor:pointer;transition:opacity .3s;position:relative;z-index:1;}
+  .g-item:hover{z-index:30;}
+  .g-item .thumb{width:100%;aspect-ratio:4/5;background:var(--card);border:1px solid rgba(var(--fg-rgb),.10);perspective:450px;}
+  .g-item .thumb-inner{border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.4);}
+  .g-item.is-card .thumb{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;}
+  .g-item .cardlabel{font-family:"Space Grotesk",sans-serif;font-weight:600;text-align:center;font-size:.85rem;}
+  .g-item.dim{opacity:.2;}
+  .g-item.dragging{opacity:.32;}
+  .g-item.drag-over{outline:2px dashed var(--fg);outline-offset:-6px;}
+
+  #grid-cats{
+    position:absolute;left:0;bottom:0;width:100%;z-index:60;
+    display:flex;gap:.4rem;flex-wrap:wrap;
+    padding:1rem var(--pad);
+    background:linear-gradient(to top, var(--bg) 55%, transparent);
+  }
+  .cat-pill{
+    padding:.5rem 1rem;border-radius:2px;border:1px solid rgba(var(--fg-rgb),.22);
+    background:var(--card);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+    cursor:pointer;transition:all .2s;color:var(--fg);
+  }
+  .cat-pill:hover{border-color:var(--fg);}
+  .cat-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  /* ── item detail — the clicked thumb itself supersizes into a big tilt
+     card (same spring/tilt engine as the grid thumbs) instead of opening a
+     separate info-panel popover. The caption is the Tilted Card reference's
+     own cursor-tooltip element, repurposed here as a fixed pill anchored to
+     the card's corner rather than following the pointer. ── */
+  #detail{
+    position:fixed;inset:0;z-index:500;
+    background:rgba(0,0,0,.78);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  #detail.show{opacity:1;pointer-events:all;}
+  #detail-card{
+    position:relative;
+    display:flex;flex-direction:column;align-items:center;
+    max-width:92vw;max-height:88vh;
+  }
+  #detail-close{
+    position:absolute;top:-3rem;right:0;
+    width:2.3rem;height:2.3rem;border-radius:50%;
+    background:transparent;border:1px solid rgba(var(--fg-rgb),.28);color:var(--fg);
+    font-size:.85rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s,opacity .2s;
+  }
+  #detail-close:hover{background:rgba(var(--fg-rgb),.1);}
+  #detail-frame{
+    position:relative;
+    width:min(460px,80vw);
+    aspect-ratio:4/5;
+    max-height:80vh;
+  }
+  #detail-frame .thumb{width:100%;height:100%;perspective:900px;}
+  #detail-frame .thumb-inner{border-radius:18px;box-shadow:0 32px 90px rgba(0,0,0,.55);}
+  #detail-frame .cardlabel{font-size:1.4rem;}
+  #detail-caption{
+    position:absolute;top:-.9rem;right:-.9rem;z-index:2;
+    max-width:68%;
+    background:var(--fg);color:var(--bg);
+    padding:.5rem .8rem;border-radius:8px;
+    font-family:"Inter",sans-serif;font-size:.72rem;font-weight:500;line-height:1.35;
+    box-shadow:0 10px 26px rgba(0,0,0,.4);
+    pointer-events:none;
+  }
+  #detail-caption .idx{display:block;font-family:"JetBrains Mono",monospace;font-size:.6rem;opacity:.55;margin-bottom:.15rem;}
+  #detail-caption-text[contenteditable="true"]{pointer-events:auto;border-radius:3px;}
+  #detail-caption-text[contenteditable="true"]:empty:before{content:'Untitled';opacity:.5;}
+
+  /* ── Custom minimalist scroll indicators ── */
+  .scrollbar-h{
+    position:fixed;left:var(--pad);right:var(--pad);bottom:.7rem;z-index:120;
+    height:1px;background:var(--faint);pointer-events:none;
+  }
+  .scrollbar-h .thumb{
+    position:absolute;top:-1px;left:0;height:3px;background:var(--fg);
+    opacity:.55;border-radius:2px;
+  }
+  .scrollbar-v{
+    position:absolute;top:5.6rem;bottom:1.4rem;right:.55rem;width:1px;
+    background:var(--faint);z-index:120;pointer-events:none;
+  }
+  .scrollbar-v .thumb{
+    position:absolute;left:-1px;width:3px;background:var(--fg);
+    opacity:.55;border-radius:2px;
+  }
+
+  @media (max-width:640px){
+    #export-btn, #import-btn, #filter-badge{display:none;}
+    .list-card{width:120px;}
+
+    #detail-card{gap:.9rem;}
+    #detail-frame{width:min(340px,84vw);}
+    #detail-caption{
+      position:static;
+      max-width:none;
+      background:none;color:var(--fg);
+      box-shadow:none;padding:0 .4rem;
+      text-align:center;
+    }
+    #detail-caption .idx{color:var(--muted);}
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <header id="hdr">
+    <div id="hdr-left">
+
+    </div>
+    <div id="hdr-right">
+      <div id="filter-badge"><span id="filter-label"></span><span class="x">✕</span></div>
+      <button id="theme-toggle" type="button" title="Toggle light / dark theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"></path></svg>
+      </button>
+      <button id="import-btn" title="Batch-add image URLs into Unsorted">+ Add</button>
+      <button id="export-btn" title="Download the current arrangement so you can hand it back to Claude">Export</button>
+      <button id="support-btn" title="Support">Support</button>
+    </div>
+  </header>
+
+  <nav id="nav"></nav>
+
+  <!-- TIMELINE -->
+  <section id="view-timeline" class="view active">
+    <div id="tl-viewport">
+      <div id="tl-bgtext"></div>
+      <div id="tl-track"></div>
+      <div id="tl-items-layer"></div>
+    </div>
+    <div class="tl-hero disp">wolfie.life</div>
+    <div id="tl-hint">Drag or scroll — sideways<br>Click a piece to open it</div>
+    <div class="scrollbar-h" id="tl-scrollbar"><div class="thumb" id="tl-scrollbar-thumb"></div></div>
+  </section>
+
+  <!-- LIST -->
+  <section id="view-list" class="view">
+    <div id="list-wrap"></div>
+    <div class="scrollbar-v" id="list-scrollbar"><div class="thumb" id="list-scrollbar-thumb"></div></div>
+  </section>
+
+  <!-- GRID -->
+  <section id="view-grid" class="view">
+    <div id="grid-scroll">
+      <div id="grid-topline">
+        <div id="grid-title disp">Every piece, 2025</div>
+        <div id="grid-count" class="mono"></div>
+      </div>
+      <div id="grid-items"></div>
+    </div>
+    <div id="grid-cats"></div>
+    <div class="scrollbar-v" id="grid-scrollbar" style="top:5.6rem;bottom:6.5rem;"><div class="thumb" id="grid-scrollbar-thumb"></div></div>
+  </section>
+
+</div>
+
+<div id="detail">
+  <div id="detail-card">
+    <button id="detail-close" aria-label="Close">✕</button>
+    <div id="detail-frame">
+      <div id="detail-caption"></div>
+    </div>
+  </div>
+</div>
+
+<div id="export-modal" class="modal-overlay">
+  <div id="export-card" class="modal-card">
+    <h3>Current arrangement</h3>
+    <p>This is every category name plus every piece, its title, group, and order. Copy it or download the file, then send it back in chat — Claude will bake it into the source file.</p>
+    <textarea id="export-text" class="modal-textarea" readonly></textarea>
+    <div id="export-actions" class="modal-actions">
+      <button id="export-copy" class="primary">Copy to clipboard</button>
+      <button id="export-download">Download .json</button>
+      <button id="export-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="import-modal" class="modal-overlay">
+  <div id="import-card" class="modal-card">
+    <h3>Add images to Unsorted</h3>
+    <p>Paste one image URL per line (or separate with commas). Each one lands in "Unsorted" as its own piece — retitle, re-caption, and re-file them from List or Grid whenever you're ready.</p>
+    <textarea id="import-text" class="modal-textarea" placeholder="https://example.com/photo-one.jpg
+https://example.com/photo-two.jpg"></textarea>
+    <div id="import-status" class="modal-status"></div>
+    <div id="import-actions" class="modal-actions">
+      <button id="import-submit" class="primary">Add to Unsorted</button>
+      <button id="import-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="support-modal" class="modal-overlay">
+  <div id="support-card" class="modal-card iframe-card small">
+    <div class="modal-card-head">
+      <h3>Help for Zack</h3>
+      <button id="support-close">Close</button>
+    </div>
+    <div class="gfm-embed" data-url="https://www.gofundme.com/f/help-for-zack-g-broke-not-broken-builder-rebuilding/widget/large?attribution_id=sl%3A52989da0-f722-479c-9b28-1819da57eac5"></div>
+  </div>
+</div>
+
+<div id="wolfielove-modal" class="modal-overlay">
+  <div id="wolfielove-card" class="modal-card iframe-card">
+    <div class="modal-card-head">
+      <h3>wolfie.love</h3>
+      <button id="wolfielove-close">Close</button>
+    </div>
+    <iframe id="wolfielove-frame" src="" title="wolfie.love" loading="lazy"></iframe>
+  </div>
+</div>
+
+<div id="ctx-menu"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ─────────────────────────── DATA ─────────────────────────── */
+/* GROUPS is the single ordered list that drives both the columns/rows
+   (flow & list views) and the filter pills. Order = sequence: left-to-right
+   in the flow view, top-to-bottom in list view. Reorder freely — nothing
+   downstream assumes these are calendar months. */
+let GROUPS = ['King from Queens','Lost & Found','Grassroots','World Star','Of Wolf & Man','Walkies','WFH','Wherever, Whatever'];
+
+const RAW = [
+  // ── Of Wolf & Man ──
+  {t:'Elephantbywolfgang', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/8g0HH5XG/elephantbywolfgang.webp'},
+  // ── Grassroots ──
+  {t:'Meet Wolfgang', c:'Grassroots', m:2, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Ohmmmm.mp4'},
+  // ── King from Queens ──
+  {t:'Batman', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/YBqRmT0f/batman.webp'},
+  // ── Lost & Found ──
+  {t:'Braveboy', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/3yYzQLjP/braveboy.webp'},
+  // ── Wherever, Whatever ──
+  {t:'Buildingburgerking', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/twP8m5wP/buildingburgerking.webp'},
+  // ── King from Queens ──
+  {t:'Happierinnewyork', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/CknqHpK/happierinnewyork.webp'},
+  // ── Of Wolf & Man ──
+  {t:'Surviorandthriverfullcolor', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/G4qDyqZH/surviorandthriverfullcolor.webp'},
+  // ── Wherever, Whatever ──
+  {t:'Oneofwolfgangsfavoriteplaces', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
+  // ── King from Queens ──
+  {t:'Fallinginlove1', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/TMxmFknH/fallinginlove1.jpg'},
+  {t:'Fellinlove1', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/YBQ5pvfW/fellinlove1.jpg'},
+  // ── Grassroots ──
+  {t:'Sweetestwolfgang', c:'Grassroots', m:2, k:'photo', img:'https://i.ibb.co/rKbH2FFx/sweetestwolfgang.webp'},
+  // ── Of Wolf & Man ──
+  {t:'Xlnexttimeplease', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/gQPNJXc/xlnexttimeplease.webp'},
+  // ── Lost & Found ──
+  {t:'Sowolfiehatedtherain', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/KJ9pcSh/sowolfiehatedtherain.webp'},
+  // ── World Star ──
+  {t:'Itshisworld', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/BKymJdYK/itshisworld.webp'},
+  {t:'Happyboy', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/rRfMt4Fj/happyboy.webp'},
+  // ── King from Queens ──
+  {t:'Assorgrasslass', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
+  {t:'Wolfgangsfinestwork', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/LXBkfzbw/wolfgangsfinestwork.webp'},
+  // ── Walkies ──
+  {t:'Wolfgangsfinestworkmoment', c:'Walkies', m:5, k:'photo', img:'https://i.ibb.co/0Rt0KW93/wolfgangsfinestworkmoment.webp'},
+  // ── King from Queens ──
+  {t:'Loveinastoria', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/KxhDw7nS/loveinastoria.webp'},
+  // ── Walkies ──
+  {t:'Wanderlust', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Worldviewwalkieswithwolfgang.mp4'},
+  // ── King from Queens ──
+  {t:'Sowhatareyouupto', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/nsKMYrDs/sowhatareyouupto.webp'},
+  // ── World Star ──
+  {t:'Floating', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/JwdP8xFc/floating.webp'},
+  // ── King from Queens ──
+  {t:'Likereallyhatedtherain', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/mCy62tkg/likereallyhatedtherain.webp'},
+  {t:'Intothevoid', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/4RkM3rHt/intothevoid.webp'},
+  {t:'caught in a landslide', c:'King from Queens', m:0, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/sleepspiral.mp4'},
+  // ── Lost & Found ──
+  {t:'Nownamedgivenanappropriatemohawk', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/5gPCWkDf/nownamedgivenanappropriatemohawk.webp'},
+  {t:'Atthismomentidecidedhewasmine', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/Q7qvD3p8/atthismomentidecidedhewasmine.webp'},
+  {t:'Lostinqueens', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/DsT5Ppk/lostinqueens.webp'},
+  {t:'Wolfgangownsallofmyhoodies', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/BX5RVPg/wolfgangownsallofmyhoodies.webp'},
+  {t:'Newtothis', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/93bMTmpY/newtothis.webp'},
+  {t:'Whenyouletastrangerintoyourhomeandtheygoforyourfridge', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/BV4C58zX/whenyouletastrangerintoyourhomeandtheygoforyourfridge.jpg'},
+  {t:'Theveryfirstofclassicwolfgang', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/rfKXyv3q/theveryfirstofclassicwolfgang.jpg'},
+  {t:'Socks1', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/nsp6BwTS/socks1.jpg'},
+  {t:'Socks2', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/hJRKrSTv/socks2.jpg'},
+  {t:'Newtothis', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/93bMTmpY/newtothis.webp'},
+  {t:'Mysweetpumpkin', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/gqbRRr5/mysweetpumpkin.jpg'},
+  {t:'Allstitchedup', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/27c34fPD/allstitchedup.jpg'},
+  // ── King from Queens ──
+  {t:'Reald', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/SDBHyLHB/park123.jpg'},
+  {t:'REALD', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/6J8QRGXg/sothisiswolfgang.webp'},
+  {t:'You longingly looked for a lap', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/KjCG862F/traininghumanonmyfavoritethingtodoperiod.webp'},
+  // ── Grassroots ──
+  {t:'Texture', c:'Grassroots', m:2, k:'photo', img:'https://i.ibb.co/HfC0qCGB/shitsupervisor.webp'},
+  // ── World Star ──
+  {t:'Night Signal', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/0RLXVg2g/hidaddy.webp'},
+  {t:'Video', c:'World Star', m:3, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/soferocious.mp4'},
+  {t:'Jitter', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/d4H86rR9/classic005.webp'},
+  // ── Lost & Found ──
+  {t:'Blurred', c:'Lost & Found', m:1, k:'photo', img:'https://i.ibb.co/nsp6BwTS/socks1.jpg'},
+  // ── World Star ──
+  {t:'Template', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/ZpbYqMZg/superhero.webp'},
+  // ── King from Queens ──
+  {t:'Panther', c:'King from Queens', m:0, k:'photo', img:'https://i.ibb.co/5XLHJ6h3/assorgrasslass.webp'},
+  // ── World Star ──
+  {t:'Urban', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/8n5gkh5v/classicwolfgang65.webp'},
+  {t:'Fashion Ed.', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/S45KWTfz/firstsnow.webp'},
+  {t:'Hoodie', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/gMfpCbRW/owl.jpg'},
+  {t:'Restart Loop', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/x8DxKNgy/someoneissnoring.jpg'},
+  // ── Of Wolf & Man ──
+  {t:'Faces', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/7tm2QB7X/whereiswolfgang.webp'},
+  {t:'Kiss Kiss', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/BKFKrbpj/instantlyourfavoritepasttime.webp'},
+  {t:'Couple', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/Kcfy2q4h/classic6543.webp'},
+  // ── World Star ──
+  {t:'Artistic Portrait', c:'World Star', m:3, k:'photo', img:'https://i.ibb.co/Ldmrtb7t/hislittleblacklips.webp'},
+  // ── Of Wolf & Man ──
+  {t:'Hard Light', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/NDk7kcW/drivethruluxurysuite.webp'},
+  {t:'Player', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/kV6CzpWS/comfort2.webp'},
+  {t:'Relax', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/r2gFFwNf/oneofwolfgangsfavoriteplaces.webp'},
+  {t:'Icecream45678', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/d4SkHwfB/icecream45678.webp'},
+  {t:'Thislittledudeexudedsomuchconfidence', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/83SsR99/thislittledudeexudedsomuchconfidence.webp'},
+  {t:'Wolfgang00', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/MxGzxSVk/wolfgang00.webp'},
+  {t:'Whereiswolfgang', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/mrsF2PP2/whereiswolfgang.webp'},
+  {t:'Delicious', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/d0MxCR6m/delicious.webp'},
+  {t:'Wolfgang000', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/Swk4v5Tv/wolfgang000.webp'},
+  {t:'haircuts', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/xqv72y7c/mohawk.webp'},
+  {t:'icecream1', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/Jj1Pc7bs/theabsolutecutestthingihaveeverseen.webp'},
+  {t:'roadworth', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/wF05mLW2/joyful.webp'},
+  {t:'as his name', c:'Of Wolf & Man', m:4, k:'photo', img:'https://i.ibb.co/zWbFdGF8/sowolfgangdiscoveredpupcupsatprettymucheverysheetz.webp'},
+  // ── Walkies ──
+  {t:'Boardwalks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boardwalks_v1%20(720p).mp4'},
+  {t:'Boop', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boop_v1%20(2160p).mp4'},
+  {t:'Exciting Things', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/excitingthings_v1%20(1080p).mp4'},
+  {t:'Favorite Fairmount', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/favoritefairmount_v1%20(720p).mp4'},
+  {t:'Fubar', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/fubar_v1%20(1080p).mp4'},
+  {t:'Goated', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/goated_v1%20(1080p).mp4'},
+  {t:'Grassy Paths', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/grassypaths_v1%20(720p).mp4'},
+  {t:'Gravel Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/gravelwalks_v1%20(1080p).mp4'},
+  {t:'Hallow Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/hallowwalks_v1%20(720p).mp4'},
+  {t:'Inline Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inlinewalks_v1%20(1080p).mp4'},
+  {t:'In Need of an Upgrade', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inneedofanupgrade_v1%20(1080p).mp4'},
+  {t:'Looking for Me', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingforme_v1%20(1080p).mp4'},
+  {t:'Looking Fresh', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingfresh_v1%20(1080p).mp4'},
+  {t:'Massacre', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/massacre_v1%20(1080p).mp4'},
+  {t:'Meats to Eat 2', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/meatstoeat2_v1%20(720p).mp4'},
+  {t:'Ominous Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/ominouswalks_v1%20(1080p).mp4'},
+  {t:'Precarious Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/precariouswalks_v1%20(720p).mp4'},
+  {t:'Reality', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reality_v1%20(720p).mp4'},
+  {t:'Really Interesting Branches', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyinterestingbranches_v1%20(720p).mp4'},
+  {t:'Really Rocky Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyrockywalks_v1%20(1440p).mp4'},
+  {t:'Reverse Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reversewalks_v1%20(720p)%20(1).mp4'},
+  {t:'Say That You Love Me', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/saythatyouloveme_v1%20(1080p).mp4'},
+  {t:'Sidewalks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/sidewalks_v1%20(720p).mp4'},
+  {t:'Skateboard Walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/skateboardwalks_v1%20(720p).mp4'},
+  {t:'Standing Not Walking', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/standingnotwalking_v1%20(1440p).mp4'},
+  {t:'Storms', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/storms_v1%20(720p).mp4'},
+  {t:'Suburban Boy', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/suburbanboy_v1%20(1080p).mp4'},
+  {t:'Upgrade', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/upgrade_v1%20(720p).mp4'},
+  {t:'Walks Into Elevators', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksintoelevators_v1%20(1080p).mp4'},
+  {t:'Walks Out of Elevators', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksoutofelevators_v1%20(720p).mp4'},
+  {t:'Windy 2', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/windy2_v1%20(720p).mp4'},
+  {t:'found home', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Latenightstroll.mp4'},
+  {t:'you have complete agency', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4'},
+  {t:'amongst', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/longislandwalks.mp4'},
+  {t:'happy walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4'},
+  {t:'loathe a lazy walk', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/lazywalkieswithwolfgang.mp4'},
+  {t:'while windy walks were wild', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/windyboy.mp4'},
+  {t:'best walks', c:'Walkies', m:5, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/anesthesia.mp4'},
+  // ── WFH ──
+  {t:'There\'s Food at Home, Wolfgang', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/theresfoodathomewolfgang_v1%20(1080p).mp4'},
+  {t:'Comfort1', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/qfBwLrD/comfort1.webp'},
+  {t:'Comfort2', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/kV6CzpWS/comfort2.webp'},
+  {t:'Homemademeals', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/M5Pcy9f9/homemademeals.webp'},
+  {t:'Whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/WvSsz44X/whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese.webp'},
+  {t:'hand', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/leglift001.mp4'},
+  {t:'new dad', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/JjGbm5rh/heydaddy.webp'},
+  {t:'belong', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/stinkyboy.mp4'},
+  {t:'know without notice', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/welcomehomebuddy.mp4'},
+  {t:'you got your mojo back', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Cityboi.mp4'},
+  {t:'New lease — no leash', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Leashlesslove.mp4'},
+  {t:'You decide', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/wolfgangfearlessbridgecrosser.mp4'},
+  {t:'true New Yorker', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Earlydayswalkpostsurgeryneverneededaleash.mp4'},
+  {t:'Lastsleepies', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/0RM9H4bs/lastsleepies.webp'},
+  {t:'Curbyourdog', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/HTqtChHv/curbyourdog.webp'},
+  {t:'Flower', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/B5hk87fv/flower.webp'},
+  {t:'moved my bed', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/QjqjMtpN/mamaweremovingout.webp'},
+  {t:'Dad moved my bed', c:'WFH', m:6, k:'photo', img:'https://i.ibb.co/QjqjMtpN/mamaweremovingout.webp'},
+  {t:'we go sleepy', c:'WFH', m:6, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Sleepingbeauty.mp4'},
+  // ── Wherever, Whatever ──
+  {t:'Wherever Whatever', c:'Wherever, Whatever', m:7, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/mp4/main/whereverwhatever_v1%20(720p).mp4'},
+  {t:'Sunglasses', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/3YQQ7hBK/drivethru.webp'},
+  {t:'Lummi', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/DHFBm7HM/hisfavoritecafe.webp'},
+  {t:'Fabric', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/TMxmFknH/fallinginlove1.jpg'},
+  {t:'Hill', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/XxZ9sYZc/fivehundredmileroadtripfromwestvirginia.webp'},
+  {t:'Tech', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/twNdHLNd/vera2.webp'},
+  {t:'Hisfavoritecafe', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/DHFBm7HM/hisfavoritecafe.webp'},
+  {t:'Metallicafanprobably', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/d0bT8TBD/metallicafanprobably.webp'},
+  {t:'Mydreamwastoownacafejustforwolfietohangoutin', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/bjK8FYHX/mydreamwastoownacafejustforwolfietohangoutin.webp'},
+  {t:'Closer', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/Z1FrMWch/closer.webp'},
+  {t:'Lookiftheysayanythingiamheretokeepyouontask', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/vCYxMRbG/lookiftheysayanythingiamheretokeepyouontask.webp'},
+  {t:'Owl', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/gMfpCbRW/owl.jpg'},
+  {t:'Traininghumanonmyfavoritethingtodoperiod', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/8gdCLfSx/traininghumanonmyfavoritethingtodoperiod.webp'},
+  {t:'Laplife', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/4gF252NS/laplife.jpg'},
+  {t:'Mylittledonut', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/qFVszwVN/mylittledonut.webp'},
+  {t:'Bag-buddy', c:'Wherever, Whatever', m:7, k:'video', src:'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Newlife.mp4'},
+  {t:'So, this is new', c:'Wherever, Whatever', m:7, k:'photo', img:'https://i.ibb.co/gb3mMDBt/wolfgangsfirsttimeinthejeep.webp'},
+];
+
+const ITEMS = RAW.map((r,i)=>Object.assign({idx:i+1}, r));
+
+/* ─────────────────────────── STATE ─────────────────────────── */
+const IS_TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+let view = 'timeline';
+let category = null;
+let openGroups = new Set([0]); // Adventures open by default
+let hoveredGroup = null;       // hover-preview only — doesn't touch openGroups
+let transitioning = false;
+
+/* ─────────────────────────── HELPERS ─────────────────────────── */
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=Math.imul(31,h)+s.charCodeAt(i)|0;return h>>>0;}
+function srand(seed){const x=Math.sin(seed+1)*10000;return x-Math.floor(x);}
+function fmtIdx(n){return String(n).padStart(2,'0');}
+function matches(item){return !category || item.c === category;}
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function thumbHTML(item, opts){
+  opts = opts || {};
+  const showOverlay = opts.overlay !== false;
+  const editableTitle = !!opts.editableTitle;
+  if(item.k==='card'){
+    return `<div class="thumb" style="background:${item.bg}"><div class="cardlabel" style="color:${item.fg}">${escapeHtml(item.label)}</div></div>`;
+  }
+  const media = item.k==='video'
+    ? `<video class="thumb-media" src="${item.src}" muted loop playsinline preload="metadata" disablepictureinpicture></video>`
+    : `<img class="thumb-media" loading="lazy" draggable="false" src="${item.img}" alt="">`;
+  const overlay = showOverlay ? `
+    <div class="thumb-overlay">
+      <span class="thumb-idx mono">${fmtIdx(item.idx)}</span>
+      <span class="thumb-ttl"${editableTitle ? ' contenteditable="true" spellcheck="false"' : ''}>${escapeHtml(item.t)}</span>
+    </div>` : '';
+  return `<div class="thumb"><div class="thumb-inner">${media}${overlay}</div></div>`;
+}
+
+/* ── video playback — clips stay paused at rest; they only play on hover
+   (desktop) or while actually in view (touch), so having dozens of clips on
+   screen at once doesn't mean dozens of clips decoding at once. The Detail
+   popover counts as "in focus" and autoplays regardless. ── */
+function wireVideoPlayback(containerEl, opts){
+  opts = opts || {};
+  const video = containerEl.querySelector('video.thumb-media');
+  if(!video) return;
+
+  if(opts.autoplay){
+    video.play().catch(()=>{});
+    return;
+  }
+
+  if(IS_TOUCH){
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting && entry.intersectionRatio >= 0.6) video.play().catch(()=>{});
+        else video.pause();
+      });
+    }, {threshold:[0,.6,1]});
+    io.observe(containerEl);
+  } else {
+    containerEl.addEventListener('mouseenter', ()=>{ video.play().catch(()=>{}); });
+    containerEl.addEventListener('mouseleave', ()=>{ video.pause(); video.currentTime = 0; });
+  }
+}
+
+/* ── live caption/title editing (List + Grid only — Timeline stays read-only) ──
+   Single source of truth is ITEMS[i].t; every surface showing that title
+   (list card, grid card, and an open detail card) gets kept in sync. ── */
+function updateItemTitle(i, newTitle){
+  const val = String(newTitle==null?'':newTitle).trim() || 'Untitled';
+  ITEMS[i].t = val;
+  document.querySelectorAll(`[data-i="${i}"] .thumb-ttl`).forEach(el=>{
+    if(el.textContent !== val) el.textContent = val;
+  });
+  const capText = document.getElementById('detail-caption-text');
+  if(capText && capText.dataset.i === String(i) && capText.textContent !== val){
+    capText.textContent = val;
+  }
+  return val;
+}
+
+function wireEditableTitle(containerEl, i){
+  const ttl = containerEl.querySelector('.thumb-ttl[contenteditable]');
+  if(!ttl) return;
+  ttl.addEventListener('mousedown', e=>{
+    e.stopPropagation();
+    if(containerEl.hasAttribute('draggable')) containerEl.setAttribute('draggable','false');
+  });
+  ttl.addEventListener('click', e=> e.stopPropagation());
+  ttl.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); ttl.blur(); }
+  });
+  ttl.addEventListener('blur', ()=>{
+    ttl.textContent = updateItemTitle(i, ttl.textContent);
+    if(containerEl.hasAttribute('draggable')) containerEl.setAttribute('draggable','true');
+  });
+}
+
+/* ── right-click "move to category" — available anywhere a card is
+   editable (List, Grid, and the Detail popover when opened from either).
+   Timeline stays read-only, so it never wires this up. ── */
+function moveItemToCategory(item, newM){
+  if(item.m === newM) return;
+  item.m = newM;
+  item.c = GROUPS[newM];
+  renderList();
+  renderGrid();
+  renderTimeline();
+  buildGridCats();
+  if(detailItem === item){
+    const idxLine = document.getElementById('detail-idx-line');
+    if(idxLine) idxLine.textContent = `${fmtIdx(item.idx)} / ${ITEMS.length} — ${GROUPS[item.m]}`;
+  }
+}
+
+const ctxMenuEl = document.getElementById('ctx-menu');
+function hideContextMenu(){ ctxMenuEl.classList.remove('show'); }
+function showCategoryContextMenu(x, y, item){
+  ctxMenuEl.innerHTML = '';
+  const label = document.createElement('div');
+  label.className = 'ctx-menu-label';
+  label.textContent = 'Move to…';
+  ctxMenuEl.appendChild(label);
+  GROUPS.forEach((name, m)=>{
+    if(m === item.m) return;
+    const opt = document.createElement('div');
+    opt.className = 'ctx-menu-item';
+    opt.textContent = name;
+    opt.addEventListener('click', ()=>{
+      moveItemToCategory(item, m);
+      hideContextMenu();
+    });
+    ctxMenuEl.appendChild(opt);
+  });
+  ctxMenuEl.style.left = '0px';
+  ctxMenuEl.style.top = '0px';
+  ctxMenuEl.classList.add('show');
+  const rect = ctxMenuEl.getBoundingClientRect();
+  const clampedX = Math.min(x, window.innerWidth - rect.width - 8);
+  const clampedY = Math.min(y, window.innerHeight - rect.height - 8);
+  ctxMenuEl.style.left = Math.max(8, clampedX) + 'px';
+  ctxMenuEl.style.top = Math.max(8, clampedY) + 'px';
+}
+document.addEventListener('click', hideContextMenu);
+document.addEventListener('contextmenu', e=>{
+  if(!e.target.closest('.list-card, .g-item, #detail-frame')) hideContextMenu();
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') hideContextMenu(); });
+window.addEventListener('scroll', hideContextMenu, true);
+window.addEventListener('resize', hideContextMenu);
+
+function wireContextMenu(containerEl, item){
+  containerEl.addEventListener('contextmenu', e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    showCategoryContextMenu(e.clientX, e.clientY, item);
+  });
+}
+
+/* ── hover tilt — this is the Tilted Card component's own spring simulator
+   and constants (stiffness:100, damping:30, mass:2, rotateAmplitude:12,
+   scaleOnHover:1.05), verbatim. Two adaptations for a ~80-thumb grid instead
+   of one hero card: (1) the title overlay stays visible always rather than
+   fading in on hover — it doubles as this site's caption, not a tooltip —
+   though it still keeps the reference's translateZ(30px) depth-lift.
+   (2) each thumb's RAF loop only runs while its spring hasn't settled yet
+   (starts on interaction, stops once it settles back to rest), instead of
+   one perpetual loop per card, since there can be dozens mounted at once. ── */
+function createSpring(stiffness, damping, mass, initial){
+  let value = initial, target = initial, velocity = 0;
+  return {
+    set(v){ target = v; },
+    step(dt){
+      const springForce = -stiffness * (value - target);
+      const dampingForce = -damping * velocity;
+      const accel = (springForce + dampingForce) / mass;
+      velocity += accel * dt;
+      value += velocity * dt;
+      return value;
+    },
+    settled(){ return Math.abs(value-target) < 0.02 && Math.abs(velocity) < 0.02; }
+  };
+}
+
+function initTilt(thumbEl){
+  const inner = thumbEl.querySelector('.thumb-inner');
+  if(!inner) return;
+  const ROTATE_AMPLITUDE = 12;
+  const SCALE_ON_HOVER   = 1.05;
+
+  // damping:30, stiffness:100, mass:2 — exactly the reference's rotateX/rotateY/scale springs
+  const rotateX = createSpring(100, 30, 2, 0);
+  const rotateY = createSpring(100, 30, 2, 0);
+  const scale   = createSpring(100, 30, 2, 1);
+
+  let raf = null, lastTime = 0;
+  function tick(now){
+    const dt = Math.min((now - lastTime)/1000, 1/30);
+    lastTime = now;
+    const rx = rotateX.step(dt), ry = rotateY.step(dt), s = scale.step(dt);
+    inner.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${s.toFixed(3)})`;
+    if(rotateX.settled() && rotateY.settled() && scale.settled()){ raf = null; return; }
+    raf = requestAnimationFrame(tick);
+  }
+  function wake(){ if(raf===null){ lastTime = performance.now(); raf = requestAnimationFrame(tick); } }
+
+  thumbEl.addEventListener('mousemove', e=>{
+    const rect = thumbEl.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left - rect.width/2;
+    const offsetY = e.clientY - rect.top - rect.height/2;
+    rotateX.set((offsetY / (rect.height/2)) * -ROTATE_AMPLITUDE);
+    rotateY.set((offsetX / (rect.width/2)) * ROTATE_AMPLITUDE);
+    wake();
+  });
+  thumbEl.addEventListener('mouseenter', ()=>{ scale.set(SCALE_ON_HOVER); wake(); });
+  thumbEl.addEventListener('mouseleave', ()=>{
+    rotateX.set(0); rotateY.set(0); scale.set(1);
+    wake();
+  });
+}
+
+/* ─────────────────────────── NAV ─────────────────────────── */
+const navEl = document.getElementById('nav');
+const VIEWS = [['timeline','Flow'],['list','List'],['grid','Grid']];
+VIEWS.forEach(([id,label])=>{
+  const b=document.createElement('button');
+  b.className='pill'+(id===view?' active':'');
+  b.textContent=label;
+  b.dataset.id=id;
+  b.addEventListener('click',()=>switchView(id));
+  navEl.appendChild(b);
+});
+
+const navSep=document.createElement('div');
+navSep.className='nav-sep';
+navEl.appendChild(navSep);
+
+const wolfieLoveBtn=document.createElement('button');
+wolfieLoveBtn.className='pill pill-external';
+wolfieLoveBtn.textContent='wolfie.love';
+wolfieLoveBtn.title='Open wolfie.love';
+wolfieLoveBtn.addEventListener('click',()=>{
+  openWolfieLove();
+});
+navEl.appendChild(wolfieLoveBtn);
+
+function switchView(id){
+  if(id===view || transitioning) return;
+  transitioning=true;
+  view=id;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p.dataset.id===id));
+  document.getElementById('view-timeline').classList.toggle('active', id==='timeline');
+  document.getElementById('view-list').classList.toggle('active', id==='list');
+  document.getElementById('view-grid').classList.toggle('active', id==='grid');
+  setTimeout(()=>{transitioning=false;},420);
+}
+
+/* ─────────────────────────── THEME ─────────────────────────── */
+// session-only (no persistence) — starts dark, toggled by the header button.
+const themeToggleBtn = document.getElementById('theme-toggle');
+themeToggleBtn.addEventListener('click', ()=>{
+  document.documentElement.classList.toggle('light-theme');
+});
+
+/* ─────────────────────────── FILTER BADGE ─────────────────────────── */
+const badgeEl = document.getElementById('filter-badge');
+const badgeLabel = document.getElementById('filter-label');
+badgeEl.addEventListener('click', ()=> setCategory(null));
+
+function setCategory(c){
+  category = (category===c) ? null : c;
+  badgeLabel.textContent = category || '';
+  badgeEl.classList.toggle('show', !!category);
+  document.querySelectorAll('.cat-pill').forEach(p=>{
+    const isAll = p.dataset.cat === '';
+    p.classList.toggle('active', isAll ? !category : p.dataset.cat===category);
+  });
+  refreshDim();
+}
+
+function refreshDim(){
+  document.querySelectorAll('.tl-item').forEach(el=>{
+    const it = ITEMS[+el.dataset.i];
+    el.classList.toggle('dim', !matches(it));
+  });
+  document.querySelectorAll('.list-card').forEach(el=>{
+    const it = ITEMS[+el.dataset.i];
+    el.classList.toggle('dim', !matches(it));
+  });
+  document.querySelectorAll('.g-item').forEach(el=>{
+    const it = ITEMS[+el.dataset.i];
+    el.classList.toggle('dim', !matches(it));
+  });
+}
+
+/* ─────────────────────────── DETAIL POPOVER ─────────────────────────── */
+const detailEl = document.getElementById('detail');
+document.getElementById('detail-close').addEventListener('click', closeDetail);
+detailEl.addEventListener('click', e=>{ if(e.target===detailEl) closeDetail(); });
+let detailItem = null, detailEditableFlag = false;
+
+function openDetail(item, opts){
+  opts = opts || {};
+  const editable = !!opts.editable; // only List/Grid pass this — Timeline opens read-only
+  const i = ITEMS.indexOf(item);
+  detailItem = item;
+  detailEditableFlag = editable;
+
+  const frame = document.getElementById('detail-frame');
+  const old = frame.querySelector('.thumb');
+  if(old) old.remove();
+  frame.insertAdjacentHTML('afterbegin', thumbHTML(item, {overlay:false}));
+  initTilt(frame.querySelector('.thumb'));
+  wireVideoPlayback(frame, {autoplay:true});
+
+  const capEl = document.getElementById('detail-caption');
+  capEl.innerHTML =
+    `<span class="idx mono" id="detail-idx-line">${fmtIdx(item.idx)} / ${ITEMS.length} — ${escapeHtml(GROUPS[item.m])}</span>` +
+    `<span id="detail-caption-text" data-i="${i}"${editable ? ' contenteditable="true" spellcheck="false"' : ''}>${escapeHtml(item.t)}</span>`;
+
+  if(editable){
+    const textEl = document.getElementById('detail-caption-text');
+    textEl.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){ e.preventDefault(); textEl.blur(); }
+    });
+    textEl.addEventListener('blur', ()=>{
+      textEl.textContent = updateItemTitle(i, textEl.textContent);
+    });
+  }
+  detailEl.classList.add('show');
+}
+function closeDetail(){ detailEl.classList.remove('show'); }
+
+document.getElementById('detail-frame').addEventListener('contextmenu', e=>{
+  if(!detailEditableFlag || !detailItem) return;
+  e.preventDefault();
+  e.stopPropagation();
+  showCategoryContextMenu(e.clientX, e.clientY, detailItem);
+});
+
+/* ─────────────────────────── CATEGORY MANAGEMENT (List view only) ─────────────────────────── */
+function commitCategoryName(m, newName){
+  const oldName = GROUPS[m];
+  const val = String(newName==null?'':newName).trim() || 'Untitled category';
+  if(val === oldName) return;
+  GROUPS[m] = val;
+  ITEMS.forEach(it=>{ if(it.m===m) it.c = val; });
+  if(category === oldName) category = val;
+  const labels = trackEl.querySelectorAll('.tl-col-label');
+  if(labels[m]) labels[m].textContent = val;
+  buildGridCats();
+}
+
+function getOpenNames(){
+  return Array.from(openGroups).map(m => GROUPS[m]).filter(n => n != null);
+}
+function restoreOpenFromNames(names){
+  openGroups = new Set(names.map(n => GROUPS.indexOf(n)).filter(i => i >= 0));
+}
+
+function addCategory(){
+  const openNames = getOpenNames();
+
+  GROUPS.unshift('New Category');
+  const m = 0;
+  ITEMS.forEach(it=>{ it.m = GROUPS.indexOf(it.c); });
+  restoreOpenFromNames(openNames);
+  openGroups.add(m);
+
+  renderList();
+  renderGrid();
+  renderTimeline();
+  buildGridCats();
+  requestAnimationFrame(()=>{
+    const row = listRows.find(r=>r.m===m);
+    if(!row) return;
+    const nameEl = row.headEl.querySelector('.list-month');
+    if(nameEl){
+      nameEl.focus();
+      const range = document.createRange();
+      range.selectNodeContents(nameEl);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  });
+}
+
+function deleteCategoryPrompt(m){
+  if(GROUPS.length <= 1){ alert('You need at least one category.'); return; }
+  const name = GROUPS[m];
+  const affected = ITEMS.filter(it=>it.m===m);
+  const fallback = m>0 ? m-1 : m+1;
+  const fallbackName = GROUPS[fallback];
+  const msg = affected.length
+    ? `Delete "${name}"? ${affected.length} image${affected.length>1?'s':''} will move into "${fallbackName}".`
+    : `Delete "${name}"?`;
+  if(!confirm(msg)) return;
+
+  const openNames = getOpenNames();
+
+  affected.forEach(it=>{ it.m = fallback; it.c = fallbackName; });
+  GROUPS.splice(m,1);
+  ITEMS.forEach(it=>{ if(it.m > m) it.m -= 1; });
+  if(category === name) category = null;
+  restoreOpenFromNames(openNames);
+
+  renderList();
+  renderGrid();
+  renderTimeline();
+  buildGridCats();
+}
+
+function reorderCategory(fromM, toM){
+  if(fromM === toM || fromM==null || toM==null) return;
+  if(fromM < 0 || fromM >= GROUPS.length || toM < 0 || toM >= GROUPS.length) return;
+
+  const openNames = getOpenNames();
+
+  const [name] = GROUPS.splice(fromM, 1);
+  let insertAt = toM;
+  if(fromM < toM) insertAt -= 1;
+  GROUPS.splice(insertAt, 0, name);
+
+  // positions moved, not names — every item just needs its m re-derived from
+  // the category name it's already tagged with.
+  ITEMS.forEach(it=>{ it.m = GROUPS.indexOf(it.c); });
+
+  restoreOpenFromNames(openNames);
+
+  renderList();
+  renderGrid();
+  renderTimeline();
+  buildGridCats();
+}
+
+/* ─────────────────────────── SUPPORT (GoFundMe) ─────────────────────────── */
+const supportBtn = document.getElementById('support-btn');
+const supportModal = document.getElementById('support-modal');
+supportBtn.addEventListener('click', ()=> supportModal.classList.add('show'));
+document.getElementById('support-close').addEventListener('click', ()=> supportModal.classList.remove('show'));
+supportModal.addEventListener('click', e=>{ if(e.target===supportModal) supportModal.classList.remove('show'); });
+
+/* ─────────────────────────── WOLFIE.LOVE ─────────────────────────── */
+const wolfieLoveModal = document.getElementById('wolfielove-modal');
+const wolfieLoveFrame = document.getElementById('wolfielove-frame');
+function closeWolfieLove(){ wolfieLoveModal.classList.remove('show'); }
+function openWolfieLove(){
+  if(!wolfieLoveFrame.src) wolfieLoveFrame.src = 'https://wolfie.love';
+  wolfieLoveModal.classList.add('show');
+}
+document.getElementById('wolfielove-close').addEventListener('click', closeWolfieLove);
+wolfieLoveModal.addEventListener('click', e=>{ if(e.target===wolfieLoveModal) closeWolfieLove(); });
+
+/* ─────────────────────────── EXPORT ─────────────────────────── */
+const exportBtn = document.getElementById('export-btn');
+const exportModal = document.getElementById('export-modal');
+const exportText = document.getElementById('export-text');
+
+function buildExportPayload(){
+  // groups + one object per piece, in current order — this is the exact shape
+  // Claude needs to rebuild GROUPS and the RAW array, so nothing beyond idx is stripped.
+  const items = ITEMS.map(({idx, ...rest})=>rest);
+  return JSON.stringify({ groups: GROUPS, items }, null, 2);
+}
+
+exportBtn.addEventListener('click', ()=>{
+  exportText.value = buildExportPayload();
+  exportModal.classList.add('show');
+});
+document.getElementById('export-close').addEventListener('click', ()=> exportModal.classList.remove('show'));
+exportModal.addEventListener('click', e=>{ if(e.target===exportModal) exportModal.classList.remove('show'); });
+
+document.getElementById('export-copy').addEventListener('click', ()=>{
+  const btn = document.getElementById('export-copy');
+  const finish = (ok)=>{ const orig='Copy to clipboard'; btn.textContent = ok ? 'Copied ✓' : 'Select the text & copy'; setTimeout(()=>{ btn.textContent = orig; }, 1800); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(exportText.value).then(()=>finish(true)).catch(()=>{
+      exportText.select();
+      finish(false);
+    });
+  } else {
+    exportText.select();
+    finish(false);
+  }
+});
+
+document.getElementById('export-download').addEventListener('click', ()=>{
+  const btn = document.getElementById('export-download');
+  try{
+    const blob = new Blob([exportText.value], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'recap-order.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    btn.textContent = 'Downloaded ✓';
+  }catch(e){
+    exportText.select();
+    btn.textContent = 'Blocked — copy instead';
+  }
+  setTimeout(()=>{ btn.textContent = 'Download .json'; }, 1800);
+});
+
+/* ─────────────────────────── BATCH IMPORT (→ Unsorted) ─────────────────────────── */
+const importBtn = document.getElementById('import-btn');
+const importModal = document.getElementById('import-modal');
+const importText = document.getElementById('import-text');
+const importStatus = document.getElementById('import-status');
+
+function unsortedIndex(){
+  let m = GROUPS.indexOf('Unsorted');
+  if(m === -1){
+    GROUPS.push('Unsorted');
+    m = GROUPS.length - 1;
+    buildGridCats();
+  }
+  return m;
+}
+function looksLikeUrl(s){ return /^https?:\/\/\S+$/i.test(s); }
+function isVideoUrl(s){ return /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(s); }
+function titleFromUrl(url){
+  try{
+    const path = new URL(url).pathname;
+    let name = decodeURIComponent(path.split('/').filter(Boolean).pop() || '');
+    name = name.replace(/\.[a-z0-9]+$/i, '').replace(/[-_]+/g, ' ').trim();
+    if(!name) return 'Untitled';
+    return name.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+  }catch(e){ return 'Untitled'; }
+}
+
+importBtn.addEventListener('click', ()=>{
+  importText.value = '';
+  importStatus.textContent = '';
+  importModal.classList.add('show');
+});
+document.getElementById('import-close').addEventListener('click', ()=> importModal.classList.remove('show'));
+importModal.addEventListener('click', e=>{ if(e.target===importModal) importModal.classList.remove('show'); });
+
+document.getElementById('import-submit').addEventListener('click', ()=>{
+  const raw = importText.value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  const urls = raw.filter(looksLikeUrl);
+  const skipped = raw.length - urls.length;
+  if(!urls.length){
+    importStatus.textContent = raw.length ? "None of those looked like valid URLs." : "Paste at least one image URL first.";
+    return;
+  }
+  const m = unsortedIndex();
+  urls.forEach(url=>{
+    ITEMS.push(isVideoUrl(url)
+      ? { t: titleFromUrl(url), c: GROUPS[m], m, k:'video', src:url }
+      : { t: titleFromUrl(url), c: GROUPS[m], m, k:'photo', img:url });
+  });
+  ITEMS.forEach((it,i)=>{ it.idx = i+1; });
+
+  renderList();
+  renderGrid();
+  renderTimeline();
+
+  importStatus.textContent = `Added ${urls.length} image${urls.length>1?'s':''} to Unsorted` +
+    (skipped ? ` (skipped ${skipped} that didn't look like a URL).` : '.');
+  importText.value = '';
+});
+
+/* ═══════════════════════════ TIMELINE VIEW ═══════════════════════════ */
+const trackEl = document.getElementById('tl-track');
+const itemsLayerEl = document.getElementById('tl-items-layer');
+const bgTextEl = document.getElementById('tl-bgtext');
+const viewportEl = document.getElementById('tl-viewport');
+
+// background repeated word
+bgTextEl.textContent = Array(10).fill('wolfgang').join('\u2003');
+
+// ── column width scales with how many pieces landed in that group ──
+const MAX_ITEMS_PER_GROUP = 31; // symbolic cap — width scaling plateaus here
+                                 // even if a group somehow held more
+const GAP           = 30;  // vertical gap between stacked items in a sub-column
+const COL_GUTTER    = 60;  // gap between one group's column and the next
+const COL_PAD       = 30;  // inner left/right padding within a column
+const SUBCOL_W      = 190; // width of one internal sub-column slot
+const SUBCOL_GUTTER = 22;  // gap between sub-columns inside a busy group
+const EMPTY_COL_W   = 130; // width for a group with nothing archived
+
+function itemHeight(w){ return Math.round(w*1.25); } // thumb only (4:5) — title now overlays the image
+
+function planColumn(items){
+  if(!items.length) return { width: EMPTY_COL_W, placed: [] };
+
+  const span   = Math.max(320, window.innerHeight - 260);
+  const scaleN = Math.min(items.length, MAX_ITEMS_PER_GROUP);
+
+  const laid = items.map(item=>{
+    const seed = hash(item.t);
+    const w = 128 + Math.round(srand(seed)*46);
+    return { item, seed, w, h: itemHeight(w) };
+  });
+
+  // how many sub-columns are needed to keep everything within one screen's height?
+  const avgH = laid.reduce((a,d)=>a+d.h,0) / laid.length;
+  let subCols = Math.max(1, Math.ceil((scaleN * (avgH+GAP)) / span));
+  subCols = Math.min(subCols, 10);
+
+  // greedy shortest-column-first packing — balances heights regardless of
+  // how the random item sizes fall, and guarantees no vertical overlap
+  // within any sub-column
+  const colHeights = new Array(subCols).fill(0);
+  const placed = laid.map(d=>{
+    let best = 0;
+    for(let c=1;c<subCols;c++) if(colHeights[c] < colHeights[best]) best = c;
+    const y = colHeights[best];
+    colHeights[best] += d.h + GAP;
+    return Object.assign({sub:best, y}, d);
+  });
+  placed.forEach(p=>{ p.centeredY = p.y - (colHeights[p.sub]-GAP)/2; });
+
+  const width = COL_PAD*2 + subCols*SUBCOL_W + (subCols-1)*SUBCOL_GUTTER;
+  return { width, subCols, placed };
+}
+
+/* ── shared reorder logic — pieces can be dragged between groups (flow
+   view columns) and freely repositioned (flow & grid views); all three
+   views read from the same ITEMS array, so a move made in one shows up
+   in the others the next time they're rendered. ── */
+function lastIndexOfGroup(m){
+  let last = -1;
+  ITEMS.forEach((it,i)=>{ if(it.m===m) last = i; });
+  return last;
+}
+
+function moveItemByDrop(fromIdx, beforeIdx, newGroup){
+  if(fromIdx===null || fromIdx===undefined || isNaN(fromIdx)) return;
+  if(fromIdx<0 || fromIdx>=ITEMS.length) return;
+  const item = ITEMS[fromIdx];
+  if(newGroup !== null && newGroup !== undefined){ item.m = newGroup; item.c = GROUPS[newGroup]; }
+  ITEMS.splice(fromIdx,1);
+  let insertAt = (beforeIdx===null || beforeIdx===undefined) ? ITEMS.length : beforeIdx;
+  if(fromIdx < insertAt) insertAt -= 1;
+  insertAt = Math.max(0, Math.min(ITEMS.length, insertAt));
+  ITEMS.splice(insertAt, 0, item);
+  ITEMS.forEach((it,i)=>{ it.idx = i+1; });
+  renderTimeline();
+  renderGrid();
+  renderList();
+  refreshDim();
+}
+
+let plans = [], colX = [], trackWidth = 0, colBobEls = [];
+let maxScroll = 0;
+
+function renderTimeline(){
+  trackEl.innerHTML = '';
+  itemsLayerEl.innerHTML = '';
+  colBobEls = [];
+
+  const byCategory = GROUPS.map((_,m)=>ITEMS.filter(it=>it.m===m));
+  plans = byCategory.map(planColumn);
+  let cursorX = 150;
+  colX = plans.map(p=>{ const x = cursorX; cursorX += p.width + COL_GUTTER; return x; });
+  trackWidth = cursorX + 150;
+
+  // column lines + labels
+  GROUPS.forEach((name,m)=>{
+    const line = document.createElement('div');
+    line.className='tl-col-line';
+    line.style.left = colX[m] + 'px';
+    trackEl.appendChild(line);
+
+    const label = document.createElement('div');
+    label.className='tl-col-label';
+    label.style.left = (colX[m] - 10) + 'px';
+    label.textContent = name;
+    trackEl.appendChild(label);
+  });
+
+  // items — laid out per the plan computed above, never overlapping.
+  // every column (even an empty one) gets a colWrap so it can act as a
+  // drop target when dragging a piece into a group with nothing in it yet.
+  plans.forEach((plan, m)=>{
+    const colWrap = document.createElement('div');
+    colWrap.className = 'tl-col-items';
+    colWrap.style.position = 'absolute';
+    colWrap.style.left = colX[m] + 'px';
+    colWrap.style.top = '0';
+    colWrap.style.width = plan.width + 'px';
+    colWrap.style.height = '100%';
+    colWrap.dataset.colSeed = hash('col'+m);
+    colBobEls.push(colWrap);
+
+    colWrap.addEventListener('dragover', e=>{ e.preventDefault(); colWrap.classList.add('drag-over-col'); });
+    colWrap.addEventListener('dragleave', ()=> colWrap.classList.remove('drag-over-col'));
+    colWrap.addEventListener('drop', e=>{
+      e.preventDefault();
+      colWrap.classList.remove('drag-over-col');
+      const fromIdx = parseInt(e.dataTransfer.getData('text/plain'),10);
+      const last = lastIndexOfGroup(m);
+      moveItemByDrop(fromIdx, last===-1 ? null : last+1, m);
+    });
+
+    plan.placed.forEach(p=>{
+      const { item, seed, w, sub, centeredY } = p;
+      const i = ITEMS.indexOf(item);
+      const subX = COL_PAD + sub*(SUBCOL_W+SUBCOL_GUTTER);
+      const maxJitter = Math.max(0, SUBCOL_W - w);
+      const jitterX = Math.round(srand(seed+1) * maxJitter);
+      const left = subX + jitterX;
+
+      const el = document.createElement('div');
+      el.className = 'tl-item' + (item.k==='card' ? ' is-card' : '');
+      el.style.left = left+'px';
+      el.style.width = w+'px';
+      el.style.top = 'calc(50% + ' + Math.round(centeredY) + 'px)';
+      el.dataset.i = i;
+      el.setAttribute('draggable','true');
+      el.innerHTML = thumbHTML(item);
+      initTilt(el.querySelector('.thumb'));
+      wireVideoPlayback(el);
+      el.addEventListener('click', ()=>openDetail(item));
+      el.addEventListener('dragstart', e=>{
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(i));
+        el.classList.add('dragging');
+      });
+      el.addEventListener('dragend', ()=> el.classList.remove('dragging'));
+      el.addEventListener('dragover', e=>{ e.preventDefault(); e.stopPropagation(); el.classList.add('drag-over'); });
+      el.addEventListener('dragleave', ()=> el.classList.remove('drag-over'));
+      el.addEventListener('drop', e=>{
+        e.preventDefault();
+        e.stopPropagation();
+        el.classList.remove('drag-over');
+        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'),10);
+        moveItemByDrop(fromIdx, i, m);
+      });
+      colWrap.appendChild(el);
+    });
+
+    itemsLayerEl.appendChild(colWrap);
+  });
+
+  maxScroll = Math.max(0, trackWidth - window.innerWidth + 200);
+  scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
+}
+
+// ── scroll engine (drives horizontal parallax) ──
+let scrollX = 0, scrollTarget = 0;
+renderTimeline();
+
+window.addEventListener('resize', ()=>{
+  maxScroll = Math.max(0, trackWidth - window.innerWidth + 200);
+  scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
+});
+let dragging=false, lastX=0;
+
+viewportEl.addEventListener('wheel', e=>{
+  e.preventDefault();
+  scrollTarget += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY);
+  scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
+}, {passive:false});
+
+viewportEl.addEventListener('mousedown', e=>{
+  if(e.target.closest('.tl-item')) return; // let native drag-and-drop take over
+  e.preventDefault();
+  dragging=true; lastX=e.clientX; viewportEl.classList.add('grabbing');
+});
+window.addEventListener('dragstart', e=>{
+  if(e.target.closest('.tl-item, .g-item')) return; // our own drag-reorder
+  e.preventDefault();
+});
+window.addEventListener('mouseup', ()=>{ dragging=false; viewportEl.classList.remove('grabbing'); });
+window.addEventListener('mousemove', e=>{
+  if(!dragging) return;
+  scrollTarget -= (e.clientX - lastX)*1.4;
+  scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
+  lastX = e.clientX;
+});
+
+let lt=0;
+viewportEl.addEventListener('touchstart', e=>{ lt=e.touches[0].clientX; }, {passive:true});
+viewportEl.addEventListener('touchmove', e=>{
+  const x=e.touches[0].clientX;
+  scrollTarget -= (x-lt)*1.4;
+  scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
+  lt=x;
+}, {passive:true});
+
+const tlThumb = document.getElementById('tl-scrollbar-thumb');
+const tlBar = document.getElementById('tl-scrollbar');
+
+const BG_SPEED    = 0.35; // farthest layer — repeated wordmark
+const ITEMS_SPEED  = 0.68; // midground — the actual pieces, lag behind the ruler
+const LINES_SPEED  = 1.0;  // foreground — the group grid, moves 1:1 with input
+
+function tlTick(){
+  scrollX += (scrollTarget - scrollX)*0.085;
+  trackEl.style.transform = `translate3d(${-scrollX*LINES_SPEED}px,0,0)`;
+  itemsLayerEl.style.transform = `translate3d(${-scrollX*ITEMS_SPEED}px,0,0)`;
+  bgTextEl.style.transform = `translate3d(${-scrollX*BG_SPEED}px,-50%,0)`;
+
+  // whole-column bob for depth parallax — items inside a column keep their
+  // packed spacing (no overlap), only the column as a group drifts
+  colBobEls.forEach(col=>{
+    const seed = +col.dataset.colSeed;
+    const bob = Math.sin(scrollX*0.0018 + seed) * 10;
+    col.style.transform = `translate3d(0, ${bob.toFixed(1)}px, 0)`;
+  });
+
+  // custom horizontal scroll indicator
+  const barW = tlBar.clientWidth;
+  const visibleRatio = Math.min(1, window.innerWidth / (maxScroll + window.innerWidth));
+  const thumbW = Math.max(28, barW * visibleRatio);
+  const travel = barW - thumbW;
+  const prog = maxScroll > 0 ? Math.max(0, Math.min(1, scrollX / maxScroll)) : 0;
+  tlThumb.style.width = thumbW + 'px';
+  tlThumb.style.left = (travel * prog) + 'px';
+
+  requestAnimationFrame(tlTick);
+}
+requestAnimationFrame(tlTick);
+
+/* ═══════════════════════════ LIST VIEW ═══════════════════════════ */
+const listWrap = document.getElementById('list-wrap');
+const listRows = [];
+
+// cursor position is kept only for the ambient parallax drift on row
+// headers — it no longer decides which row is "focused".
+const FOCUS_OFFSET = 54;
+let cursorY = null;
+listWrap.addEventListener('mousemove', e=>{ cursorY = e.clientY; });
+listWrap.addEventListener('mouseleave', ()=>{ cursorY = null; });
+
+function renderList(){
+  hoveredGroup = null;
+  listWrap.innerHTML = '';
+  listRows.length = 0;
+
+  const byCategory = GROUPS.map((_,m)=>ITEMS.filter(it=>it.m===m));
+
+  GROUPS.forEach((name, m)=>{
+    const items = byCategory[m];
+    const row = document.createElement('div');
+    row.className = 'list-row' + (openGroups.has(m) ? ' expanded' : '');
+    row.dataset.m = m;
+
+    const head = document.createElement('div');
+    head.className = 'list-row-head';
+    head.innerHTML = `
+      <button type="button" class="list-drag-handle" draggable="true" title="Drag to reorder">
+        <svg viewBox="0 0 20 20"><circle cx="6" cy="5" r="1.4"></circle><circle cx="14" cy="5" r="1.4"></circle><circle cx="6" cy="10" r="1.4"></circle><circle cx="14" cy="10" r="1.4"></circle><circle cx="6" cy="15" r="1.4"></circle><circle cx="14" cy="15" r="1.4"></circle></svg>
+      </button>
+      <div class="list-month disp" contenteditable="true" spellcheck="false">${escapeHtml(name)}</div>
+      <div class="list-row-head-right">
+        <div class="list-idx">(${fmtIdx(m+1)} / ${fmtIdx(GROUPS.length)})</div>
+        <button class="list-cat-del" type="button" title="Delete this category">Delete ✕</button>
+      </div>`;
+    head.addEventListener('click', ()=>{
+      toggleOpen(m);
+    });
+    row.addEventListener('mouseenter', ()=>{
+      hoveredGroup = m;
+      row.classList.add('expanded');
+    });
+    row.addEventListener('mouseleave', ()=>{
+      if(hoveredGroup === m) hoveredGroup = null;
+      if(!openGroups.has(m)) row.classList.remove('expanded');
+    });
+
+    const nameEl = head.querySelector('.list-month');
+    nameEl.addEventListener('mousedown', e=> e.stopPropagation());
+    nameEl.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){ e.preventDefault(); nameEl.blur(); }
+    });
+    nameEl.addEventListener('blur', ()=>{
+      commitCategoryName(m, nameEl.textContent);
+      nameEl.textContent = GROUPS[m];
+    });
+
+    const delBtn = head.querySelector('.list-cat-del');
+    delBtn.addEventListener('click', e=>{
+      e.stopPropagation();
+      deleteCategoryPrompt(m);
+    });
+
+    // drag-to-reorder — grab the handle, drop on any row to move it there
+    const dragHandle = head.querySelector('.list-drag-handle');
+    dragHandle.addEventListener('click', e=> e.stopPropagation());
+    dragHandle.addEventListener('mousedown', e=> e.stopPropagation());
+    dragHandle.addEventListener('dragstart', e=>{
+      e.stopPropagation();
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(m));
+      try{ e.dataTransfer.setDragImage(row, 20, 20); }catch(err){}
+      row.classList.add('dragging-row');
+    });
+    dragHandle.addEventListener('dragend', ()=>{
+      row.classList.remove('dragging-row');
+      document.querySelectorAll('.list-row.drag-over-row').forEach(r=>r.classList.remove('drag-over-row'));
+    });
+    row.addEventListener('dragover', e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      row.classList.add('drag-over-row');
+    });
+    row.addEventListener('dragleave', e=>{
+      if(!row.contains(e.relatedTarget)) row.classList.remove('drag-over-row');
+    });
+    row.addEventListener('drop', e=>{
+      e.preventDefault();
+      row.classList.remove('drag-over-row');
+      const fromM = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      if(!isNaN(fromM)) reorderCategory(fromM, m);
+    });
+
+    row.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'list-row-body';
+    const inner = document.createElement('div');
+    inner.className = 'list-row-body-inner';
+
+    let strip = null;
+    if(items.length){
+      strip = document.createElement('div');
+      strip.className = 'list-strip';
+      items.forEach(item=>{
+        const i = ITEMS.indexOf(item);
+        const card = document.createElement('div');
+        card.className = 'list-card' + (item.k==='card' ? ' is-card' : '');
+        card.dataset.i = i;
+        card.innerHTML = thumbHTML(item, {editableTitle:true});
+        initTilt(card.querySelector('.thumb'));
+        wireEditableTitle(card, i);
+        wireVideoPlayback(card);
+        wireContextMenu(card, item);
+        card.addEventListener('click', ()=>openDetail(item, {editable:true}));
+        strip.appendChild(card);
+      });
+      inner.appendChild(strip);
+    } else {
+      const empty = document.createElement('div');
+      empty.className = 'list-empty';
+      empty.textContent = 'Nothing archived yet.';
+      inner.appendChild(empty);
+    }
+
+    body.appendChild(inner);
+    row.appendChild(body);
+    listWrap.appendChild(row);
+
+    listRows.push({ m, rowEl: row, headEl: head, innerEl: inner, stripEl: strip });
+  });
+
+  const addRow = document.createElement('div');
+  addRow.id = 'list-add-row';
+  addRow.textContent = '+ New Category';
+  addRow.addEventListener('click', addCategory);
+  listWrap.appendChild(addRow);
+}
+
+renderList();
+
+function updateRowExpandedClasses(){
+  listRows.forEach(r=> r.rowEl.classList.toggle('expanded', openGroups.has(r.m) || hoveredGroup===r.m));
+}
+
+function scrollRowIntoView(m){
+  const target = listRows.find(r=>r.m===m);
+  if(!target) return;
+  const contTop = listWrap.getBoundingClientRect().top;
+  const hr = target.headEl.getBoundingClientRect();
+  const delta = hr.top - (contTop + FOCUS_OFFSET);
+  listWrap.scrollTo({ top: listWrap.scrollTop + delta, behavior:'smooth' });
+}
+
+function toggleOpen(m){
+  if(openGroups.has(m)){
+    openGroups.delete(m);
+  } else {
+    openGroups.add(m);
+    scrollRowIntoView(m);
+  }
+  updateRowExpandedClasses();
+}
+
+// Esc closes every open row at once — the "exit focus" hatch, since rows
+// otherwise stay open (multiple at a time) until explicitly clicked shut.
+document.addEventListener('keydown', e=>{
+  if(e.key !== 'Escape' || view !== 'list') return;
+  if(document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
+  openGroups.clear();
+  hoveredGroup = null;
+  updateRowExpandedClasses();
+});
+
+const listScrollbarThumb = document.getElementById('list-scrollbar-thumb');
+function updateListScrollbar(){
+  const ch = listWrap.clientHeight, sh = listWrap.scrollHeight;
+  if(sh <= ch){ listScrollbarThumb.style.opacity = '0'; return; }
+  listScrollbarThumb.style.opacity = '.55';
+  const trackH = listScrollbarThumb.parentElement.clientHeight;
+  const thumbH = Math.max(24, trackH * (ch/sh));
+  const travel = trackH - thumbH;
+  const prog = listWrap.scrollTop / (sh - ch);
+  listScrollbarThumb.style.height = thumbH+'px';
+  listScrollbarThumb.style.top = (travel*prog)+'px';
+}
+
+function listTick(){
+  // ambient parallax: rows counter-drift gently relative to the cursor line
+  const line = (cursorY !== null) ? cursorY : (listWrap.getBoundingClientRect().top + FOCUS_OFFSET);
+  listRows.forEach(r=>{
+    const hr = r.headEl.getBoundingClientRect();
+    const dist = (hr.top + hr.height/2) - line;
+    const target = Math.max(-14, Math.min(14, dist * -0.035));
+    const cur = parseFloat(r.headEl.dataset.py || '0');
+    const next = cur + (target - cur) * 0.12;
+    r.headEl.dataset.py = next.toFixed(2);
+    r.headEl.style.transform = `translate3d(0, ${next.toFixed(2)}px, 0)`;
+  });
+
+  updateListScrollbar();
+  requestAnimationFrame(listTick);
+}
+requestAnimationFrame(listTick);
+
+/* ═══════════════════════════ GRID VIEW ═══════════════════════════ */
+const gridItemsEl = document.getElementById('grid-items');
+
+function renderGrid(){
+  gridItemsEl.innerHTML = '';
+  document.getElementById('grid-count').textContent = `${ITEMS.length} PIECES`;
+
+  ITEMS.forEach((item,i)=>{
+    const el = document.createElement('div');
+    el.className = 'g-item' + (item.k==='card' ? ' is-card' : '');
+    el.dataset.i = i;
+    el.setAttribute('draggable','true');
+    el.innerHTML = thumbHTML(item, {editableTitle:true});
+    initTilt(el.querySelector('.thumb'));
+    wireEditableTitle(el, i);
+    wireVideoPlayback(el);
+    wireContextMenu(el, item);
+    el.addEventListener('click', ()=>openDetail(item, {editable:true}));
+    el.addEventListener('dragstart', e=>{
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(i));
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', ()=> el.classList.remove('dragging'));
+    el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', ()=> el.classList.remove('drag-over'));
+    el.addEventListener('drop', e=>{
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      const fromIdx = parseInt(e.dataTransfer.getData('text/plain'),10);
+      moveItemByDrop(fromIdx, i, null); // null → keep its current group, just reorder
+    });
+    gridItemsEl.appendChild(el);
+  });
+}
+
+renderGrid();
+
+const gridScroll = document.getElementById('grid-scroll');
+const gridScrollbarThumb = document.getElementById('grid-scrollbar-thumb');
+function updateGridScrollbar(){
+  const ch = gridScroll.clientHeight, sh = gridScroll.scrollHeight;
+  if(sh <= ch){ gridScrollbarThumb.style.opacity = '0'; return; }
+  gridScrollbarThumb.style.opacity = '.55';
+  const trackH = gridScrollbarThumb.parentElement.clientHeight;
+  const thumbH = Math.max(24, trackH * (ch/sh));
+  const travel = trackH - thumbH;
+  const prog = gridScroll.scrollTop / (sh - ch);
+  gridScrollbarThumb.style.height = thumbH+'px';
+  gridScrollbarThumb.style.top = (travel*prog)+'px';
+}
+gridScroll.addEventListener('scroll', updateGridScrollbar, {passive:true});
+window.addEventListener('resize', updateGridScrollbar);
+updateGridScrollbar();
+
+const gridCatsEl = document.getElementById('grid-cats');
+
+function buildGridCats(){
+  gridCatsEl.innerHTML = '';
+
+  const allPill = document.createElement('div');
+  allPill.className = 'cat-pill' + (!category ? ' active' : '');
+  allPill.textContent = 'All';
+  allPill.dataset.cat = '';
+  allPill.addEventListener('click', ()=>setCategory(null));
+  gridCatsEl.appendChild(allPill);
+
+  GROUPS.forEach(cat=>{
+    const p = document.createElement('div');
+    p.className = 'cat-pill' + (category===cat ? ' active' : '');
+    p.textContent = cat;
+    p.dataset.cat = cat;
+    p.addEventListener('click', ()=>setCategory(cat));
+    gridCatsEl.appendChild(p);
+  });
+}
+buildGridCats();
+
+})();
+
+</script>
+<script defer src="https://www.gofundme.com/static/js/embed.js"></script>
+</body>
+</html>
