@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>wolfie.life</title>
+  <title>Shepherd's Dog — Wolfie (Isometric 3D)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,500&family=Cabin:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -993,6 +993,9 @@ function startPee() {
   if (dog.peeTimer > 0) return;
   dog.peeTimer = PEE_TIME;
   dog.sniffTimer = 0;
+  // pee snaps him out of butterfly daze
+  dog.distractTimer = 0;
+  dog.distractTarget = null;
   stats.pees++;
   const p = peeSpot();
   const pud = {
@@ -1431,8 +1434,8 @@ function update(dt) {
   if (sniffing) dog.sniffTimer = Math.max(0, dog.sniffTimer - dt);
   const distracted = (dog.distractTimer || 0) > 0;
 
-  // Camera-relative WASD
-  let ax = 0, ay = 0;
+  // Viewport-relative WASD / arrows: up = top of screen, etc.
+  let ax = 0, ay = 0; // ax: -1 left / +1 right; ay: -1 up / +1 down
   if (!peeing && !distracted) {
     if (keys.left) ax -= 1;
     if (keys.right) ax += 1;
@@ -1446,10 +1449,18 @@ function update(dt) {
     targets.length = 0;
     dog.sniffTimer = 0;
     dog.distractTimer = 0;
-    // rotate by camera yaw so W is up-screen
-    const k = Math.SQRT1_2;
-    const wx = (ax - ay) * k;
-    const wz = (-ax - ay) * k;
+    // Derive ground-plane axes from the camera so movement matches the viewport exactly.
+    // Three.js camera: local +X = screen-right, local +Y = screen-up, looks down -Z.
+    const r = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0); // screen-right
+    const u = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1); // screen-up
+    // Project onto XZ ground and normalize
+    let rx = r.x, rz = r.z, rl = Math.hypot(rx, rz) || 1;
+    rx /= rl; rz /= rl;
+    let ux = u.x, uz = u.z, ul = Math.hypot(ux, uz) || 1;
+    ux /= ul; uz /= ul;
+    // ay is +down, so screen-up contribution is -ay
+    const wx = rx * ax + ux * (-ay);
+    const wz = rz * ax + uz * (-ay);
     const [nx, ny] = norm(wx, wz);
     dog.vx += nx * ACCEL * dt;
     dog.vy += ny * ACCEL * dt;
