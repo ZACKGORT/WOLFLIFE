@@ -116,17 +116,14 @@
       text-align: right;
     }
 
-    #barkBtn {
+    #barkBtn, #peeBtn {
       display: none;
       position: fixed;
-      right: 18px;
-      bottom: 64px;
       z-index: 6;
       width: 76px;
       height: 76px;
       border-radius: 50%;
       border: 3px solid var(--cream);
-      background: var(--rust);
       color: var(--cream);
       font-family: var(--display);
       font-weight: 900;
@@ -139,13 +136,29 @@
       -webkit-user-select: none;
       user-select: none;
     }
+    #barkBtn {
+      right: 18px;
+      bottom: 64px;
+      background: var(--rust);
+    }
     #barkBtn:active { transform: scale(0.93); background: #d96a3f; }
-    @media (pointer: coarse) { #barkBtn { display: flex; } }
+    #peeBtn {
+      right: 18px;
+      bottom: 152px;
+      background: #c9a03a;
+      font-size: 22px;
+      line-height: 1;
+    }
+    #peeBtn:active { transform: scale(0.93); background: #e0b84a; }
+    @media (pointer: coarse) {
+      #barkBtn, #peeBtn { display: flex; }
+    }
   </style>
 </head>
 <body>
   <canvas id="game"></canvas>
 
+  <button id="peeBtn" type="button" aria-label="Pee">💧</button>
   <button id="barkBtn" type="button">WOOF!</button>
 
   <div id="stats">
@@ -335,11 +348,19 @@
       ctx.globalAlpha = 1;
     }
 
-    // touch screens get an on-screen bark button
+    // touch screens get on-screen bark + pee buttons
     const barkBtn = document.getElementById("barkBtn");
     barkBtn.addEventListener("pointerdown", e => { e.preventDefault(); ensureAudio(); keys.bark = true; });
     ["pointerup", "pointercancel", "pointerleave"].forEach(ev =>
       barkBtn.addEventListener(ev, () => { keys.bark = false; }));
+
+    const peeBtn = document.getElementById("peeBtn");
+    peeBtn.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      ensureAudio();
+      startPee();
+    });
 
     window.addEventListener("keydown", e => {
       if (e.key === "m" || e.key === "M") {
@@ -405,14 +426,14 @@
     window.addEventListener("mousemove", e => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
-      mouse.visible = !e.target.closest("#stats, #barkBtn");
+      mouse.visible = !e.target.closest("#stats, #barkBtn, #peeBtn");
     });
     document.documentElement.addEventListener("mouseleave", () => { mouse.visible = false; });
     document.documentElement.addEventListener("mouseenter", () => { mouse.visible = true; });
 
     window.addEventListener("mousedown", e => {
       ensureAudio();
-      if (e.target.closest("#stats, #barkBtn")) return;
+      if (e.target.closest("#stats, #barkBtn, #peeBtn")) return;
       mouse.x = e.clientX; mouse.y = e.clientY; mouse.visible = true;
       if (e.button === 0) {
         mouse.left = true; mouse.pulse = 1; mouse.pulseKind = 0;
@@ -429,7 +450,7 @@
     window.addEventListener("contextmenu", e => e.preventDefault());
     window.addEventListener("touchstart", e => {
       ensureAudio();
-      if (e.target.closest("#stats, #barkBtn")) return;
+      if (e.target.closest("#stats, #barkBtn, #peeBtn")) return;
       e.preventDefault();
       mouse.visible = false;
       const t = e.touches[0];
