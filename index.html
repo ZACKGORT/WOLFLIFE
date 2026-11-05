@@ -107,6 +107,31 @@
       color: #f0a63d; text-shadow: 0 0 4px #2b2620, 0 1px 0 #2b2620, 1px 0 0 #2b2620, -1px 0 0 #2b2620, 0 -1px 0 #2b2620;
       white-space: nowrap; opacity: 1; transition: none;
     }
+    #pooMeter {
+      position: fixed; z-index: 7; display: none; pointer-events: none;
+      width: 58px; height: 9px; transform: translate(-50%, 28px);
+      border: 2px solid var(--cream); border-radius: 6px;
+      background: rgba(43,38,32,0.7); overflow: hidden;
+    }
+    #pooMeter .fill { height: 100%; width: 0%; background: #8a5a2b; }
+    .poo-emoji .s {
+      position: absolute; left: 50%; bottom: 70%; width: 6px; height: 6px; margin-left: -3px;
+      border-radius: 50%; background: rgba(255,255,255,0.9); filter: blur(1.5px);
+      opacity: 0; animation: pooSteam 1.9s ease-out infinite;
+    }
+    .poo-emoji .s1 { --dx: 5px; }
+    .poo-emoji .s2 { --dx: -6px; margin-left: -6px; animation-delay: 0.6s; }
+    .poo-emoji .s3 { --dx: 2px; margin-left: 0; animation-delay: 1.2s; }
+    @keyframes pooSteam {
+      0%   { transform: translate(0, 0) scale(0.5); opacity: 0; }
+      20%  { opacity: calc(var(--steam, 1) * 0.75); }
+      100% { transform: translate(var(--dx, 4px), -26px) scale(1.8); opacity: 0; }
+    }
+    .poo-emoji {
+      position: absolute; transform: translate(-50%, -50%); pointer-events: none;
+      line-height: 1; -webkit-user-select: none; user-select: none;
+      filter: drop-shadow(0 2px 1px rgba(0,0,0,0.35));
+    }
     #penHud {
       position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
       z-index: 6; background: rgba(43,38,32,0.78); color: var(--cream);
@@ -174,12 +199,13 @@
       <span class="k">🌼 Flowers sniffed</span><span class="v" id="st-sniffs">0</span>
       <span class="k">🌸 Flowers found</span><span class="v" id="st-found">0</span>
       <span class="k">💧 Pee pees</span><span class="v" id="st-pees">0</span>
+      <span class="k">💩 Poos</span><span class="v" id="st-poos">0</span>
       <span class="k">🔊 Barks</span><span class="v" id="st-barks">0</span>
       <span class="k">🐾 Distance run</span><span class="v" id="st-dist">0 m</span>
       <span class="k">⏱ Time played</span><span class="v" id="st-time">0:00</span>
     </div>
   </div>
-  <div id="hint">Herd every sheep into the pen · Hold-drag to paint Wolfie's path (release to set endpoint; click a flower to sniff) · Space to bark (M mutes) · Right-click to pee · WASD cancels · Esc resets</div>
+  <div id="hint">Herd every sheep into the pen · Hold-drag to paint Wolfie's path (release to set endpoint; click a flower to sniff) · Space to bark (M mutes) · Right-click to pee · hold right-click to build pressure, release to drop a 💩 · WASD / TFGH / arrows cancel · Esc resets</div>
 
   <script type="importmap">
   {
@@ -219,7 +245,7 @@ if (window.innerWidth < 600) statsEl.classList.add('closed');
 const stats = {
   sheepHerded: 0, pensCleared: 0, pensMissed: 0, bestPen: null,
   flowersSniffed: 0, found: new Set(),
-  pees: 0, barks: 0, barkHeld: false,
+  pees: 0, poos: 0, barks: 0, barkHeld: false,
   dist: 0, lx: null, ly: null
 };
 const statCache = {};
@@ -237,6 +263,7 @@ function renderStats() {
   setStat('st-sniffs', stats.flowersSniffed);
   setStat('st-found', stats.found.size + ' / ' + flowers.length);
   setStat('st-pees', stats.pees);
+  setStat('st-poos', stats.poos);
   setStat('st-barks', stats.barks);
   const m = stats.dist * 0.05;
   setStat('st-dist', m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(2) + ' km');
@@ -334,6 +361,8 @@ const keyMap = {
   ArrowDown: 'down', s: 'down', S: 'down',
   ArrowLeft: 'left', a: 'left', A: 'left',
   ArrowRight: 'right', d: 'right', D: 'right',
+  // TFGH mirrors WASD (t = up, f = left, g = down, h = right)
+  t: 'up', T: 'up', f: 'left', F: 'left', g: 'down', G: 'down', h: 'right', H: 'right',
   ' ': 'bark'
 };
 window.addEventListener('keydown', e => {
@@ -1317,7 +1346,7 @@ const wingPal = [
       x, y,
       vx: rand(-28, 28), vy: rand(-22, 22), dir: rand(0, TAU),
       phase: rand(0, TAU), wing: 0, size: rand(0.75, 1.15),
-      c1: pal[0], c2: pal[1], rest: 0, wanderT: rand(1.5, 4)
+      c1: pal[0], c2: pal[1], rest: 0, wanderT: rand(1.5, 4), scatter: 0
     };
     butterflies.push(b);
     const g = new THREE.Group();
@@ -1523,7 +1552,7 @@ const dog = {
   x: FIELD.w * 0.5, y: FIELD.h * 0.82,
   vx: 0, vy: 0,
   dir: -Math.PI / 2, // face toward the flock (screen-up / -Z)
-  barkTimer: 0, peeTimer: 0, sniffTimer: 0, sniffFlower: null,
+  barkTimer: 0, barkImmune: 0, peeTimer: 0, sniffTimer: 0, sniffFlower: null,
   distractTimer: 0, distractTarget: null,
   idleAction: null, idleElapsed: 0, idleDuration: 0,
   idleTimer: 0, idleCooldown: 5,
@@ -1555,18 +1584,23 @@ function doBark() {
   const words = ['WOOF!', 'RUFF!', 'ARF!', 'BORK!'];
   spawnFloat(dbl ? 'WOOF WOOF!' : words[Math.floor(Math.random() * words.length)], dog.x, dog.y);
 
+  // A bark instantly snaps Wolfie out of any butterfly daze, sends the culprit
+  // (and anything nearby) flying, and keeps him from being re-dazed right away.
+  const dazer = dog.distractTarget;
   dog.distractTimer = 0;
   dog.distractTarget = null;
-  const BARK_R = 160;
+  dog.barkImmune = 2.4;
+  const BARK_R = 220;
   for (const b of butterflies) {
     const dx = b.x - dog.x, dy = b.y - dog.y;
     const d = hyp(dx, dy) || 0.001;
-    if (d < BARK_R) {
-      const force = (1 - d / BARK_R) * 220 + 40;
+    if (d < BARK_R || b === dazer) {
+      const force = (1 - Math.min(d, BARK_R) / BARK_R) * 140 + 80;
       const [nx, ny] = norm(dx, dy);
-      b.vx = nx * force + rand(-30, 30);
-      b.vy = ny * force + rand(-30, 30);
-      b.wanderT = rand(0.4, 1.2);
+      b.vx = nx * force + rand(-25, 25);
+      b.vy = ny * force + rand(-25, 25);
+      b.scatter = rand(1.6, 2.4);
+      b.wanderT = rand(1.0, 2.0);
     }
   }
   // visual ring
@@ -1579,6 +1613,93 @@ function doBark() {
   ring.userData.age = 0;
   barkRings.push(ring);
   scene.add(ring);
+}
+
+// ---------- Poo: hold right-click to build pressure, release to drop ----------
+const POO_TAP = 0.25;       // release before this = ordinary right-click pee
+const POO_MAX_HOLD = 1.6;   // seconds held to reach full pressure
+const POO_LIFE = 10;        // how long a poo stays on the field
+const POO_COOLDOWN = 10;    // one poo per this many seconds (matches its lifetime)
+const poo = { charging: false, t: 0, cool: 0, piles: [] };
+const pooMeter = document.createElement('div');
+pooMeter.id = 'pooMeter';
+pooMeter.innerHTML = '<div class="fill"></div>';
+document.body.appendChild(pooMeter);
+const pooFill = pooMeter.firstChild;
+
+function startPooCharge() {
+  if (poo.charging) return;
+  poo.charging = true;
+  poo.t = 0;
+  pooFill.style.width = '0%';
+}
+function cancelPooCharge() {
+  poo.charging = false;
+  poo.t = 0;
+  pooMeter.style.display = 'none';
+}
+function releasePoo() {
+  if (!poo.charging) return;
+  const held = poo.t;
+  cancelPooCharge();
+  if (held < POO_TAP) { startPee(); return; }   // quick right-click = pee pee
+  if (poo.cool > 0) { spawnFloat('💩 not yet…', dog.x, dog.y, '#f6efdf'); return; }
+  dropPoo(clamp((held - POO_TAP) / (POO_MAX_HOLD - POO_TAP), 0, 1));
+}
+function dropPoo(pressure) {
+  const c = Math.cos(dog.dir), s = Math.sin(dog.dir);
+  const x = clamp(dog.x - 16 * c, 20, FIELD.w - 20);
+  const y = clamp(dog.y - 16 * s, 20, FIELD.h - 20);
+  const size = 8 + pressure * 8;   // tiny: 8px to 16px
+  const el = document.createElement('div');
+  el.className = 'poo-emoji';
+  el.innerHTML = '💩<i class="s s1"></i><i class="s s2"></i><i class="s s3"></i>';
+  el.style.fontSize = size + 'px';
+  floatLabels.appendChild(el);
+  poo.piles.push({ el, x, y, age: 0 });
+  poo.cool = POO_COOLDOWN;
+  stats.poos++;
+  spawnFloat(pressure > 0.85 ? 'PLOP!!' : pressure > 0.4 ? 'plop!' : 'plip', dog.x, dog.y, '#c9a03a');
+}
+function clearPoo() {
+  cancelPooCharge();
+  poo.cool = 0;
+  for (const pile of poo.piles) pile.el.remove();
+  poo.piles.length = 0;
+}
+function updatePoo(dt) {
+  poo.cool = Math.max(0, poo.cool - dt);
+  if (poo.charging) {
+    poo.t = Math.min(POO_MAX_HOLD, poo.t + dt);
+    const f = clamp((poo.t - POO_TAP) / (POO_MAX_HOLD - POO_TAP), 0, 1);
+    // meter appears only once it's clearly a hold, and only if a poo is available
+    const showMeter = poo.t >= POO_TAP && poo.cool <= 0;
+    pooMeter.style.display = showMeter ? 'block' : 'none';
+    pooFill.style.width = (f * 100) + '%';
+    pooFill.style.background = f > 0.85 ? '#c4552e' : '#8a5a2b';
+  }
+  for (let i = poo.piles.length - 1; i >= 0; i--) {
+    const pile = poo.piles[i];
+    pile.age += dt;
+    if (pile.age > POO_LIFE) { pile.el.remove(); poo.piles.splice(i, 1); }
+  }
+}
+function syncPoo() {
+  if (poo.charging) {
+    pooMeter.style.left = mouse.x + 'px';
+    pooMeter.style.top = mouse.y + 'px';
+  }
+  for (const pile of poo.piles) {
+    const sc = worldToScreen(pile.x, 4, pile.y);
+    const pop = Math.min(1, pile.age / 0.25);
+    const scale = 0.4 + 0.6 * (1 + 2.2 * Math.pow(pop - 1, 3) + 1.2 * Math.pow(pop - 1, 2));
+    pile.el.style.left = sc.x + 'px';
+    pile.el.style.top = sc.y + 'px';
+    pile.el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+    pile.el.style.opacity = String(clamp((POO_LIFE - pile.age) / 1.5, 0, 1));
+    // steam is strongest while fresh, gone by ~8s
+    pile.el.style.setProperty('--steam', clamp(1 - (pile.age - 4) / 4, 0, 1).toFixed(2));
+  }
 }
 
 // ---------- Target markers ----------
@@ -1698,6 +1819,7 @@ document.documentElement.addEventListener('mouseleave', () => {
   mouse.visible = false;
   cursorEl.style.display = 'none';
   aimRing.visible = false;
+  cancelPooCharge();
   // If the pointer leaves the window mid-stroke, commit what we have.
   if (drawingPath) {
     const last = drawPoints[drawPoints.length - 1];
@@ -1721,7 +1843,7 @@ window.addEventListener('mousedown', e => {
     if (!p) return;
     mouse.right = true;
     cursorEl.classList.add('pressed');
-    startPee();
+    startPooCharge();
   }
 });
 window.addEventListener('mouseup', e => {
@@ -1732,10 +1854,11 @@ window.addEventListener('mouseup', e => {
     }
     mouse.left = false;
   }
-  if (e.button === 2) mouse.right = false;
+  if (e.button === 2) { mouse.right = false; releasePoo(); }
   if (!mouse.left && !mouse.right) cursorEl.classList.remove('pressed');
 });
 window.addEventListener('contextmenu', e => e.preventDefault());
+window.addEventListener('blur', () => { mouse.right = false; cancelPooCharge(); });
 window.addEventListener('touchstart', e => {
   ensureAudio();
   if (isGameUiTarget(e.target)) return;
@@ -1911,8 +2034,10 @@ function updateButterflies(dt) {
     b.phase += dt;
     b.wing = Math.sin(b.phase * 18) * 0.55;
     b.rest = Math.max(0, b.rest - dt);
+    b.scatter = Math.max(0, (b.scatter || 0) - dt);
+    const fleeing = b.scatter > 0;
     b.wanderT -= dt;
-    if (b.wanderT <= 0) {
+    if (b.wanderT <= 0 && !fleeing) {
       b.wanderT = rand(1.2, 3.8);
       const a = rand(0, TAU);
       b.vx = Math.cos(a) * rand(18, 38);
@@ -1920,8 +2045,13 @@ function updateButterflies(dt) {
     }
     b.vx += rand(-12, 12) * dt; b.vy += rand(-10, 10) * dt;
     const sp = hyp(b.vx, b.vy);
-    if (sp > 42) { b.vx *= 42 / sp; b.vy *= 42 / sp; }
-    if (sp < 12) { const [nx, ny] = norm(b.vx || 1, b.vy || 0); b.vx = nx * 16; b.vy = ny * 16; }
+    if (sp > 42) {
+      // scattered butterflies keep their speed; afterwards they ease back to a flutter
+      const k = fleeing ? 0 : 1 - Math.exp(-dt * 3);
+      const target = fleeing ? Math.min(sp, 220) : sp + (42 - sp) * k;
+      b.vx *= target / sp; b.vy *= target / sp;
+    }
+    if (sp < 12 && !fleeing) { const [nx, ny] = norm(b.vx || 1, b.vy || 0); b.vx = nx * 16; b.vy = ny * 16; }
     b.x += b.vx * dt; b.y += b.vy * dt;
     if (b.x < 20) { b.x = 20; b.vx = Math.abs(b.vx); }
     if (b.x > FIELD.w - 20) { b.x = FIELD.w - 20; b.vx = -Math.abs(b.vx); }
@@ -1932,9 +2062,12 @@ function updateButterflies(dt) {
     }
   }
   dog.distractTimer = Math.max(0, dog.distractTimer - dt);
-  // grace period after load so he doesn't bolt into a wall from a spawn daze
-  if (nowT > 2.5 && dog.distractTimer <= 0 && dog.peeTimer <= 0 && dog.sniffTimer <= 0) {
+  dog.barkImmune = Math.max(0, (dog.barkImmune || 0) - dt);
+  // grace period after load so he doesn't bolt into a wall from a spawn daze;
+  // a fresh bark also keeps him clear-headed while the butterflies scatter
+  if (nowT > 2.5 && dog.distractTimer <= 0 && dog.barkImmune <= 0 && !keys.bark && dog.peeTimer <= 0 && dog.sniffTimer <= 0) {
     for (const b of butterflies) {
+      if (b.scatter > 0) continue;
       const d = dist(b.x, b.y, dog.x, dog.y);
       if (d < DISTRACT_R) {
         dog.distractTimer = DISTRACT_TIME;
@@ -2232,6 +2365,7 @@ function update(dt) {
     dog.sniffTimer = 0;
     dog.distractTimer = 0;
     dog.distractTarget = null;
+    dog.barkImmune = Math.max(dog.barkImmune || 0, 0.6);
   } else {
     dog.barkTimer = Math.max(0, dog.barkTimer - dt);
   }
@@ -2246,6 +2380,7 @@ function update(dt) {
   }
 
   updatePuddles(dt);
+  updatePoo(dt);
   updateFlowers(dt);
   updateDirt(dt);
   updateButterflies(dt);
@@ -2479,6 +2614,8 @@ function syncVisuals(dt) {
     aimRing.visible = false;
   }
 
+  syncPoo();
+
   // Floating labels
   for (const el of activeFloats) {
     if (!el._active) continue;
@@ -2512,7 +2649,7 @@ function resetGame() {
   Object.assign(dog, {
     x: FIELD.w * 0.5, y: FIELD.h * 0.82,
     vx: 0, vy: 0, dir: -Math.PI / 2,
-    barkTimer: 0, peeTimer: 0, sniffTimer: 0, sniffFlower: null,
+    barkTimer: 0, barkImmune: 0, peeTimer: 0, sniffTimer: 0, sniffFlower: null,
     distractTimer: 0, distractTarget: null,
     idleAction: null, idleElapsed: 0, idleDuration: 0,
     idleTimer: 0, idleCooldown: 5,
@@ -2529,6 +2666,7 @@ function resetGame() {
     floatPool.push(el);
   }
   activeFloats.length = 0;
+  clearPoo();
 
   for (const mesh of puddleMeshes) {
     scene.remove(mesh);
@@ -2587,6 +2725,7 @@ function resetGame() {
   stats.found.clear();
   stats.pees = 0;
   stats.barks = 0;
+  stats.poos = 0;
   stats.barkHeld = false;
   stats.dist = 0;
   stats.lx = null;
