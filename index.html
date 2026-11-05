@@ -167,6 +167,17 @@
       display: inline-block; font-size: 10px; opacity: 0.65;
       margin-left: 4px; font-weight: 600;
     }
+    #zoomWrap { position: relative; display: flex; }
+    #zoomPop { position: absolute; top: 100%; right: 0; padding-top: 8px; display: none; }
+    #zoomWrap:hover #zoomPop, #zoomWrap.dragging #zoomPop { display: block; }
+    #zoomPop .box {
+      display: flex; align-items: center; gap: 9px; padding: 8px 12px;
+      background: rgba(43,38,32,0.92); border-radius: 12px; color: var(--cream);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      font-family: var(--body); font-weight: 700; font-size: 11px;
+    }
+    #zoomPop input[type=range] { width: 130px; margin: 0; accent-color: #e8a33d; cursor: pointer; }
+    #zoomPop .val { min-width: 34px; text-align: right; font-variant-numeric: tabular-nums; color: var(--gold); }
   </style>
 </head>
 <body>
@@ -179,7 +190,15 @@
   <div id="viewSwitch">
     <button type="button" data-mode="iso" class="active">Iso <span class="key">1</span></button>
     <button type="button" data-mode="top">Top <span class="key">2</span></button>
-    <button type="button" id="zoomBtn" title="Zoom follow Wolfie (Z)">Zoom <span class="key">Z</span></button>
+    <div id="zoomWrap">
+      <button type="button" id="zoomBtn" title="Zoom follow Wolfie (Z) · hover for zoom level, scroll to adjust">Zoom <span class="key">Z</span></button>
+      <div id="zoomPop"><div class="box">
+        <span>−</span>
+        <input type="range" id="zoomSlider" min="1.1" max="4" step="0.05" value="2.38" aria-label="Zoom level" />
+        <span>+</span>
+        <span class="val" id="zoomVal">2.4×</span>
+      </div></div>
+    </div>
   </div>
 
   <button id="peeBtn" type="button" aria-label="Pee pee (right-click)">
@@ -219,7 +238,17 @@
 import * as THREE from 'three';
 
 // ---------- Constants & helpers ----------
-const FIELD = { w: 1600, h: 1000 };
+// Landscape board by default. On a portrait phone the grass is laid out vertically
+// instead, shaped to the screen's aspect ratio so it fills the space (top view).
+// (Decided once at load; isMobileUI is a hoisted function declaration below.)
+const FIELD = (() => {
+  const portrait = isMobileUI() && window.innerHeight > window.innerWidth;
+  if (!portrait) return { w: 1600, h: 1000 };
+  const aspect = Math.max(0.4, Math.min(0.8, window.innerWidth / window.innerHeight));
+  const AREA = 1500000;                       // about the same play area as desktop
+  const h = Math.round(Math.sqrt(AREA / aspect));
+  return { w: Math.round(h * aspect), h };
+})();
 const TAU = Math.PI * 2;
 const rand = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -544,6 +573,8 @@ function defaultCamMode() {
 }
 let camMode = defaultCamMode(); // 'iso' | 'top'
 let zoomFollow = false; // when true: tighter frustum + camera tracks Wolfie
+const ZOOM_DEFAULT = 0.42;
+let zoomLevel = ZOOM_DEFAULT; // frustum scale while zoomed (smaller = closer)
 
 const CAM_YAW = Math.PI / 4;
 const CAM_PITCH = Math.atan(1 / Math.SQRT2);
@@ -586,7 +617,7 @@ function fitCamera() {
   const aspect = window.innerWidth / window.innerHeight;
   // Iso & Top default to full-frame (board fills the view).
   // Zoom mode: tighter window so you can pan into "blind spots" by following Wolfie.
-  const zoomScale = zoomFollow ? 0.42 : 1.0;
+  const zoomScale = zoomFollow ? zoomLevel : 1.0;
   let hw, hh;
   if (camMode === 'top') {
     const halfW = (FIELD.w / 2) * zoomScale;
@@ -663,6 +694,37 @@ document.querySelectorAll('#viewSwitch button[data-mode]').forEach(btn => {
 });
 const zoomBtnEl = document.getElementById('zoomBtn');
 if (zoomBtnEl) zoomBtnEl.addEventListener('click', toggleZoom);
+
+// Zoom level slider (hover the Zoom button): value is magnification, 1.1x–4x.
+const ZOOM_MAG_MIN = 1.1, ZOOM_MAG_MAX = 4;
+const zoomWrap = document.getElementById('zoomWrap');
+const zoomSlider = document.getElementById('zoomSlider');
+const zoomValEl = document.getElementById('zoomVal');
+function syncZoomUI() {
+  const mag = 1 / zoomLevel;
+  zoomSlider.value = mag;
+  zoomValEl.textContent = mag.toFixed(1) + '×';
+}
+function setZoomMag(mag) {
+  mag = clamp(mag, ZOOM_MAG_MIN, ZOOM_MAG_MAX);
+  zoomLevel = 1 / mag;
+  syncZoomUI();
+  if (!zoomFollow) { toggleZoom(); return; }  // adjusting the level turns zoom on
+  placeCamera();
+}
+zoomSlider.addEventListener('input', () => setZoomMag(parseFloat(zoomSlider.value)));
+zoomWrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  setZoomMag((1 / zoomLevel) * Math.exp(-e.deltaY * 0.002));
+}, { passive: false });
+zoomSlider.addEventListener('pointerdown', () => zoomWrap.classList.add('dragging'));
+window.addEventListener('pointerup', () => {
+  if (zoomWrap.classList.contains('dragging')) {
+    zoomWrap.classList.remove('dragging');
+    zoomSlider.blur(); // hand the arrow keys back to Wolfie
+  }
+});
+syncZoomUI();
 
 // smooth follow + re-place camera each frame when zoomed
 function updateCameraFollow(dt) {
@@ -2737,6 +2799,8 @@ function resetGame() {
   // Return to the default camera and remove all visual target feedback.
   camMode = defaultCamMode();
   zoomFollow = false;
+  zoomLevel = ZOOM_DEFAULT;
+  syncZoomUI();
   follow.x = FIELD.w / 2;
   follow.z = FIELD.h / 2;
   placeCamera();
