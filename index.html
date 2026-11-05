@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>wolfie.life</title>
+  <title>Shepherd's Dog — Wolfie (Isometric 3D)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,500&family=Cabin:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -644,129 +644,264 @@ const puddleMat = new THREE.MeshStandardMaterial({
   color: 0xe2c846, roughness: 0.4, metalness: 0.05, transparent: true, opacity: 0.7, depthWrite: false
 });
 
-// ---------- Dog ----------
+// ---------- Dog (upgraded rig) ----------
 const dogGroup = new THREE.Group();
-function makeDog() {
-  // body — skinnier silhouette
-  const body = new THREE.Mesh(new THREE.SphereGeometry(12, 8, 6), dogMat);
-  body.scale.set(1.25, 0.58, 0.58);
-  body.castShadow = true;
-  dogGroup.add(body);
-  // chest fluff
-  const chest = new THREE.Mesh(new THREE.SphereGeometry(6.5, 7, 5), dogAccent);
-  chest.position.set(5, 0.2, 0);
-  chest.scale.set(0.95, 0.8, 0.85);
-  chest.castShadow = true;
-  dogGroup.add(chest);
-  // head
-  const head = new THREE.Mesh(new THREE.SphereGeometry(6.6, 8, 6), dogMat);
-  head.position.set(14.5, 1.8, 0);
-  head.castShadow = true;
-  dogGroup.add(head);
-  // topknot
-  const knot = new THREE.Mesh(new THREE.SphereGeometry(4.8, 6, 5), dogMat);
-  knot.position.set(13.5, 7.2, 0);
-  dogGroup.add(knot);
-  const knot2 = new THREE.Mesh(new THREE.SphereGeometry(3.3, 5, 4), dogMat);
-  knot2.position.set(10.5, 6.2, 2.2);
-  dogGroup.add(knot2);
-  const knot3 = new THREE.Mesh(new THREE.SphereGeometry(3.3, 5, 4), dogMat);
-  knot3.position.set(10.5, 6.2, -2.2);
-  dogGroup.add(knot3);
-  // ears
-  const earL = new THREE.Mesh(new THREE.SphereGeometry(3.1, 5, 4), dogAccent);
-  earL.position.set(11.5, 1.2, 4.8);
-  earL.scale.set(0.65, 1.05, 1.35);
-  earL.rotation.x = 0.4;
-  dogGroup.add(earL);
-  const earR = earL.clone();
-  earR.position.z = -4.8;
-  earR.rotation.x = -0.4;
-  dogGroup.add(earR);
-  // snout
-  const snout = new THREE.Mesh(new THREE.SphereGeometry(3.3, 6, 5), dogMat);
-  snout.position.set(20.5, 0.6, 0);
-  snout.scale.set(1.15, 0.7, 0.72);
-  dogGroup.add(snout);
-  // nose
-  const nose = new THREE.Mesh(new THREE.SphereGeometry(1.4, 5, 4), noseMat);
-  nose.position.set(24, 0.7, 0);
-  dogGroup.add(nose);
-  // collar
-  const collar = new THREE.Mesh(new THREE.TorusGeometry(5.6, 1.0, 6, 12, Math.PI * 1.1), collarMat);
-  collar.position.set(10, 0.2, 0);
-  collar.rotation.y = Math.PI / 2;
-  collar.rotation.x = 0.12;
-  dogGroup.add(collar);
-  // eyes
-  const eye = new THREE.Mesh(new THREE.SphereGeometry(1.15, 5, 4), noseMat);
-  eye.position.set(17, 3.4, 2.3);
-  dogGroup.add(eye);
-  const eye2 = eye.clone();
-  eye2.position.z = -2.3;
-  dogGroup.add(eye2);
-  // legs
-  const legMat = new THREE.MeshStandardMaterial({ color: 0xefe9dc, roughness: 0.85, metalness: 0, flatShading: true });
-  const pawMat = new THREE.MeshStandardMaterial({ color: 0xf4efe4, roughness: 0.85, metalness: 0, flatShading: true });
-  function makeLeg(x, z) {
-    const leg = new THREE.Group();
-    const upper = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.2, 7, 5), legMat);
-    upper.position.y = -3.5;
-    upper.castShadow = true;
-    leg.add(upper);
-    const paw = new THREE.Mesh(new THREE.SphereGeometry(1.6, 5, 4), pawMat);
-    paw.position.y = -7.2;
-    paw.scale.set(1.1, 0.7, 1.2);
-    leg.add(paw);
-    leg.position.set(x, 0, z);
-    return leg;
+const dogPivot = new THREE.Group();
+dogGroup.add(dogPivot);
+
+function RigDog() {
+  this.root = new THREE.Object3D();
+  this.fur   = new THREE.MeshStandardMaterial({ color: 0xf0ebe3, roughness: 0.82, metalness: 0, flatShading: true });
+  this.furD  = new THREE.MeshStandardMaterial({ color: 0xd8d2c8, roughness: 0.86, metalness: 0, flatShading: true });
+  this.noseM = new THREE.MeshStandardMaterial({ color: 0x1a1210, roughness: 0.45, metalness: 0, flatShading: true });
+  this.eyeW  = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, metalness: 0, flatShading: true });
+  this.eyeB  = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4, metalness: 0, flatShading: true });
+
+  this.hips = new THREE.Object3D();
+  this.root.add(this.hips);
+
+  this.spine = new THREE.Object3D();
+  this.spine.position.y = 6;
+  this.hips.add(this.spine);
+
+  const bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(14, 12, 28), this.fur);
+  bodyMesh.position.set(0, 2, 0);
+  bodyMesh.castShadow = true;
+  this.spine.add(bodyMesh);
+
+  this.chest = new THREE.Object3D();
+  this.chest.position.set(0, 1, 10);
+  this.spine.add(this.chest);
+
+  this.neck = new THREE.Object3D();
+  this.neck.position.set(0, 4, 6);
+  this.chest.add(this.neck);
+
+  const neckMesh = new THREE.Mesh(new THREE.BoxGeometry(7, 7, 9), this.fur);
+  neckMesh.position.set(0, 0, 3);
+  this.neck.add(neckMesh);
+
+  this.head = new THREE.Object3D();
+  this.head.position.set(0, 1, 8);
+  this.neck.add(this.head);
+
+  const headMesh = new THREE.Mesh(new THREE.BoxGeometry(12, 11, 13), this.fur);
+  headMesh.castShadow = true;
+  this.head.add(headMesh);
+
+  const muzzle = new THREE.Mesh(new THREE.BoxGeometry(8, 6, 9), this.furD);
+  muzzle.position.set(0, -1.5, 9);
+  this.head.add(muzzle);
+
+  const nose = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 2.5), this.noseM);
+  nose.position.set(0, 1.2, 4.5);
+  muzzle.add(nose);
+
+  const eyeGeo = new THREE.BoxGeometry(2.2, 3.2, 3);
+  this.eyeL = new THREE.Mesh(eyeGeo, this.eyeW);
+  this.eyeL.position.set(4.2, 2, 5);
+  this.head.add(this.eyeL);
+  const irisL = new THREE.Mesh(new THREE.BoxGeometry(1.1, 2.2, 2.2), this.eyeB);
+  irisL.position.set(0.9, 0.2, 1.2);
+  this.eyeL.add(irisL);
+
+  this.eyeR = this.eyeL.clone();
+  this.eyeR.position.x = -4.2;
+  this.eyeR.children[0].position.x = -0.9;
+  this.head.add(this.eyeR);
+
+  this.earL = new THREE.Object3D();
+  this.earL.position.set(5.5, 5, 0);
+  this.head.add(this.earL);
+  const earMeshL = new THREE.Mesh(new THREE.BoxGeometry(5.5, 9, 3), this.furD);
+  earMeshL.position.set(0, -4, 0);
+  this.earL.add(earMeshL);
+
+  this.earR = new THREE.Object3D();
+  this.earR.position.set(-5.5, 5, 0);
+  this.head.add(this.earR);
+  this.earR.add(earMeshL.clone());
+
+  this.tail1 = new THREE.Object3D();
+  this.tail1.position.set(0, 4, -13);
+  this.spine.add(this.tail1);
+  const t1 = new THREE.Mesh(new THREE.BoxGeometry(5, 5, 9), this.fur);
+  t1.position.z = -4;
+  this.tail1.add(t1);
+
+  this.tail2 = new THREE.Object3D();
+  this.tail2.position.set(0, 0, -9);
+  this.tail1.add(this.tail2);
+  const t2 = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 8), this.furD);
+  t2.position.z = -3.5;
+  this.tail2.add(t2);
+
+  this.tail3 = new THREE.Object3D();
+  this.tail3.position.set(0, 0, -8);
+  this.tail2.add(this.tail3);
+  const t3 = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 6), this.fur);
+  t3.position.z = -2.5;
+  this.tail3.add(t3);
+
+  const self = this;
+  function makeLeg(parent, x, z, isFront) {
+    const hip = new THREE.Object3D();
+    hip.position.set(x, isFront ? 0 : -1, z);
+    parent.add(hip);
+
+    const upper = new THREE.Object3D();
+    hip.add(upper);
+    const upperMesh = new THREE.Mesh(new THREE.BoxGeometry(5, 11, 5), isFront ? self.fur : self.furD);
+    upperMesh.position.y = -5;
+    upper.add(upperMesh);
+
+    const knee = new THREE.Object3D();
+    knee.position.set(0, -11, 0);
+    upper.add(knee);
+    const lowerMesh = new THREE.Mesh(new THREE.BoxGeometry(4, 9, 4), self.furD);
+    lowerMesh.position.y = -4;
+    knee.add(lowerMesh);
+
+    const paw = new THREE.Object3D();
+    paw.position.set(0, -9, 0);
+    knee.add(paw);
+    const pawMesh = new THREE.Mesh(new THREE.BoxGeometry(5.5, 3, 7), self.fur);
+    pawMesh.position.set(0, -1, isFront ? 1.5 : -1);
+    paw.add(pawMesh);
+
+    return { hip: hip, upper: upper, knee: knee, paw: paw };
   }
-  const frontL = makeLeg(5, 3.2);
-  const frontR = makeLeg(5, -3.2);
-  const hindL = makeLeg(-6, 3.0);
-  const hindR = makeLeg(-6, -3.0);
-  dogGroup.add(frontL, frontR, hindL, hindR);
-  // Longer, gently curled tail: an animated root with a tapered stem and soft tuft.
-  const tail = new THREE.Group();
-  tail.position.set(-12.5, 3.0, 0);
-  const tailCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(-4.5, 1.8, 0),
-    new THREE.Vector3(-9.5, 3.2, 0.8),
-    new THREE.Vector3(-14.5, 6.4, 1.8)
-  ]);
-  const tailStem = new THREE.Mesh(
-    new THREE.TubeGeometry(tailCurve, 10, 1.65, 5, false), dogMat
-  );
-  tailStem.castShadow = true;
-  tail.add(tailStem);
-  const tailTuft = new THREE.Mesh(new THREE.SphereGeometry(3.25, 7, 5), dogMat);
-  tailTuft.position.set(-14.7, 6.5, 1.8);
-  tailTuft.scale.set(1.15, 1.05, 1.0);
-  tailTuft.castShadow = true;
-  tail.add(tailTuft);
-  dogGroup.add(tail);
-  dogGroup.userData.tail = tail;
-  dogGroup.userData.earL = earL;
-  dogGroup.userData.earR = earR;
-  dogGroup.userData.head = head;
-  dogGroup.userData.hindL = hindL;
-  dogGroup.userData.hindR = hindR;
-  dogGroup.userData.frontL = frontL;
-  dogGroup.userData.frontR = frontR;
+
+  this.legFL = makeLeg(this.chest,  5.5,  2, true);
+  this.legFR = makeLeg(this.chest, -5.5,  2, true);
+  this.legBL = makeLeg(this.hips,   5.5, -8, false);
+  this.legBR = makeLeg(this.hips,  -5.5, -8, false);
+
+  this.legFL.hip.rotation.z = -0.12;
+  this.legFR.hip.rotation.z =  0.12;
+  this.legBL.hip.rotation.z = -0.18;
+  this.legBR.hip.rotation.z =  0.18;
+
+  this.time = 0;
+  this.speed = 0;
+  this.targetSpeed = 0;
+
+  this.root.traverse(function (o) {
+    if (o.isMesh) {
+      o.castShadow = true;
+      o.receiveShadow = true;
+    }
+  });
 }
-makeDog();
-dogGroup.scale.setScalar(1.2);
+
+RigDog.prototype.update = function (dt) {
+  this.speed += (this.targetSpeed - this.speed) * Math.min(1, dt * 6);
+  const isMoving = this.speed > 0.05;
+  const gaitFreq = 4.0 + this.speed * 4.2;
+  this.time += dt * gaitFreq;
+
+  const t = this.time;
+  const amp = Math.min(1.15, this.speed);
+
+  const bobAmt = (0.85 + this.speed * 1.5) * amp;
+  this.hips.position.y = Math.sin(t * 2) * bobAmt;
+
+  const spineFlex = Math.sin(t * 2) * 0.15 * amp * (0.55 + this.speed * 0.55);
+  this.spine.rotation.x = spineFlex;
+  this.chest.rotation.x = -spineFlex * 0.65;
+  this.hips.rotation.z = Math.sin(t) * 0.055 * amp;
+
+  this.neck.rotation.x = -0.18 + Math.sin(t * 2 + 0.4) * 0.13 * amp;
+  this.head.rotation.x = Math.sin(t * 2 + 0.9) * 0.09 * amp;
+  this.head.rotation.z = Math.sin(t + 0.3) * 0.05 * amp;
+
+  const earFlop = Math.sin(t * 2.3) * 0.5 * amp;
+  this.earL.rotation.x = 0.3 + earFlop;
+  this.earR.rotation.x = 0.3 - earFlop * 0.85;
+  this.earL.rotation.z = -0.18 + Math.sin(t * 1.8) * 0.22 * amp;
+  this.earR.rotation.z =  0.18 - Math.sin(t * 1.8) * 0.22 * amp;
+
+  const blink = (Math.sin(this.time * 0.065) > 0.97) ? 0.08 : 1;
+  this.eyeL.scale.y = blink;
+  this.eyeR.scale.y = blink;
+
+  const wag = Math.sin(t * 3.8) * (0.85 + this.speed * 0.9);
+  this.tail1.rotation.x = -0.55 + Math.sin(t * 2) * 0.28 * amp;
+  this.tail1.rotation.z = wag * 0.65;
+  this.tail2.rotation.x = Math.sin(t * 2 + 0.5) * 0.32 * amp;
+  this.tail2.rotation.z = wag * 0.95;
+  this.tail3.rotation.z = wag * 1.15;
+  this.tail3.rotation.x = Math.sin(t * 2 + 1.1) * 0.22 * amp;
+
+  const gallop = this.speed > 1.15;
+  if (gallop) this._gallopGait(t, amp);
+  else this._trotGait(t, amp);
+
+  if (!isMoving) {
+    this.spine.position.y = 6 + Math.sin(this.time * 1.3) * 0.25;
+    this.neck.rotation.x = -0.12 + Math.sin(this.time * 0.85) * 0.045;
+    this.tail1.rotation.z = Math.sin(this.time * 2.1) * 0.4;
+    this.tail2.rotation.z = Math.sin(this.time * 2.1 + 0.4) * 0.5;
+  } else {
+    this.spine.position.y = 6;
+  }
+};
+
+RigDog.prototype._trotGait = function (t, amp) {
+  const swing = 0.9 * amp;
+  const kneeA = 1.2 * amp;
+  this._driveLeg(this.legFL, t,           swing, kneeA, true);
+  this._driveLeg(this.legFR, t + Math.PI, swing, kneeA, true);
+  this._driveLeg(this.legBL, t + Math.PI, swing * 0.95, kneeA * 0.9, false);
+  this._driveLeg(this.legBR, t,           swing * 0.95, kneeA * 0.9, false);
+};
+
+RigDog.prototype._gallopGait = function (t, amp) {
+  const swing = 1.1 * amp;
+  const kneeA = 1.4 * amp;
+  this._driveLeg(this.legBL, t,                         swing * 1.08, kneeA, false);
+  this._driveLeg(this.legBR, t + 0.55,                   swing * 1.08, kneeA, false);
+  this._driveLeg(this.legFL, t + Math.PI * 0.95,         swing, kneeA, true);
+  this._driveLeg(this.legFR, t + Math.PI * 0.95 + 0.55,  swing, kneeA, true);
+  this.spine.rotation.x += Math.sin(t * 2) * 0.09 * amp;
+};
+
+RigDog.prototype._driveLeg = function (leg, phase, swingAmp, kneeAmp, isFront) {
+  const upperX = Math.sin(phase) * swingAmp;
+  if (isFront) leg.upper.rotation.x = upperX * 0.95 - 0.18;
+  else leg.upper.rotation.x = upperX * 1.08 + 0.08;
+  const kneePhase = phase + (isFront ? 0.65 : 0.95);
+  const kneeFlex = Math.max(0, Math.sin(kneePhase)) * kneeAmp;
+  if (isFront) leg.knee.rotation.x = 0.28 + kneeFlex;
+  else leg.knee.rotation.x = -0.38 - kneeFlex * 0.95;
+  leg.paw.rotation.x = -leg.knee.rotation.x * 0.4 - leg.upper.rotation.x * 0.22;
+  leg.upper.rotation.z = 0;
+};
+
+const wolf = new RigDog();
+// Rig faces +Z; the game treats local +X as forward.
+wolf.root.rotation.y = Math.PI / 2;
+dogPivot.add(wolf.root);
+wolf.root.updateMatrixWorld(true);
+{
+  const bb = new THREE.Box3().setFromObject(wolf.root);
+  const height = bb.max.y - bb.min.y;
+  const center = height * 0.42;
+  dogPivot.position.y = center;
+  wolf.root.position.y = -bb.min.y - center;
+}
+dogGroup.scale.setScalar(0.64);
 scene.add(dogGroup);
+
 
 // Dog shadow blob
 const dogShadow = new THREE.Mesh(
-  new THREE.CircleGeometry(12, 16),
+  new THREE.CircleGeometry(18, 20),
   new THREE.MeshBasicMaterial({ color: 0x1e2a0f, transparent: true, opacity: 0.32, depthWrite: false })
 );
 dogShadow.rotation.x = -Math.PI / 2;
 dogShadow.position.y = 0.15;
-dogShadow.scale.set(1.08, 0.9, 0.64); // slightly tighter under Wolfie's slimmer silhouette
+dogShadow.scale.set(1.15, 0.72, 1);
 scene.add(dogShadow);
 
 // ---------- Sheep ----------
@@ -1921,7 +2056,6 @@ function update(dt) {
 
 // ---------- Sync 3D transforms ----------
 function syncVisuals(dt) {
-  // Dog: procedural poses share the same model and smoothly yield to player control.
   const sniffingNow = dog.sniffTimer > 0;
   const distractedNow = (dog.distractTimer || 0) > 0;
   const peeingNow = dog.peeTimer > 0;
@@ -1931,126 +2065,97 @@ function syncVisuals(dt) {
   const rollingNow = idleAction === 'roll';
   const zoomiesNow = idleAction === 'zoomies';
   const digPhase = nowT * 15;
-  let bodyBob = 0;
   let rollAngle = 0;
-  if (diggingNow) bodyBob = Math.abs(Math.sin(digPhase)) * 0.8;
   if (rollingNow) {
-    // Roll onto his back, wriggle, then roll upright again.
     const ease = v => v * v * (3 - 2 * v);
     if (idleProgress < 0.32) rollAngle = Math.PI * ease(idleProgress / 0.32);
     else if (idleProgress < 0.70) rollAngle = Math.PI + Math.sin((idleProgress - 0.32) / 0.38 * Math.PI * 4) * 0.22;
     else rollAngle = Math.PI * (1 - ease((idleProgress - 0.70) / 0.30)) + TAU * ease((idleProgress - 0.70) / 0.30);
   }
-  dogGroup.position.set(dog.x, 9.2 + bodyBob, dog.y);
-  dogGroup.rotation.set(rollAngle, -dog.dir, peeingNow ? 0.14 : (diggingNow ? Math.sin(digPhase * 0.5) * 0.025 : 0));
 
-  const tail = dogGroup.userData.tail;
-  if (tail) {
-    const wagSpeed = peeingNow ? 3 : (zoomiesNow ? 18 : (diggingNow ? 13 : (rollingNow ? 10 : (sniffingNow ? 8 : 6 + hyp(dog.vx, dog.vy) * 0.04))));
-    const wagAmount = rollingNow ? 0.55 : (zoomiesNow ? 0.62 : 0.38);
-    tail.rotation.y = Math.sin(nowT * wagSpeed) * wagAmount;
-    tail.rotation.z = 0.12 + Math.sin(nowT * (wagSpeed * 0.72) + 0.6) * (rollingNow ? 0.22 : 0.12);
+  const spd = hyp(dog.vx, dog.vy);
+  const posing = peeingNow || sniffingNow || diggingNow || rollingNow;
+  wolf.targetSpeed = (!posing && spd > 16)
+    ? clamp(spd / 150, 0.42, zoomiesNow ? 1.85 : 1.55)
+    : 0;
+  wolf.update(dt);
+
+  wolf.legFL.hip.rotation.z = -0.12;
+  wolf.legFR.hip.rotation.z =  0.12;
+  wolf.legBL.hip.rotation.z = -0.18;
+  wolf.legBR.hip.rotation.z =  0.18;
+
+  if (sniffingNow) {
+    const bob = Math.sin(nowT * 14) * 0.1;
+    wolf.spine.rotation.x = 0.22;
+    wolf.neck.rotation.x = 0.78 + bob;
+    wolf.head.rotation.x = 0.46 + bob;
+    wolf.head.rotation.z = Math.sin(nowT * 9) * 0.08;
+  } else if (distractedNow) {
+    wolf.neck.rotation.x = -0.48;
+    wolf.head.rotation.x = -0.28;
+    wolf.earL.rotation.x = -0.2;
+    wolf.earR.rotation.x = -0.2;
+  } else if (diggingNow) {
+    const scoopL = Math.max(0, Math.sin(digPhase));
+    const scoopR = Math.max(0, Math.sin(digPhase + Math.PI));
+    wolf.spine.rotation.x = 0.48;
+    wolf.neck.rotation.x = 0.4;
+    wolf.head.rotation.x = 0.22 + Math.sin(digPhase) * 0.06;
+    wolf.legFL.upper.rotation.x = -0.5 - scoopL * 1.2;
+    wolf.legFR.upper.rotation.x = -0.5 - scoopR * 1.2;
+    wolf.legFL.knee.rotation.x = 0.5 + scoopL * 0.95;
+    wolf.legFR.knee.rotation.x = 0.5 + scoopR * 0.95;
+    wolf.legFL.paw.rotation.x = -0.35;
+    wolf.legFR.paw.rotation.x = -0.35;
+    wolf.legBL.upper.rotation.x = 0.28;
+    wolf.legBR.upper.rotation.x = 0.28;
+  } else if (rollingNow) {
+    const kick = Math.sin(nowT * 12) * 0.28;
+    wolf.legFL.upper.rotation.x = -1.15;
+    wolf.legFR.upper.rotation.x = -1.15;
+    wolf.legBL.upper.rotation.x = 1.05;
+    wolf.legBR.upper.rotation.x = 1.05;
+    wolf.legFL.hip.rotation.z = -0.75 - kick;
+    wolf.legFR.hip.rotation.z =  0.75 + kick;
+    wolf.legBL.hip.rotation.z = -0.85;
+    wolf.legBR.hip.rotation.z =  0.85;
+    wolf.neck.rotation.x = -0.35;
+    wolf.head.rotation.x = Math.sin(nowT * 8) * 0.2;
+    wolf.earL.rotation.x = 0.7;
+    wolf.earR.rotation.x = 0.7;
   }
 
-  // Head pose: sniff, alert, digging, or a relaxed neutral look.
-  const head = dogGroup.userData.head;
-  if (head) {
-    if (sniffingNow) {
-      const bob = Math.sin(nowT * 14) * 0.14;
-      head.rotation.x = 0.65 + bob;
-      head.rotation.z = 0;
-      head.position.y = 0.6 + bob * 1.5;
-      head.position.x = 15.0 + Math.sin(nowT * 9) * 0.8;
-    } else if (distractedNow) {
-      head.rotation.x = -0.28;
-      head.rotation.z = 0;
-      head.position.y = 2.6;
-      head.position.x = 14.5;
-    } else if (diggingNow) {
-      head.rotation.x = 0.08;
-      head.rotation.z = 0.18 + Math.sin(digPhase) * 0.05;
-      head.position.y = 1.0 + Math.sin(digPhase * 2) * 0.25;
-      head.position.x = 15.2;
-    } else if (rollingNow) {
-      head.rotation.x = Math.sin(nowT * 8) * 0.16;
-      head.rotation.z = 0.08;
-      head.position.y = 1.8;
-      head.position.x = 14.5;
-    } else {
-      head.rotation.x = 0;
-      head.rotation.z = 0;
-      head.position.y = 1.8;
-      head.position.x = 14.5;
-    }
-  }
-
-  const earL = dogGroup.userData.earL;
-  const earR = dogGroup.userData.earR;
-  if (earL && earR) {
-    if (rollingNow) {
-      earL.rotation.x = 0.7;
-      earR.rotation.x = -0.7;
-    } else if (distractedNow) {
-      earL.rotation.x = 0.15;
-      earR.rotation.x = -0.15;
-    } else {
-      earL.rotation.x = 0.4;
-      earR.rotation.x = -0.4;
-    }
-  }
-
-  const hl = dogGroup.userData.hindL;
-  const hr = dogGroup.userData.hindR;
-  const fl = dogGroup.userData.frontL;
-  const fr = dogGroup.userData.frontR;
-  if (peeingNow && hl && hr) {
-    // Hind-left lifts high and visibly out to the side; the right leg stays planted.
-    if (fl) fl.rotation.set(0, 0, 0);
-    if (fr) fr.rotation.set(0, 0, 0);
+  if (peeingNow) {
     const t = 1 - dog.peeTimer / PEE_TIME;
     const eased = t < 0.15 ? (t / 0.15) ** 2 * (3 - 2 * (t / 0.15)) :
       (t > 0.85 ? ((1 - t) / 0.15) ** 2 * (3 - 2 * ((1 - t) / 0.15)) : 1);
-    hl.rotation.set(-0.88 * eased, 0, -0.62 * eased);
-    hl.position.set(-6, 2.8 * eased, 3.0 + 1.8 * eased);
-    hr.rotation.set(0, 0, 0.08 * eased);
-  } else if (diggingNow && fl && fr) {
-    // Alternate forepaw scoops, with the shoulders following the digging rhythm.
-    fl.rotation.set(-0.16, 0, Math.max(0, Math.sin(digPhase)) * 0.86);
-    fr.rotation.set(-0.16, 0, Math.max(0, Math.sin(digPhase + Math.PI)) * 0.86);
-    hl.rotation.set(0, 0, 0.04);
-    hr.rotation.set(0, 0, -0.04);
-  } else if (rollingNow && fl && fr && hl && hr) {
-    const kick = Math.sin(nowT * 12) * 0.35;
-    fl.rotation.set(0.45 + kick, 0, 0.72);
-    fr.rotation.set(-0.45 - kick, 0, -0.72);
-    hl.rotation.set(-0.35 - kick, 0, 0.62);
-    hr.rotation.set(0.35 + kick, 0, -0.62);
-  } else {
-    // Restore the hips to their neutral positions before applying the walk cycle.
-    if (hl) { hl.position.set(-6, 0, 3.0); hl.rotation.set(0, 0, 0); }
-    if (hr) { hr.position.set(-6, 0, -3.0); hr.rotation.set(0, 0, 0); }
-    if (fl) fl.rotation.set(0, 0, 0);
-    if (fr) fr.rotation.set(0, 0, 0);
-    const spd = hyp(dog.vx, dog.vy);
-    if (spd > 12 && !peeingNow) {
-      const phase = nowT * (8 + spd * 0.04);
-      if (fl) fl.rotation.z = Math.sin(phase) * 0.35;
-      if (fr) fr.rotation.z = Math.sin(phase + Math.PI) * 0.35;
-      if (hr) hr.rotation.z = Math.sin(phase + Math.PI) * 0.3;
-      if (hl) hl.rotation.z = Math.sin(phase) * 0.3;
-    }
+    wolf.hips.rotation.z = 0.22 * eased;
+    wolf.legBL.hip.rotation.z = -0.2;
+    wolf.legBL.upper.rotation.z = -1.25 * eased;
+    wolf.legBL.upper.rotation.x = -1.05 * eased;
+    wolf.legBL.knee.rotation.x = -0.25 * eased;
+    wolf.legBR.upper.rotation.x = 0.15 * eased;
+    wolf.tail1.rotation.z = Math.sin(nowT * 3) * 0.7;
   }
 
-  // The slightly narrower body keeps his familiar silhouette while feeling lighter.
-  const baseScaleX = 1.15, baseScaleY = 1.10, baseScaleZ = 1.10;
   if (dog.barkTimer > 0) {
     const a = dog.barkTimer / 0.38;
-    dogGroup.scale.set(baseScaleX * (1 + 0.08 * a), baseScaleY * (1 - 0.06 * a), baseScaleZ * (1 + 0.08 * a));
+    wolf.neck.rotation.x = -0.35 * a;
+    wolf.head.rotation.x = -0.28 * a;
+    dogPivot.scale.setScalar(1 + 0.07 * a);
   } else {
-    dogGroup.scale.set(baseScaleX, baseScaleY, baseScaleZ);
+    dogPivot.scale.setScalar(1);
   }
+
+  const digBob = diggingNow ? Math.abs(Math.sin(digPhase)) * 1.4 : 0;
+  dogGroup.position.set(dog.x, digBob, dog.y);
+  dogGroup.rotation.set(0, -dog.dir, 0);
+  dogPivot.rotation.set(rollAngle, 0, peeingNow ? 0.18 : (diggingNow ? Math.sin(digPhase * 0.5) * 0.04 : 0));
+
   dogShadow.position.x = dog.x;
   dogShadow.position.z = dog.y;
+
 
   // Sheep
   for (let i = 0; i < sheep.length; i++) {
