@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>wolfie.life</title>
+  <title>Shepherd's Dog — Wolfie (Isometric 3D)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,500&family=Cabin:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -120,6 +120,27 @@
       pointer-events: none; opacity: 0; transition: opacity 0.3s;
       text-shadow: 0 2px 0 #2b2620, 2px 0 0 #2b2620, -2px 0 0 #2b2620, 0 -2px 0 #2b2620;
     }
+    #viewSwitch {
+      position: fixed; top: 14px; right: 16px; z-index: 6;
+      display: flex; gap: 4px;
+      background: rgba(43,38,32,0.8); border-radius: 12px; padding: 4px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    #viewSwitch button {
+      all: unset; box-sizing: border-box; cursor: pointer;
+      font-family: var(--body); font-weight: 700; font-size: 12px;
+      color: var(--cream); opacity: 0.7;
+      padding: 7px 11px; border-radius: 9px;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    #viewSwitch button:hover { opacity: 1; background: rgba(246,239,223,0.1); }
+    #viewSwitch button.active {
+      opacity: 1; background: rgba(232,163,61,0.35); color: var(--gold);
+    }
+    #viewSwitch button .key {
+      display: inline-block; font-size: 10px; opacity: 0.65;
+      margin-left: 4px; font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -128,6 +149,12 @@
   <div id="floatLabels"></div>
   <div id="penHud">Penned 0  ·  In pen 0/48  ·  45s</div>
   <div id="toast"></div>
+
+  <div id="viewSwitch">
+    <button type="button" data-mode="iso" class="active">Iso <span class="key">1</span></button>
+    <button type="button" data-mode="top">Top <span class="key">2</span></button>
+    <button type="button" id="zoomBtn" title="Zoom follow Wolfie (Z)">Zoom <span class="key">Z</span></button>
+  </div>
 
   <button id="peeBtn" type="button" aria-label="Pee pee (right-click)">
     <span class="main">💧 Pee pee</span>
@@ -152,7 +179,7 @@
       <span class="k">⏱ Time played</span><span class="v" id="st-time">0:00</span>
     </div>
   </div>
-  <div id="hint">Herd every sheep into the pen · Click to queue stops (click a flower to sniff) · Space to bark (M mutes) · Right-click to pee · WASD cancels</div>
+  <div id="hint">Herd every sheep into the pen · Click to queue stops (click a flower to sniff) · Space to bark (M mutes) · Right-click to pee · WASD cancels · Esc resets</div>
 
   <script type="importmap">
   {
@@ -310,6 +337,11 @@ const keyMap = {
   ' ': 'bark'
 };
 window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    resetGame();
+    return;
+  }
   ensureAudio();
   const k = keyMap[e.key];
   if (k) { e.preventDefault(); keys[k] = true; }
@@ -327,8 +359,20 @@ const mouse = { x: 0, y: 0, visible: false, left: false, right: false };
 const cursorEl = document.getElementById('cursor');
 const targets = [];
 const MAX_TARGETS = 20;
+const FIELD_EDGE = 28; // match Wolfie's safe movement boundary
+function isInsideField(x, y) {
+  return Number.isFinite(x) && Number.isFinite(y) &&
+    x >= FIELD_EDGE && x <= FIELD.w - FIELD_EDGE &&
+    y >= FIELD_EDGE && y <= FIELD.h - FIELD_EDGE;
+}
 function addTarget(x, y, flower) {
-  if (targets.length < MAX_TARGETS) targets.push({ x, y, t0: nowT, flower: flower || null });
+  // A second guard keeps invalid coordinates out even if a caller bypasses picking.
+  if (!isInsideField(x, y)) return false;
+  if (targets.length < MAX_TARGETS) {
+    targets.push({ x, y, t0: nowT, flower: flower || null });
+    return true;
+  }
+  return false;
 }
 
 // ---------- Three.js setup ----------
@@ -344,33 +388,173 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xf0e6c8);
 scene.fog = new THREE.Fog(0xf0e6c8, 1800, 3200);
 
-const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 10, 5000);
+const orthoCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 10, 6000);
+let cam = orthoCam;
+// Phones (portrait / touch) default to top-down; desktop keeps classic iso.
+function isMobileUI() {
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches && window.innerWidth < 1100) return true;
+  return window.innerWidth < 700 || window.innerHeight > window.innerWidth * 1.15;
+}
+function defaultCamMode() {
+  return isMobileUI() ? 'top' : 'iso';
+}
+let camMode = defaultCamMode(); // 'iso' | 'top'
+let zoomFollow = false; // when true: tighter frustum + camera tracks Wolfie
+
 const CAM_YAW = Math.PI / 4;
 const CAM_PITCH = Math.atan(1 / Math.SQRT2);
 const CAM_DIST = 2200;
-function placeCamera() {
-  const cx = FIELD.w / 2, cz = FIELD.h / 2;
-  cam.position.set(
-    cx + CAM_DIST * Math.cos(CAM_PITCH) * Math.sin(CAM_YAW),
-    CAM_DIST * Math.sin(CAM_PITCH),
-    cz + CAM_DIST * Math.cos(CAM_PITCH) * Math.cos(CAM_YAW)
-  );
-  cam.lookAt(cx, 0, cz);
-  cam.up.set(0, 1, 0);
+// smoothed follow target (world XZ)
+const follow = { x: FIELD.w / 2, z: FIELD.h / 2 };
+
+function getFocus() {
+  // board center, or Wolfie when zoom-following
+  if (zoomFollow && typeof dog !== 'undefined') {
+    return { x: follow.x, z: follow.z };
+  }
+  return { x: FIELD.w / 2, z: FIELD.h / 2 };
 }
-placeCamera();
+
+function placeCamera() {
+  const f = getFocus();
+  const cx = f.x, cz = f.z;
+  cam = orthoCam;
+  if (camMode === 'top') {
+    cam.position.set(cx, 2400, cz + 0.01);
+    cam.up.set(0, 0, -1);
+    cam.lookAt(cx, 0, cz);
+  } else {
+    // iso (default)
+    cam.position.set(
+      cx + CAM_DIST * Math.cos(CAM_PITCH) * Math.sin(CAM_YAW),
+      CAM_DIST * Math.sin(CAM_PITCH),
+      cz + CAM_DIST * Math.cos(CAM_PITCH) * Math.cos(CAM_YAW)
+    );
+    cam.up.set(0, 1, 0);
+    cam.lookAt(cx, 0, cz);
+  }
+  fitCamera();
+  cam.updateMatrixWorld(true);
+  updateViewButtons();
+}
 
 function fitCamera() {
   const aspect = window.innerWidth / window.innerHeight;
-  const pad = 1.12;
-  let hh = FIELD.h / 2 * pad, hw = hh * aspect;
-  if (hw < FIELD.w / 2 * pad) { hw = FIELD.w / 2 * pad; hh = hw / aspect; }
+  // Iso & Top default to full-frame (board fills the view).
+  // Zoom mode: tighter window so you can pan into "blind spots" by following Wolfie.
+  const zoomScale = zoomFollow ? 0.42 : 1.0;
+  let hw, hh;
+  if (camMode === 'top') {
+    const halfW = (FIELD.w / 2) * zoomScale;
+    const halfH = (FIELD.h / 2) * zoomScale;
+    // Portrait phones: contain the whole field so both sides stay in view
+    // (letterbox top/bottom). Landscape / desktop: cover-style fill.
+    const containBoard = isMobileUI() && aspect < 0.9 && !zoomFollow;
+    if (containBoard) {
+      if (halfW / halfH > aspect) {
+        hw = halfW;
+        hh = hw / aspect;
+      } else {
+        hh = halfH;
+        hw = hh * aspect;
+      }
+    } else if (halfW / halfH > aspect) {
+      hh = halfH;
+      hw = hh * aspect;
+    } else {
+      hw = halfW;
+      hh = hw / aspect;
+    }
+  } else {
+    // iso — full-frame contain of board (or zoomed window)
+    // On tall portrait phones, a slight extra margin keeps the edges readable.
+    const pad = (isMobileUI() && aspect < 0.9 && !zoomFollow) ? 1.08 : 1.02;
+    const halfW = (FIELD.w / 2) * pad * zoomScale;
+    const halfH = (FIELD.h / 2) * pad * zoomScale;
+    if (halfW / halfH > aspect) {
+      hw = halfW;
+      hh = hw / aspect;
+    } else {
+      hh = halfH;
+      hw = hh * aspect;
+    }
+  }
   cam.left = -hw; cam.right = hw; cam.top = hh; cam.bottom = -hh;
   cam.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
-window.addEventListener('resize', () => { fitCamera(); });
-fitCamera();
+window.addEventListener('resize', () => { placeCamera(); });
+
+function setCamMode(mode) {
+  if (mode === camMode) return;
+  camMode = mode;
+  placeCamera();
+}
+function toggleZoom() {
+  zoomFollow = !zoomFollow;
+  if (zoomFollow && typeof dog !== 'undefined') {
+    follow.x = dog.x;
+    follow.z = dog.y;
+  } else {
+    follow.x = FIELD.w / 2;
+    follow.z = FIELD.h / 2;
+  }
+  placeCamera();
+}
+window.addEventListener('keydown', e => {
+  if (e.key === '1') setCamMode('iso');
+  if (e.key === '2') setCamMode('top');
+  if (e.key === 'z' || e.key === 'Z') toggleZoom();
+});
+
+function updateViewButtons() {
+  document.querySelectorAll('#viewSwitch button[data-mode]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === camMode);
+  });
+  const zBtn = document.getElementById('zoomBtn');
+  if (zBtn) zBtn.classList.toggle('active', zoomFollow);
+}
+document.querySelectorAll('#viewSwitch button[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => setCamMode(btn.dataset.mode));
+});
+const zoomBtnEl = document.getElementById('zoomBtn');
+if (zoomBtnEl) zoomBtnEl.addEventListener('click', toggleZoom);
+
+// smooth follow + re-place camera each frame when zoomed
+function updateCameraFollow(dt) {
+  if (!zoomFollow || typeof dog === 'undefined') return;
+  const lead = 50;
+  const sp = hyp(dog.vx, dog.vy);
+  let tx = dog.x, tz = dog.y;
+  if (sp > 20) {
+    tx += (dog.vx / sp) * lead;
+    tz += (dog.vy / sp) * lead;
+  }
+  const margin = 60;
+  tx = clamp(tx, margin, FIELD.w - margin);
+  tz = clamp(tz, margin, FIELD.h - margin);
+  const k = 1 - Math.exp(-dt * 5);
+  follow.x = lerp(follow.x, tx, k);
+  follow.z = lerp(follow.z, tz, k);
+  // reposition only (skip button refresh)
+  const f = getFocus();
+  const cx = f.x, cz = f.z;
+  if (camMode === 'top') {
+    cam.position.set(cx, 2400, cz + 0.01);
+    cam.lookAt(cx, 0, cz);
+  } else {
+    cam.position.set(
+      cx + CAM_DIST * Math.cos(CAM_PITCH) * Math.sin(CAM_YAW),
+      CAM_DIST * Math.sin(CAM_PITCH),
+      cz + CAM_DIST * Math.cos(CAM_PITCH) * Math.cos(CAM_YAW)
+    );
+    cam.lookAt(cx, 0, cz);
+  }
+  cam.updateMatrixWorld(true);
+}
+
+// deferred initial place until after dog exists — call again at end of setup
+placeCamera();
 
 // Lights
 const hemi = new THREE.HemisphereLight(0xf6efdf, 0x4a7032, 0.85);
@@ -465,7 +649,7 @@ const dogGroup = new THREE.Group();
 function makeDog() {
   // body — skinnier silhouette
   const body = new THREE.Mesh(new THREE.SphereGeometry(12, 8, 6), dogMat);
-  body.scale.set(1.25, 0.62, 0.62);
+  body.scale.set(1.25, 0.58, 0.58);
   body.castShadow = true;
   dogGroup.add(body);
   // chest fluff
@@ -542,9 +726,25 @@ function makeDog() {
   const hindL = makeLeg(-6, 3.0);
   const hindR = makeLeg(-6, -3.0);
   dogGroup.add(frontL, frontR, hindL, hindR);
-  // tail pom
-  const tail = new THREE.Mesh(new THREE.SphereGeometry(3.8, 6, 5), dogMat);
-  tail.position.set(-15, 3.5, 0);
+  // Longer, gently curled tail: an animated root with a tapered stem and soft tuft.
+  const tail = new THREE.Group();
+  tail.position.set(-12.5, 3.0, 0);
+  const tailCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(-4.5, 1.8, 0),
+    new THREE.Vector3(-9.5, 3.2, 0.8),
+    new THREE.Vector3(-14.5, 6.4, 1.8)
+  ]);
+  const tailStem = new THREE.Mesh(
+    new THREE.TubeGeometry(tailCurve, 10, 1.65, 5, false), dogMat
+  );
+  tailStem.castShadow = true;
+  tail.add(tailStem);
+  const tailTuft = new THREE.Mesh(new THREE.SphereGeometry(3.25, 7, 5), dogMat);
+  tailTuft.position.set(-14.7, 6.5, 1.8);
+  tailTuft.scale.set(1.15, 1.05, 1.0);
+  tailTuft.castShadow = true;
+  tail.add(tailTuft);
   dogGroup.add(tail);
   dogGroup.userData.tail = tail;
   dogGroup.userData.earL = earL;
@@ -566,7 +766,7 @@ const dogShadow = new THREE.Mesh(
 );
 dogShadow.rotation.x = -Math.PI / 2;
 dogShadow.position.y = 0.15;
-dogShadow.scale.set(1.15, 1, 0.7); // elongated under the skinnier body
+dogShadow.scale.set(1.08, 0.9, 0.64); // slightly tighter under Wolfie's slimmer silhouette
 scene.add(dogShadow);
 
 // ---------- Sheep ----------
@@ -694,6 +894,7 @@ function scatterFlock() {
   }
 }
 scatterFlock();
+const initialSheepState = sheep.map(s => ({ ...s }));
 
 // ---------- Flowers ----------
 const SNIFF_TIME = 2.2;
@@ -722,6 +923,33 @@ function spawnPollen(x, y, col) {
   m.userData.max = rand(0.7, 1.4);
   m.visible = true;
   activePollen.push(m);
+}
+
+// Little dirt puffs kicked up while Wolfie digs
+const dirtPool = [];
+const activeDirt = [];
+const dirtColors = [0x6b4a2b, 0x5a3d24, 0x7a5a38, 0x4e3420, 0x8a6a45];
+function spawnDirt(x, y) {
+  let m = dirtPool.pop();
+  if (!m) {
+    m = new THREE.Mesh(
+      new THREE.SphereGeometry(1.4, 5, 4),
+      new THREE.MeshBasicMaterial({ color: 0x6b4a2b, transparent: true, opacity: 0.85, depthWrite: false })
+    );
+    scene.add(m);
+  }
+  m.material.color.set(dirtColors[Math.floor(Math.random() * dirtColors.length)]);
+  m.material.opacity = 0.85;
+  m.position.set(x + rand(-3, 3), 1.5 + rand(0, 2), y + rand(-3, 3));
+  m.userData.vx = rand(-18, 18);
+  m.userData.vy = rand(22, 48);
+  m.userData.vz = rand(-18, 18);
+  m.userData.life = 0;
+  m.userData.max = rand(0.45, 0.9);
+  m.userData.baseScale = rand(0.7, 1.35);
+  m.scale.setScalar(m.userData.baseScale);
+  m.visible = true;
+  activeDirt.push(m);
 }
 
 (function genFlowers() {
@@ -826,10 +1054,18 @@ const wingPal = [
   ['#fbf7ec','#e8d9b8'], ['#d8514a','#b83e38']
 ];
 (function spawnButterflies() {
+  // keep clear of Wolfie's spawn so he isn't dazedin the first frames
+  const spawnX = FIELD.w * 0.5, spawnY = FIELD.h * 0.82;
   for (let i = 0; i < BUTTERFLY_COUNT; i++) {
     const pal = wingPal[Math.floor(Math.random() * wingPal.length)];
+    let x, y, tries = 0;
+    do {
+      x = rand(40, FIELD.w - 40);
+      y = rand(40, FIELD.h - 60);
+      tries++;
+    } while (hyp(x - spawnX, y - spawnY) < 180 && tries < 30);
     const b = {
-      x: rand(40, FIELD.w - 40), y: rand(40, FIELD.h - 60),
+      x, y,
       vx: rand(-28, 28), vy: rand(-22, 22), dir: rand(0, TAU),
       phase: rand(0, TAU), wing: 0, size: rand(0.75, 1.15),
       c1: pal[0], c2: pal[1], rest: 0, wanderT: rand(1.5, 4)
@@ -861,6 +1097,7 @@ const wingPal = [
     scene.add(g);
   }
 })();
+const initialButterflyState = butterflies.map(b => ({ ...b }));
 
 // ---------- Pen ----------
 let pen = null;
@@ -991,6 +1228,7 @@ function peeSpot() {
 
 function startPee() {
   if (dog.peeTimer > 0) return;
+  cancelDogIdle(5);
   dog.peeTimer = PEE_TIME;
   dog.sniffTimer = 0;
   // pee snaps him out of butterfly daze
@@ -1034,10 +1272,31 @@ function startPee() {
 // ---------- Dog state ----------
 const dog = {
   x: FIELD.w * 0.5, y: FIELD.h * 0.82,
-  vx: 0, vy: 0, dir: -0.2,
+  vx: 0, vy: 0,
+  dir: -Math.PI / 2, // face toward the flock (screen-up / -Z)
   barkTimer: 0, peeTimer: 0, sniffTimer: 0, sniffFlower: null,
-  distractTimer: 0, distractTarget: null
+  distractTimer: 0, distractTarget: null,
+  idleAction: null, idleElapsed: 0, idleDuration: 0,
+  idleTimer: 0, idleCooldown: 5,
+  idleOriginX: 0, idleOriginY: 0, idleTargetX: 0, idleTargetY: 0
 };
+
+function cancelDogIdle(cooldown = 4) {
+  dog.idleAction = null;
+  dog.idleElapsed = 0;
+  dog.idleDuration = 0;
+  dog.idleTimer = 0;
+  dog.idleCooldown = Math.max(dog.idleCooldown || 0, cooldown);
+  dog.idleTargetX = dog.x;
+  dog.idleTargetY = dog.y;
+}
+
+function setNextZoomieTarget() {
+  const angle = rand(0, TAU);
+  const radius = rand(75, 145);
+  dog.idleTargetX = clamp(dog.idleOriginX + Math.cos(angle) * radius, 48, FIELD.w - 48);
+  dog.idleTargetY = clamp(dog.idleOriginY + Math.sin(angle) * radius, 48, FIELD.h - 48);
+}
 
 // ---------- Bark / VFX ----------
 const barkRings = [];
@@ -1127,18 +1386,28 @@ function pickGround(clientX, clientY) {
   ndc.set((clientX / window.innerWidth) * 2 - 1, -(clientY / window.innerHeight) * 2 + 1);
   raycaster.setFromCamera(ndc, cam);
   if (!raycaster.ray.intersectPlane(groundPlane, hitPoint)) return null;
-  return { x: hitPoint.x, y: hitPoint.z };
+  const point = { x: hitPoint.x, y: hitPoint.z };
+  // The canvas fills the window, but only the FIELD rectangle is playable.
+  return isInsideField(point.x, point.y) ? point : null;
 }
 
 function clickAt(x, y) {
+  if (!isInsideField(x, y)) return;
+  cancelDogIdle(4);
   const f = flowerAt(x, y);
   if (f) addTarget(f.u * FIELD.w, f.v * FIELD.h, f);
   else addTarget(x, y);
 }
 
+function isGameUiTarget(target) {
+  return target instanceof Element && !!target.closest(
+    '#stats, #viewSwitch, #barkBtn, #peeBtn, button, a, input, select, textarea, [data-no-game-input]'
+  );
+}
+
 window.addEventListener('mousemove', e => {
   mouse.x = e.clientX; mouse.y = e.clientY;
-  mouse.visible = !e.target.closest('#stats, #barkBtn, #peeBtn, #statsHead');
+  mouse.visible = !isGameUiTarget(e.target);
   if (mouse.visible) {
     cursorEl.style.display = 'block';
     cursorEl.style.left = mouse.x + 'px';
@@ -1154,7 +1423,7 @@ document.documentElement.addEventListener('mouseleave', () => {
 });
 window.addEventListener('mousedown', e => {
   ensureAudio();
-  if (e.target.closest('#stats, #barkBtn, #peeBtn')) return;
+  if (isGameUiTarget(e.target)) return;
   mouse.x = e.clientX; mouse.y = e.clientY;
   if (e.button === 0) {
     mouse.left = true;
@@ -1162,6 +1431,8 @@ window.addEventListener('mousedown', e => {
     const p = pickGround(e.clientX, e.clientY);
     if (p) clickAt(p.x, p.y);
   } else if (e.button === 2) {
+    const p = pickGround(e.clientX, e.clientY);
+    if (!p) return;
     mouse.right = true;
     cursorEl.classList.add('pressed');
     startPee();
@@ -1175,7 +1446,7 @@ window.addEventListener('mouseup', e => {
 window.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('touchstart', e => {
   ensureAudio();
-  if (e.target.closest('#stats, #barkBtn, #peeBtn')) return;
+  if (isGameUiTarget(e.target)) return;
   e.preventDefault();
   mouse.visible = false;
   cursorEl.style.display = 'none';
@@ -1249,6 +1520,24 @@ function updateSheep(dt) {
       const push = w * w * 560 + 60;
       fx += (ddx / dd) * push; fy += (ddy / dd) * push;
     }
+    // Pee puddles deter the flock — sheep veer away from marked territory
+    for (const p of puddles) {
+      const pdx = s.x - p.x, pdy = s.y - p.y;
+      const pd = hyp(pdx, pdy) || 0.001;
+      const avoidR = p.r * 2.8 + 28; // personal space around the puddle
+      if (pd < avoidR) {
+        // stronger when fresh, weaker as it fades
+        const freshness = p.age < 0.3 ? 1 : clamp(1 - (p.age - 0.3) / (PUDDLE_LIFE - 0.3), 0.15, 1);
+        const w = (1 - pd / avoidR) * freshness;
+        const push = w * w * 320 + 40;
+        fx += (pdx / pd) * push;
+        fy += (pdy / pd) * push;
+        // a little extra unease when right on top of a fresh spot
+        if (pd < p.r * 1.4 && p.age < 4) {
+          s.fear = Math.min(1, s.fear + 0.35 * dt * freshness);
+        }
+      }
+    }
     if (fear < 0.12) {
       s.gT -= dt;
       if (s.gT <= 0) {
@@ -1321,7 +1610,8 @@ function updateButterflies(dt) {
     }
   }
   dog.distractTimer = Math.max(0, dog.distractTimer - dt);
-  if (dog.distractTimer <= 0 && dog.peeTimer <= 0 && dog.sniffTimer <= 0) {
+  // grace period after load so he doesn't bolt into a wall from a spawn daze
+  if (nowT > 2.5 && dog.distractTimer <= 0 && dog.peeTimer <= 0 && dog.sniffTimer <= 0) {
     for (const b of butterflies) {
       const d = dist(b.x, b.y, dog.x, dog.y);
       if (d < DISTRACT_R) {
@@ -1366,6 +1656,39 @@ function updateFlowers(dt) {
       m.visible = false;
       activePollen.splice(i, 1);
       pollenPool.push(m);
+    }
+  }
+}
+
+function updateDirt(dt) {
+  // Kick up little dirt clumps near the front paws while digging
+  if (dog.idleAction === 'dig') {
+    if (Math.random() < dt * 14) {
+      const c = Math.cos(dog.dir), s = Math.sin(dog.dir);
+      const behind = 4 + rand(0, 6);
+      const sideOff = rand(-5, 5);
+      const px = dog.x + c * 6 - s * sideOff - c * behind * 0.15;
+      const py = dog.y + s * 6 + c * sideOff - s * behind * 0.15;
+      spawnDirt(px, py);
+      if (Math.random() < 0.45) spawnDirt(px + rand(-4, 4), py + rand(-4, 4));
+    }
+  }
+  for (let i = activeDirt.length - 1; i >= 0; i--) {
+    const m = activeDirt[i];
+    m.userData.life += dt;
+    m.userData.vy -= 55 * dt; // heavier than pollen — falls quicker
+    m.userData.vx *= Math.exp(-dt * 1.8);
+    m.userData.vz *= Math.exp(-dt * 1.8);
+    m.position.x += m.userData.vx * dt;
+    m.position.y += m.userData.vy * dt;
+    m.position.z += m.userData.vz * dt;
+    const a = 1 - m.userData.life / m.userData.max;
+    m.material.opacity = clamp(a, 0, 1) * 0.85;
+    m.scale.setScalar((0.55 + a * 0.9) * (m.userData.baseScale || 1));
+    if (m.userData.life > m.userData.max || m.position.y < 0.3) {
+      m.visible = false;
+      activeDirt.splice(i, 1);
+      dirtPool.push(m);
     }
   }
 }
@@ -1433,6 +1756,47 @@ function update(dt) {
   const sniffing = dog.sniffTimer > 0;
   if (sniffing) dog.sniffTimer = Math.max(0, dog.sniffTimer - dt);
   const distracted = (dog.distractTimer || 0) > 0;
+  const playerSteering = keys.left || keys.right || keys.up || keys.down;
+  const playerBusy = playerSteering || keys.bark || targets.length > 0 ||
+    peeing || sniffing || distracted || dog.barkTimer > 0.05;
+
+  // Wolfie gets a little personality when left to himself. These actions are
+  // deliberately low-frequency and are cancelled immediately by player input.
+  if (playerBusy) {
+    if (dog.idleAction) cancelDogIdle(4.5);
+    dog.idleTimer = 0;
+  } else {
+    dog.idleCooldown = Math.max(0, dog.idleCooldown - dt);
+    if (hyp(dog.vx, dog.vy) < 10) dog.idleTimer += dt;
+    else dog.idleTimer = 0;
+    if (!dog.idleAction && dog.idleTimer > 5.5 && dog.idleCooldown <= 0) {
+      const roll = Math.random();
+      dog.idleAction = roll < 0.42 ? 'dig' : (roll < 0.70 ? 'roll' : 'zoomies');
+      dog.idleElapsed = 0;
+      dog.idleDuration = dog.idleAction === 'dig' ? rand(2.0, 2.7) :
+        (dog.idleAction === 'roll' ? rand(2.8, 3.6) : rand(2.7, 3.5));
+      dog.idleTimer = 0;
+      if (dog.idleAction === 'zoomies') {
+        dog.idleOriginX = dog.x;
+        dog.idleOriginY = dog.y;
+        setNextZoomieTarget();
+      } else {
+        dog.vx *= 0.25;
+        dog.vy *= 0.25;
+      }
+    }
+    if (dog.idleAction) {
+      dog.idleElapsed += dt;
+      if (dog.idleElapsed >= dog.idleDuration) {
+        dog.idleAction = null;
+        dog.idleElapsed = 0;
+        dog.idleDuration = 0;
+        dog.idleCooldown = rand(11, 17);
+        dog.idleTargetX = dog.x;
+        dog.idleTargetY = dog.y;
+      }
+    }
+  }
 
   // Viewport-relative WASD / arrows: up = top of screen, etc.
   let ax = 0, ay = 0; // ax: -1 left / +1 right; ay: -1 up / +1 down
@@ -1483,12 +1847,22 @@ function update(dt) {
       dog.vy += (ny * speed - dog.vy) * k;
       steered = true;
     }
+  } else if (!peeing && !sniffing && !distracted && dog.idleAction === 'zoomies') {
+    const dx = dog.idleTargetX - dog.x, dy = dog.idleTargetY - dog.y;
+    const d = hyp(dx, dy);
+    if (d < 22) setNextZoomieTarget();
+    const [nx, ny] = norm(dog.idleTargetX - dog.x, dog.idleTargetY - dog.y);
+    const desiredSpeed = MAX_DOG * 1.22;
+    const k = 1 - Math.exp(-dt * 8.5);
+    dog.vx += (nx * desiredSpeed - dog.vx) * k;
+    dog.vy += (ny * desiredSpeed - dog.vy) * k;
+    steered = true;
   }
   if (!steered) {
     const damp = Math.exp(-(peeing || sniffing || distracted ? 14 : FRICTION) * dt);
     dog.vx *= damp; dog.vy *= damp;
   }
-  const maxSp = distracted ? MAX_DOG * 0.45 : MAX_DOG;
+  const maxSp = distracted ? MAX_DOG * 0.45 : (dog.idleAction === 'zoomies' ? MAX_DOG * 1.25 : MAX_DOG);
   const sp = hyp(dog.vx, dog.vy);
   if (sp > maxSp) { dog.vx = (dog.vx / sp) * maxSp; dog.vy = (dog.vy / sp) * maxSp; }
   dog.x += dog.vx * dt; dog.y += dog.vy * dt;
@@ -1537,6 +1911,7 @@ function update(dt) {
 
   updatePuddles(dt);
   updateFlowers(dt);
+  updateDirt(dt);
   updateButterflies(dt);
   updateFloats(dt);
   updatePen(dt);
@@ -1546,41 +1921,76 @@ function update(dt) {
 
 // ---------- Sync 3D transforms ----------
 function syncVisuals(dt) {
-  // Dog
+  // Dog: procedural poses share the same model and smoothly yield to player control.
   const sniffingNow = dog.sniffTimer > 0;
   const distractedNow = (dog.distractTimer || 0) > 0;
-  dogGroup.position.set(dog.x, 9.2, dog.y);
-  dogGroup.rotation.y = -dog.dir; // model faces +X
+  const peeingNow = dog.peeTimer > 0;
+  const idleAction = dog.idleAction;
+  const idleProgress = dog.idleDuration > 0 ? clamp(dog.idleElapsed / dog.idleDuration, 0, 1) : 0;
+  const diggingNow = idleAction === 'dig';
+  const rollingNow = idleAction === 'roll';
+  const zoomiesNow = idleAction === 'zoomies';
+  const digPhase = nowT * 15;
+  let bodyBob = 0;
+  let rollAngle = 0;
+  if (diggingNow) bodyBob = Math.abs(Math.sin(digPhase)) * 0.8;
+  if (rollingNow) {
+    // Roll onto his back, wriggle, then roll upright again.
+    const ease = v => v * v * (3 - 2 * v);
+    if (idleProgress < 0.32) rollAngle = Math.PI * ease(idleProgress / 0.32);
+    else if (idleProgress < 0.70) rollAngle = Math.PI + Math.sin((idleProgress - 0.32) / 0.38 * Math.PI * 4) * 0.22;
+    else rollAngle = Math.PI * (1 - ease((idleProgress - 0.70) / 0.30)) + TAU * ease((idleProgress - 0.70) / 0.30);
+  }
+  dogGroup.position.set(dog.x, 9.2 + bodyBob, dog.y);
+  dogGroup.rotation.set(rollAngle, -dog.dir, peeingNow ? 0.14 : (diggingNow ? Math.sin(digPhase * 0.5) * 0.025 : 0));
+
   const tail = dogGroup.userData.tail;
   if (tail) {
-    const wagSpeed = dog.peeTimer > 0 ? 3 : (sniffingNow ? 8 : (6 + hyp(dog.vx, dog.vy) * 0.04));
-    tail.position.y = 3.5 + Math.sin(nowT * wagSpeed) * (sniffingNow ? 3.5 : 2.8);
+    const wagSpeed = peeingNow ? 3 : (zoomiesNow ? 18 : (diggingNow ? 13 : (rollingNow ? 10 : (sniffingNow ? 8 : 6 + hyp(dog.vx, dog.vy) * 0.04))));
+    const wagAmount = rollingNow ? 0.55 : (zoomiesNow ? 0.62 : 0.38);
+    tail.rotation.y = Math.sin(nowT * wagSpeed) * wagAmount;
+    tail.rotation.z = 0.12 + Math.sin(nowT * (wagSpeed * 0.72) + 0.6) * (rollingNow ? 0.22 : 0.12);
   }
-  // Head pose: sniff (nose down + bob) or distract (alert look)
+
+  // Head pose: sniff, alert, digging, or a relaxed neutral look.
   const head = dogGroup.userData.head;
   if (head) {
     if (sniffingNow) {
-      // eager nose-down sniff with little bobs
       const bob = Math.sin(nowT * 14) * 0.14;
-      head.rotation.x = 0.65 + bob;          // dip nose toward ground
-      head.position.y = 0.6 + bob * 1.5;     // lower toward the flower
+      head.rotation.x = 0.65 + bob;
+      head.rotation.z = 0;
+      head.position.y = 0.6 + bob * 1.5;
       head.position.x = 15.0 + Math.sin(nowT * 9) * 0.8;
     } else if (distractedNow) {
-      // alert, tracking the butterfly
-      head.rotation.x = -0.28;               // head up
+      head.rotation.x = -0.28;
+      head.rotation.z = 0;
       head.position.y = 2.6;
+      head.position.x = 14.5;
+    } else if (diggingNow) {
+      head.rotation.x = 0.08;
+      head.rotation.z = 0.18 + Math.sin(digPhase) * 0.05;
+      head.position.y = 1.0 + Math.sin(digPhase * 2) * 0.25;
+      head.position.x = 15.2;
+    } else if (rollingNow) {
+      head.rotation.x = Math.sin(nowT * 8) * 0.16;
+      head.rotation.z = 0.08;
+      head.position.y = 1.8;
       head.position.x = 14.5;
     } else {
       head.rotation.x = 0;
+      head.rotation.z = 0;
       head.position.y = 1.8;
       head.position.x = 14.5;
     }
   }
-  // Ears: perk slightly when distracted
+
   const earL = dogGroup.userData.earL;
   const earR = dogGroup.userData.earR;
   if (earL && earR) {
-    if (distractedNow) {
+    if (rollingNow) {
+      earL.rotation.x = 0.7;
+      earR.rotation.x = -0.7;
+    } else if (distractedNow) {
       earL.rotation.x = 0.15;
       earR.rotation.x = -0.15;
     } else {
@@ -1588,51 +1998,56 @@ function syncVisuals(dt) {
       earR.rotation.x = -0.4;
     }
   }
-  // leg lift when peeing (hind-left raises up and out — classic dog pee pose)
-  const peeingNow = dog.peeTimer > 0;
+
   const hl = dogGroup.userData.hindL;
   const hr = dogGroup.userData.hindR;
-  if (hl && hr) {
-    if (peeingNow) {
-      // ease in/out so the leg rises quickly then holds
-      const t = 1 - dog.peeTimer / PEE_TIME;
-      const lift = t < 0.15 ? t / 0.15 : (t > 0.85 ? (1 - t) / 0.15 : 1);
-      hl.rotation.z = -1.05 * lift;   // lift high
-      hl.rotation.x = 0.4 * lift;     // swing slightly outward
-      hl.position.y = 3.2 * lift;
-      // subtle body lean toward the planted side
-      dogGroup.rotation.z = 0.14 * lift;
-    } else {
-      hl.rotation.z = 0;
-      hl.rotation.x = 0;
-      hl.position.y = 0;
-      dogGroup.rotation.z = 0;
+  const fl = dogGroup.userData.frontL;
+  const fr = dogGroup.userData.frontR;
+  if (peeingNow && hl && hr) {
+    // Hind-left lifts high and visibly out to the side; the right leg stays planted.
+    if (fl) fl.rotation.set(0, 0, 0);
+    if (fr) fr.rotation.set(0, 0, 0);
+    const t = 1 - dog.peeTimer / PEE_TIME;
+    const eased = t < 0.15 ? (t / 0.15) ** 2 * (3 - 2 * (t / 0.15)) :
+      (t > 0.85 ? ((1 - t) / 0.15) ** 2 * (3 - 2 * ((1 - t) / 0.15)) : 1);
+    hl.rotation.set(-0.88 * eased, 0, -0.62 * eased);
+    hl.position.set(-6, 2.8 * eased, 3.0 + 1.8 * eased);
+    hr.rotation.set(0, 0, 0.08 * eased);
+  } else if (diggingNow && fl && fr) {
+    // Alternate forepaw scoops, with the shoulders following the digging rhythm.
+    fl.rotation.set(-0.16, 0, Math.max(0, Math.sin(digPhase)) * 0.86);
+    fr.rotation.set(-0.16, 0, Math.max(0, Math.sin(digPhase + Math.PI)) * 0.86);
+    hl.rotation.set(0, 0, 0.04);
+    hr.rotation.set(0, 0, -0.04);
+  } else if (rollingNow && fl && fr && hl && hr) {
+    const kick = Math.sin(nowT * 12) * 0.35;
+    fl.rotation.set(0.45 + kick, 0, 0.72);
+    fr.rotation.set(-0.45 - kick, 0, -0.72);
+    hl.rotation.set(-0.35 - kick, 0, 0.62);
+    hr.rotation.set(0.35 + kick, 0, -0.62);
+  } else {
+    // Restore the hips to their neutral positions before applying the walk cycle.
+    if (hl) { hl.position.set(-6, 0, 3.0); hl.rotation.set(0, 0, 0); }
+    if (hr) { hr.position.set(-6, 0, -3.0); hr.rotation.set(0, 0, 0); }
+    if (fl) fl.rotation.set(0, 0, 0);
+    if (fr) fr.rotation.set(0, 0, 0);
+    const spd = hyp(dog.vx, dog.vy);
+    if (spd > 12 && !peeingNow) {
+      const phase = nowT * (8 + spd * 0.04);
+      if (fl) fl.rotation.z = Math.sin(phase) * 0.35;
+      if (fr) fr.rotation.z = Math.sin(phase + Math.PI) * 0.35;
+      if (hr) hr.rotation.z = Math.sin(phase + Math.PI) * 0.3;
+      if (hl) hl.rotation.z = Math.sin(phase) * 0.3;
     }
   }
-  // simple walk cycle on other legs when moving
-  const spd = hyp(dog.vx, dog.vy);
-  if (!peeingNow && spd > 12) {
-    const phase = nowT * (8 + spd * 0.04);
-    if (dogGroup.userData.frontL) {
-      dogGroup.userData.frontL.rotation.z = Math.sin(phase) * 0.35;
-      dogGroup.userData.frontR.rotation.z = Math.sin(phase + Math.PI) * 0.35;
-      hr.rotation.z = Math.sin(phase + Math.PI) * 0.3;
-      hl.rotation.z = Math.sin(phase) * 0.3;
-    }
-  } else if (!peeingNow) {
-    if (dogGroup.userData.frontL) {
-      dogGroup.userData.frontL.rotation.z = 0;
-      dogGroup.userData.frontR.rotation.z = 0;
-      hr.rotation.z = 0;
-      hl.rotation.z = 0;
-    }
-  }
-  const baseScale = 1.2;
+
+  // The slightly narrower body keeps his familiar silhouette while feeling lighter.
+  const baseScaleX = 1.15, baseScaleY = 1.10, baseScaleZ = 1.10;
   if (dog.barkTimer > 0) {
     const a = dog.barkTimer / 0.38;
-    dogGroup.scale.set(baseScale * (1 + 0.08 * a), baseScale * (1 - 0.06 * a), baseScale * (1 + 0.08 * a));
+    dogGroup.scale.set(baseScaleX * (1 + 0.08 * a), baseScaleY * (1 - 0.06 * a), baseScaleZ * (1 + 0.08 * a));
   } else {
-    dogGroup.scale.setScalar(baseScale);
+    dogGroup.scale.set(baseScaleX, baseScaleY, baseScaleZ);
   }
   dogShadow.position.x = dog.x;
   dogShadow.position.z = dog.y;
@@ -1774,11 +2189,127 @@ spawnPen();
 setTimeout(() => hint.classList.add('fade'), 7000);
 
 let last = performance.now();
+
+function resetGame() {
+  // Release every held input and discard the entire queued route.
+  for (const key of Object.keys(keys)) keys[key] = false;
+  mouse.left = false;
+  mouse.right = false;
+  cursorEl.classList.remove('pressed');
+  targets.length = 0;
+
+  // Restore Wolfie and the original flock / butterfly positions and behavior.
+  Object.assign(dog, {
+    x: FIELD.w * 0.5, y: FIELD.h * 0.82,
+    vx: 0, vy: 0, dir: -Math.PI / 2,
+    barkTimer: 0, peeTimer: 0, sniffTimer: 0, sniffFlower: null,
+    distractTimer: 0, distractTarget: null,
+    idleAction: null, idleElapsed: 0, idleDuration: 0,
+    idleTimer: 0, idleCooldown: 5,
+    idleOriginX: 0, idleOriginY: 0, idleTargetX: 0, idleTargetY: 0
+  });
+  sheep.forEach((s, i) => Object.assign(s, initialSheepState[i]));
+  butterflies.forEach((b, i) => Object.assign(b, initialButterflyState[i]));
+  for (const f of flowers) f.hit = 0;
+
+  // Clear temporary effects and world objects created during play.
+  for (const el of activeFloats) {
+    el._active = false;
+    el.style.opacity = '0';
+    floatPool.push(el);
+  }
+  activeFloats.length = 0;
+
+  for (const mesh of puddleMeshes) {
+    scene.remove(mesh);
+    mesh.traverse(obj => {
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) {
+        const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+        for (const material of materials) material.dispose();
+      }
+    });
+  }
+  puddles.length = 0;
+  puddleMeshes.length = 0;
+
+  for (const mesh of activePollen) {
+    mesh.visible = false;
+    pollenPool.push(mesh);
+  }
+  activePollen.length = 0;
+
+  for (const mesh of activeDirt) {
+    mesh.visible = false;
+    dirtPool.push(mesh);
+  }
+  activeDirt.length = 0;
+
+  for (const ring of barkRings) {
+    scene.remove(ring);
+    ring.geometry.dispose();
+    ring.material.dispose();
+  }
+  barkRings.length = 0;
+
+  // Reset the pen and its score/timer, then generate a fresh starting pen.
+  pen = null;
+  oldPens.length = 0;
+  penScore = 0;
+  lastPenPos = null;
+  // Release the previous pen's generated geometry before rebuilding it.
+  for (const child of [...penGroup.children]) {
+    penGroup.remove(child);
+    if (child.geometry) child.geometry.dispose();
+  }
+  penPosts.length = 0;
+  penRails.length = 0;
+  penFloor = null;
+  penRing = null;
+  spawnPen();
+
+  // Reset session stats and elapsed time.
+  stats.sheepHerded = 0;
+  stats.pensCleared = 0;
+  stats.pensMissed = 0;
+  stats.bestPen = null;
+  stats.flowersSniffed = 0;
+  stats.found.clear();
+  stats.pees = 0;
+  stats.barks = 0;
+  stats.barkHeld = false;
+  stats.dist = 0;
+  stats.lx = null;
+  stats.ly = null;
+  nowT = 0;
+  renderStats();
+
+  // Return to the default camera and remove all visual target feedback.
+  camMode = defaultCamMode();
+  zoomFollow = false;
+  follow.x = FIELD.w / 2;
+  follow.z = FIELD.h / 2;
+  placeCamera();
+  aimRing.visible = false;
+  syncTargets();
+
+  toast = { text: '', t: 0, color: '#f6efdf' };
+  toastEl.textContent = '';
+  toastEl.style.opacity = '0';
+  penHud.textContent = 'Penned 0  ·  In pen 0/48  ·  45s';
+  penHud.style.color = '#f6efdf';
+  hint.classList.remove('fade');
+  setTimeout(() => hint.classList.add('fade'), 7000);
+  last = performance.now();
+  showToast('Fresh start!', 1.4, '#d4ee9f');
+}
+
 function frame(now) {
   let dt = (now - last) / 1000;
   last = now;
   dt = Math.min(dt, 0.05);
   update(dt);
+  updateCameraFollow(dt);
   syncVisuals(dt);
   renderer.render(scene, cam);
   requestAnimationFrame(frame);
