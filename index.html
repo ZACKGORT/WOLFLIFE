@@ -1,2876 +1,1751 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>wolfie.life · swiss grid</title>
-    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@1,2,3,4,5,6,7,8,9&display=swap" rel="stylesheet" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        /* ── design system (from letter‑base) ── */
-        :root {
-            --bg: #f0f0f2;
-            --card: #ffffff;
-            --card-dark: #1c1c1e;
-            --card-mid: #3a3a3c;
-            --accent: #e5e567;
-            --accent-2: #f5f557;
-            --ink: #1c1c1e;
-            --ink-mid: #3a3a3c;
-            --ink-light: #8e8e93;
-            --ink-lighter: #b0b0b6;
-            --border: #e6e6e8;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-            --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.02);
-            --shadow-floating: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --radius: 1.5rem;
-            --radius-sm: 0.65rem;
-            --font: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
-            --fs-body: 15px;
-            --max-width: 1600px;
-            --transition: 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --margin: 16px;
-            --topbar-height: 56px;
-            --hud-height: 64px;
-            --scrollbar-height: 3px;
-        }
-        @media (min-width: 640px) {
-            :root {
-                --margin: 24px;
-                --topbar-height: 64px;
-                --hud-height: 70px;
-            }
-        }
-        @media (min-width: 1024px) {
-            :root {
-                --margin: 32px;
-                --topbar-height: 72px;
-                --hud-height: 76px;
-            }
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Shepherd's Dog — Wolfie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,500&family=Cabin:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #2b2620;
+      --cream: #f6efdf;
+      --paper: #efe5cd;
+      --gold: #e8a33d;
+      --grass: #7da04a;
+      --rust: #c4552e;
+      --display: "Fraunces", Georgia, serif;
+      --body: "Cabin", "Trebuchet MS", sans-serif;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #243018;
+    }
+    body {
+      font-family: var(--body);
+      color: var(--ink);
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #game {
+      position: fixed;
+      inset: 0;
+      display: block;
+      cursor: none;
+    }
+    #hint {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      background: rgba(43, 38, 32, 0.78);
+      color: var(--cream);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 99px;
+      pointer-events: none;
+      opacity: 0.85;
+      letter-spacing: 0.01em;
+      transition: opacity 1.2s;
+    }
+    #hint.fade { opacity: 0; }
 
-        /* ── reset ── */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        html {
-            -webkit-text-size-adjust: 100%;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            background: var(--bg);
-            color: var(--ink);
-            font-family: var(--font);
-            font-size: var(--fs-body);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            min-height: 100vh;
-            min-height: 100dvh;
-            padding-bottom: calc(var(--hud-height) + 20px + var(--scrollbar-height));
-            overflow-x: hidden;
-        }
-        ::selection {
-            background: var(--accent);
-            color: var(--ink);
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--ink-lighter);
-            border-radius: var(--radius-sm);
-        }
-        html {
-            scrollbar-width: thin;
-            scrollbar-color: var(--ink-lighter) transparent;
-        }
+    #stats {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 6;
+      width: 196px;
+      background: rgba(43, 38, 32, 0.8);
+      color: var(--cream);
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      font-size: 13px;
+      overflow: hidden;
+      cursor: default;
+    }
+    #statsHead {
+      all: unset;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--gold);
+    }
+    #statsHead .chev {
+      font-family: var(--body);
+      font-size: 11px;
+      color: var(--cream);
+      opacity: 0.7;
+      transition: transform 0.2s;
+    }
+    #stats.closed .chev { transform: rotate(-90deg); }
+    #statsBody {
+      padding: 2px 13px 11px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      row-gap: 5px;
+      column-gap: 10px;
+      align-items: baseline;
+      border-top: 1px solid rgba(246, 239, 223, 0.12);
+      padding-top: 9px;
+    }
+    #stats.closed #statsBody { display: none; }
+    #statsBody .k { opacity: 0.82; font-weight: 600; white-space: nowrap; }
+    #statsBody .v {
+      font-family: var(--display);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
 
-        .t-micro {
-            font-family: var(--font-mono);
-            font-size: 7px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--ink-light);
-            line-height: 1.4;
-        }
-        .btn {
-            font-family: var(--font-mono);
-            font-size: 8px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--ink-mid);
-            padding: 5px 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-radius: var(--radius-sm);
-            font-weight: 500;
-            touch-action: manipulation;
-            min-height: 30px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
-            gap: 6px;
-        }
-        .btn:hover {
-            background: var(--ink);
-            color: var(--card);
-            border-color: var(--ink);
-        }
-        .btn:active {
-            transform: scale(0.96);
-        }
-        .btn.ghost {
-            border-color: var(--border);
-            color: var(--ink-light);
-        }
-        .btn.ghost:hover {
-            background: var(--ink);
-            color: var(--card);
-            border-color: var(--ink);
-        }
-        .btn-primary {
-            background: var(--ink);
-            color: var(--card);
-            border-color: var(--ink);
-        }
-        .btn-primary:hover {
-            background: var(--ink-mid);
-            border-color: var(--ink-mid);
-        }
-        .btn-icon {
-            width: 32px;
-            padding: 0;
-            font-size: 15px;
-        }
-
-        /* ── topbar ── */
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 150;
-            background: transparent;
-            padding: 6px 0;
-            min-height: var(--topbar-height);
-            display: flex;
-            align-items: center;
-        }
-        .topbar .wrap {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            padding: 0 var(--margin);
-            max-width: var(--max-width);
-            margin: 0 auto;
-            width: 100%;
-        }
-        .wordmark {
-            font-family: var(--font);
-            font-size: clamp(12px, 3.5vw, 20px);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-            color: var(--ink);
-            flex-shrink: 0;
-        }
-        .wordmark .count {
-            font-family: var(--font-mono);
-            font-size: 8px;
-            font-weight: 400;
-            color: var(--ink-light);
-            letter-spacing: 0.04em;
-        }
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .topbar-right .btn {
-            font-size: 9px;
-            min-height: 32px;
-            padding: 4px 10px;
-        }
-        .topbar-right .btn-icon {
-            width: 32px;
-            padding: 0;
-            font-size: 15px;
-        }
-
-        /* ── viewport blur ── */
-        .viewport-blur {
-            position: fixed;
-            left: 0;
-            right: 0;
-            z-index: 40;
-            pointer-events: none;
-            backdrop-filter: blur(0px);
-            -webkit-backdrop-filter: blur(0px);
-            transition: backdrop-filter 0.3s ease, background 0.4s ease;
-        }
-        .viewport-blur.scrolling {
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-        .viewport-blur-top {
-            top: 0;
-            height: calc(var(--topbar-height) + 36px);
-            background: linear-gradient(to bottom, rgba(240, 240, 242, 0.7), rgba(240, 240, 242, 0));
-            mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
-        }
-        .viewport-blur-bottom {
-            bottom: 0;
-            height: calc(var(--hud-height) + 60px);
-            background: linear-gradient(to top, rgba(240, 240, 242, 0.7), rgba(240, 240, 242, 0));
-            mask-image: linear-gradient(to top, black 0%, black 45%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to top, black 0%, black 45%, transparent 100%);
-        }
-
-        /* ── scroll border progress ── */
-        .scroll-border-top {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: var(--accent);
-            z-index: 160;
-            width: 0%;
-            pointer-events: none;
-            box-shadow: 0 0 10px rgba(229, 229, 103, 0.35), 0 0 24px rgba(229, 229, 103, 0.12);
-            border-radius: 0 2px 2px 0;
-            transition: width 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: width;
-        }
-        .scroll-border-bottom {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            height: 3px;
-            background: var(--accent);
-            z-index: 160;
-            width: 0%;
-            pointer-events: none;
-            box-shadow: 0 0 10px rgba(229, 229, 103, 0.35), 0 0 24px rgba(229, 229, 103, 0.12);
-            border-radius: 2px 0 0 2px;
-            transition: width 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            will-change: width;
-        }
-        .scroll-border-corner {
-            position: fixed;
-            z-index: 160;
-            pointer-events: none;
-            background: var(--accent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .scroll-border-corner.show {
-            opacity: 1;
-        }
-        .scroll-border-corner-tl {
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 6px;
-            border-radius: 0 0 3px 0;
-        }
-        .scroll-border-corner-tr {
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 6px;
-            border-radius: 0 0 0 3px;
-        }
-        .scroll-border-corner-bl {
-            bottom: 0;
-            left: 0;
-            width: 6px;
-            height: 6px;
-            border-radius: 0 3px 0 0;
-        }
-        .scroll-border-corner-br {
-            bottom: 0;
-            right: 0;
-            width: 6px;
-            height: 6px;
-            border-radius: 3px 0 0 0;
-        }
-
-        /* ── custom cursor ── */
-        body.custom-cursor-active {
-            cursor: none;
-        }
-        .write-cursor-dot,
-        .write-cursor-ellipse {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 500;
-            pointer-events: none;
-            transform: translate(-9999px, -9999px);
-            opacity: 0;
-            transition: opacity 0.18s ease;
-            will-change: transform;
-        }
-        .write-cursor-dot.visible,
-        .write-cursor-ellipse.visible {
-            opacity: 1;
-        }
-        .write-cursor-dot {
-            width: 6px;
-            height: 6px;
-            margin: -3px 0 0 -3px;
-            border-radius: 50%;
-            background: var(--ink);
-        }
-        .write-cursor-ellipse {
-            width: 34px;
-            height: 34px;
-            margin: -17px 0 0 -17px;
-            border: 1.5px solid var(--ink);
-            border-radius: 50%;
-            opacity: 0;
-        }
-        .write-cursor-ellipse.visible {
-            opacity: 0.32;
-        }
-        body.custom-cursor-active.write-native-cursor {
-            cursor: auto;
-        }
-        .write-native-cursor .write-cursor-dot,
-        .write-native-cursor .write-cursor-ellipse {
-            opacity: 0 !important;
-        }
-
-        /* ── HUD ── */
-        .hud {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-floating);
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            min-height: 44px;
-            font-family: var(--font-mono);
-        }
-        .hud-bottom {
-            bottom: calc(12px + var(--scrollbar-height));
-            padding: 10px 18px;
-            min-height: 56px;
-            gap: 6px;
-        }
-        .hud .btn {
-            min-height: 30px;
-            padding: 5px 10px;
-            font-size: 8px;
-        }
-        .hud .hud-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--border);
-            flex-shrink: 0;
-            margin: 0 2px;
-        }
-        .hud .filter-count {
-            background: var(--ink);
-            color: var(--card);
-            padding: 1px 6px;
-            border-radius: var(--radius-sm);
-            font-size: 7px;
-            font-weight: 600;
-            min-width: 18px;
-            text-align: center;
-        }
-        .hud .hud-label {
-            font-size: 6px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--ink-light);
-            opacity: 0.5;
-        }
-        .hud-nav-counter {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--ink);
-            color: var(--card);
-            padding: 1px 6px;
-            border-radius: var(--radius-sm);
-            font-size: 7px;
-            font-weight: 600;
-            min-width: 18px;
-            text-align: center;
-        }
-        @media (max-width: 640px) {
-            .hud-bottom {
-                padding: 8px 12px;
-                min-height: 48px;
-                gap: 4px;
-            }
-            .hud .btn {
-                font-size: 7px;
-                padding: 4px 8px;
-                min-height: 26px;
-            }
-            .hud .hud-label {
-                display: none;
-            }
-        }
-        @media (max-width: 480px) {
-            .hud-bottom {
-                padding: 6px 10px;
-                gap: 3px;
-                min-height: 42px;
-            }
-            .hud .btn {
-                font-size: 6px;
-                padding: 3px 6px;
-                min-height: 24px;
-            }
-        }
-
-        /* ── Nav pills (view switcher) ── */
-        .nav-pills {
-            display: flex;
-            gap: 0.3rem;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            padding: 0.2rem;
-        }
-        .pill {
-            font-family: var(--font-mono);
-            font-size: 8px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            background: transparent;
-            border: none;
-            color: var(--ink-mid);
-            padding: 4px 12px;
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            min-height: 28px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .pill:hover {
-            color: var(--ink);
-            background: rgba(0, 0, 0, 0.04);
-        }
-        .pill.active {
-            background: var(--ink);
-            color: var(--card);
-        }
-
-        /* ── view containers ── */
-        .view {
-            position: relative;
-            width: 100%;
-            display: none;
-            padding: 0 var(--margin) 1rem;
-            max-width: var(--max-width);
-            margin: 0 auto;
-        }
-        .view.active {
-            display: block;
-        }
-
-        /* ── Timeline view (re‑styled) ── */
-        #view-timeline {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            padding: 0;
-            margin: 0;
-            max-width: 100%;
-        }
-        #tl-viewport {
-            position: relative;
-            overflow: hidden;
-            cursor: grab;
-            width: 100%;
-            height: calc(100vh - var(--topbar-height) - var(--hud-height) - 40px);
-            min-height: 400px;
-        }
-        #tl-viewport.grabbing {
-            cursor: grabbing;
-        }
-        #tl-bgtext {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            white-space: nowrap;
-            font-family: var(--font);
-            font-weight: 700;
-            font-size: 15vw;
-            line-height: 1;
-            color: rgba(28, 28, 30, 0.055);
-            transform: translateY(-50%);
-            will-change: transform;
-            user-select: none;
-            pointer-events: none;
-        }
-        #tl-track {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            will-change: transform;
-        }
-        #tl-items-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            will-change: transform;
-        }
-        .tl-col-items {
-            will-change: transform;
-        }
-        .tl-col-items.drag-over-col {
-            background: rgba(0, 0, 0, 0.04);
-            border-radius: var(--radius-sm);
-        }
-        .tl-col-line {
-            position: absolute;
-            top: 12%;
-            bottom: 14%;
-            width: 1px;
-            background: rgba(28, 28, 30, 0.16);
-            pointer-events: none;
-        }
-        .tl-col-label {
-            position: absolute;
-            bottom: 2.4rem;
-            font-family: var(--font);
-            font-weight: 500;
-            font-size: 0.72rem;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--ink-light);
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            pointer-events: none;
-        }
-        .tl-item {
-            position: absolute;
-            cursor: pointer;
-            transition: filter 0.3s, opacity 0.3s;
-            will-change: transform;
-            z-index: 1;
-        }
-        .tl-item:hover {
-            z-index: 30;
-        }
-        .tl-item .thumb {
-            width: 100%;
-            aspect-ratio: 4/5;
-            background: var(--card);
-            border: 1px solid var(--border);
-            perspective: 450px;
-        }
-        .tl-item .thumb-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            will-change: transform;
-            overflow: hidden;
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow);
-        }
-        .tl-item.is-card .thumb {
-            aspect-ratio: 1/1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .tl-item .cardlabel {
-            font-family: var(--font);
-            font-weight: 600;
-            text-align: center;
-            padding: 0 0.5rem;
-            line-height: 1.1;
-        }
-        .tl-item.dim {
-            opacity: 0.18;
-        }
-        .tl-item.dragging {
-            opacity: 0.32;
-        }
-        .tl-item.drag-over {
-            outline: 2px dashed var(--ink);
-            outline-offset: 6px;
-        }
-        .thumb-media {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: grayscale(0.85) contrast(1.05);
-            transition: filter 0.35s;
-            transform: translateZ(0);
-        }
-        .thumb:hover .thumb-media {
-            filter: grayscale(0) contrast(1.02);
-        }
-        .thumb-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            display: flex;
-            align-items: flex-end;
-            gap: 0.45rem;
-            padding: 0.6rem 0.65rem;
-            transform: translateZ(46px);
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0) 58%);
-            pointer-events: none;
-        }
-        .thumb-idx {
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.62);
-            flex-shrink: 0;
-        }
-        .thumb-ttl {
-            font-family: var(--font);
-            font-size: 0.72rem;
-            font-weight: 500;
-            letter-spacing: 0.01em;
-            color: #fff;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .thumb-ttl[contenteditable="true"] {
-            pointer-events: auto;
-            border-radius: 3px;
-            -webkit-user-select: text;
-            user-select: text;
-            cursor: text;
-        }
-        .thumb-ttl[contenteditable="true"]:empty:before {
-            content: 'Untitled';
-            opacity: 0.5;
-        }
-        [contenteditable="true"]:focus {
-            outline: none;
-            box-shadow: 0 0 0 1px var(--ink);
-        }
-        .tl-hero {
-            position: absolute;
-            left: var(--margin);
-            bottom: var(--margin);
-            z-index: 50;
-            font-family: var(--font);
-            font-weight: 300;
-            font-size: clamp(2.2rem, 7vw, 5rem);
-            line-height: 0.92;
-            letter-spacing: -0.01em;
-            pointer-events: none;
-        }
-        #tl-hint {
-            position: fixed;
-            bottom: calc(var(--hud-height) + 20px);
-            right: var(--margin);
-            z-index: 100;
-            font-size: 0.64rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--ink-light);
-            text-align: right;
-            line-height: 1.7;
-            pointer-events: none;
-        }
-
-        /* ── List view ── */
-        #view-list {
-            padding-top: 0.5rem;
-        }
-        #list-wrap {
-            overflow-y: auto;
-            max-height: calc(100vh - var(--topbar-height) - var(--hud-height) - 40px);
-            scroll-behavior: smooth;
-        }
-        #list-wrap::-webkit-scrollbar {
-            width: 0;
-        }
-        .list-row {
-            border-bottom: 1px solid var(--border);
-        }
-        .list-row-head {
-            display: flex;
-            align-items: center;
-            gap: 0.9rem;
-            padding: 1.1rem 0.2rem;
-            cursor: pointer;
-            user-select: none;
-        }
-        .list-month {
-            font-family: var(--font);
-            font-weight: 300;
-            flex: 1;
-            min-width: 0;
-            font-size: clamp(1.7rem, 4.4vw, 3rem);
-            color: var(--ink-lighter);
-            transition: color 0.3s, font-weight 0.3s;
-            border-radius: 4px;
-        }
-        .list-month[contenteditable="true"] {
-            cursor: text;
-            -webkit-user-select: text;
-            user-select: text;
-        }
-        .list-month[contenteditable="true"]:empty:before {
-            content: 'Untitled category';
-            opacity: 0.4;
-        }
-        .list-row.expanded .list-month {
-            color: var(--ink);
-            font-weight: 600;
-        }
-        .list-row-head-right {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            flex-shrink: 0;
-        }
-        .list-idx {
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--ink-light);
-            white-space: nowrap;
-        }
-        .list-drag-handle {
-            flex-shrink: 0;
-            background: transparent;
-            border: none;
-            padding: 0.3rem;
-            margin-right: 0.1rem;
-            cursor: grab;
-            opacity: 0.4;
-            transition: opacity 0.2s;
-            display: flex;
-            align-items: center;
-        }
-        .list-drag-handle svg {
-            width: 14px;
-            height: 14px;
-            fill: var(--ink-light);
-        }
-        .list-row-head:hover .list-drag-handle {
-            opacity: 0.85;
-        }
-        .list-drag-handle:hover svg {
-            fill: var(--ink);
-        }
-        .list-drag-handle:active {
-            cursor: grabbing;
-        }
-        .list-row.dragging-row {
-            opacity: 0.4;
-        }
-        .list-row.drag-over-row .list-row-head {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 4px;
-        }
-        .list-cat-del {
-            flex-shrink: 0;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--ink-light);
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 0.32rem 0.55rem;
-            border-radius: 2px;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.2s, color 0.2s, border-color 0.2s;
-        }
-        .list-row-head:hover .list-cat-del {
-            opacity: 0.65;
-        }
-        .list-cat-del:hover {
-            opacity: 1 !important;
-            color: var(--accent);
-            border-color: var(--accent);
-        }
-        #list-add-row {
-            padding: 1.1rem 0.2rem;
-            cursor: pointer;
-            user-select: none;
-            text-align: center;
-            font-family: var(--font);
-            font-weight: 500;
-            font-size: 0.95rem;
-            color: var(--ink-light);
-            border: 1px dashed var(--border);
-            border-radius: var(--radius-sm);
-            margin-top: 1rem;
-            transition: color 0.2s, border-color 0.2s;
-        }
-        #list-add-row:hover {
-            color: var(--ink);
-            border-color: var(--ink-mid);
-        }
-        .list-row-body {
-            display: grid;
-            grid-template-rows: 0fr;
-            transition: grid-template-rows 0.55s cubic-bezier(0.65, 0, 0.35, 1);
-        }
-        .list-row-body-inner {
-            overflow: hidden;
-        }
-        .list-row.expanded .list-row-body {
-            grid-template-rows: 1fr;
-        }
-        .list-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.9rem;
-            padding: 0.2rem 0.2rem 1.6rem;
-        }
-        .list-card {
-            flex: 0 0 auto;
-            width: 150px;
-            cursor: pointer;
-            position: relative;
-            z-index: 1;
-            content-visibility: auto;
-            contain-intrinsic-size: 150px 200px;
-        }
-        .list-card:hover {
-            z-index: 30;
-        }
-        .list-card .thumb {
-            width: 100%;
-            aspect-ratio: 4/5;
-            background: var(--card);
-            border: 1px solid var(--border);
-            perspective: 450px;
-        }
-        .list-card .thumb-inner {
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow);
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            will-change: transform;
-            overflow: hidden;
-        }
-        .list-card.is-card .thumb {
-            aspect-ratio: 1/1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .list-card .cardlabel {
-            font-family: var(--font);
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-        .list-card.dim {
-            opacity: 0.2;
-        }
-        .list-empty {
-            padding: 0 0.2rem 1.6rem;
-            font-size: 0.72rem;
-            color: var(--ink-light);
-            letter-spacing: 0.04em;
-        }
-
-        /* ── Grid view ── */
-        #view-grid {
-            padding-top: 0.5rem;
-        }
-        #grid-scroll {
-            overflow-y: auto;
-            max-height: calc(100vh - var(--topbar-height) - var(--hud-height) - 40px);
-        }
-        #grid-scroll::-webkit-scrollbar {
-            width: 0;
-        }
-        #grid-topline {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            padding-bottom: 1.1rem;
-            margin-bottom: 1.1rem;
-            border-bottom: 1px solid var(--border);
-        }
-        #grid-title {
-            font-family: var(--font);
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 0.02em;
-        }
-        #grid-count {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--ink-light);
-        }
-        #grid-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1.6rem 1rem;
-        }
-        .g-item {
-            cursor: pointer;
-            position: relative;
-            z-index: 1;
-            content-visibility: auto;
-            contain-intrinsic-size: 150px 200px;
-        }
-        .g-item:hover {
-            z-index: 30;
-        }
-        .g-item .thumb {
-            width: 100%;
-            aspect-ratio: 4/5;
-            background: var(--card);
-            border: 1px solid var(--border);
-            perspective: 450px;
-        }
-        .g-item .thumb-inner {
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow);
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            will-change: transform;
-            overflow: hidden;
-        }
-        .g-item.is-card .thumb {
-            aspect-ratio: 1/1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .g-item .cardlabel {
-            font-family: var(--font);
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.85rem;
-        }
-        .g-item.dim {
-            opacity: 0.2;
-        }
-        .g-item.dragging {
-            opacity: 0.32;
-        }
-        .g-item.drag-over {
-            outline: 2px dashed var(--ink);
-            outline-offset: -6px;
-        }
-
-        #grid-cats {
-            position: sticky;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 60;
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-            padding: 1rem 0;
-            background: linear-gradient(to top, var(--bg) 55%, transparent);
-            pointer-events: none;
-        }
-        #grid-cats>* {
-            pointer-events: auto;
-        }
-        .cat-pill {
-            padding: 0.5rem 1rem;
-            border-radius: 2px;
-            border: 1px solid var(--border);
-            background: var(--card);
-            font-size: 0.68rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--ink);
-            box-shadow: var(--shadow);
-        }
-        .cat-pill:hover {
-            border-color: var(--ink);
-        }
-        .cat-pill.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--ink);
-        }
-
-        /* ── Detail modal ── */
-        #detail {
-            position: fixed;
-            inset: 0;
-            z-index: 500;
-            background: rgba(0, 0, 0, 0.78);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        #detail.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        #detail-card {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 92vw;
-            max-height: 88vh;
-        }
-        #detail-close {
-            position: absolute;
-            top: -3rem;
-            right: 0;
-            width: 2.3rem;
-            height: 2.3rem;
-            border-radius: 50%;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.28);
-            color: #fff;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s, opacity 0.2s;
-        }
-        #detail-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        #detail-frame {
-            position: relative;
-            width: min(460px, 80vw);
-            aspect-ratio: 4/5;
-            max-height: 80vh;
-        }
-        #detail-frame .thumb {
-            width: 100%;
-            height: 100%;
-            perspective: 900px;
-        }
-        #detail-frame .thumb-inner {
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-hover);
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            will-change: transform;
-            overflow: hidden;
-        }
-        #detail-frame .cardlabel {
-            font-size: 1.4rem;
-        }
-        #detail-caption {
-            position: absolute;
-            top: -0.9rem;
-            right: -0.9rem;
-            z-index: 2;
-            max-width: 68%;
-            background: var(--ink);
-            color: var(--card);
-            padding: 0.5rem 0.8rem;
-            border-radius: var(--radius-sm);
-            font-family: var(--font);
-            font-size: 0.72rem;
-            font-weight: 500;
-            line-height: 1.35;
-            box-shadow: var(--shadow-floating);
-            pointer-events: none;
-        }
-        #detail-caption .idx {
-            display: block;
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            opacity: 0.55;
-            margin-bottom: 0.15rem;
-        }
-        #detail-caption-text[contenteditable="true"] {
-            pointer-events: auto;
-            border-radius: 3px;
-            -webkit-user-select: text;
-            user-select: text;
-            cursor: text;
-        }
-        #detail-caption-text[contenteditable="true"]:empty:before {
-            content: 'Untitled';
-            opacity: 0.5;
-        }
-
-        /* ── modals (export/import) ── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 600;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .modal-overlay.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .modal-card {
-            background: var(--card);
-            width: min(620px, 90vw);
-            padding: 1.6rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            max-height: 86vh;
-            overflow: auto;
-            box-shadow: var(--shadow-floating);
-        }
-        .modal-card h3 {
-            font-family: var(--font);
-            font-weight: 700;
-            font-size: 1.05rem;
-        }
-        .modal-card p {
-            font-size: 0.74rem;
-            color: var(--ink-light);
-            line-height: 1.5;
-        }
-        .modal-textarea {
-            width: 100%;
-            height: 220px;
-            resize: vertical;
-            background: var(--bg);
-            color: var(--ink);
-            border: 1px solid var(--border);
-            padding: 0.7rem;
-            font-family: var(--font-mono);
-            font-size: 0.68rem;
-            line-height: 1.4;
-            border-radius: var(--radius-sm);
-        }
-        .modal-actions {
-            display: flex;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .modal-actions .btn {
-            font-size: 8px;
-            min-height: 32px;
-        }
-        .modal-status {
-            font-size: 0.7rem;
-            color: var(--accent);
-            min-height: 1em;
-        }
-
-        /* ── context menu ── */
-        #ctx-menu {
-            position: fixed;
-            z-index: 800;
-            background: var(--card);
-            border: 1px solid var(--border);
-            min-width: 170px;
-            max-height: 60vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-floating);
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.97);
-            transition: opacity 0.12s, transform 0.12s;
-            padding: 0.35rem;
-            border-radius: var(--radius-sm);
-        }
-        #ctx-menu.show {
-            opacity: 1;
-            pointer-events: all;
-            transform: scale(1);
-        }
-        .ctx-menu-label {
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--ink-light);
-            padding: 0.4rem 0.6rem 0.3rem;
-        }
-        .ctx-menu-item {
-            font-family: var(--font);
-            font-size: 0.78rem;
-            color: var(--ink);
-            padding: 0.45rem 0.6rem;
-            border-radius: 3px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .ctx-menu-item:hover {
-            background: var(--bg);
-        }
-
-        /* ── HUD popovers ── */
-        .hud-popover {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0;
-            z-index: 400;
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 0.7rem;
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-floating);
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-4px);
-            transition: opacity 0.15s, transform 0.15s;
-        }
-        .hud-popover.show {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(0);
-        }
-        .hud-popover h4 {
-            font-family: var(--font);
-            font-weight: 700;
-            font-size: 0.76rem;
-            margin-bottom: 0.55rem;
-        }
-        #hud-wolfielove-panel {
-            width: min(560px, 90vw);
-        }
-        #hud-wolfielove-panel iframe {
-            width: 100%;
-            height: 400px;
-            border: none;
-            background: var(--bg);
-            border-radius: var(--radius-sm);
-        }
-        #hud-support-panel {
-            width: min(340px, 86vw);
-            max-height: 70vh;
-            overflow: auto;
-        }
-        .hud-open-link {
-            display: inline-block;
-            margin-top: 0.55rem;
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--accent);
-            text-decoration: none;
-        }
-        .hud-open-link:hover {
-            text-decoration: underline;
-        }
-
-        /* ── scrollbars in list/grid ── */
-        .scrollbar-v {
-            position: absolute;
-            top: 0.5rem;
-            bottom: 1.4rem;
-            right: 0.55rem;
-            width: 1px;
-            background: var(--border);
-            z-index: 120;
-            pointer-events: none;
-        }
-        .scrollbar-v .thumb {
-            position: absolute;
-            left: -1px;
-            width: 3px;
-            background: var(--ink);
-            opacity: 0.55;
-            border-radius: 2px;
-        }
-
-        /* ── responsive ── */
-        @media (max-width: 640px) {
-            .tl-item .thumb {
-                border-radius: var(--radius-sm);
-            }
-            .list-card {
-                width: 120px;
-            }
-            .hud-popover {
-                position: fixed;
-                left: var(--margin);
-                right: var(--margin);
-                top: calc(var(--topbar-height) + 10px);
-                width: auto !important;
-                max-width: none;
-            }
-            #hud-wolfielove-panel iframe {
-                height: 280px;
-            }
-            #hud-support-panel {
-                max-height: 60vh;
-            }
-            .scrollbar-v {
-                right: 0.3rem;
-            }
-        }
-    </style>
+    #barkBtn {
+      display: none;
+      position: fixed;
+      right: 18px;
+      bottom: 64px;
+      z-index: 6;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: 3px solid var(--cream);
+      background: var(--rust);
+      color: var(--cream);
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    #barkBtn:active { transform: scale(0.93); background: #d96a3f; }
+    @media (pointer: coarse) { #barkBtn { display: flex; } }
+  </style>
 </head>
 <body>
+  <canvas id="game"></canvas>
 
-    <!-- ─── CUSTOM CURSOR ─── -->
-    <div class="write-cursor-ellipse" id="writeCursorEllipse" aria-hidden="true"></div>
-    <div class="write-cursor-dot" id="writeCursorDot" aria-hidden="true"></div>
+  <button id="barkBtn" type="button">WOOF!</button>
 
-    <!-- ─── SCROLL PROGRESS BORDER ─── -->
-    <div class="scroll-border-top" id="scrollBorderTop" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-    <div class="scroll-border-bottom" id="scrollBorderBottom" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-    <div class="scroll-border-corner scroll-border-corner-tl" id="cornerTL"></div>
-    <div class="scroll-border-corner scroll-border-corner-tr" id="cornerTR"></div>
-    <div class="scroll-border-corner scroll-border-corner-bl" id="cornerBL"></div>
-    <div class="scroll-border-corner scroll-border-corner-br" id="cornerBR"></div>
-
-    <!-- ─── VIEWPORT BLUR ─── -->
-    <div class="viewport-blur viewport-blur-top" id="viewportBlurTop" aria-hidden="true"></div>
-    <div class="viewport-blur viewport-blur-bottom" id="viewportBlurBottom" aria-hidden="true"></div>
-
-    <!-- ─── TOPBAR ─── -->
-    <div class="topbar">
-        <div class="wrap">
-            <div class="wordmark">
-                <span>wolfie.life</span>
-                <span class="count" id="topCount">◈</span>
-            </div>
-            <div class="topbar-right">
-                <button class="btn" id="topResetBtn">↺ Reset</button>
-                <button class="btn" id="themeToggle">⚫︎</button>
-            </div>
-        </div>
+  <div id="stats">
+    <button id="statsHead" type="button">Wolfie's stats <span class="chev">&#9660;</span></button>
+    <div id="statsBody">
+      <span class="k">&#128017; Sheep herded</span><span class="v" id="st-herded">0</span>
+      <span class="k">&#127937; Pens cleared</span><span class="v" id="st-pens">0</span>
+      <span class="k">&#9889; Best pen time</span><span class="v" id="st-best">&mdash;</span>
+      <span class="k">&#127804; Flowers sniffed</span><span class="v" id="st-sniffs">0</span>
+      <span class="k">&#127800; Flowers found</span><span class="v" id="st-found">0</span>
+      <span class="k">&#128167; Pee pees</span><span class="v" id="st-pees">0</span>
+      <span class="k">&#128266; Barks</span><span class="v" id="st-barks">0</span>
+      <span class="k">&#128099; Distance run</span><span class="v" id="st-dist">0 m</span>
+      <span class="k">&#9201; Time played</span><span class="v" id="st-time">0:00</span>
     </div>
+  </div>
+  <div id="hint">Herd every sheep into the pen · Click to queue stops (click a flower to sniff) · Space to bark (M mutes) · Right-click to pee · WASD cancels</div>
 
-    <!-- ─── VIEW SWITCHER (pills) ─── -->
-    <div style="display:flex; justify-content:center; padding: 0.5rem var(--margin);">
-        <div class="nav-pills" id="navPills">
-            <button class="pill active" data-view="timeline">Flow</button>
-            <button class="pill" data-view="list">List</button>
-            <button class="pill" data-view="grid">Grid</button>
-        </div>
-    </div>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const hint = document.getElementById("hint");
 
-    <!-- ─── TIMELINE VIEW ─── -->
-    <section id="view-timeline" class="view active">
-        <div id="tl-viewport">
-            <div id="tl-bgtext"></div>
-            <div id="tl-track"></div>
-            <div id="tl-items-layer"></div>
-        </div>
-        <div class="tl-hero">wolfie.life</div>
-        <div id="tl-hint">Drag or scroll — sideways<br>Click a piece to open it</div>
-    </section>
+    // ---------- Stats ----------
+    const stats = {
+      sheepHerded: 0, pensCleared: 0, pensMissed: 0, bestPen: null,
+      flowersSniffed: 0, found: new Set(),
+      pees: 0, barks: 0, barkHeld: false,
+      dist: 0, lx: null, ly: null
+    };
+    const statsEl = document.getElementById("stats");
+    document.getElementById("statsHead").addEventListener("click", () => statsEl.classList.toggle("closed"));
+    if (window.innerWidth < 600) statsEl.classList.add("closed");
 
-    <!-- ─── LIST VIEW ─── -->
-    <section id="view-list" class="view">
-        <div id="list-wrap"></div>
-        <div class="scrollbar-v" id="list-scrollbar"><div class="thumb" id="list-scrollbar-thumb"></div></div>
-    </section>
+    const statCache = {};
+    function setStat(id, v) {
+      v = String(v);
+      if (statCache[id] !== v) {
+        statCache[id] = v;
+        document.getElementById(id).textContent = v;
+      }
+    }
+    function renderStats() {
+      setStat("st-herded", stats.sheepHerded);
+      setStat("st-pens", stats.pensCleared + (stats.pensMissed ? " (" + stats.pensMissed + " missed)" : ""));
+      setStat("st-best", stats.bestPen === null ? "\u2014" : stats.bestPen.toFixed(1) + "s");
+      setStat("st-sniffs", stats.flowersSniffed);
+      setStat("st-found", stats.found.size + " / " + flowers.length);
+      setStat("st-pees", stats.pees);
+      setStat("st-barks", stats.barks);
+      const m = stats.dist * 0.05; // ~20 px per metre
+      setStat("st-dist", m < 1000 ? Math.round(m) + " m" : (m / 1000).toFixed(2) + " km");
+      const t = Math.floor(nowT);
+      setStat("st-time", Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"));
+    }
 
-    <!-- ─── GRID VIEW ─── -->
-    <section id="view-grid" class="view">
-        <div id="grid-scroll">
-            <div id="grid-topline">
-                <div id="grid-title">Every piece, 2025</div>
-                <div id="grid-count" class="t-micro"></div>
-            </div>
-            <div id="grid-items"></div>
-            <div id="grid-cats"></div>
-        </div>
-        <div class="scrollbar-v" id="grid-scrollbar"><div class="thumb" id="grid-scrollbar-thumb"></div></div>
-    </section>
 
-    <!-- ─── DETAIL POPOVER ─── -->
-    <div id="detail">
-        <div id="detail-card">
-            <button id="detail-close" aria-label="Close">✕</button>
-            <div id="detail-frame">
-                <div id="detail-caption"></div>
-            </div>
-        </div>
-    </div>
+    // ---------- Wolfie's bark: synthesized woof + floating text ----------
+    let audio = null, muted = false, noiseBuf = null;
+    function ensureAudio() {
+      if (!audio) {
+        try {
+          audio = new (window.AudioContext || window.webkitAudioContext)();
+          const len = Math.floor(audio.sampleRate * 0.2);
+          noiseBuf = audio.createBuffer(1, len, audio.sampleRate);
+          const d = noiseBuf.getChannelData(0);
+          for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        } catch (err) { audio = null; }
+      }
+      if (audio && audio.state === "suspended") audio.resume();
+    }
 
-    <!-- ─── BOTTOM HUD ─── -->
-    <div class="hud hud-bottom" id="hud">
-        <span class="hud-label">Status</span>
-        <span class="filter-count" id="hudStatusCount">0</span>
-        <span style="font-size:0.75rem;color:var(--ink-light);" id="hudStatusText">Ready</span>
-        <div class="hud-divider"></div>
-        <button class="btn" id="hudImport">+ Add</button>
-        <button class="btn" id="hudExport">Export</button>
-        <div class="hud-divider"></div>
-        <span class="hud-label">Filter</span>
-        <span id="filterBadge" class="btn" style="border-color:transparent; background:transparent; font-size:7px; min-height:24px; padding:2px 6px;">All</span>
-    </div>
+    // one "woof": a falling growly tone through a moving vowel filter, plus a breathy burst
+    function woof(t, base, vol) {
+      const bp = audio.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.Q.value = 1.6;
+      bp.frequency.setValueAtTime(650, t);
+      bp.frequency.exponentialRampToValueAtTime(1250, t + 0.04);
+      bp.frequency.exponentialRampToValueAtTime(700, t + 0.18);
 
-    <!-- ─── EXPORT MODAL ─── -->
-    <div id="export-modal" class="modal-overlay">
-        <div id="export-card" class="modal-card">
-            <h3>Current arrangement</h3>
-            <p>Copy or download the arrangement JSON to hand back to Claude.</p>
-            <textarea id="export-text" class="modal-textarea" readonly></textarea>
-            <div id="export-actions" class="modal-actions">
-                <button class="btn btn-primary" id="export-copy">Copy</button>
-                <button class="btn" id="export-download">Download</button>
-                <button class="btn" id="export-close">Close</button>
-            </div>
-        </div>
-    </div>
+      const g = audio.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.21);
+      bp.connect(g);
+      g.connect(audio.destination);
 
-    <!-- ─── IMPORT MODAL ─── -->
-    <div id="import-modal" class="modal-overlay">
-        <div id="import-card" class="modal-card">
-            <h3>Add images to Unsorted</h3>
-            <p>Paste one image URL per line (or separate with commas). Each lands in "Unsorted".</p>
-            <textarea id="import-text" class="modal-textarea" placeholder="https://example.com/photo.jpg"></textarea>
-            <div id="import-status" class="modal-status"></div>
-            <div id="import-actions" class="modal-actions">
-                <button class="btn btn-primary" id="import-submit">Add</button>
-                <button class="btn" id="import-close">Close</button>
-            </div>
-        </div>
-    </div>
+      const osc = audio.createOscillator();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(base * 1.3, t);
+      osc.frequency.exponentialRampToValueAtTime(base * 0.6, t + 0.18);
+      osc.connect(bp);
+      osc.start(t);
+      osc.stop(t + 0.23);
 
-    <!-- ─── CONTEXT MENU ─── -->
-    <div id="ctx-menu"></div>
+      const body = audio.createOscillator();
+      const bodyG = audio.createGain();
+      bodyG.gain.value = 0.5;
+      body.type = "square";
+      body.frequency.setValueAtTime(base * 0.65, t);
+      body.frequency.exponentialRampToValueAtTime(base * 0.3, t + 0.18);
+      body.connect(bodyG);
+      bodyG.connect(bp);
+      body.start(t);
+      body.stop(t + 0.23);
 
-    <script>
-        (function() {
-            'use strict';
+      const nz = audio.createBufferSource();
+      nz.buffer = noiseBuf;
+      const nf = audio.createBiquadFilter();
+      nf.type = "bandpass";
+      nf.frequency.value = 1800;
+      nf.Q.value = 0.9;
+      const ng = audio.createGain();
+      ng.gain.setValueAtTime(vol * 0.55, t);
+      ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      nz.connect(nf);
+      nf.connect(ng);
+      ng.connect(audio.destination);
+      nz.start(t);
+      nz.stop(t + 0.12);
+    }
 
-            /* ═══════════════════════════════════════════
-               DATA — GROUPS + ITEMS (from original)
-               ═══════════════════════════════════════════ */
-            let GROUPS = ['King from Queens', 'Lost & Found', 'Grassroots', 'World Star', 'Of Wolf & Man', 'Walkies', 'WFH',
-                'Wherever, Whatever'
-            ];
+    function playBark(dbl) {
+      if (!audio || muted) return;
+      const t = audio.currentTime + 0.005;
+      const base = 300 + Math.random() * 70;
+      woof(t, base, 0.55);
+      if (dbl) woof(t + 0.19, base * 1.08, 0.42); // "ruff ruff"
+    }
 
-            const RAW = [
-                { t: 'Elephantbywolfgang', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/elephantbywolfgang.avif' },
-                { t: 'Meet Wolfgang', c: 'Grassroots', m: 2, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Ohmmmm.mp4' },
-                { t: 'Batman', c: 'King from Queens', m: 0, k: 'photo', img: 'https://i.ibb.co/YBqRmT0f/batman.webp' },
-                { t: 'Braveboy', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/braveboy.avif' },
-                { t: 'Buildingburgerking', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://i.ibb.co/twP8m5wP/buildingburgerking.webp' },
-                { t: 'Happierinnewyork', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/happierinnewyork.avif' },
-                { t: 'Surviorandthriverfullcolor', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/surviorandthriverfullcolor.avif' },
-                { t: 'Oneofwolfgangsfavoriteplaces', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/oneofwolfgangsfavoriteplaces.avif' },
-                { t: 'Fallinginlove1', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/fallinginlove1.avif' },
-                { t: 'Fellinlove1', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://i.ibb.co/YBQ5pvfW/fellinlove1.jpg' },
-                { t: 'Sweetestwolfgang', c: 'Grassroots', m: 2, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/sweetestwolfgang.avif' },
-                { t: 'Xlnexttimeplease', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/xlnexttimeplease.avif' },
-                { t: 'Sowolfiehatedtherain', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/sowolfiehatedtherain.avif' },
-                { t: 'Itshisworld', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/itshisworld.avif' },
-                { t: 'Happyboy', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/happyboy.avif' },
-                { t: 'Assorgrasslass', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/assorgrasslass.avif' },
-                { t: 'Wolfgangsfinestwork', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/wolfgangsfinestwork.avif' },
-                { t: 'Wolfgangsfinestworkmoment', c: 'Walkies', m: 5, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/wolfgangsfinestworkmoment.avif' },
-                { t: 'Loveinastoria', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/loveinastoria.avif' },
-                { t: 'Wanderlust', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Worldviewwalkieswithwolfgang.mp4' },
-                { t: 'Sowhatareyouupto', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/sowhatareyouupto.avif' },
-                { t: 'Floating', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/floating.avif' },
-                { t: 'Likereallyhatedtherain', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/likereallyhatedtherain.avif' },
-                { t: 'Intothevoid', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/intothevoid.avif' },
-                { t: 'caught in a landslide', c: 'King from Queens', m: 0, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/sleepspiral.mp4' },
-                { t: 'Nownamedgivenanappropriatemohawk', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/nownamedgivenanappropriatemohawk.avif' },
-                { t: 'Atthismomentidecidedhewasmine', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/atthismomentidecidedhewasmine.avif' },
-                { t: 'Lostinqueens', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/lostinqueens.avif' },
-                { t: 'Wolfgangownsallofmyhoodies', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/wolfgangownsallofmyhoodies.avif' },
-                { t: 'Newtothis', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/newtothis.avif' },
-                { t: 'Whenyouletastrangerintoyourhomeandtheygoforyourfridge', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/whenyouletastrangerintoyourhomeandtheygoforyourfridge.avif' },
-                { t: 'Theveryfirstofclassicwolfgang', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/theveryfirstofclassicwolfgang.avif' },
-                { t: 'Socks1', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/socks1.avif' },
-                { t: 'Socks2', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/socks2.avif' },
-                { t: 'Mysweetpumpkin', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/mysweetpumpkin.avif' },
-                { t: 'Allstitchedup', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/allstitchedup.avif' },
-                { t: 'Reald', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/park123.avif' },
-                { t: 'REALD', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/sothisiswolfgang.avif' },
-                { t: 'You longingly looked for a lap', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/traininghumanonmyfavoritethingtodoperiod.avif' },
-                { t: 'Texture', c: 'Grassroots', m: 2, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/shitsupervisor.avif' },
-                { t: 'Night Signal', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/hidaddy.avif' },
-                { t: 'Video', c: 'World Star', m: 3, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/soferocious.mp4' },
-                { t: 'Jitter', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/classic005.avif' },
-                { t: 'Blurred', c: 'Lost & Found', m: 1, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/socks1.avif' },
-                { t: 'Template', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/superhero.avif' },
-                { t: 'Panther', c: 'King from Queens', m: 0, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/assorgrasslass.avif' },
-                { t: 'Urban', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/classicwolfgang65.avif' },
-                { t: 'Fashion Ed.', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/firstsnow.avif' },
-                { t: 'Hoodie', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/owl.avif' },
-                { t: 'Restart Loop', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/someoneissnoring.avif' },
-                { t: 'Faces', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/whereiswolfgang.avif' },
-                { t: 'Kiss Kiss', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/instantlyourfavoritepasttime.avif' },
-                { t: 'Couple', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/classic6543.avif' },
-                { t: 'Artistic Portrait', c: 'World Star', m: 3, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/hislittleblacklips.avif' },
-                { t: 'Hard Light', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/drivethruluxurysuite.avif' },
-                { t: 'Player', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/comfort2.avif' },
-                { t: 'Relax', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/oneofwolfgangsfavoriteplaces.avif' },
-                { t: 'Icecream45678', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/icecream45678.avif' },
-                { t: 'Thislittledudeexudedsomuchconfidence', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/thislittledudeexudedsomuchconfidence.avif' },
-                { t: 'Wolfgang00', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/wolfgang00.avif' },
-                { t: 'Whereiswolfgang', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/whereiswolfgang.avif' },
-                { t: 'Delicious', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/delicious.avif' },
-                { t: 'Wolfgang000', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/wolfgang000.avif' },
-                { t: 'haircuts', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/mohawk.avif' },
-                { t: 'icecream1', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/theabsolutecutestthingihaveeverseen.avif' },
-                { t: 'roadworth', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/joyful.avif' },
-                { t: 'as his name', c: 'Of Wolf & Man', m: 4, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/sowolfgangdiscoveredpupcupsatprettymucheverysheetz.avif' },
-                { t: 'Boardwalks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boardwalks_v1%20(720p).mp4' },
-                { t: 'Boop', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/boop_v1%20(2160p).mp4' },
-                { t: 'Exciting Things', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/excitingthings_v1%20(1080p).mp4' },
-                { t: 'Favorite Fairmount', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/favoritefairmount_v1%20(720p).mp4' },
-                { t: 'Fubar', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/fubar_v1%20(1080p).mp4' },
-                { t: 'Goated', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/goated_v1%20(1080p).mp4' },
-                { t: 'Grassy Paths', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/grassypaths_v1%20(720p).mp4' },
-                { t: 'Gravel Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/gravelwalks_v1%20(1080p).mp4' },
-                { t: 'Hallow Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/hallowwalks_v1%20(720p).mp4' },
-                { t: 'Inline Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inlinewalks_v1%20(1080p).mp4' },
-                { t: 'In Need of an Upgrade', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/inneedofanupgrade_v1%20(1080p).mp4' },
-                { t: 'Looking for Me', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingforme_v1%20(1080p).mp4' },
-                { t: 'Looking Fresh', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/lookingfresh_v1%20(1080p).mp4' },
-                { t: 'Massacre', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/massacre_v1%20(1080p).mp4' },
-                { t: 'Meats to Eat 2', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/meatstoeat2_v1%20(720p).mp4' },
-                { t: 'Ominous Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/ominouswalks_v1%20(1080p).mp4' },
-                { t: 'Precarious Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/precariouswalks_v1%20(720p).mp4' },
-                { t: 'Reality', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reality_v1%20(720p).mp4' },
-                { t: 'Really Interesting Branches', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyinterestingbranches_v1%20(720p).mp4' },
-                { t: 'Really Rocky Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reallyrockywalks_v1%20(1440p).mp4' },
-                { t: 'Reverse Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/reversewalks_v1%20(720p)%20(1).mp4' },
-                { t: 'Say That You Love Me', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/saythatyouloveme_v1%20(1080p).mp4' },
-                { t: 'Sidewalks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/sidewalks_v1%20(720p).mp4' },
-                { t: 'Skateboard Walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/skateboardwalks_v1%20(720p).mp4' },
-                { t: 'Standing Not Walking', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/standingnotwalking_v1%20(1440p).mp4' },
-                { t: 'Storms', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/storms_v1%20(720p).mp4' },
-                { t: 'Suburban Boy', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/suburbanboy_v1%20(1080p).mp4' },
-                { t: 'Upgrade', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/upgrade_v1%20(720p).mp4' },
-                { t: 'Walks Into Elevators', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksintoelevators_v1%20(1080p).mp4' },
-                { t: 'Walks Out of Elevators', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/walksoutofelevators_v1%20(720p).mp4' },
-                { t: 'Windy 2', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/windy2_v1%20(720p).mp4' },
-                { t: 'found home', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Latenightstroll.mp4' },
-                { t: 'you have complete agency', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4' },
-                { t: 'amongst', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/longislandwalks.mp4' },
-                { t: 'happy walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/happywalks.mp4' },
-                { t: 'loathe a lazy walk', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/lazywalkieswithwolfgang.mp4' },
-                { t: 'while windy walks were wild', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/windyboy.mp4' },
-                { t: 'best walks', c: 'Walkies', m: 5, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/anesthesia.mp4' },
-                { t: 'There\'s Food at Home, Wolfgang', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/theresfoodathomewolfgang_v1%20(1080p).mp4' },
-                { t: 'Comfort1', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/comfort1.avif' },
-                { t: 'Comfort2', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/comfort2.avif' },
-                { t: 'Homemademeals', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/homemademeals.avif' },
-                { t: 'Whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/whendadworksfromhomesoyougettheenviablewindowofficewithfreemassuese.avif' },
-                { t: 'hand', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/leglift001.mp4' },
-                { t: 'new dad', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/heydaddy.avif' },
-                { t: 'belong', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/stinkyboy.mp4' },
-                { t: 'know without notice', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/welcomehomebuddy.mp4' },
-                { t: 'you got your mojo back', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Cityboi.mp4' },
-                { t: 'New lease — no leash', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Leashlesslove.mp4' },
-                { t: 'You decide', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/wolfgangfearlessbridgecrosser.mp4' },
-                { t: 'true New Yorker', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Earlydayswalkpostsurgeryneverneededaleash.mp4' },
-                { t: 'Lastsleepies', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/lastsleepies.avif' },
-                { t: 'Curbyourdog', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/curbyourdog.avif' },
-                { t: 'Flower', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/flower.avif' },
-                { t: 'moved my bed', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/mamaweremovingout.avif' },
-                { t: 'Dad moved my bed', c: 'WFH', m: 6, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/mamaweremovingout.avif' },
-                { t: 'we go sleepy', c: 'WFH', m: 6, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Sleepingbeauty.mp4' },
-                { t: 'Wherever Whatever', c: 'Wherever, Whatever', m: 7, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/mp4/main/whereverwhatever_v1%20(720p).mp4' },
-                { t: 'Sunglasses', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/drivethru.avif' },
-                { t: 'Lummi', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/hisfavoritecafe.avif' },
-                { t: 'Fabric', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/fallinginlove1.avif' },
-                { t: 'Hill', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/fivehundredmileroadtripfromwestvirginia.avif' },
-                { t: 'Tech', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/vera2.avif' },
-                { t: 'Hisfavoritecafe', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/hisfavoritecafe.avif' },
-                { t: 'Metallicafanprobably', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/metallicafanprobably.avif' },
-                { t: 'Mydreamwastoownacafejustforwolfietohangoutin', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/mydreamwastoownacafejustforwolfietohangoutin.avif' },
-                { t: 'Closer', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://i.ibb.co/Z1FrMWch/closer.webp' },
-                { t: 'Lookiftheysayanythingiamheretokeepyouontask', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/lookiftheysayanythingiamheretokeepyouontask.avif' },
-                { t: 'Owl', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/owl.avif' },
-                { t: 'Traininghumanonmyfavoritethingtodoperiod', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/traininghumanonmyfavoritethingtodoperiod.avif' },
-                { t: 'Laplife', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/laplife.avif' },
-                { t: 'Mylittledonut', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/mylittledonut.avif' },
-                { t: 'Bag-buddy', c: 'Wherever, Whatever', m: 7, k: 'video',
-                    src: 'https://raw.githubusercontent.com/ZACKGORT/ifimaybefrank/main/mp4/Newlife.mp4' },
-                { t: 'So, this is new', c: 'Wherever, Whatever', m: 7, k: 'photo',
-                    img: 'https://raw.githubusercontent.com/ZACKGORT/never/main/images/avif/wolfgangsfirsttimeinthejeep.avif' },
-            ];
+    const woofs = [];
+    function doBark() {
+      const dbl = Math.random() < 0.4;
+      playBark(dbl);
+      const words = ["WOOF!", "RUFF!", "ARF!", "BORK!"];
+      woofs.push({
+        text: dbl ? "WOOF WOOF!" : words[Math.floor(Math.random() * words.length)],
+        x: dog.x + Math.cos(dog.dir) * 34,
+        y: dog.y + Math.sin(dog.dir) * 34 - 14,
+        rot: (Math.random() - 0.5) * 0.4,
+        t: 0
+      });
+    }
+    function updateWoofs(dt) {
+      for (let i = woofs.length - 1; i >= 0; i--) {
+        woofs[i].t += dt;
+        if (woofs[i].t > 1) woofs.splice(i, 1);
+      }
+    }
+    function drawWoofs() {
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineJoin = "round";
+      for (const w of woofs) {
+        const a = clamp(1 - Math.max(0, w.t - 0.45) / 0.55, 0, 1);
+        const pop = 1 + 0.35 * Math.max(0, 1 - w.t / 0.14);
+        ctx.save();
+        ctx.translate(w.x, w.y - w.t * 30);
+        ctx.rotate(w.rot);
+        ctx.scale(pop, pop);
+        ctx.globalAlpha = a;
+        ctx.font = "900 19px Fraunces, Georgia, serif";
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "#2b2620";
+        ctx.strokeText(w.text, 0, 0);
+        ctx.fillStyle = "#f0a63d";
+        ctx.fillText(w.text, 0, 0);
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+    }
 
-            const ITEMS = RAW.map((r, i) => Object.assign({ idx: i + 1 }, r));
+    // touch screens get an on-screen bark button
+    const barkBtn = document.getElementById("barkBtn");
+    barkBtn.addEventListener("pointerdown", e => { e.preventDefault(); ensureAudio(); keys.bark = true; });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(ev =>
+      barkBtn.addEventListener(ev, () => { keys.bark = false; }));
 
-            /* ═══════════════════════════════════════════
-               STATE
-               ═══════════════════════════════════════════ */
-            const IS_TOUCH = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-            let view = 'timeline';
-            let category = null;
-            let openGroups = new Set([0]);
-            let hoveredGroup = null;
-            let transitioning = false;
-            let detailItem = null;
-            let detailEditableFlag = false;
-            let viewsRendered = { timeline: false, list: false, grid: false };
+    window.addEventListener("keydown", e => {
+      if (e.key === "m" || e.key === "M") {
+        muted = !muted;
+        toast = { text: muted ? "Sound off" : "Sound on", t: 1.4, color: "#f6efdf" };
+      }
+    });
 
-            /* ── helpers ────────────────────────────────────── */
-            function hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0; return h >>>
-                    0; }
+    let W, H, dpr, nowT = 0;
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
 
-            function srand(seed) { const x = Math.sin(seed + 1) * 10000; return x - Math.floor(x); }
+    setTimeout(() => hint.classList.add("fade"), 7000);
 
-            function fmtIdx(n) { return String(n).padStart(2, '0'); }
+    // ---------- Keyboard (smooth directional) ----------
+    const keys = { up: false, down: false, left: false, right: false, bark: false };
+    const keyMap = {
+      ArrowUp: "up", w: "up", W: "up",
+      ArrowDown: "down", s: "down", S: "down",
+      ArrowLeft: "left", a: "left", A: "left",
+      ArrowRight: "right", d: "right", D: "right",
+      " ": "bark"
+    };
+    window.addEventListener("keydown", e => {
+      ensureAudio();
+      const k = keyMap[e.key];
+      if (k) {
+        e.preventDefault();
+        keys[k] = true;
+      }
+    });
+    window.addEventListener("keyup", e => {
+      const k = keyMap[e.key];
+      if (k) {
+        e.preventDefault();
+        keys[k] = false;
+      }
+    });
+    // ---------- Pointer: each click queues another stop for Wolfie ----------
+    const mouse = { x: -100, y: -100, visible: false, left: false, right: false, pulse: 0, pulseKind: 0 };
+    const targets = []; // run queue: [{ x, y, t0 }, ...]
+    const MAX_TARGETS = 20;
+    function addTarget(x, y, flower) {
+      if (targets.length < MAX_TARGETS) targets.push({ x, y, t0: nowT, flower: flower || null });
+    }
+    // clicking a flower queues a sniff stop; anywhere else queues a normal stop
+    function clickAt(x, y) {
+      const f = flowerAt(x, y);
+      if (f) addTarget(f.u * W, f.v * H, f);
+      else addTarget(x, y);
+    }
 
-            function matches(item) { return !category || item.c === category; }
+    window.addEventListener("mousemove", e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.visible = !e.target.closest("#stats, #barkBtn");
+    });
+    document.documentElement.addEventListener("mouseleave", () => { mouse.visible = false; });
+    document.documentElement.addEventListener("mouseenter", () => { mouse.visible = true; });
 
-            function escapeHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;'); }
+    window.addEventListener("mousedown", e => {
+      ensureAudio();
+      if (e.target.closest("#stats, #barkBtn")) return;
+      mouse.x = e.clientX; mouse.y = e.clientY; mouse.visible = true;
+      if (e.button === 0) {
+        mouse.left = true; mouse.pulse = 1; mouse.pulseKind = 0;
+        clickAt(mouse.x, mouse.y);
+      } else if (e.button === 2) {
+        mouse.right = true; mouse.pulse = 1; mouse.pulseKind = 1;
+        startPee();
+      }
+    });
+    window.addEventListener("mouseup", e => {
+      if (e.button === 0) mouse.left = false;
+      if (e.button === 2) mouse.right = false;
+    });
+    window.addEventListener("contextmenu", e => e.preventDefault());
+    window.addEventListener("touchstart", e => {
+      ensureAudio();
+      if (e.target.closest("#stats, #barkBtn")) return;
+      e.preventDefault();
+      mouse.visible = false;
+      const t = e.touches[0];
+      clickAt(t.clientX, t.clientY);
+    }, { passive: false });
 
-            function thumbHTML(item, opts) {
-                opts = opts || {};
-                const showOverlay = opts.overlay !== false;
-                const editableTitle = !!opts.editableTitle;
-                if (item.k === 'card') {
-                    return `<div class="thumb" style="background:${item.bg}"><div class="cardlabel" style="color:${item.fg}">${escapeHtml(item.label)}</div></div>`;
-                }
-                const media = item.k === 'video' ?
-                    `<video class="thumb-media" src="${item.src}" muted loop playsinline preload="none" disablepictureinpicture></video>` :
-                    `<img class="thumb-media" loading="lazy" draggable="false" src="${item.img}" alt="">`;
-                const overlay = showOverlay ? `
-              <div class="thumb-overlay">
-                <span class="thumb-idx mono">${fmtIdx(item.idx)}</span>
-                <span class="thumb-ttl"${editableTitle ? ' contenteditable="true" spellcheck="false"' : ''}>${escapeHtml(item.t)}</span>
-              </div>` :
-                    '';
-                return `<div class="thumb"><div class="thumb-inner">${media}${overlay}</div></div>`;
-            }
+    const TAU = Math.PI * 2;
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+    function hyp(x, y) { return Math.sqrt(x * x + y * y); }
+    function dist(ax, ay, bx, by) { return hyp(ax - bx, ay - by); }
+    function norm(x, y) {
+      const l = hyp(x, y) || 1;
+      return [x / l, y / l];
+    }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function lerpAngle(a, b, t) {
+      let d = ((b - a + Math.PI) % TAU) - Math.PI;
+      if (d < -Math.PI) d += TAU;
+      return a + d * t;
+    }
 
-            function wireVideoPlayback(containerEl, opts) {
-                opts = opts || {};
-                const video = containerEl.querySelector('video.thumb-media');
-                if (!video) return;
-                if (opts.autoplay) { video.play().catch(() => {}); return; }
-                if (IS_TOUCH) {
-                    const io = new IntersectionObserver(entries => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting && entry.intersectionRatio >= 0.6) video.play().catch(() => {});
-                            else video.pause();
-                        });
-                    }, { threshold: [0, .6, 1] });
-                    io.observe(containerEl);
-                } else {
-                    containerEl.addEventListener('mouseenter', () => { video.play().catch(() => {}); });
-                    containerEl.addEventListener('mouseleave', () => { video.pause();
-                        video.currentTime = 0; });
-                }
-            }
+    // ---------- Wolfie (white poodle-mix, original drawing language) ----------
+    const PEE_TIME = 1.3;
+    const PUDDLE_LIFE = 14;
+    const dog = {
+      x: W * 0.5, y: H * 0.78,
+      vx: 0, vy: 0,
+      dir: -0.2,
+      barkTimer: 0,
+      peeTimer: 0,
+      sniffTimer: 0,
+      sniffFlower: null,
+      distractTimer: 0,
+      distractTarget: null
+    };
 
-            function updateItemTitle(i, newTitle) {
-                const val = String(newTitle == null ? '' : newTitle).trim() || 'Untitled';
-                ITEMS[i].t = val;
-                document.querySelectorAll(`[data-i="${i}"] .thumb-ttl`).forEach(el => {
-                    if (el.textContent !== val) el.textContent = val;
-                });
-                const capText = document.getElementById('detail-caption-text');
-                if (capText && capText.dataset.i === String(i) && capText.textContent !== val) {
-                    capText.textContent = val;
-                }
-                return val;
-            }
+    // ---------- Puddles ----------
+    const puddles = [];
 
-            function wireEditableTitle(containerEl, i) {
-                const ttl = containerEl.querySelector('.thumb-ttl[contenteditable]');
-                if (!ttl) return;
-                ttl.addEventListener('mousedown', e => {
-                    e.stopPropagation();
-                    if (containerEl.hasAttribute('draggable')) containerEl.setAttribute('draggable', 'false');
-                });
-                ttl.addEventListener('click', e => e.stopPropagation());
-                ttl.addEventListener('keydown', e => {
-                    if (e.key === 'Enter') { e.preventDefault();
-                        ttl.blur(); }
-                });
-                ttl.addEventListener('blur', () => {
-                    ttl.textContent = updateItemTitle(i, ttl.textContent);
-                    if (containerEl.hasAttribute('draggable')) containerEl.setAttribute('draggable', 'true');
-                });
-            }
+    // spot on the ground where the pee lands, in the dog's rotated frame
+    const PEE_LOCAL_X = -15, PEE_LOCAL_Y = 11;
+    function peeSpot() {
+      const c = Math.cos(dog.dir), s = Math.sin(dog.dir);
+      return {
+        x: dog.x + PEE_LOCAL_X * c - PEE_LOCAL_Y * s,
+        y: dog.y + PEE_LOCAL_X * s + PEE_LOCAL_Y * c
+      };
+    }
 
-            /* ── context menu ── */
-            const ctxMenuEl = document.getElementById('ctx-menu');
+    function startPee() {
+      if (dog.peeTimer > 0) return;
+      dog.peeTimer = PEE_TIME;
+      dog.sniffTimer = 0;
+      stats.pees++;
+      const p = peeSpot();
+      puddles.push({
+        x: p.x, y: p.y,
+        r: 1,
+        maxR: rand(15, 21),
+        squash: rand(0.62, 0.78),
+        rot: rand(0, Math.PI),
+        wob: rand(0, TAU),
+        age: 0,
+        growing: true
+      });
+    }
 
-            function hideContextMenu() { ctxMenuEl.classList.remove('show'); }
+    function updatePuddles(dt) {
+      for (let i = puddles.length - 1; i >= 0; i--) {
+        const p = puddles[i];
+        p.age += dt;
+        if (p.growing) {
+          p.r = Math.min(p.maxR, p.r + dt * (p.maxR / PEE_TIME) * 1.15);
+          if (p.r >= p.maxR) p.growing = false;
+        }
+        if (p.age > PUDDLE_LIFE) puddles.splice(i, 1);
+      }
+    }
 
-            function showCategoryContextMenu(x, y, item) {
-                ctxMenuEl.innerHTML = '';
-                const label = document.createElement('div');
-                label.className = 'ctx-menu-label';
-                label.textContent = 'Move to…';
-                ctxMenuEl.appendChild(label);
-                GROUPS.forEach((name, m) => {
-                    if (m === item.m) return;
-                    const opt = document.createElement('div');
-                    opt.className = 'ctx-menu-item';
-                    opt.textContent = name;
-                    opt.addEventListener('click', () => {
-                        moveItemToCategory(item, m);
-                        hideContextMenu();
-                    });
-                    ctxMenuEl.appendChild(opt);
-                });
-                ctxMenuEl.style.left = '0px';
-                ctxMenuEl.style.top = '0px';
-                ctxMenuEl.classList.add('show');
-                const rect = ctxMenuEl.getBoundingClientRect();
-                const clampedX = Math.min(x, window.innerWidth - rect.width - 8);
-                const clampedY = Math.min(y, window.innerHeight - rect.height - 8);
-                ctxMenuEl.style.left = Math.max(8, clampedX) + 'px';
-                ctxMenuEl.style.top = Math.max(8, clampedY) + 'px';
-            }
-            document.addEventListener('click', hideContextMenu);
-            document.addEventListener('contextmenu', e => {
-                if (!e.target.closest('.list-card, .g-item, #detail-frame')) hideContextMenu();
+    // ---------- Sheep (original herding dynamics) ----------
+    const SHEEP_COUNT = 48;
+    const sheep = [];
+
+    function makeSheep(x, y) {
+      // Wool palette: soft off-whites, creams, rare warmer or cooler tints
+      const woolPal = [
+        "#f7f3e6", "#f4efe0", "#efe9d8", "#f9f5ea", "#ebe6d4",
+        "#f2ebe0", "#e8e2d0", "#faf6ed", "#e6e0d2", "#f0e8d6"
+      ];
+      const headPal = ["#4a3b2c", "#3d3226", "#5a4634", "#423528", "#4f4030"];
+      const r = Math.random();
+      // ~8% lambs (smaller), ~6% with tiny horns, ~12% slightly fluffier, rare dark face
+      const isLamb = r < 0.08;
+      const hasHorns = !isLamb && Math.random() < 0.07;
+      const fluff = Math.random() < 0.14 ? 1.12 : (Math.random() < 0.2 ? 0.92 : 1);
+      const darkFace = Math.random() < 0.05;
+      return {
+        x, y,
+        vx: rand(-12, 12),
+        vy: rand(-12, 12),
+        dir: rand(0, TAU),
+        fear: 0,
+        size: isLamb ? rand(0.62, 0.78) : rand(0.88, 1.14),
+        phase: rand(0, TAU),
+        wool: woolPal[Math.floor(Math.random() * woolPal.length)],
+        head: darkFace ? "#2e241c" : headPal[Math.floor(Math.random() * headPal.length)],
+        hasHorns,
+        fluff,
+        earScale: rand(0.85, 1.15),
+        bodyStretch: rand(0.94, 1.06),
+        // grazing
+        gx: x, gy: y,
+        gT: rand(1, 5),
+        indep: Math.random()
+      };
+    }
+
+    function scatterFlock() {
+      sheep.length = 0;
+      const cx = W * 0.52, cy = H * 0.38;
+      for (let i = 0; i < SHEEP_COUNT; i++) {
+        const a = rand(0, TAU);
+        const r = rand(30, 210);
+        sheep.push(makeSheep(
+          clamp(cx + Math.cos(a) * r, 50, W - 50),
+          clamp(cy + Math.sin(a) * r * 0.65, 40, H - 80)
+        ));
+      }
+    }
+    scatterFlock();
+
+    // ---------- Flowers: freshly randomized every session ----------
+    const SNIFF_TIME = 2.2;
+    const flowers = [];
+    const puffs = []; // pollen puffs while Wolfie sniffs
+
+    (function genFlowers() {
+      const pal = ["#e87aa0", "#f2a1c0", "#9b7fd1", "#7fa6e8", "#f4d24a", "#f0914a", "#fbf7ec", "#d8514a", "#c58ae0"];
+      const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+      const add = (u, v) => {
+        u = clamp(u, 0.03, 0.97);
+        v = clamp(v, 0.06, 0.95);
+        const r = Math.random();
+        let f;
+        if (r < 0.3) {          // daisy: many thin petals
+          f = { kind: "daisy", n: Math.floor(rand(9, 13)), size: rand(8, 11), px: 0.2, py: 0.62,
+                color: Math.random() < 0.75 ? "#fbf7ec" : "#f7d4e2", center: "#f0c23a" };
+        } else if (r < 0.75) {  // bloom: few round petals
+          f = { kind: "bloom", n: Math.floor(rand(5, 7)), size: rand(9, 13), px: 0.42, py: 0.5,
+                color: pal[Math.floor(rand(0, pal.length))], center: Math.random() < 0.5 ? "#f6e08a" : "#fbf2d0" };
+        } else {                // bud: small and bright
+          f = { kind: "bud", n: Math.floor(rand(4, 6)), size: rand(5, 7), px: 0.45, py: 0.5,
+                color: Math.random() < 0.6 ? "#f4d24a" : "#f0914a", center: "#d98b2a" };
+        }
+        f.u = u; f.v = v;
+        f.rot = rand(0, TAU);
+        f.ph = rand(0, TAU);
+        f.hit = 0;
+        flowers.push(f);
+      };
+      // a handful of patches...
+      const patches = Math.floor(rand(6, 10));
+      for (let i = 0; i < patches; i++) {
+        const cu = rand(0.08, 0.92), cv = rand(0.1, 0.9);
+        const spread = rand(0.04, 0.09);
+        const n = Math.floor(rand(4, 10));
+        for (let j = 0; j < n; j++) add(cu + gauss() * spread, cv + gauss() * spread * 1.3);
+      }
+      // ...plus lone strays
+      const strays = Math.floor(rand(8, 16));
+      for (let i = 0; i < strays; i++) add(rand(0.04, 0.96), rand(0.08, 0.94));
+    })();
+
+    function flowerAt(x, y) {
+      let best = null, bd = Infinity;
+      for (const f of flowers) {
+        const d = dist(x, y, f.u * W, f.v * H);
+        if (d < f.size + 14 && d < bd) { bd = d; best = f; }
+      }
+      return best;
+    }
+
+    // ---------- Ambient butterflies (distract Wolfie on close pass) ----------
+    const butterflies = [];
+    const BUTTERFLY_COUNT = 9;
+    const DISTRACT_R = 42;
+    const DISTRACT_TIME = 1.15;
+
+    (function spawnButterflies() {
+      const wingPal = [
+        ["#f2a1c0", "#e87aa0"], ["#9b7fd1", "#7a5fb8"], ["#f4d24a", "#e8a33d"],
+        ["#7fa6e8", "#5b8ad4"], ["#f0914a", "#d87830"], ["#c58ae0", "#a86bc8"],
+        ["#fbf7ec", "#e8d9b8"], ["#d8514a", "#b83e38"]
+      ];
+      for (let i = 0; i < BUTTERFLY_COUNT; i++) {
+        const pal = wingPal[Math.floor(Math.random() * wingPal.length)];
+        butterflies.push({
+          x: rand(40, W - 40),
+          y: rand(40, H - 60),
+          vx: rand(-28, 28),
+          vy: rand(-22, 22),
+          dir: rand(0, TAU),
+          phase: rand(0, TAU),
+          wing: 0,
+          size: rand(0.75, 1.15),
+          c1: pal[0],
+          c2: pal[1],
+          rest: 0,
+          wanderT: rand(1.5, 4)
+        });
+      }
+    })();
+
+    function updateButterflies(dt) {
+      for (const b of butterflies) {
+        b.phase += dt;
+        b.wing = Math.sin(b.phase * 18) * 0.55; // flap
+        b.rest = Math.max(0, b.rest - dt);
+        b.wanderT -= dt;
+
+        // soft flutter steering — change heading occasionally
+        if (b.wanderT <= 0) {
+          b.wanderT = rand(1.2, 3.8);
+          const a = rand(0, TAU);
+          b.vx = Math.cos(a) * rand(18, 38);
+          b.vy = Math.sin(a) * rand(14, 32);
+        }
+        // gentle drift + slight noise
+        b.vx += rand(-12, 12) * dt;
+        b.vy += rand(-10, 10) * dt;
+        const sp = hyp(b.vx, b.vy);
+        if (sp > 42) { b.vx *= 42 / sp; b.vy *= 42 / sp; }
+        if (sp < 12) { const [nx, ny] = norm(b.vx || 1, b.vy || 0); b.vx = nx * 16; b.vy = ny * 16; }
+
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+        // soft bounce at edges
+        if (b.x < 20) { b.x = 20; b.vx = Math.abs(b.vx); }
+        if (b.x > W - 20) { b.x = W - 20; b.vx = -Math.abs(b.vx); }
+        if (b.y < 30) { b.y = 30; b.vy = Math.abs(b.vy); }
+        if (b.y > H - 40) { b.y = H - 40; b.vy = -Math.abs(b.vy); }
+
+        if (hyp(b.vx, b.vy) > 4) {
+          b.dir = lerpAngle(b.dir, Math.atan2(b.vy, b.vx), 1 - Math.exp(-dt * 5));
+        }
+      }
+
+      // distraction: if a butterfly crosses near Wolfie and he isn't already busy
+      dog.distractTimer = Math.max(0, dog.distractTimer - dt);
+
+      if (dog.distractTimer <= 0 && dog.peeTimer <= 0 && dog.sniffTimer <= 0) {
+        for (const b of butterflies) {
+          const d = dist(b.x, b.y, dog.x, dog.y);
+          if (d < DISTRACT_R) {
+            dog.distractTimer = DISTRACT_TIME;
+            dog.distractTarget = b;
+            // cancel queued path so he pauses / looks
+            targets.length = 0;
+            // small impulse toward the butterfly + slow
+            const [nx, ny] = norm(b.x - dog.x, b.y - dog.y);
+            dog.vx = dog.vx * 0.35 + nx * 55;
+            dog.vy = dog.vy * 0.35 + ny * 55;
+            // floating "!" or interest text
+            woofs.push({
+              text: Math.random() < 0.5 ? "!" : "…",
+              x: dog.x + Math.cos(dog.dir) * 28,
+              y: dog.y + Math.sin(dog.dir) * 28 - 18,
+              rot: (Math.random() - 0.5) * 0.3,
+              t: 0
             });
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') hideContextMenu(); });
-            window.addEventListener('scroll', hideContextMenu, true);
-            window.addEventListener('resize', hideContextMenu);
+            break;
+          }
+        }
+      }
+    }
 
-            function wireContextMenu(containerEl, item) {
-                containerEl.addEventListener('contextmenu', e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showCategoryContextMenu(e.clientX, e.clientY, item);
-                });
-            }
+    function drawButterflies() {
+      for (const b of butterflies) {
+        ctx.save();
+        ctx.translate(b.x, b.y);
+        ctx.rotate(b.dir);
+        const s = b.size;
+        const flap = b.wing;
+        // body
+        ctx.fillStyle = "#3a3228";
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 2.2 * s, 1.1 * s, 0, 0, TAU);
+        ctx.fill();
+        // wings (paired, flapping)
+        ctx.fillStyle = b.c1;
+        ctx.beginPath();
+        ctx.ellipse(-1.5 * s, -3.8 * s + flap * 2, 3.6 * s, 4.2 * s * (0.7 + Math.abs(flap) * 0.25), -0.35 + flap * 0.4, 0, TAU);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(-1.5 * s, 3.8 * s - flap * 2, 3.6 * s, 4.2 * s * (0.7 + Math.abs(flap) * 0.25), 0.35 - flap * 0.4, 0, TAU);
+        ctx.fill();
+        // inner wing color
+        ctx.fillStyle = b.c2;
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.ellipse(-1.2 * s, -3.2 * s + flap * 1.5, 2.1 * s, 2.6 * s, -0.3 + flap * 0.3, 0, TAU);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(-1.2 * s, 3.2 * s - flap * 1.5, 2.1 * s, 2.6 * s, 0.3 - flap * 0.3, 0, TAU);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        // antennae
+        ctx.strokeStyle = "#3a3228";
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(1.8 * s, -0.6 * s);
+        ctx.quadraticCurveTo(4 * s, -2.5 * s, 5.2 * s, -1.8 * s);
+        ctx.moveTo(1.8 * s, 0.6 * s);
+        ctx.quadraticCurveTo(4 * s, 2.5 * s, 5.2 * s, 1.8 * s);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
 
-            /* ── tilt spring ── */
-            function initTilt(thumbEl) {
-                const inner = thumbEl.querySelector('.thumb-inner');
-                if (!inner) return;
-                const ROTATE_AMPLITUDE = 12;
-                const SCALE_ON_HOVER = 1.05;
+    function startSniff(f) {
+      dog.sniffTimer = SNIFF_TIME;
+      dog.sniffFlower = f;
+      stats.flowersSniffed++;
+      stats.found.add(f);
+      f.hit = SNIFF_TIME;
+      dog.vx *= 0.3;
+      dog.vy *= 0.3;
+    }
 
-                function createSpring(stiffness, damping, mass, initial) {
-                    let value = initial,
-                        target = initial,
-                        velocity = 0;
-                    return {
-                        set(v) { target = v; },
-                        step(dt) {
-                            const springForce = -stiffness * (value - target);
-                            const dampingForce = -damping * velocity;
-                            const accel = (springForce + dampingForce) / mass;
-                            velocity += accel * dt;
-                            value += velocity * dt;
-                            return value;
-                        },
-                        settled() { return Math.abs(value - target) < 0.02 && Math.abs(velocity) < 0.02; }
-                    };
-                }
-                const rotateX = createSpring(100, 30, 2, 0);
-                const rotateY = createSpring(100, 30, 2, 0);
-                const scale = createSpring(100, 30, 2, 1);
-                let raf = null,
-                    lastTime = 0,
-                    active = false;
-
-                function tick(now) {
-                    const dt = Math.min((now - lastTime) / 1000, 1 / 30);
-                    lastTime = now;
-                    const rx = rotateX.step(dt),
-                        ry = rotateY.step(dt),
-                        s = scale.step(dt);
-                    inner.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) scale(${s.toFixed(3)})`;
-                    if (!active && rotateX.settled() && rotateY.settled() && scale.settled()) { raf = null; return; }
-                    raf = requestAnimationFrame(tick);
-                }
-
-                function wake() { if (raf === null) { active = true;
-                        lastTime = performance.now();
-                        raf = requestAnimationFrame(tick); } }
-
-                function stop() { active = false; }
-
-                thumbEl.addEventListener('mousemove', e => {
-                    const rect = thumbEl.getBoundingClientRect();
-                    const offsetX = e.clientX - rect.left - rect.width / 2;
-                    const offsetY = e.clientY - rect.top - rect.height / 2;
-                    rotateX.set((offsetY / (rect.height / 2)) * -ROTATE_AMPLITUDE);
-                    rotateY.set((offsetX / (rect.width / 2)) * ROTATE_AMPLITUDE);
-                    wake();
-                });
-                thumbEl.addEventListener('mouseenter', () => { scale.set(SCALE_ON_HOVER);
-                    wake(); });
-                thumbEl.addEventListener('mouseleave', () => { rotateX.set(0);
-                    rotateY.set(0);
-                    scale.set(1);
-                    wake();
-                    stop(); });
-            }
-
-            /* ── moves ── */
-            function moveItemToCategory(item, newM) {
-                if (item.m === newM) return;
-                item.m = newM;
-                item.c = GROUPS[newM];
-                renderCurrentView();
-                buildGridCats();
-                if (detailItem === item) {
-                    const idxLine = document.getElementById('detail-idx-line');
-                    if (idxLine) idxLine.textContent = `${fmtIdx(item.idx)} / ${ITEMS.length} — ${GROUPS[item.m]}`;
-                }
-            }
-
-            function lastIndexOfGroup(m) {
-                let last = -1;
-                ITEMS.forEach((it, i) => { if (it.m === m) last = i; });
-                return last;
-            }
-
-            function moveItemByDrop(fromIdx, beforeIdx, newGroup) {
-                if (fromIdx === null || fromIdx === undefined || isNaN(fromIdx)) return;
-                if (fromIdx < 0 || fromIdx >= ITEMS.length) return;
-                const item = ITEMS[fromIdx];
-                if (newGroup !== null && newGroup !== undefined) { item.m = newGroup;
-                    item.c = GROUPS[newGroup]; }
-                ITEMS.splice(fromIdx, 1);
-                let insertAt = (beforeIdx === null || beforeIdx === undefined) ? ITEMS.length : beforeIdx;
-                if (fromIdx < insertAt) insertAt -= 1;
-                insertAt = Math.max(0, Math.min(ITEMS.length, insertAt));
-                ITEMS.splice(insertAt, 0, item);
-                ITEMS.forEach((it, i) => { it.idx = i + 1; });
-                renderCurrentView();
-                refreshDim();
-            }
-
-            /* ── category management ── */
-            function commitCategoryName(m, newName) {
-                const oldName = GROUPS[m];
-                const val = String(newName == null ? '' : newName).trim() || 'Untitled category';
-                if (val === oldName) return;
-                GROUPS[m] = val;
-                ITEMS.forEach(it => { if (it.m === m) it.c = val; });
-                if (category === oldName) category = val;
-                const labels = document.querySelectorAll('.tl-col-label');
-                if (labels[m]) labels[m].textContent = val;
-                buildGridCats();
-                renderCurrentView();
-            }
-
-            function addCategory() {
-                GROUPS.unshift('New Category');
-                const m = 0;
-                ITEMS.forEach(it => { it.m = GROUPS.indexOf(it.c); });
-                openGroups.add(m);
-                renderCurrentView();
-                buildGridCats();
-                requestAnimationFrame(() => {
-                    const nameEl = document.querySelector(`.list-row[data-m="${m}"] .list-month`);
-                    if (nameEl) { nameEl.focus();
-                        const range = document.createRange();
-                        range.selectNodeContents(nameEl);
-                        const sel = window.getSelection();
-                        sel.removeAllRanges();
-                        sel.addRange(range); }
-                });
-            }
-
-            function deleteCategoryPrompt(m) {
-                if (GROUPS.length <= 1) { alert('You need at least one category.'); return; }
-                const name = GROUPS[m];
-                const affected = ITEMS.filter(it => it.m === m);
-                const fallback = m > 0 ? m - 1 : m + 1;
-                const fallbackName = GROUPS[fallback];
-                const msg = affected.length ?
-                    `Delete "${name}"? ${affected.length} image${affected.length>1?'s':''} will move into "${fallbackName}".` :
-                    `Delete "${name}"?`;
-                if (!confirm(msg)) return;
-                affected.forEach(it => { it.m = fallback;
-                    it.c = fallbackName; });
-                GROUPS.splice(m, 1);
-                ITEMS.forEach(it => { if (it.m > m) it.m -= 1; });
-                if (category === name) category = null;
-                renderCurrentView();
-                buildGridCats();
-            }
-
-            function reorderCategory(fromM, toM) {
-                if (fromM === toM || fromM == null || toM == null) return;
-                if (fromM < 0 || fromM >= GROUPS.length || toM < 0 || toM >= GROUPS.length) return;
-                const [name] = GROUPS.splice(fromM, 1);
-                let insertAt = toM;
-                if (fromM < toM) insertAt -= 1;
-                GROUPS.splice(insertAt, 0, name);
-                ITEMS.forEach(it => { it.m = GROUPS.indexOf(it.c); });
-                renderCurrentView();
-                buildGridCats();
-            }
-
-            function unsortedIndex() {
-                let m = GROUPS.indexOf('Unsorted');
-                if (m === -1) { GROUPS.push('Unsorted');
-                    m = GROUPS.length - 1;
-                    buildGridCats(); }
-                return m;
-            }
-
-            function titleFromUrl(url) {
-                try {
-                    const path = new URL(url).pathname;
-                    let name = decodeURIComponent(path.split('/').filter(Boolean).pop() || '');
-                    name = name.replace(/\.[a-z0-9]+$/i, '').replace(/[-_]+/g, ' ').trim();
-                    if (!name) return 'Untitled';
-                    return name.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
-                } catch (e) { return 'Untitled'; }
-            }
-
-            function isVideoUrl(s) { return /\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(s); }
-
-            /* ── view rendering ────────────────────────────── */
-            function renderCurrentView() {
-                if (view === 'timeline') renderTimeline();
-                else if (view === 'list') renderList();
-                else renderGrid();
-                refreshDim();
-            }
-
-            /* ── Timeline ── */
-            const trackEl = document.getElementById('tl-track');
-            const itemsLayerEl = document.getElementById('tl-items-layer');
-            const bgTextEl = document.getElementById('tl-bgtext');
-            const viewportEl = document.getElementById('tl-viewport');
-            if (!bgTextEl.textContent) bgTextEl.textContent = Array(10).fill('wolfgang').join('\u2003');
-
-            const MAX_ITEMS_PER_GROUP = 31;
-            const GAP = 30;
-            const COL_GUTTER = 60;
-            const COL_PAD = 30;
-            const SUBCOL_W = 190;
-            const SUBCOL_GUTTER = 22;
-            const EMPTY_COL_W = 130;
-
-            function itemHeight(w) { return Math.round(w * 1.25); }
-
-            let plans = [],
-                colX = [],
-                trackWidth = 0,
-                colBobEls = [],
-                maxScroll = 0;
-            let scrollX = 0,
-                scrollTarget = 0;
-
-            function planColumn(items) {
-                if (!items.length) return { width: EMPTY_COL_W, placed: [] };
-                const span = Math.max(320, window.innerHeight - 260);
-                const scaleN = Math.min(items.length, MAX_ITEMS_PER_GROUP);
-                const laid = items.map(item => {
-                    const seed = hash(item.t);
-                    const w = 128 + Math.round(srand(seed) * 46);
-                    return { item, seed, w, h: itemHeight(w) };
-                });
-                const avgH = laid.reduce((a, d) => a + d.h, 0) / laid.length;
-                let subCols = Math.max(1, Math.ceil((scaleN * (avgH + GAP)) / span));
-                subCols = Math.min(subCols, 10);
-                const colHeights = new Array(subCols).fill(0);
-                const placed = laid.map(d => {
-                    let best = 0;
-                    for (let c = 1; c < subCols; c++)
-                        if (colHeights[c] < colHeights[best]) best = c;
-                    const y = colHeights[best];
-                    colHeights[best] += d.h + GAP;
-                    return Object.assign({ sub: best, y }, d);
-                });
-                placed.forEach(p => { p.centeredY = p.y - (colHeights[p.sub] - GAP) / 2; });
-                const width = COL_PAD * 2 + subCols * SUBCOL_W + (subCols - 1) * SUBCOL_GUTTER;
-                return { width, subCols, placed };
-            }
-
-            function renderTimeline() {
-                if (viewsRendered.timeline && view !== 'timeline') return;
-                trackEl.innerHTML = '';
-                itemsLayerEl.innerHTML = '';
-                colBobEls = [];
-                const byCategory = GROUPS.map((_, m) => ITEMS.filter(it => it.m === m));
-                plans = byCategory.map(planColumn);
-                let cursorX = 150;
-                colX = plans.map(p => { const x = cursorX;
-                    cursorX += p.width + COL_GUTTER; return x; });
-                trackWidth = cursorX + 150;
-                GROUPS.forEach((name, m) => {
-                    const line = document.createElement('div');
-                    line.className = 'tl-col-line';
-                    line.style.left = colX[m] + 'px';
-                    trackEl.appendChild(line);
-                    const label = document.createElement('div');
-                    label.className = 'tl-col-label';
-                    label.style.left = (colX[m] - 10) + 'px';
-                    label.textContent = name;
-                    trackEl.appendChild(label);
-                });
-                plans.forEach((plan, m) => {
-                    const colWrap = document.createElement('div');
-                    colWrap.className = 'tl-col-items';
-                    colWrap.style.position = 'absolute';
-                    colWrap.style.left = colX[m] + 'px';
-                    colWrap.style.top = '0';
-                    colWrap.style.width = plan.width + 'px';
-                    colWrap.style.height = '100%';
-                    colWrap.dataset.colSeed = hash('col' + m);
-                    colBobEls.push(colWrap);
-                    colWrap.addEventListener('dragover', e => { e.preventDefault();
-                        colWrap.classList.add('drag-over-col'); });
-                    colWrap.addEventListener('dragleave', () => colWrap.classList.remove('drag-over-col'));
-                    colWrap.addEventListener('drop', e => {
-                        e.preventDefault();
-                        colWrap.classList.remove('drag-over-col');
-                        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                        const last = lastIndexOfGroup(m);
-                        moveItemByDrop(fromIdx, last === -1 ? null : last + 1, m);
-                    });
-                    plan.placed.forEach(p => {
-                        const { item, seed, w, sub, centeredY } = p;
-                        const i = ITEMS.indexOf(item);
-                        const subX = COL_PAD + sub * (SUBCOL_W + SUBCOL_GUTTER);
-                        const maxJitter = Math.max(0, SUBCOL_W - w);
-                        const jitterX = Math.round(srand(seed + 1) * maxJitter);
-                        const left = subX + jitterX;
-                        const el = document.createElement('div');
-                        el.className = 'tl-item' + (item.k === 'card' ? ' is-card' : '');
-                        el.style.left = left + 'px';
-                        el.style.width = w + 'px';
-                        el.style.top = 'calc(50% + ' + Math.round(centeredY) + 'px)';
-                        el.dataset.i = i;
-                        el.setAttribute('draggable', 'true');
-                        el.innerHTML = thumbHTML(item);
-                        const thumb = el.querySelector('.thumb');
-                        if (thumb) initTilt(thumb);
-                        wireVideoPlayback(el);
-                        el.addEventListener('click', () => openDetail(item));
-                        el.addEventListener('dragstart', e => {
-                            e.dataTransfer.effectAllowed = 'move';
-                            e.dataTransfer.setData('text/plain', String(i));
-                            el.classList.add('dragging');
-                        });
-                        el.addEventListener('dragend', () => el.classList.remove('dragging'));
-                        el.addEventListener('dragover', e => { e.preventDefault();
-                            e.stopPropagation();
-                            el.classList.add('drag-over'); });
-                        el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
-                        el.addEventListener('drop', e => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            el.classList.remove('drag-over');
-                            const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                            moveItemByDrop(fromIdx, i, m);
-                        });
-                        colWrap.appendChild(el);
-                    });
-                    itemsLayerEl.appendChild(colWrap);
-                });
-                maxScroll = Math.max(0, trackWidth - window.innerWidth + 200);
-                scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
-                viewsRendered.timeline = true;
-                updateBorderProgress();
-            }
-
-            function updateBorderProgress() {
-                const total = ITEMS.length;
-                const topBar = document.getElementById('scrollBorderTop');
-                const bottomBar = document.getElementById('scrollBorderBottom');
-                const cornerTL = document.getElementById('cornerTL');
-                const cornerTR = document.getElementById('cornerTR');
-                const cornerBL = document.getElementById('cornerBL');
-                const cornerBR = document.getElementById('cornerBR');
-                if (total <= 1) {
-                    topBar.style.width = '0%';
-                    bottomBar.style.width = '0%';
-                    [cornerTL, cornerTR, cornerBL, cornerBR].forEach(el => el.classList.remove('show'));
-                    return;
-                }
-                // In timeline, progress is based on scrollX relative to maxScroll
-                const progress = maxScroll > 0 ? scrollX / maxScroll : 0;
-                const percent = Math.round(Math.min(1, Math.max(0, progress)) * 100);
-                topBar.style.width = percent + '%';
-                bottomBar.style.width = percent + '%';
-                const showTL = percent > 0;
-                const showTR = percent > 0 && percent < 100;
-                const showBR = percent < 100;
-                const showBL = percent > 0 && percent < 100;
-                cornerTL.classList.toggle('show', showTL);
-                cornerTR.classList.toggle('show', showTR);
-                cornerBR.classList.toggle('show', showBR);
-                cornerBL.classList.toggle('show', showBL);
-                if (percent === 0) {
-                    cornerTL.classList.add('show');
-                    cornerTR.classList.remove('show');
-                    cornerBL.classList.remove('show');
-                    cornerBR.classList.remove('show');
-                }
-                if (percent === 100) {
-                    [cornerTL, cornerTR, cornerBL, cornerBR].forEach(el => el.classList.add('show'));
-                }
-            }
-
-            let dragging = false,
-                lastX = 0;
-            viewportEl.addEventListener('wheel', e => {
-                e.preventDefault();
-                scrollTarget += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY);
-                scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
-            }, { passive: false });
-            viewportEl.addEventListener('mousedown', e => {
-                if (e.target.closest('.tl-item')) return;
-                e.preventDefault();
-                dragging = true;
-                lastX = e.clientX;
-                viewportEl.classList.add('grabbing');
+    function updateFlowers(dt) {
+      for (const f of flowers) {
+        if (f.hit > 0) {
+          f.hit = Math.max(0, f.hit - dt);
+          if (Math.random() < dt * 14) {
+            puffs.push({
+              x: f.u * W + rand(-5, 5), y: f.v * H + rand(-3, 3),
+              vx: rand(-8, 8), vy: rand(-26, -12),
+              life: 0, max: rand(0.7, 1.3), col: f.center
             });
-            window.addEventListener('mouseup', () => { dragging = false;
-                viewportEl.classList.remove('grabbing'); });
-            window.addEventListener('mousemove', e => {
-                if (!dragging) return;
-                scrollTarget -= (e.clientX - lastX) * 1.4;
-                scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
-                lastX = e.clientX;
-            });
-            let lt = 0;
-            viewportEl.addEventListener('touchstart', e => { lt = e.touches[0].clientX; }, { passive: true });
-            viewportEl.addEventListener('touchmove', e => {
-                const x = e.touches[0].clientX;
-                scrollTarget -= (x - lt) * 1.4;
-                scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
-                lt = x;
-            }, { passive: true });
+          }
+        }
+      }
+      for (let i = puffs.length - 1; i >= 0; i--) {
+        const q = puffs[i];
+        q.life += dt;
+        q.x += q.vx * dt;
+        q.y += q.vy * dt;
+        if (q.life > q.max) puffs.splice(i, 1);
+      }
+    }
 
-            const BG_SPEED = 0.35,
-                ITEMS_SPEED = 0.68,
-                LINES_SPEED = 1.0;
+    function drawFlowers() {
+      const hover = mouse.visible ? flowerAt(mouse.x, mouse.y) : null;
+      for (const f of flowers) {
+        const x = f.u * W, y = f.v * H;
+        const sniffed = f.hit > 0;
+        const sway = Math.sin(nowT * 1.3 + f.ph) * (sniffed ? 0.2 : 0.05);
+        const pulse = sniffed ? 1 + 0.08 * Math.sin(nowT * 14) : 1;
+        const sz = f.size * pulse;
+        ctx.save();
+        ctx.translate(x, y);
 
-            function tlTick() {
-                scrollX += (scrollTarget - scrollX) * 0.085;
-                trackEl.style.transform = `translate3d(${-scrollX*LINES_SPEED}px,0,0)`;
-                itemsLayerEl.style.transform = `translate3d(${-scrollX*ITEMS_SPEED}px,0,0)`;
-                bgTextEl.style.transform = `translate3d(${-scrollX*BG_SPEED}px,-50%,0)`;
-                colBobEls.forEach(col => {
-                    const seed = +col.dataset.colSeed;
-                    const bob = Math.sin(scrollX * 0.0018 + seed) * 10;
-                    col.style.transform = `translate3d(0, ${bob.toFixed(1)}px, 0)`;
-                });
-                updateBorderProgress();
-                requestAnimationFrame(tlTick);
+        // hover ring so it's obvious you can click it
+        if (f === hover) {
+          ctx.strokeStyle = "rgba(246,239,223,0.7)";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.ellipse(0, 2, f.size + 8, (f.size + 8) * 0.55, 0, 0, TAU);
+          ctx.stroke();
+        }
+
+        // soft shadow + leafy halo
+        ctx.fillStyle = "rgba(30,45,15,0.25)";
+        ctx.beginPath();
+        ctx.ellipse(1.5, 3, sz * 0.95, sz * 0.6, 0, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = "rgba(70,105,40,0.5)";
+        ctx.beginPath();
+        ctx.ellipse(0, 1, sz * 1.1, sz * 0.8, 0, 0, TAU);
+        ctx.fill();
+
+        // petals
+        ctx.rotate(f.rot + sway);
+        ctx.fillStyle = f.color;
+        ctx.strokeStyle = "rgba(60,40,30,0.18)";
+        ctx.lineWidth = 0.8;
+        for (let i = 0; i < f.n; i++) {
+          ctx.rotate(TAU / f.n);
+          ctx.beginPath();
+          ctx.ellipse(0, -sz * 0.58, sz * f.px, sz * f.py, 0, 0, TAU);
+          ctx.fill();
+          ctx.stroke();
+        }
+        // center
+        ctx.fillStyle = f.center;
+        ctx.beginPath();
+        ctx.arc(0, 0, sz * 0.3, 0, TAU);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // pollen puffs
+      for (const q of puffs) {
+        const a = 1 - q.life / q.max;
+        ctx.fillStyle = q.col;
+        ctx.globalAlpha = clamp(a, 0, 1) * 0.9;
+        ctx.beginPath();
+        ctx.arc(q.x, q.y, 1.6 * a + 0.6, 0, TAU);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // ---------- Pens: timed circles on the ground to herd the flock into ----------
+    let pen = null;                 // the active pen
+    const oldPens = [];             // finished pens, fading out
+    let penScore = 0;
+    let lastPenPos = null;
+    let toast = { text: "", t: 0, color: "#f6efdf" };
+
+    function spawnPen() {
+      const r = clamp(Math.min(W, H) * 0.22, 110, 180);
+      const mx = r + 24, myTop = r + 70, myBot = r + 24;
+      let fx = 0, fy = 0;
+      for (const s of sheep) { fx += s.x; fy += s.y; }
+      fx /= sheep.length; fy /= sheep.length;
+
+      let best = null, bestScore = -Infinity;
+      for (let i = 0; i < 40; i++) {
+        const x = W > mx * 2 ? rand(mx, W - mx) : W / 2;
+        const y = H > myTop + myBot ? rand(myTop, H - myBot) : H / 2;
+        let sc = dist(x, y, fx, fy) + rand(0, 220);
+        if (lastPenPos) sc += Math.min(dist(x, y, lastPenPos.x, lastPenPos.y), 500) * 0.6;
+        if (dist(x, y, dog.x, dog.y) < r * 0.8) sc -= 400;
+        if (sc > bestScore) { bestScore = sc; best = { x, y }; }
+      }
+      // farther pens get a little more time
+      const maxT = clamp(30 + dist(best.x, best.y, fx, fy) / 10, 35, 70);
+      pen = { x: best.x, y: best.y, r, maxT, left: maxT, age: 0, hold: 0, count: 0, state: "active", out: 0 };
+      lastPenPos = { x: best.x, y: best.y };
+    }
+
+    function finishPen(win) {
+      pen.state = win ? "won" : "expired";
+      pen.out = 0;
+      oldPens.push(pen);
+      if (win) {
+        penScore++;
+        stats.pensCleared++;
+        stats.sheepHerded += sheep.length;
+        const took = pen.maxT - pen.left;
+        if (stats.bestPen === null || took < stats.bestPen) stats.bestPen = took;
+      } else {
+        stats.pensMissed++;
+      }
+      toast = {
+        text: win ? "All penned!" : "Time's up \u2014 new pen",
+        t: 2.2,
+        color: win ? "#d4ee9f" : "#f2b890"
+      };
+      spawnPen(); // dynamically make a new zone elsewhere
+    }
+
+    function updatePen(dt) {
+      for (let i = oldPens.length - 1; i >= 0; i--) {
+        oldPens[i].out += dt;
+        if (oldPens[i].out > 1.4) oldPens.splice(i, 1);
+      }
+      toast.t = Math.max(0, toast.t - dt);
+
+      pen.age += dt;
+      pen.left -= dt;
+      let n = 0;
+      for (const s of sheep) if (dist(s.x, s.y, pen.x, pen.y) < pen.r) n++;
+      pen.count = n;
+      // every sheep must be inside, and stay there for a moment
+      if (n === sheep.length && pen.age > 0.6) pen.hold += dt; else pen.hold = 0;
+
+      if (pen.hold > 0.6) finishPen(true);
+      else if (pen.left <= 0) finishPen(false);
+    }
+
+    function drawPenShape(p, scale, alpha) {
+      const r = p.r * scale;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+
+      // trampled straw floor
+      const g = ctx.createRadialGradient(0, 0, r * 0.15, 0, 0, r);
+      g.addColorStop(0, `rgba(244,222,150,${0.22 * alpha})`);
+      g.addColorStop(1, `rgba(214,184,110,${0.34 * alpha})`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, TAU);
+      ctx.fill();
+      if (p.state === "won") {
+        ctx.fillStyle = `rgba(170,225,110,${0.28 * alpha})`;
+        ctx.fill();
+      }
+
+      // fence rails
+      ctx.strokeStyle = `rgba(104,74,42,${0.9 * alpha})`;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, TAU);
+      ctx.stroke();
+      ctx.strokeStyle = `rgba(190,150,96,${0.65 * alpha})`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(0, r - 4), 0, TAU);
+      ctx.stroke();
+
+      // fence posts
+      const N = Math.max(12, Math.round((TAU * r) / 24));
+      for (let i = 0; i < N; i++) {
+        const a = (i / N) * TAU;
+        const px = Math.cos(a) * r, py = Math.sin(a) * r;
+        ctx.fillStyle = `rgba(107,74,43,${alpha})`;
+        ctx.beginPath();
+        ctx.arc(px, py, 3.4, 0, TAU);
+        ctx.fill();
+        ctx.fillStyle = `rgba(214,180,128,${0.8 * alpha})`;
+        ctx.beginPath();
+        ctx.arc(px - 0.7, py - 0.7, 1.2, 0, TAU);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawTimerRing(p) {
+      const frac = clamp(p.left / p.maxT, 0, 1);
+      const low = frac < 0.25;
+      const pulse = low ? 0.65 + 0.35 * Math.sin(nowT * 9) : 1;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.lineCap = "round";
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "rgba(43,38,32,0.25)";
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r + 11, 0, TAU);
+      ctx.stroke();
+      ctx.strokeStyle = low ? `rgba(196,85,46,${pulse})` : "rgba(232,163,61,0.95)";
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r + 11, -Math.PI / 2, -Math.PI / 2 + frac * TAU);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawPens() {
+      for (const p of oldPens) {
+        const a = clamp(1 - p.out / 1.4, 0, 1);
+        drawPenShape(p, 1, a);
+        if (p.state === "won") {
+          ctx.strokeStyle = `rgba(190,235,120,${a * 0.9})`;
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * (1 + (p.out / 1.4) * 0.4), 0, TAU);
+          ctx.stroke();
+        }
+      }
+      if (pen) {
+        const e = clamp(pen.age / 0.6, 0, 1);
+        const sc = 1 - Math.pow(1 - e, 3);
+        drawPenShape(pen, Math.max(sc, 0.01), clamp(pen.age / 0.3, 0, 1));
+        if (e >= 1) drawTimerRing(pen);
+      }
+    }
+
+    function pillPath(x, y, w, h) {
+      const r = h / 2;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawPenOverlay() {
+      if (!pen) return;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // count above the pen
+      if (pen.age > 0.6) {
+        ctx.font = "700 14px Cabin, sans-serif";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(43,38,32,0.7)";
+        ctx.fillStyle = "#f6efdf";
+        const txt = pen.count + " / " + sheep.length;
+        ctx.strokeText(txt, pen.x, pen.y - pen.r - 26);
+        ctx.fillText(txt, pen.x, pen.y - pen.r - 26);
+      }
+
+      // HUD pill
+      const secs = Math.max(0, Math.ceil(pen.left));
+      const label = "Penned " + penScore + "  \u00b7  In pen " + pen.count + "/" + sheep.length + "  \u00b7  " + secs + "s";
+      ctx.font = "700 14px Cabin, sans-serif";
+      const w = ctx.measureText(label).width + 36, h = 30;
+      const x = W / 2 - w / 2, y = 14;
+      ctx.fillStyle = "rgba(43,38,32,0.78)";
+      pillPath(x, y, w, h);
+      ctx.fill();
+      ctx.fillStyle = secs <= 8 ? "#f2b890" : "#f6efdf";
+      ctx.fillText(label, W / 2, y + h / 2 + 1);
+
+      // toast
+      if (toast.t > 0) {
+        const a = clamp(toast.t / 0.6, 0, 1);
+        const rise = (1 - clamp(toast.t / 2.2, 0, 1)) * 14;
+        ctx.font = "900 30px Fraunces, Georgia, serif";
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = `rgba(43,38,32,${0.7 * a})`;
+        ctx.globalAlpha = a;
+        ctx.fillStyle = toast.color;
+        ctx.strokeText(toast.text, W / 2, H * 0.2 - rise);
+        ctx.fillText(toast.text, W / 2, H * 0.2 - rise);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    spawnPen();
+
+    /* =========================================================
+       FLOCKING — matched to the original Shepherd's Dog.
+       Three classic boids forces + fear dynamics:
+       - fear in (0 .. ~0.55): flock KNITS TOGETHER and flows away
+         from the dog as one body (cohesion boosted).
+       - fear above ~0.75 (bark blast): cohesion collapses,
+         separation spikes -> believable radial SCATTER.
+       - fear decays -> stragglers drift back via cohesion + a
+         "rejoin the mob" pull when far from the local centroid.
+       ========================================================= */
+    const SEP_R = 32,
+          ALI_R = 84,
+          COH_R = 175,
+          COH_R2 = COH_R * COH_R;
+    const DOG_R = 175;
+
+    function updateSheep(dt) {
+      // flock centroid (for rejoin + grazing bias)
+      let cX = 0, cY = 0;
+      for (const s of sheep) { cX += s.x; cY += s.y; }
+      if (sheep.length) { cX /= sheep.length; cY /= sheep.length; }
+
+      // mob centroid (same set here, but kept for parity with original)
+      let mX = cX, mY = cY;
+
+      const barkActive = dog.barkTimer > 0.12;
+
+      for (const s of sheep) {
+        let fx = 0, fy = 0;
+
+        /* --- neighbours --- */
+        let sepX = 0, sepY = 0;
+        let aliX = 0, aliY = 0, nAli = 0;
+        let cohX = 0, cohY = 0, nCoh = 0;
+
+        for (const o of sheep) {
+          if (o === s) continue;
+          const dx = o.x - s.x, dy = o.y - s.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 > COH_R2) continue;
+          const d = Math.sqrt(d2) || 0.001;
+          if (d < SEP_R) {
+            const w = (SEP_R - d) / SEP_R;
+            sepX -= (dx / d) * w;
+            sepY -= (dy / d) * w;
+          }
+          if (d < ALI_R) {
+            aliX += o.vx;
+            aliY += o.vy;
+            nAli++;
+          }
+          cohX += o.x;
+          cohY += o.y;
+          nCoh++;
+        }
+
+        const fear = s.fear;
+        // cohesion: boosted at herding-level fear, collapses in panic
+        const cohFactor = fear < 0.55 ? 1 + fear * 1.6 : Math.max(0, (0.9 - fear) / 0.35);
+        const sepW = 95 + 130 * fear;
+        const aliW = 1.5 * (1 - fear * 0.55);
+        const cohW = 11 * cohFactor;
+
+        fx += sepX * sepW;
+        fy += sepY * sepW;
+        if (nAli) {
+          fx += (aliX / nAli - s.vx) * aliW;
+          fy += (aliY / nAli - s.vy) * aliW;
+        }
+        if (nCoh) {
+          const mx = cohX / nCoh - s.x;
+          const my = cohY / nCoh - s.y;
+          const m = hyp(mx, my) || 0.001;
+          fx += (mx / m) * cohW;
+          fy += (my / m) * cohW;
+        }
+
+        /* --- fear of the dog --- */
+        const ddx = s.x - dog.x, ddy = s.y - dog.y;
+        const dd = hyp(ddx, ddy) || 0.001;
+        const R = DOG_R + (barkActive ? 110 : 0);
+        if (dd < R) {
+          const w = 1 - dd / R;
+          s.fear = Math.min(1, s.fear + w * 3.2 * dt);
+          const push = w * w * 560 + 60;
+          fx += (ddx / dd) * push;
+          fy += (ddy / dd) * push;
+        }
+
+        /* --- grazing & straying (only when calm) --- */
+        if (fear < 0.12) {
+          s.gT -= dt;
+          if (s.gT <= 0) {
+            const stray = s.indep > 0.78 && Math.random() < 0.35;
+            const range = stray ? 280 : 95;
+            const a = rand(0, TAU), r = rand(20, range);
+            const bias = stray ? 0.05 : 0.3;
+            s.gx = clamp(lerp(s.x + Math.cos(a) * r, cX, bias), 40, W - 40);
+            s.gy = clamp(lerp(s.y + Math.sin(a) * r, cY, bias), 40, H - 40);
+            s.gT = rand(3, 8);
+          }
+          const gx = s.gx - s.x, gy = s.gy - s.y, gd = hyp(gx, gy);
+          if (gd > 14) {
+            fx += (gx / gd) * 16;
+            fy += (gy / gd) * 16;
+          }
+        }
+
+        /* --- mob instinct: weak long-range pull toward the flock --- */
+        if (sheep.length > 1) {
+          const rx = mX - s.x, ry = mY - s.y, rd = hyp(rx, ry);
+          if (fear < 0.7 && rd > 30) {
+            const w = 8 + clamp((rd - 180) / 200, 0, 1.6) * 70;
+            fx += (rx / rd) * w;
+            fy += (ry / rd) * w;
+          }
+        }
+
+        /* --- soft bounds --- */
+        if (s.x < 50) fx += (50 - s.x) * 4;
+        if (s.x > W - 50) fx -= (s.x - (W - 50)) * 4;
+        if (s.y < 50) fy += (50 - s.y) * 4;
+        if (s.y > H - 50) fy -= (s.y - (H - 50)) * 4;
+
+        /* --- pen fence: calm sheep inside the pen stay put; a bark blast can still scatter them --- */
+        if (pen) {
+          const qx = s.x - pen.x, qy = s.y - pen.y, qd = hyp(qx, qy) || 0.001;
+          if (qd < pen.r + 6) {
+            const fw = fear < 0.5 ? 1 : Math.max(0, (0.9 - fear) / 0.4);
+            const over = qd - (pen.r - 18);
+            if (over > 0) {
+              fx -= (qx / qd) * over * 70 * fw;
+              fy -= (qy / qd) * over * 70 * fw;
             }
-            requestAnimationFrame(tlTick);
+          }
+        }
 
-            /* ── List ── */
-            const listWrap = document.getElementById('list-wrap');
-            const listRows = [];
-            let cursorY = null;
-            listWrap.addEventListener('mousemove', e => { cursorY = e.clientY; });
-            listWrap.addEventListener('mouseleave', () => { cursorY = null; });
+        /* --- integrate (original speed curve + damping) --- */
+        s.vx += fx * dt;
+        s.vy += fy * dt;
+        const maxS = 26 + 155 * Math.pow(fear, 0.85);
+        const sp = hyp(s.vx, s.vy);
+        if (sp > maxS) {
+          s.vx *= maxS / sp;
+          s.vy *= maxS / sp;
+        }
+        s.vx *= Math.exp(-dt * 0.9);
+        s.vy *= Math.exp(-dt * 0.9);
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
 
-            function renderList() {
-                if (viewsRendered.list && view !== 'list') return;
-                listWrap.innerHTML = '';
-                listRows.length = 0;
-                const byCategory = GROUPS.map((_, m) => ITEMS.filter(it => it.m === m));
-                GROUPS.forEach((name, m) => {
-                    const items = byCategory[m];
-                    const row = document.createElement('div');
-                    row.className = 'list-row' + (openGroups.has(m) ? ' expanded' : '');
-                    row.dataset.m = m;
-                    const head = document.createElement('div');
-                    head.className = 'list-row-head';
-                    head.innerHTML = `
-                <button type="button" class="list-drag-handle" draggable="true" title="Drag to reorder">
-                  <svg viewBox="0 0 20 20"><circle cx="6" cy="5" r="1.4"></circle><circle cx="14" cy="5" r="1.4"></circle><circle cx="6" cy="10" r="1.4"></circle><circle cx="14" cy="10" r="1.4"></circle><circle cx="6" cy="15" r="1.4"></circle><circle cx="14" cy="15" r="1.4"></circle></svg>
-                </button>
-                <div class="list-month" contenteditable="true" spellcheck="false">${escapeHtml(name)}</div>
-                <div class="list-row-head-right">
-                  <div class="list-idx">(${fmtIdx(m+1)} / ${fmtIdx(GROUPS.length)})</div>
-                  <button class="list-cat-del" type="button" title="Delete this category">Delete ✕</button>
-                </div>`;
-                    head.addEventListener('click', () => { toggleOpen(m); });
-                    row.addEventListener('mouseenter', () => { hoveredGroup = m;
-                        row.classList.add('expanded'); });
-                    row.addEventListener('mouseleave', () => { if (hoveredGroup === m) hoveredGroup = null; if (!openGroups
-                            .has(m)) row.classList.remove('expanded'); });
-                    const nameEl = head.querySelector('.list-month');
-                    nameEl.addEventListener('mousedown', e => e.stopPropagation());
-                    nameEl.addEventListener('keydown', e => {
-                        if (e.key === 'Enter') { e.preventDefault();
-                            nameEl.blur(); }
-                    });
-                    nameEl.addEventListener('blur', () => {
-                        commitCategoryName(m, nameEl.textContent);
-                        nameEl.textContent = GROUPS[m];
-                    });
-                    const delBtn = head.querySelector('.list-cat-del');
-                    delBtn.addEventListener('click', e => { e.stopPropagation();
-                        deleteCategoryPrompt(m); });
-                    const dragHandle = head.querySelector('.list-drag-handle');
-                    dragHandle.addEventListener('click', e => e.stopPropagation());
-                    dragHandle.addEventListener('mousedown', e => e.stopPropagation());
-                    dragHandle.addEventListener('dragstart', e => {
-                        e.stopPropagation();
-                        e.dataTransfer.effectAllowed = 'move';
-                        e.dataTransfer.setData('text/plain', String(m));
-                        try { e.dataTransfer.setDragImage(row, 20, 20); } catch (err) {}
-                        row.classList.add('dragging-row');
-                    });
-                    dragHandle.addEventListener('dragend', () => {
-                        row.classList.remove('dragging-row');
-                        document.querySelectorAll('.list-row.drag-over-row').forEach(r => r.classList.remove(
-                        'drag-over-row'));
-                    });
-                    row.addEventListener('dragover', e => { e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                        row.classList.add('drag-over-row'); });
-                    row.addEventListener('dragleave', e => { if (!row.contains(e.relatedTarget)) row.classList.remove(
-                            'drag-over-row'); });
-                    row.addEventListener('drop', e => {
-                        e.preventDefault();
-                        row.classList.remove('drag-over-row');
-                        const fromM = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                        if (!isNaN(fromM)) reorderCategory(fromM, m);
-                    });
-                    row.appendChild(head);
-                    const body = document.createElement('div');
-                    body.className = 'list-row-body';
-                    const inner = document.createElement('div');
-                    inner.className = 'list-row-body-inner';
-                    if (items.length) {
-                        const strip = document.createElement('div');
-                        strip.className = 'list-strip';
-                        items.forEach(item => {
-                            const i = ITEMS.indexOf(item);
-                            const card = document.createElement('div');
-                            card.className = 'list-card' + (item.k === 'card' ? ' is-card' : '');
-                            card.dataset.i = i;
-                            card.innerHTML = thumbHTML(item, { editableTitle: true });
-                            const thumb = card.querySelector('.thumb');
-                            if (thumb) initTilt(thumb);
-                            wireEditableTitle(card, i);
-                            wireVideoPlayback(card);
-                            wireContextMenu(card, item);
-                            card.addEventListener('click', () => openDetail(item, { editable: true }));
-                            strip.appendChild(card);
-                        });
-                        inner.appendChild(strip);
-                    } else {
-                        const empty = document.createElement('div');
-                        empty.className = 'list-empty';
-                        empty.textContent = 'Nothing archived yet.';
-                        inner.appendChild(empty);
-                    }
-                    body.appendChild(inner);
-                    row.appendChild(body);
-                    listWrap.appendChild(row);
-                    listRows.push({ m, rowEl: row, headEl: head, innerEl: inner });
-                });
-                const addRow = document.createElement('div');
-                addRow.id = 'list-add-row';
-                addRow.textContent = '+ New Category';
-                addRow.addEventListener('click', addCategory);
-                listWrap.appendChild(addRow);
-                viewsRendered.list = true;
-                updateListScrollbar();
-            }
+        s.fear = Math.max(0, s.fear - dt * 0.28);
 
-            function updateRowExpandedClasses() {
-                listRows.forEach(r => r.rowEl.classList.toggle('expanded', openGroups.has(r.m) || hoveredGroup === r.m));
-            }
+        if (hyp(s.vx, s.vy) > 6) {
+          s.dir = lerpAngle(s.dir, Math.atan2(s.vy, s.vx), 1 - Math.exp(-dt * 7));
+        }
+      }
+    }
 
-            function scrollRowIntoView(m) {
-                const target = listRows.find(r => r.m === m);
-                if (!target) return;
-                const contTop = listWrap.getBoundingClientRect().top;
-                const hr = target.headEl.getBoundingClientRect();
-                const delta = hr.top - (contTop + 54);
-                listWrap.scrollTo({ top: listWrap.scrollTop + delta, behavior: 'smooth' });
-            }
+    function update(dt) {
+      nowT += dt;
 
-            function toggleOpen(m) {
-                if (openGroups.has(m)) openGroups.delete(m);
-                else { openGroups.add(m);
-                    scrollRowIntoView(m); }
-                updateRowExpandedClasses();
-            }
+      const peeing = dog.peeTimer > 0;
+      if (peeing) dog.peeTimer = Math.max(0, dog.peeTimer - dt);
+      const sniffing = dog.sniffTimer > 0;
+      if (sniffing) dog.sniffTimer = Math.max(0, dog.sniffTimer - dt);
+      const distracted = (dog.distractTimer || 0) > 0;
 
-            document.addEventListener('keydown', e => {
-                if (e.key !== 'Escape' || view !== 'list') return;
-                if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
-                openGroups.clear();
-                hoveredGroup = null;
-                updateRowExpandedClasses();
-            });
+      // Smooth arrow-key / WASD acceleration (frozen while peeing)
+      let ax = 0, ay = 0;
+      if (!peeing && !distracted) {
+        if (keys.left)  ax -= 1;
+        if (keys.right) ax += 1;
+        if (keys.up)    ay -= 1;
+        if (keys.down)  ay += 1;
+      }
 
-            const listScrollbarThumb = document.getElementById('list-scrollbar-thumb');
+      const ACCEL = 920;      // px/s²
+      const MAX_DOG = 280;    // top speed
+      const FRICTION = 6.5;   // how quickly it coasts to a stop
 
-            function updateListScrollbar() {
-                const ch = listWrap.clientHeight,
-                    sh = listWrap.scrollHeight;
-                if (sh <= ch) { listScrollbarThumb.style.opacity = '0'; return; }
-                listScrollbarThumb.style.opacity = '.55';
-                const trackH = listScrollbarThumb.parentElement.clientHeight;
-                const thumbH = Math.max(24, trackH * (ch / sh));
-                const travel = trackH - thumbH;
-                const prog = listWrap.scrollTop / (sh - ch);
-                listScrollbarThumb.style.height = thumbH + 'px';
-                listScrollbarThumb.style.top = (travel * prog) + 'px';
-            }
+      let steered = false;
+      if (ax !== 0 || ay !== 0) {
+        // keyboard takes over and cancels any queued cursor path
+        targets.length = 0;
+        dog.sniffTimer = 0;
+        dog.distractTimer = 0;
+        const [nx, ny] = norm(ax, ay);
+        dog.vx += nx * ACCEL * dt;
+        dog.vy += ny * ACCEL * dt;
+        steered = true;
+      } else if (!peeing && !sniffing && !distracted && targets.length) {
+        // run through the queue: blow past middle stops, ease into the last one
+        const tg = targets[0];
+        if (tg.flower) { tg.x = tg.flower.u * W; tg.y = tg.flower.v * H; }
+        const dx = tg.x - dog.x, dy = tg.y - dog.y, d = hyp(dx, dy);
+        const isLast = targets.length === 1;
+        const isStop = isLast || !!tg.flower; // flowers are always a full stop
+        const arrive = tg.flower ? 24 : (isLast ? 6 : 16);
+        if (d < arrive) {
+          targets.shift();
+          if (tg.flower) startSniff(tg.flower);
+        } else {
+          const speed = isStop ? Math.min(MAX_DOG, d * 5) : MAX_DOG;
+          const [nx, ny] = norm(dx, dy);
+          const k = 1 - Math.exp(-dt * 9);
+          dog.vx += (nx * speed - dog.vx) * k;
+          dog.vy += (ny * speed - dog.vy) * k;
+          steered = true;
+        }
+      }
+      if (!steered) {
+        // exponential friction when no keys held (stronger while peeing / distracted)
+        const damp = Math.exp(-(peeing || sniffing || distracted ? 14 : FRICTION) * dt);
+        dog.vx *= damp;
+        dog.vy *= damp;
+      }
 
-            function listTick() {
-                const line = (cursorY !== null) ? cursorY : (listWrap.getBoundingClientRect().top + 54);
-                listRows.forEach(r => {
-                    const hr = r.headEl.getBoundingClientRect();
-                    const dist = (hr.top + hr.height / 2) - line;
-                    const target = Math.max(-14, Math.min(14, dist * -0.035));
-                    const cur = parseFloat(r.headEl.dataset.py || '0');
-                    const next = cur + (target - cur) * 0.12;
-                    r.headEl.dataset.py = next.toFixed(2);
-                    r.headEl.style.transform = `translate3d(0, ${next.toFixed(2)}px, 0)`;
-                });
-                updateListScrollbar();
-                requestAnimationFrame(listTick);
-            }
-            requestAnimationFrame(listTick);
+      // clamp top speed (slower while distracted)
+      const maxSp = distracted ? MAX_DOG * 0.45 : MAX_DOG;
+      const sp = hyp(dog.vx, dog.vy);
+      if (sp > maxSp) {
+        dog.vx = (dog.vx / sp) * maxSp;
+        dog.vy = (dog.vy / sp) * maxSp;
+      }
 
-            /* ── Grid ── */
-            const gridItemsEl = document.getElementById('grid-items');
+      dog.x += dog.vx * dt;
+      dog.y += dog.vy * dt;
 
-            function renderGrid() {
-                if (viewsRendered.grid && view !== 'grid') return;
-                gridItemsEl.innerHTML = '';
-                document.getElementById('grid-count').textContent = `${ITEMS.length} PIECES`;
-                ITEMS.forEach((item, i) => {
-                    const el = document.createElement('div');
-                    el.className = 'g-item' + (item.k === 'card' ? ' is-card' : '');
-                    el.dataset.i = i;
-                    el.setAttribute('draggable', 'true');
-                    el.innerHTML = thumbHTML(item, { editableTitle: true });
-                    const thumb = el.querySelector('.thumb');
-                    if (thumb) initTilt(thumb);
-                    wireEditableTitle(el, i);
-                    wireVideoPlayback(el);
-                    wireContextMenu(el, item);
-                    el.addEventListener('click', () => openDetail(item, { editable: true }));
-                    el.addEventListener('dragstart', e => {
-                        e.dataTransfer.effectAllowed = 'move';
-                        e.dataTransfer.setData('text/plain', String(i));
-                        el.classList.add('dragging');
-                    });
-                    el.addEventListener('dragend', () => el.classList.remove('dragging'));
-                    el.addEventListener('dragover', e => { e.preventDefault();
-                        el.classList.add('drag-over'); });
-                    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
-                    el.addEventListener('drop', e => {
-                        e.preventDefault();
-                        el.classList.remove('drag-over');
-                        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                        moveItemByDrop(fromIdx, i, null);
-                    });
-                    gridItemsEl.appendChild(el);
-                });
-                viewsRendered.grid = true;
-                updateGridScrollbar();
-            }
+      // soft world bounds
+      const m = 24;
+      dog.x = clamp(dog.x, m, W - m);
+      dog.y = clamp(dog.y, m, H - m);
+      if (stats.lx !== null) stats.dist += dist(dog.x, dog.y, stats.lx, stats.ly);
+      stats.lx = dog.x; stats.ly = dog.y;
 
-            const gridScroll = document.getElementById('grid-scroll');
-            const gridScrollbarThumb = document.getElementById('grid-scrollbar-thumb');
+      if (sp > 10 && !peeing && !sniffing && !distracted) {
+        dog.dir = lerpAngle(dog.dir, Math.atan2(dog.vy, dog.vx), 1 - Math.exp(-dt * 10));
+      }
 
-            function updateGridScrollbar() {
-                const ch = gridScroll.clientHeight,
-                    sh = gridScroll.scrollHeight;
-                if (sh <= ch) { gridScrollbarThumb.style.opacity = '0'; return; }
-                gridScrollbarThumb.style.opacity = '.55';
-                const trackH = gridScrollbarThumb.parentElement.clientHeight;
-                const thumbH = Math.max(24, trackH * (ch / sh));
-                const travel = trackH - thumbH;
-                const prog = gridScroll.scrollTop / (sh - ch);
-                gridScrollbarThumb.style.height = thumbH + 'px';
-                gridScrollbarThumb.style.top = (travel * prog) + 'px';
-            }
-            gridScroll.addEventListener('scroll', updateGridScrollbar, { passive: true });
-            window.addEventListener('resize', updateGridScrollbar);
-            updateGridScrollbar();
+      if (sniffing && dog.sniffFlower) {
+        // nose toward the flower
+        const f = dog.sniffFlower;
+        dog.dir = lerpAngle(dog.dir, Math.atan2(f.v * H - dog.y, f.u * W - dog.x), 1 - Math.exp(-dt * 8));
+      }
 
-            /* ── Grid category pills ── */
-            const gridCatsEl = document.getElementById('grid-cats');
+      if (distracted && dog.distractTarget) {
+        // watch the butterfly go by
+        const b = dog.distractTarget;
+        dog.dir = lerpAngle(dog.dir, Math.atan2(b.y - dog.y, b.x - dog.x), 1 - Math.exp(-dt * 7));
+      }
 
-            function buildGridCats() {
-                gridCatsEl.innerHTML = '';
-                const allPill = document.createElement('div');
-                allPill.className = 'cat-pill' + (!category ? ' active' : '');
-                allPill.textContent = 'All';
-                allPill.dataset.cat = '';
-                allPill.addEventListener('click', () => setCategory(null));
-                gridCatsEl.appendChild(allPill);
-                GROUPS.forEach(cat => {
-                    const p = document.createElement('div');
-                    p.className = 'cat-pill' + (category === cat ? ' active' : '');
-                    p.textContent = cat;
-                    p.dataset.cat = cat;
-                    p.addEventListener('click', () => setCategory(cat));
-                    gridCatsEl.appendChild(p);
-                });
-            }
-            buildGridCats();
+      if (keys.bark && !peeing) { if (!stats.barkHeld) { stats.barks++; doBark(); } dog.barkTimer = 0.38; dog.sniffTimer = 0; }
+      else dog.barkTimer = Math.max(0, dog.barkTimer - dt);
+      stats.barkHeld = keys.bark && !peeing;
 
-            /* ── filter ── */
-            const filterBadge = document.getElementById('filterBadge');
+      // keep the growing puddle glued to the pee spot
+      if (peeing) {
+        const cur = puddles[puddles.length - 1];
+        if (cur && cur.growing) {
+          const p = peeSpot();
+          cur.x = p.x;
+          cur.y = p.y;
+        }
+      }
 
-            function setCategory(c) {
-                category = (category === c) ? null : c;
-                filterBadge.textContent = category || 'All';
-                document.querySelectorAll('.cat-pill').forEach(p => {
-                    const isAll = p.dataset.cat === '';
-                    p.classList.toggle('active', isAll ? !category : p.dataset.cat === category);
-                });
-                refreshDim();
-            }
+      updatePuddles(dt);
+      updateFlowers(dt);
+      updateButterflies(dt);
+      updateWoofs(dt);
+      updatePen(dt);
+      updateSheep(dt);
+      renderStats();
+    }
 
-            filterBadge.addEventListener('click', () => setCategory(null));
+    // ---------- Field (matches original soft pasture feel) ----------
+    function drawField() {
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, "#6d9a48");
+      g.addColorStop(0.45, "#5e8a3e");
+      g.addColorStop(1, "#4a7032");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
 
-            function refreshDim() {
-                document.querySelectorAll('.tl-item').forEach(el => {
-                    const it = ITEMS[+el.dataset.i];
-                    el.classList.toggle('dim', !matches(it));
-                });
-                document.querySelectorAll('.list-card').forEach(el => {
-                    const it = ITEMS[+el.dataset.i];
-                    el.classList.toggle('dim', !matches(it));
-                });
-                document.querySelectorAll('.g-item').forEach(el => {
-                    const it = ITEMS[+el.dataset.i];
-                    el.classList.toggle('dim', !matches(it));
-                });
-            }
+      const vg = ctx.createRadialGradient(W * 0.5, H * 0.45, H * 0.2, W * 0.5, H * 0.5, H * 0.85);
+      vg.addColorStop(0, "rgba(0,0,0,0)");
+      vg.addColorStop(1, "rgba(20,24,12,0.28)");
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
 
-            /* ── Detail ── */
-            const detailEl = document.getElementById('detail');
-            document.getElementById('detail-close').addEventListener('click', closeDetail);
-            detailEl.addEventListener('click', e => { if (e.target === detailEl) closeDetail(); });
+      ctx.strokeStyle = "rgba(255,255,230,0.04)";
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < 90; i++) {
+        const x = (i * 137.5 + 17) % W;
+        const y = (i * 89.3 + 11) % H;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 1.5, y + 7);
+        ctx.stroke();
+      }
 
-            function openDetail(item, opts) {
-                opts = opts || {};
-                const editable = !!opts.editable;
-                const i = ITEMS.indexOf(item);
-                detailItem = item;
-                detailEditableFlag = editable;
-                const frame = document.getElementById('detail-frame');
-                const old = frame.querySelector('.thumb');
-                if (old) old.remove();
-                frame.insertAdjacentHTML('afterbegin', thumbHTML(item, { overlay: false }));
-                const thumb = frame.querySelector('.thumb');
-                if (thumb) initTilt(thumb);
-                wireVideoPlayback(frame, { autoplay: true });
-                const capEl = document.getElementById('detail-caption');
-                capEl.innerHTML =
-                    `<span class="idx" id="detail-idx-line">${fmtIdx(item.idx)} / ${ITEMS.length} — ${escapeHtml(GROUPS[item.m])}</span>` +
-                    `<span id="detail-caption-text" data-i="${i}"${editable ? ' contenteditable="true" spellcheck="false"' : ''}>${escapeHtml(item.t)}</span>`;
-                if (editable) {
-                    const textEl = document.getElementById('detail-caption-text');
-                    textEl.addEventListener('keydown', e => {
-                        if (e.key === 'Enter') { e.preventDefault();
-                            textEl.blur(); }
-                    });
-                    textEl.addEventListener('blur', () => {
-                        textEl.textContent = updateItemTitle(i, textEl.textContent);
-                    });
-                }
-                detailEl.classList.add('show');
-            }
+      const haze = ctx.createLinearGradient(0, 0, 0, H * 0.25);
+      haze.addColorStop(0, "rgba(200,220,180,0.18)");
+      haze.addColorStop(1, "rgba(200,220,180,0)");
+      ctx.fillStyle = haze;
+      ctx.fillRect(0, 0, W, H * 0.28);
+    }
 
-            function closeDetail() { detailEl.classList.remove('show'); }
+    // ---------- Puddles ----------
+    function drawPuddles() {
+      for (const p of puddles) {
+        // full opacity for a while, then a long soft fade-out
+        const t = p.age / PUDDLE_LIFE;
+        const fade = t < 0.3 ? 1 : 1 - (t - 0.3) / 0.7;
+        const a = clamp(fade, 0, 1);
+        // blob outline with a slight wobble
+        const rx = p.r, ry = p.r * p.squash;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
 
-            document.getElementById('detail-frame').addEventListener('contextmenu', e => {
-                if (!detailEditableFlag || !detailItem) return;
-                e.preventDefault();
-                e.stopPropagation();
-                showCategoryContextMenu(e.clientX, e.clientY, detailItem);
-            });
+        // dark wet-grass halo
+        ctx.fillStyle = `rgba(40,55,20,${0.28 * a})`;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, rx * 1.18, ry * 1.18, 0, 0, TAU);
+        ctx.fill();
 
-            /* ── Navigation pills ── */
-            const navPills = document.getElementById('navPills');
-            navPills.querySelectorAll('.pill').forEach(pill => {
-                pill.addEventListener('click', () => {
-                    const id = pill.dataset.view;
-                    if (id === view) return;
-                    navPills.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-                    pill.classList.add('active');
-                    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-                    document.getElementById('view-' + id).classList.add('active');
-                    view = id;
-                    renderCurrentView();
-                });
-            });
+        // main puddle (wobbly edge)
+        ctx.fillStyle = `rgba(226,200,70,${0.62 * a})`;
+        ctx.strokeStyle = `rgba(170,140,30,${0.5 * a})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        const N = 20;
+        for (let i = 0; i <= N; i++) {
+          const ang = (i / N) * TAU;
+          const w = 1 + 0.08 * Math.sin(ang * 3 + p.wob) + 0.05 * Math.sin(ang * 5 + p.wob * 2);
+          const x = Math.cos(ang) * rx * w;
+          const y = Math.sin(ang) * ry * w;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
 
-            /* ── HUD buttons ── */
-            document.getElementById('hudImport').addEventListener('click', () => {
-                document.getElementById('import-modal').classList.add('show');
-            });
-            document.getElementById('hudExport').addEventListener('click', () => {
-                document.getElementById('export-text').value = JSON.stringify({ groups: GROUPS, items: ITEMS.map(({
-                        idx, ...rest }) => rest) }, null, 2);
-                document.getElementById('export-modal').classList.add('show');
-            });
+        // shine
+        ctx.fillStyle = `rgba(255,250,200,${0.45 * a})`;
+        ctx.beginPath();
+        ctx.ellipse(-rx * 0.25, -ry * 0.28, rx * 0.32, ry * 0.2, -0.3, 0, TAU);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
 
-            // Import logic
-            const importModal = document.getElementById('import-modal');
-            document.getElementById('import-close').addEventListener('click', () => importModal.classList.remove('show'));
-            importModal.addEventListener('click', e => { if (e.target === importModal) importModal.classList.remove('show'); });
-            document.getElementById('import-submit').addEventListener('click', () => {
-                const raw = document.getElementById('import-text').value.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-                const urls = raw.filter(s => /^https?:\/\/\S+$/i.test(s));
-                if (!urls.length) {
-                    document.getElementById('import-status').textContent = 'No valid URLs found.';
-                    return;
-                }
-                const m = unsortedIndex();
-                urls.forEach(url => {
-                    ITEMS.push(isVideoUrl(url) ?
-                        { t: titleFromUrl(url), c: GROUPS[m], m, k: 'video', src: url } :
-                        { t: titleFromUrl(url), c: GROUPS[m], m, k: 'photo', img: url });
-                });
-                ITEMS.forEach((it, i) => { it.idx = i + 1; });
-                renderCurrentView();
-                document.getElementById('import-status').textContent = `Added ${urls.length} items.`;
-                document.getElementById('import-text').value = '';
-                setTimeout(() => { document.getElementById('import-status').textContent = ''; }, 3000);
-            });
+    // ---------- Sheep — soft wool-blob style with individual variety ----------
+    function drawSheep(s) {
+      const sp = hyp(s.vx, s.vy);
+      const bob = Math.sin(s.phase + nowT * (4 + sp * 0.18)) * (sp > 8 ? 1.4 : 0.5);
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      // shadow
+      ctx.fillStyle = "rgba(50,60,25,.3)";
+      ctx.beginPath();
+      ctx.ellipse(0, 5, 11 * s.size, 6 * s.size, 0, 0, TAU);
+      ctx.fill();
+      ctx.rotate(s.dir);
+      ctx.translate(0, bob * 0.4);
+      const sz = s.size;
+      const fl = s.fluff || 1;
+      const stretch = s.bodyStretch || 1;
+      const wool = s.wool || "#f7f3e6";
+      const headCol = s.head || "#4a3b2c";
+      const earSc = s.earScale || 1;
 
-            // Export logic
-            const exportModal = document.getElementById('export-modal');
-            document.getElementById('export-close').addEventListener('click', () => exportModal.classList.remove('show'));
-            exportModal.addEventListener('click', e => { if (e.target === exportModal) exportModal.classList.remove('show'); });
-            document.getElementById('export-copy').addEventListener('click', () => {
-                const text = document.getElementById('export-text');
-                text.select();
-                document.execCommand('copy');
-            });
-            document.getElementById('export-download').addEventListener('click', () => {
-                const data = document.getElementById('export-text').value;
-                const blob = new Blob([data], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'wolfie-arrangement.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
+      // wool body: overlapping blobs (same language, varied placement/scale)
+      ctx.fillStyle = wool;
+      ctx.strokeStyle = "rgba(110,95,70,.38)";
+      ctx.lineWidth = 1.35;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 11 * sz * stretch, 8 * sz, 0, 0, TAU);
+      ctx.fill();
+      ctx.stroke();
+      // rear / side tufts
+      ctx.beginPath();
+      ctx.arc(-6.2 * sz * fl, -3.1 * sz, 5.4 * sz * fl, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(-4.2 * sz, 3.6 * sz * fl, 5.1 * sz * fl, 0, TAU);
+      ctx.fill();
+      // top / front fluff
+      ctx.beginPath();
+      ctx.arc(3.2 * sz * stretch, -4.1 * sz * fl, 5.0 * sz * fl, 0, TAU);
+      ctx.fill();
+      // occasional extra shoulder puff for fluffier sheep
+      if (fl > 1.05) {
+        ctx.beginPath();
+        ctx.arc(1.5 * sz, 3.8 * sz, 4.2 * sz, 0, TAU);
+        ctx.fill();
+      }
 
-            /* ── Theme toggle ── */
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                document.documentElement.classList.toggle('light-theme');
-                // We don't have a light theme defined, but we can invert some colors using a class.
-                // For simplicity, we'll just toggle a class on body that inverts the background.
-                document.body.classList.toggle('light-theme');
-            });
+      // head
+      ctx.fillStyle = headCol;
+      ctx.beginPath();
+      ctx.ellipse(10.5 * sz * stretch, 0, 4.6 * sz, 3.55 * sz, 0, 0, TAU);
+      ctx.fill();
 
-            /* ── Reset ── */
-            document.getElementById('topResetBtn').addEventListener('click', () => {
-                if (confirm('Reset to default data?')) {
-                    location.reload();
-                }
-            });
+      // tiny horns (rare adults)
+      if (s.hasHorns) {
+        ctx.strokeStyle = "#3a2e24";
+        ctx.lineWidth = 1.6;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(8.2 * sz, -3.2 * sz);
+        ctx.quadraticCurveTo(7.0 * sz, -6.5 * sz, 5.5 * sz, -7.2 * sz);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(8.2 * sz, 3.2 * sz);
+        ctx.quadraticCurveTo(7.0 * sz, 6.5 * sz, 5.5 * sz, 7.2 * sz);
+        ctx.stroke();
+      }
 
-            /* ── Viewport blur ── */
-            function setupViewportBlur() {
-                const top = document.getElementById('viewportBlurTop'),
-                    bottom = document.getElementById('viewportBlurBottom');
-                if (!top || !bottom) return;
+      // ears (size varies per sheep)
+      ctx.fillStyle = headCol;
+      ctx.beginPath();
+      ctx.ellipse(8.5 * sz, -3.55 * sz * earSc, 2.55 * sz * earSc, 1.35 * sz * earSc, -0.5, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(8.5 * sz, 3.55 * sz * earSc, 2.55 * sz * earSc, 1.35 * sz * earSc, 0.5, 0, TAU);
+      ctx.fill();
 
-                function update() {
-                    const scrollY = window.scrollY || window.pageYOffset || 0;
-                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-                    top.classList.toggle('scrolling', scrollY > 4);
-                    bottom.classList.toggle('scrolling', scrollY < maxScroll - 4);
-                }
-                let ticking = false;
+      // subtle nose highlight on darker faces
+      if (headCol === "#2e241c") {
+        ctx.fillStyle = "rgba(90,70,50,0.45)";
+        ctx.beginPath();
+        ctx.ellipse(13.2 * sz, 0, 1.4 * sz, 1.1 * sz, 0, 0, TAU);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
 
-                function onScrollOrResize() { if (ticking) return;
-                    ticking = true;
-                    requestAnimationFrame(() => { update();
-                        ticking = false; }); }
-                window.addEventListener('scroll', onScrollOrResize, { passive: true });
-                window.addEventListener('resize', onScrollOrResize);
-                update();
-            }
-            setupViewportBlur();
+    // ---------- Dog — original drawing language, all-white poodle-mix ----------
+    function drawDog() {
+      const sp = hyp(dog.vx, dog.vy);
+      const peeing = dog.peeTimer > 0;
+      const sniffing = dog.sniffTimer > 0;
+      ctx.save();
+      ctx.translate(dog.x, dog.y);
 
-            /* ── Custom cursor (from letter‑base) ── */
-            (function initWriteCursor() {
-                const dot = document.getElementById('writeCursorDot');
-                const ellipse = document.getElementById('writeCursorEllipse');
-                if (!dot || !ellipse) return;
-                const NATIVE_SELECTOR = ['button', 'a', 'input', 'textarea', 'select', '[role="button"]',
-                    '.letter-hotspot'
-                ].join(', ');
-                let ptrX = 0,
-                    ptrY = 0,
-                    prevFrameX = 0,
-                    prevFrameY = 0,
-                    frameInit = false;
-                let ellAngle = 0,
-                    ellScaleX = 1,
-                    ellScaleY = 1,
-                    rafId = null;
-                const ELLIPSE_LERP = 0.22,
-                    SPEED_SATURATE = 34,
-                    MAX_STRETCH = 0.6;
+      // shadow (same treatment as original)
+      ctx.fillStyle = "rgba(50,60,25,.35)";
+      ctx.beginPath();
+      ctx.ellipse(0, 6, 14, 7, 0, 0, TAU);
+      ctx.fill();
 
-                function shortAngleLerp(current, target, factor) { const diff = ((target - current + 540) % 360) - 180; return current +
-                        diff * factor; }
+      ctx.rotate(dog.dir);
+      if (sniffing) {
+        // eager little head bob while sniffing
+        ctx.translate(Math.sin(nowT * 9) * 1.2, 0);
+        ctx.rotate(Math.sin(nowT * 16) * 0.035);
+      }
 
-                function step() {
-                    if (!frameInit) { prevFrameX = ptrX;
-                        prevFrameY = ptrY;
-                        frameInit = true; }
-                    const dx = ptrX - prevFrameX,
-                        dy = ptrY - prevFrameY;
-                    prevFrameX = ptrX;
-                    prevFrameY = ptrY;
-                    const speed = Math.hypot(dx, dy);
-                    const angleTarget = speed > 0.4 ? Math.atan2(dy, dx) * (180 / Math.PI) : ellAngle;
-                    const stretch = Math.min(speed / SPEED_SATURATE, 1) * MAX_STRETCH;
-                    ellAngle = shortAngleLerp(ellAngle, angleTarget, ELLIPSE_LERP);
-                    ellScaleX += (1 + stretch - ellScaleX) * ELLIPSE_LERP;
-                    ellScaleY += (1 - stretch * 0.45 - ellScaleY) * ELLIPSE_LERP;
-                    ellipse.style.transform = 'translate(' + ptrX + 'px,' + ptrY + 'px) rotate(' + ellAngle +
-                        'deg) scale(' + ellScaleX + ',' + ellScaleY + ')';
-                    rafId = requestAnimationFrame(step);
-                }
+      // pee stream (drawn under the body, from raised leg to the puddle)
+      if (peeing) {
+        const el = PEE_TIME - dog.peeTimer;
+        const flow = clamp(Math.min(el / 0.12, dog.peeTimer / 0.15), 0, 1);
+        ctx.strokeStyle = `rgba(236,210,80,${0.85 * flow})`;
+        ctx.lineWidth = 1.8;
+        ctx.lineCap = "round";
+        ctx.setLineDash([3, 2.5]);
+        ctx.lineDashOffset = -nowT * 40;
+        ctx.beginPath();
+        ctx.moveTo(-11, 8);
+        ctx.lineTo(PEE_LOCAL_X, PEE_LOCAL_Y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.lineDashOffset = 0;
+      }
 
-                function startLoop() { if (!rafId) rafId = requestAnimationFrame(step); }
+      // tail — curly poodle pom, same stroke language
+      const wagSpeed = peeing ? 3 : (6 + sp * 0.06);
+      const wag = Math.sin(nowT * wagSpeed) * 0.5;
+      ctx.strokeStyle = "#f4efe4";
+      ctx.lineWidth = 4.5;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-12, 0);
+      ctx.quadraticCurveTo(-20, wag * 8, -23, -6 + wag * 7);
+      ctx.stroke();
+      // pom tip
+      ctx.fillStyle = "#f4efe4";
+      ctx.beginPath();
+      ctx.arc(-23, -6 + wag * 7, 3.8, 0, TAU);
+      ctx.fill();
 
-                function stopLoop() { if (rafId) { cancelAnimationFrame(rafId);
-                        rafId = null; } }
+      // raised hind leg while peeing
+      if (peeing) {
+        ctx.strokeStyle = "#efe9dc";
+        ctx.lineWidth = 3.6;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(-8, 5);
+        ctx.lineTo(-12.5, 9);
+        ctx.stroke();
+        ctx.fillStyle = "#f4efe4";
+        ctx.beginPath();
+        ctx.arc(-12.5, 9, 2.2, 0, TAU);
+        ctx.fill();
+      }
 
-                function hideAll() { dot.classList.remove('visible');
-                    ellipse.classList.remove('visible');
-                    document.body.classList.remove('write-native-cursor', 'custom-cursor-active');
-                    stopLoop(); }
-                window.addEventListener('mousemove', (e) => {
-                    const overNative = !!(e.target && e.target.nodeType === 1 && e.target.closest(NATIVE_SELECTOR));
-                    document.body.classList.add('custom-cursor-active');
-                    document.body.classList.toggle('write-native-cursor', overNative);
-                    ptrX = e.clientX;
-                    ptrY = e.clientY;
-                    dot.style.transform = 'translate(' + ptrX + 'px,' + ptrY + 'px)';
-                    dot.classList.add('visible');
-                    ellipse.classList.add('visible');
-                    startLoop();
-                });
-                document.addEventListener('mouseleave', hideAll);
-            })();
+      // body (white coat, original ellipse proportions)
+      ctx.fillStyle = "#f4efe4";
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 13, 7.5, 0, 0, TAU);
+      ctx.fill();
 
-            /* ── HUD popovers (wolfie.love / support) ── */
-            // (We can keep the original wolfie.love HUD logic if needed, but for brevity we'll skip it here)
-            // The original file had wolfie.love and support panels – we could include them if desired.
+      // soft chest / ruff fluff (replaces original cream blaze)
+      ctx.fillStyle = "#faf6ed";
+      ctx.beginPath();
+      ctx.ellipse(3, 0, 6.5, 5.5, 0, 0, TAU);
+      ctx.fill();
 
-            /* ── Init ── */
-            renderTimeline();
-            refreshDim();
-            document.getElementById('hudStatusCount').textContent = ITEMS.length;
-            document.getElementById('hudStatusText').textContent = `${ITEMS.length} pieces`;
+      // head
+      ctx.fillStyle = "#f4efe4";
+      ctx.beginPath();
+      ctx.arc(12, 0, 6.8, 0, TAU);
+      ctx.fill();
 
-            // Ensure list/grid render on first switch
-            const origSwitch = view;
-            // Already handled by click events.
+      // poodle top-knot (extra fluff on crown)
+      ctx.beginPath();
+      ctx.arc(12, -6.5, 4.8, 0, TAU);
+      ctx.arc(9, -5.5, 3.4, 0, TAU);
+      ctx.arc(15, -5.5, 3.4, 0, TAU);
+      ctx.fill();
 
-            // Update counts
-            document.getElementById('topCount').textContent = `◈ ${ITEMS.length}`;
+      // floppy ears (poodle-mix instead of pointed)
+      ctx.fillStyle = "#efe9dc";
+      ctx.beginPath();
+      ctx.ellipse(9.5, 4.5, 3.2, 5.5, 0.55, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(9.5, -4.5, 3.2, 5.5, -0.55, 0, TAU);
+      ctx.fill();
 
-            window.addEventListener('resize', () => {
-                if (view === 'timeline') {
-                    maxScroll = Math.max(0, trackWidth - window.innerWidth + 200);
-                    scrollTarget = Math.max(-120, Math.min(maxScroll, scrollTarget));
-                }
-            });
+      // snout
+      ctx.fillStyle = "#f4efe4";
+      ctx.beginPath();
+      ctx.ellipse(17.8, 0, 3.8, 2.8, 0, 0, TAU);
+      ctx.fill();
 
-        })();
-    </script>
+      // nose
+      ctx.fillStyle = "#2b2620";
+      ctx.beginPath();
+      ctx.ellipse(20.6, 0, 1.6, 1.3, 0, 0, TAU);
+      ctx.fill();
+
+      // collar (keeps original rust accent)
+      ctx.strokeStyle = "#c4552e";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(8.5, 0, 5.6, -1.2, 1.2);
+      ctx.stroke();
+
+      // eye
+      ctx.fillStyle = "#2b2620";
+      ctx.beginPath();
+      ctx.arc(13.5, -2.4, 1.35, 0, TAU);
+      ctx.fill();
+      // tiny highlight
+      ctx.fillStyle = "#f6efdf";
+      ctx.beginPath();
+      ctx.arc(13.8, -2.7, 0.45, 0, TAU);
+      ctx.fill();
+
+      // bark rings (original rust)
+      if (dog.barkTimer > 0) {
+        const a = dog.barkTimer / 0.38;
+        ctx.strokeStyle = `rgba(196,85,46,${a * 0.9})`;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.arc(22, 0, 8 + (1 - a) * 12, -0.55, 0.55);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(22, 0, 14 + (1 - a) * 16, -0.45, 0.45);
+        ctx.stroke();
+      }
+
+      // sniff: little arcs of air drawn in toward the nose
+      if (sniffing) {
+        ctx.lineWidth = 1.6;
+        ctx.lineCap = "round";
+        for (let k = 0; k < 2; k++) {
+          const ph = (nowT * 3 + k * 0.5) % 1;
+          ctx.strokeStyle = `rgba(246,239,223,${(1 - ph) * 0.75})`;
+          ctx.beginPath();
+          ctx.arc(21, 0, 13 - ph * 9, -0.6, 0.6);
+          ctx.stroke();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    // ---------- Run queue: dotted route + numbered stops ----------
+    function drawTarget() {
+      if (!targets.length) return;
+
+      // dotted route from Wolfie through every stop
+      ctx.strokeStyle = "rgba(246,239,223,0.4)";
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = "round";
+      ctx.setLineDash([2, 7]);
+      ctx.beginPath();
+      ctx.moveTo(dog.x, dog.y);
+      for (const t of targets) ctx.lineTo(t.x, t.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // stops
+      ctx.font = "700 11px Cabin, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      targets.forEach((t, i) => {
+        const fadeIn = clamp((nowT - t.t0) / 0.15, 0, 1);
+        const next = i === 0;
+        ctx.save();
+        ctx.translate(t.x, t.y);
+        ctx.strokeStyle = `rgba(246,239,223,${(next ? 0.85 : 0.5) * fadeIn})`;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 12, 6.5, 0, 0, TAU);
+        ctx.stroke();
+        if (next) {
+          const ph = ((nowT - t.t0) * 1.1) % 1;
+          ctx.strokeStyle = `rgba(246,239,223,${0.45 * (1 - ph) * fadeIn})`;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 8 + ph * 18, (8 + ph * 18) * 0.54, 0, 0, TAU);
+          ctx.stroke();
+        }
+        ctx.fillStyle = `rgba(232,163,61,${0.95 * fadeIn})`;
+        ctx.beginPath();
+        ctx.arc(0, 0, 2.4, 0, TAU);
+        ctx.fill();
+        if (targets.length > 1) {
+          ctx.fillStyle = `rgba(246,239,223,${0.95 * fadeIn})`;
+          ctx.fillText(String(i + 1), 0, -13);
+        }
+        ctx.restore();
+      });
+    }
+
+    // ---------- Custom cursor: a dot and one ring ----------
+    function drawCursor(dt) {
+      if (!mouse.visible) return;
+      mouse.pulse = Math.max(0, mouse.pulse - dt * 2.6);
+      const pressed = mouse.left || mouse.right;
+      const col = mouse.right ? "232,163,61" : mouse.left ? "196,85,46" : "246,239,223";
+
+      // click ripple
+      if (mouse.pulse > 0) {
+        ctx.strokeStyle = `rgba(${col},${mouse.pulse * 0.8})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, 10 + (1 - mouse.pulse) * 22, 0, TAU);
+        ctx.stroke();
+      }
+
+      // ring
+      ctx.strokeStyle = `rgba(${col},0.9)`;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, pressed ? 7 : 10, 0, TAU);
+      ctx.stroke();
+
+      // dot
+      ctx.fillStyle = `rgb(${col})`;
+      ctx.strokeStyle = "rgba(43,38,32,0.6)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, 2.6, 0, TAU);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    function render(dt) {
+      drawField();
+      drawFlowers();
+      drawButterflies();
+      drawTarget();
+      drawPuddles();
+      drawPens();
+      const list = [...sheep].sort((a, b) => a.y - b.y);
+      for (const s of list) drawSheep(s);
+      drawDog();
+      drawWoofs();
+      drawPenOverlay();
+      drawCursor(dt);
+    }
+
+    let last = performance.now();
+    function frame(now) {
+      let dt = (now - last) / 1000;
+      last = now;
+      dt = Math.min(dt, 0.05);
+      update(dt);
+      render(dt);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  </script>
 </body>
 </html>
