@@ -146,6 +146,19 @@
       pointer-events: none; opacity: 0; transition: opacity 0.3s;
       text-shadow: 0 2px 0 #2b2620, 2px 0 0 #2b2620, -2px 0 0 #2b2620, 0 -2px 0 #2b2620;
     }
+    :root { --top: 14px; --side: 16px; }
+    #zenBtn {
+      all: unset; box-sizing: border-box; cursor: pointer; position: fixed; z-index: 6;
+      top: calc(var(--top) + 46px); right: var(--side);
+      font-family: var(--body); font-weight: 700; font-size: 12px; color: var(--cream);
+      background: rgba(43,38,32,0.8); border-radius: 12px; padding: 7px 11px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25); opacity: 0.85;
+      transition: opacity 0.2s, background 0.2s;
+    }
+    #zenBtn .key { font-size: 10px; opacity: 0.65; margin-left: 4px; font-weight: 600; }
+    body.zen #zenBtn { top: var(--top); background: rgba(43,38,32,0.4); box-shadow: none; opacity: 0.45; }
+    body.zen #zenBtn:hover { opacity: 0.9; }
+    body.zen #stats, body.zen #viewSwitch, body.zen #penHud, body.zen #hint { display: none !important; }
     #viewSwitch {
       position: fixed; top: 14px; right: 16px; z-index: 6;
       display: flex; gap: 4px;
@@ -185,7 +198,9 @@
       #statsHead { padding: 8px 11px; font-size: 13px; }
       #viewSwitch { top: var(--top); right: max(10px, env(safe-area-inset-right)); gap: 2px; padding: 3px; }
       #viewSwitch button { padding: 8px 9px; font-size: 12px; }
-      #viewSwitch button .key { display: none; }
+      #viewSwitch button .key, #zenBtn .key { display: none; }
+      #zenBtn { right: max(10px, env(safe-area-inset-right)); padding: 8px 9px; top: calc(var(--top) + 46px); }
+      body.zen #zenBtn { top: var(--top); }
       #penHud {
         top: calc(var(--top) + 48px); font-size: 12px; padding: 5px 14px;
         max-width: calc(100% - 20px);
@@ -227,6 +242,8 @@
       </div></div>
     </div>
   </div>
+
+  <button type="button" id="zenBtn" title="Hide / show interface (X)">Zen <span class="key">X</span></button>
 
   <button id="peeBtn" type="button" aria-label="Pee pee (right-click)">
     <span class="main">💧 Pee pee</span>
@@ -294,8 +311,8 @@ const canvas = document.getElementById('c');
 const hint = document.getElementById('hint');
 if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
   // touch devices: no keyboard / right-click wording
-  hint.textContent = "Herd every sheep into the pen · Drag to paint Wolfie's path · Tap a flower to sniff · Tap WOOF to bark";
-  document.querySelector('#peeBtn .hint').textContent = 'tap';
+  hint.textContent = "Herd every sheep into the pen · Drag to paint Wolfie's path · Tap a flower to sniff · Tap WOOF to bark · tap 💧 to pee, hold it for 💩";
+  document.querySelector('#peeBtn .hint').textContent = 'tap · hold 💩';
   document.querySelector('#barkBtn .hint').textContent = 'tap';
   document.getElementById('peeBtn').setAttribute('aria-label', 'Pee pee');
   document.getElementById('barkBtn').setAttribute('aria-label', 'Bark');
@@ -715,6 +732,7 @@ window.addEventListener('keydown', e => {
   if (e.key === '1') setCamMode('iso');
   if (e.key === '2') setCamMode('top');
   if (e.key === 'z' || e.key === 'Z') toggleZoom();
+  if (e.key === 'x' || e.key === 'X') toggleZen();
 });
 
 function updateViewButtons() {
@@ -729,6 +747,13 @@ document.querySelectorAll('#viewSwitch button[data-mode]').forEach(btn => {
 });
 const zoomBtnEl = document.getElementById('zoomBtn');
 if (zoomBtnEl) zoomBtnEl.addEventListener('click', toggleZoom);
+
+// Zen mode: hide all chrome except the bark / pee buttons and a faint Zen toggle.
+function toggleZen() {
+  const on = document.body.classList.toggle('zen');
+  document.getElementById('zenBtn').firstChild.textContent = on ? 'Show ' : 'Zen ';
+}
+document.getElementById('zenBtn').addEventListener('click', toggleZen);
 
 // Zoom level slider (hover the Zoom button): value is magnification, 1.1x–4x.
 const ZOOM_MAG_MIN = 1.1, ZOOM_MAG_MAX = 4;
@@ -1718,31 +1743,34 @@ const POO_TAP = 0.25;       // release before this = ordinary right-click pee
 const POO_MAX_HOLD = 1.6;   // seconds held to reach full pressure
 const POO_LIFE = 10;        // how long a poo stays on the field
 const POO_COOLDOWN = 10;    // one poo per this many seconds (matches its lifetime)
-const poo = { charging: false, t: 0, cool: 0, piles: [] };
+const poo = { charging: false, t: 0, cool: 0, piles: [], tapT: POO_TAP, anchor: null };
 const pooMeter = document.createElement('div');
 pooMeter.id = 'pooMeter';
 pooMeter.innerHTML = '<div class="fill"></div>';
 document.body.appendChild(pooMeter);
 const pooFill = pooMeter.firstChild;
 
-function startPooCharge() {
+function startPooCharge(tapT = POO_TAP, anchor = null) {
   if (poo.charging) return;
   poo.charging = true;
   poo.t = 0;
+  poo.tapT = tapT;       // release before this = pee
+  poo.anchor = anchor;   // screen point for the meter (touch button); null = follow cursor
   pooFill.style.width = '0%';
 }
 function cancelPooCharge() {
   poo.charging = false;
   poo.t = 0;
+  poo.anchor = null;
   pooMeter.style.display = 'none';
 }
 function releasePoo() {
   if (!poo.charging) return;
-  const held = poo.t;
+  const held = poo.t, tapT = poo.tapT;
   cancelPooCharge();
-  if (held < POO_TAP) { startPee(); return; }   // quick right-click = pee pee
+  if (held < tapT) { startPee(); return; }   // quick tap / right-click = pee pee
   if (poo.cool > 0) { spawnFloat('💩 not yet…', dog.x, dog.y, '#f6efdf'); return; }
-  dropPoo(clamp((held - POO_TAP) / (POO_MAX_HOLD - POO_TAP), 0, 1));
+  dropPoo(clamp((held - tapT) / (POO_MAX_HOLD - tapT), 0, 1));
 }
 function dropPoo(pressure) {
   const c = Math.cos(dog.dir), s = Math.sin(dog.dir);
@@ -1769,9 +1797,9 @@ function updatePoo(dt) {
   poo.cool = Math.max(0, poo.cool - dt);
   if (poo.charging) {
     poo.t = Math.min(POO_MAX_HOLD, poo.t + dt);
-    const f = clamp((poo.t - POO_TAP) / (POO_MAX_HOLD - POO_TAP), 0, 1);
+    const f = clamp((poo.t - poo.tapT) / (POO_MAX_HOLD - poo.tapT), 0, 1);
     // meter appears only once it's clearly a hold, and only if a poo is available
-    const showMeter = poo.t >= POO_TAP && poo.cool <= 0;
+    const showMeter = poo.t >= poo.tapT && poo.cool <= 0;
     pooMeter.style.display = showMeter ? 'block' : 'none';
     pooFill.style.width = (f * 100) + '%';
     pooFill.style.background = f > 0.85 ? '#c4552e' : '#8a5a2b';
@@ -1784,8 +1812,8 @@ function updatePoo(dt) {
 }
 function syncPoo() {
   if (poo.charging) {
-    pooMeter.style.left = mouse.x + 'px';
-    pooMeter.style.top = mouse.y + 'px';
+    pooMeter.style.left = (poo.anchor ? poo.anchor.x : mouse.x) + 'px';
+    pooMeter.style.top = (poo.anchor ? poo.anchor.y : mouse.y) + 'px';
   }
   for (const pile of poo.piles) {
     const sc = worldToScreen(pile.x, 4, pile.y);
@@ -2002,7 +2030,14 @@ const barkBtn = document.getElementById('barkBtn');
 barkBtn.addEventListener('pointerdown', e => { e.preventDefault(); ensureAudio(); keys.bark = true; });
 ['pointerup','pointercancel','pointerleave'].forEach(ev => barkBtn.addEventListener(ev, () => { keys.bark = false; }));
 const peeBtn = document.getElementById('peeBtn');
-peeBtn.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); ensureAudio(); startPee(); });
+peeBtn.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation(); ensureAudio();
+  const r = peeBtn.getBoundingClientRect();
+  startPooCharge(0.35, { x: r.left + r.width / 2, y: r.top - 40 });  // tap = pee, hold = poo
+  try { peeBtn.setPointerCapture(e.pointerId); } catch (_) {}
+});
+peeBtn.addEventListener('pointerup', e => { e.preventDefault(); releasePoo(); });
+peeBtn.addEventListener('pointercancel', () => cancelPooCharge());
 
 // ---------- World→screen for floats ----------
 const _v = new THREE.Vector3();
