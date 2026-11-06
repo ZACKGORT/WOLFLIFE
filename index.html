@@ -243,7 +243,7 @@
     </div>
   </div>
 
-  <button type="button" id="zenBtn" title="Hide / show interface (X)">Zen <span class="key">X</span></button>
+  <button type="button" id="zenBtn" title="Hide / show interface (Shift)">Zen <span class="key">Shift</span></button>
 
   <button id="peeBtn" type="button" aria-label="Pee pee (right-click)">
     <span class="main">💧 Pee pee</span>
@@ -732,7 +732,6 @@ window.addEventListener('keydown', e => {
   if (e.key === '1') setCamMode('iso');
   if (e.key === '2') setCamMode('top');
   if (e.key === 'z' || e.key === 'Z') toggleZoom();
-  if (e.key === 'x' || e.key === 'X') toggleZen();
 });
 
 function updateViewButtons() {
@@ -754,6 +753,16 @@ function toggleZen() {
   document.getElementById('zenBtn').firstChild.textContent = on ? 'Show ' : 'Zen ';
 }
 document.getElementById('zenBtn').addEventListener('click', toggleZen);
+// Shift (pressed and released on its own) toggles zen; Shift+W etc. is left alone.
+let shiftSolo = false;
+window.addEventListener('keydown', e => {
+  if (e.key === 'Shift') { if (!e.repeat) shiftSolo = true; }
+  else shiftSolo = false;
+});
+window.addEventListener('keyup', e => {
+  if (e.key === 'Shift' && shiftSolo) { shiftSolo = false; toggleZen(); }
+});
+window.addEventListener('blur', () => { shiftSolo = false; });
 
 // Zoom level slider (hover the Zoom button): value is magnification, 1.1x–4x.
 const ZOOM_MAG_MIN = 1.1, ZOOM_MAG_MAX = 4;
@@ -1844,6 +1853,7 @@ drawLine.visible = false;
 scene.add(drawLine);
 
 function syncTargets() {
+  const vis = targets.filter(t => !t.auto);   // free-will walks draw no path
   // Live paint stroke (while holding)
   if (drawingPath && drawPoints.length) {
     const pts = [new THREE.Vector3(dog.x, 0.45, dog.y)];
@@ -1856,8 +1866,8 @@ function syncTargets() {
   }
 
   // markers — only show for committed path; thin out if dense
-  const markerStride = targets.length > 24 ? 2 : 1;
-  const markerCount = targets.length ? Math.ceil(targets.length / markerStride) : 0;
+  const markerStride = vis.length > 24 ? 2 : 1;
+  const markerCount = vis.length ? Math.ceil(vis.length / markerStride) : 0;
   while (targetMarkers.length < markerCount) {
     const m = new THREE.Mesh(
       new THREE.RingGeometry(7, 10, 16),
@@ -1872,21 +1882,21 @@ function syncTargets() {
     const m = targetMarkers.pop();
     scene.remove(m);
   }
-  for (let i = 0, mi = 0; i < targets.length; i += markerStride, mi++) {
-    const t = targets[i];
+  for (let i = 0, mi = 0; i < vis.length; i += markerStride, mi++) {
+    const t = vis[i];
     const m = targetMarkers[mi];
     if (!m) break;
     m.position.x = t.x;
     m.position.z = t.y;
     const isFirst = i === 0;
-    const isLast = i + markerStride >= targets.length;
+    const isLast = i + markerStride >= vis.length;
     m.material.opacity = isFirst || isLast ? 0.9 : 0.4;
     m.scale.setScalar(isLast ? 1.15 : 1);
   }
   // committed path line (dog → remaining waypoints)
-  if (targets.length && !drawingPath) {
+  if (vis.length && !drawingPath) {
     const pts = [new THREE.Vector3(dog.x, 0.4, dog.y)];
-    for (const t of targets) pts.push(new THREE.Vector3(t.x, 0.4, t.y));
+    for (const t of vis) pts.push(new THREE.Vector3(t.x, 0.4, t.y));
     targetLine.geometry.dispose();
     targetLine.geometry = new THREE.BufferGeometry().setFromPoints(pts);
     targetLine.computeLineDistances();
@@ -2025,6 +2035,10 @@ window.addEventListener('touchcancel', () => {
   }
   mouse.left = false;
 });
+
+// Any press / key / wheel is player activity: it resets the idle clock and ends free will.
+['keydown', 'pointerdown', 'wheel', 'touchstart'].forEach(t =>
+  window.addEventListener(t, noteInput, { capture: true, passive: true }));
 
 const barkBtn = document.getElementById('barkBtn');
 barkBtn.addEventListener('pointerdown', e => { e.preventDefault(); ensureAudio(); keys.bark = true; });
@@ -2337,6 +2351,83 @@ function startSniff(f) {
   }
 }
 
+// ---------- Free will: after a long idle, Wolfie does his own thing ----------
+const FREEWILL_AFTER = 30;   // seconds without any player input
+const free = { on: false, autoZoomed: false, urge: 0, zoomT: 0, visited: new Set() };
+let lastInputT = 0;
+
+function noteInput(e) {
+  lastInputT = nowT;
+  if (free.on) endFreeWill(e);
+}
+function beginFreeWill() {
+  free.on = true;
+  free.urge = rand(10, 22);     // time until his next pee / poo impulse
+  free.zoomT = rand(12, 26);    // time until his next zoomies
+  if (!zoomFollow) { toggleZoom(); free.autoZoomed = true; }  // camera tracks Wolfie
+}
+function endFreeWill(e) {
+  free.on = false;
+  dropAutoTargets();
+  dog.sniffTimer = 0;
+  if (dog.idleAction) cancelDogIdle(4);
+  // if the player is touching the zoom control themselves, leave zoom as they set it
+  const zoomCtl = e && ((e.target instanceof Element && e.target.closest('#zoomWrap')) || e.key === 'z' || e.key === 'Z');
+  if (free.autoZoomed && !zoomCtl && zoomFollow) toggleZoom();
+  free.autoZoomed = false;
+}
+function dropAutoTargets() {
+  for (let i = targets.length - 1; i >= 0; i--) if (targets[i].auto) targets.splice(i, 1);
+}
+function pickFlowerToSniff() {
+  let pool = flowers.filter(f => !free.visited.has(f));
+  if (!pool.length) { free.visited.clear(); pool = flowers.slice(); }  // start a new tour
+  const dd = f => dist(dog.x, dog.y, f.u * FIELD.w, f.v * FIELD.h);
+  pool.sort((a, b) => dd(a) - dd(b));
+  const f = pool[Math.floor(Math.random() * Math.min(3, pool.length))];
+  free.visited.add(f);
+  targets.push({ x: f.u * FIELD.w, y: f.v * FIELD.h, t0: nowT, flower: f, auto: true });
+}
+function updateFreeWill(dt, peeing, sniffing, distracted) {
+  const holding = keys.left || keys.right || keys.up || keys.down || keys.bark ||
+    drawingPath || mouse.left || mouse.right || poo.charging;
+  if (holding) {                       // held input counts as activity
+    lastInputT = nowT;
+    if (free.on) endFreeWill(null);
+    return;
+  }
+  if (!free.on) {
+    if (nowT - lastInputT > FREEWILL_AFTER) beginFreeWill();
+    return;
+  }
+  free.urge -= dt;
+  free.zoomT -= dt;
+  const busy = peeing || sniffing || distracted || dog.idleAction;
+  if (busy) return;
+  if (free.urge <= 0) {                // his own pee / poo impulse
+    free.urge = rand(14, 32);
+    dropAutoTargets();
+    if (poo.cool <= 0 && Math.random() < 0.4) {
+      dropPoo(rand(0.1, 0.9));
+      dog.vx *= 0.3; dog.vy *= 0.3;
+    } else {
+      startPee();
+    }
+    return;
+  }
+  if (free.zoomT <= 0) {               // intermittent zoomies
+    free.zoomT = rand(22, 45);
+    dropAutoTargets();
+    dog.idleAction = 'zoomies';
+    dog.idleElapsed = 0;
+    dog.idleDuration = rand(3, 4.2);
+    dog.idleOriginX = dog.x; dog.idleOriginY = dog.y;
+    setNextZoomieTarget();
+    return;
+  }
+  if (!targets.length) pickFlowerToSniff();   // wander on to the next flower
+}
+
 function update(dt) {
   nowT += dt;
   const peeing = dog.peeTimer > 0;
@@ -2345,7 +2436,8 @@ function update(dt) {
   if (sniffing) dog.sniffTimer = Math.max(0, dog.sniffTimer - dt);
   const distracted = (dog.distractTimer || 0) > 0;
   const playerSteering = keys.left || keys.right || keys.up || keys.down;
-  const playerBusy = playerSteering || keys.bark || targets.length > 0 || drawingPath ||
+  updateFreeWill(dt, peeing, sniffing, distracted);
+  const playerBusy = playerSteering || keys.bark || targets.some(t => !t.auto) || drawingPath ||
     peeing || sniffing || distracted || dog.barkTimer > 0.05;
 
   // Wolfie gets a little personality when left to himself. These actions are
@@ -2442,7 +2534,8 @@ function update(dt) {
         aimX = lerp(tg.x, nx2, blend);
         aimY = lerp(tg.y, ny2, blend);
       }
-      const speed = isStop ? Math.min(MAX_DOG, d * 5) : MAX_DOG;
+      const topSp = tg.auto ? MAX_DOG * 0.55 : MAX_DOG;   // leisurely trot when wandering
+      const speed = isStop ? Math.min(topSp, d * 5) : topSp;
       const [nx, ny] = norm(aimX - dog.x, aimY - dog.y);
       const k = 1 - Math.exp(-dt * 9);
       dog.vx += (nx * speed - dog.vx) * k;
@@ -2871,6 +2964,7 @@ function resetGame() {
   zoomFollow = false;
   zoomLevel = ZOOM_DEFAULT;
   syncZoomUI();
+  free.on = false; free.autoZoomed = false; free.visited.clear(); lastInputT = 0;
   follow.x = FIELD.w / 2;
   follow.z = FIELD.h / 2;
   placeCamera();
